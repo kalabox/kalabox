@@ -1,0 +1,16 @@
+{
+  "title": "My Drupal 8 Site",
+  "desc": "A custom drupal-8 site based on kalalbx d8 profile.",
+  "name": "myd8site",
+  "components": {
+    "data": {
+      "image": "kalabox/data"
+    },
+    "db": {
+      "image": "dockerfile/mysql"
+    },
+    "web": {
+      "image": "dockerfile/nginx"
+    }
+  }
+}

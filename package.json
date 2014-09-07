@@ -1,0 +1,10 @@
+{
+  "name": "AppManager",
+  "description": "An application orchestration concept for Kalabox",
+  "version": "0.0.1",
+  "devDependencies": {
+    "gulp": "~3.8.7",
+    "dockerode": "~2.0.3",
+    "lodash": "~2.4.1"
+  }
+}
