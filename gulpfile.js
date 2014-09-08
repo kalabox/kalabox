@@ -28,5 +28,5 @@ gulp.task('remove', function() {
 });
 
 gulp.task('pull-images', function() {
-  am.pullImages();
+  return am.pullImages();
 });

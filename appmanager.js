@@ -3,6 +3,7 @@ var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
 var docker =  new Docker({socketPath: '/var/run/docker.sock'});
+var Q = require('q');
 
 var AppManager = function(appPath) {
   this.appPath = appPath;
@@ -93,15 +94,26 @@ var removeContainer = function(obj) {
   });
 };
 
-var pullImage = function(obj) {
+var pullImage = function(obj, components, deferred) {
   // Don't pull images defined to be built
   if (obj.build) {
     return;
   }
+
+  console.log('pulling ' + obj.image);
   docker.pull(obj.image, function (err, stream) {
     if (err) {
-      console.log('Error updating images');
+      throw err;
     }
+
+    obj.pulled = true;
+    if (_.every(components, {'pulled': true})) {
+      _(components).each(function(obj) {
+        delete obj.pulled;
+      });
+      deferred.resolve();
+    }
+    console.log(obj.image + ' complete.');
   });
 };
 
@@ -148,7 +160,14 @@ AppManager.prototype.remove = function() {
 };
 
 AppManager.prototype.pullImages = function() {
-  _.map(this.config.components, pullImage);
+  var self = this;
+  var deferred = Q.defer();
+
+  _(self.config.components).each(function(obj){
+    pullImage(obj, self.config.components, deferred);
+  });
+  //_.map(self.config.components, pullImage);
+  return deferred.promise;
 };
 
 module.exports = AppManager;
