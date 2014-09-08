@@ -4,7 +4,7 @@
   "name": "myd8site",
   "components": {
     "data": {
-      "image": "kalabox/data"
+      "image": "pirog/kaladata-docker"
     },
     "db": {
       "image": "dockerfile/mysql"

@@ -2,7 +2,10 @@ var Docker = require('dockerode');
 var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
-var docker =  new Docker({socketPath: '/var/run/docker.sock'});
+// for a local linux instance
+// var docker =  new Docker({socketPath: '/var/run/docker.sock'});
+// for osx/kalabox instance
+var docker =  new Docker({host: 'http://1.3.3.7', port: 2375});
 var Q = require('q');
 
 var AppManager = function(appPath) {
