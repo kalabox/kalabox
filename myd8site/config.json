@@ -6,14 +6,8 @@
     "data": {
       "image": "pirog/kaladata-docker"
     },
-    "db": {
-      "image": "dockerfile/mysql"
-    },
-    "redis": {
-      "image": "dockerfile/redis"
-    },
     "web": {
-      "image": "dockerfile/nginx"
+      "image": "pirog/kalastack-docker"
     }
   }
 }

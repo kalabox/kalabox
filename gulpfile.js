@@ -3,7 +3,7 @@ var AppManager = require('./appmanager.js');
 var am = new AppManager('./myd8site');
 
 // Creates app containers
-gulp.task('init', function() {
+gulp.task('init', ['pull-images'], function() {
   am.init();
 });
 

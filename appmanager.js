@@ -104,19 +104,26 @@ var pullImage = function(obj, components, deferred) {
   }
 
   console.log('pulling ' + obj.image);
+
   docker.pull(obj.image, function (err, stream) {
     if (err) {
       throw err;
     }
 
-    obj.pulled = true;
-    if (_.every(components, {'pulled': true})) {
-      _(components).each(function(obj) {
-        delete obj.pulled;
-      });
-      deferred.resolve();
-    }
-    console.log(obj.image + ' complete.');
+    stream.on('data', function(data) {
+      // this is needed?
+    });
+
+    stream.on('end', function() {
+      obj.pulled = true;
+      if (_.every(components, {'pulled': true})) {
+        _(components).each(function(obj) {
+          delete obj.pulled;
+        });
+        deferred.resolve();
+      }
+      console.log(obj.image + ' complete.');
+    });
   });
 };
 
@@ -166,9 +173,10 @@ AppManager.prototype.pullImages = function() {
   var self = this;
   var deferred = Q.defer();
 
-  _(self.config.components).each(function(obj){
+  _(self.config.components).each(function(obj) {
     pullImage(obj, self.config.components, deferred);
   });
+
   //_.map(self.config.components, pullImage);
   return deferred.promise;
 };
