@@ -20,7 +20,7 @@ var AppManager = function(appPath) {
   // Set more properties for each component
   _.map(this.config.components, function(obj, key) {
     obj.key = key;
-    obj.dataCname = self.dataCname;
+    obj.dataCname = self.hasData && key !== 'data' ? self.dataCname : null;
     obj.cname = self.prefix + key;
     obj.cidfile = path.resolve(self.cidPath, key);
     if (fs.existsSync(obj.cidfile)) {
@@ -52,23 +52,19 @@ var createContainer = function(obj) {
     name: obj.cname,
     Image: obj.image,
     Dns: ['8.8.8.8', '8.8.4.4'],
-    VolumesFrom: this.hasData == null || obj.key === 'data' ? '' : obj.dataCname,
-    // cidfile not working here, so we're manually creating the cidfile in the callback.
-    // https://github.com/apocas/dockerode/issues/95
     cidfile: obj.cidfile
   }, function(err, container) {
     if (container) {
       var fs = require('fs');
       fs.writeFileSync(path.resolve(obj.cidfile), container.id);
-      container.start(function(err, data) {
-
+      container.start({PublishAllPorts: true, VolumesFrom: obj.dataCname}, function(err, data) {
       });
     }
   });
 };
 
 var startContainer = function(obj) {
-  docker.getContainer(obj.cid).start(function(err, data) {
+  docker.getContainer(obj.cid).start({PublishAllPorts: true, VolumesFrom: obj.dataCname}, function(err, data) {
   });
 };
 

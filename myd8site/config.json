@@ -4,10 +4,16 @@
   "name": "myd8site",
   "components": {
     "data": {
-      "image": "pirog/kaladata-docker"
+      "image": "pirog/kaladata-docker",
+      "ExposedPorts": {}
     },
     "web": {
-      "image": "pirog/kalastack-docker"
+      "image": "pirog/kalastack-docker",
+      "ExposedPorts": {
+        "22/tcp": {},
+        "80/tcp": {},
+        "3306/tcp": {}
+      }
     }
   }
 }
