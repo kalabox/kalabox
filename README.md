@@ -1,34 +1,42 @@
-## Kalabox App Manager Concept
+## App Manager Concept
 
-Once an application is created based on a profile and various components,
-the config data is copied to somewhere like `~/kalabox/apps/myd8site`.
+This is currently setup for OSX and Boot2Docker, with the B2D host of: `1.3.3.7`.
 
-`myd8site` is the app name, and inside is the application `config.json` and a `cids` directory.
+You can modify the docker host at the top of `appmanager.js`. See the `dockerode` project for formats.
 
-The `cids` directory contains plain text files named by component key, with the container id
-as its contents. This provides a way for the app to know if a container exists, and easily
-access the container by component.
 
-Components with the key `data` are treated special in that they will be created first. This
-is so volumes from the data container can be shared with all other containers launched after it.
+## Install
+```
+npm install -g gulp
+git clone git@github.com:mikemilano/appmanager.git
+cd appmanager
+npm install
+gulp pull-images
+gulp init
+```
 
-Containers names are prefixed with the app name, and then appended with the component key.
+## AppManager API
+```
+var AppManager = require('./appmanager.js');
+var am = new AppManager('/path/to/app/config');
 
-For example: `<app name>_<component key>' would translate to something like: `myd8site_web`.
+// Pull images defined in config
+am.pullImages();
 
-## AppManager
+// Create & start containers
+am.createContainers();
 
-`AppManager` can be instantiated with the path to the application config. It assumes the app
-name is the last section of the path.
+// Stop all app containers
+am.stopContainers();
 
-This means an instance of AppManager only controls a single application.
+// Start all app containers
+am.startContainers();
 
-See `appmanager.js` for its functions.
+// Restart all app containers
+am.restartContainers();
+```
 
 ## Gulp Demo
-
-This demo is setup for a ubuntu system running docker locally through the unix socket. Theoretically
-you could change the remote path for `dockerode` and it should still work.
 
 Gulp at this point is only used for demonstrating the use of `AppManager`.
 
@@ -60,4 +68,3 @@ gulp kill
 # remove containers
 gulp remove
 ```
-
