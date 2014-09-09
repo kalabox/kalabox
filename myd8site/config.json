@@ -4,7 +4,9 @@
   "name": "myd8site",
   "components": {
     "data": {
-      "image": "pirog/kaladata-docker"
+      "image": "kalabox/data",
+      "build": true,
+      "src": "./dockerfiles/kalabox/data"
     },
     "web": {
       "image": "pirog/kalastack-docker"

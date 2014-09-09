@@ -2,6 +2,7 @@ var Docker = require('dockerode');
 var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
+
 // for a local linux instance
 // var docker =  new Docker({socketPath: '/var/run/docker.sock'});
 // for osx/kalabox instance
@@ -94,11 +95,6 @@ var removeContainer = function(obj) {
 };
 
 var pullImage = function(obj, components, deferred) {
-  // Don't pull images defined to be built
-  if (obj.build) {
-    return;
-  }
-
   console.log('pulling ' + obj.image);
 
   docker.pull(obj.image, function (err, stream) {
@@ -112,13 +108,62 @@ var pullImage = function(obj, components, deferred) {
 
     stream.on('end', function() {
       obj.pulled = true;
+      console.log(obj.image + ' pull complete.');
+
       if (_.every(components, {'pulled': true})) {
         _(components).each(function(obj) {
           delete obj.pulled;
         });
         deferred.resolve();
       }
-      console.log(obj.image + ' complete.');
+
+    });
+  });
+};
+
+var buildImage = function(obj, components, deferred) {
+  console.log('building ' + obj.image);
+
+  var filename = obj.key + '.tar';
+  var origdir = process.cwd();
+  try {
+    process.chdir(obj.src);
+  }
+  catch (err) {
+    throw err;
+  }
+
+  var exec = require('child_process').exec;
+  exec('tar -cvf ' + filename + ' *', function (err, stdout, stderr) {
+    if (err) {
+      throw err;
+    }
+
+    var data = fs.createReadStream(filename);
+    docker.buildImage(data, {t: obj.image}, function (err, stream){
+      if (err) {
+        throw err;
+      }
+
+      stream.on('data', function(data) {
+        // this is needed?
+      });
+
+      stream.on('end', function() {
+        //
+        fs.unlinkSync(filename);
+        process.chdir(origdir);
+
+        obj.built = true;
+        console.log(obj.image + ' build complete.');
+
+        if (_.every(components, {'built': true, 'build': true})) {
+          _(components).each(function(obj) {
+            delete obj.built;
+          });
+          deferred.resolve();
+        }
+      });
     });
   });
 };
@@ -169,11 +214,29 @@ AppManager.prototype.pullImages = function() {
   var self = this;
   var deferred = Q.defer();
 
-  _(self.config.components).each(function(obj) {
-    pullImage(obj, self.config.components, deferred);
+  var pulls = _.filter(self.config.components, function(obj) {
+    return obj.build !== true;
   });
 
-  //_.map(self.config.components, pullImage);
+  _(pulls).each(function(obj) {
+    pullImage(obj, pulls, deferred);
+  });
+
+  return deferred.promise;
+};
+
+AppManager.prototype.buildImages = function() {
+  var self = this;
+  var deferred = Q.defer();
+
+  var builds = _.filter(self.config.components, function(obj) {
+    return obj.build === true;
+  });
+
+  _(builds).each(function(obj) {
+    buildImage(obj, builds, deferred);
+  });
+
   return deferred.promise;
 };
 
