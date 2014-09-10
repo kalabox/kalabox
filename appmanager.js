@@ -2,6 +2,7 @@ var Docker = require('dockerode');
 var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
+var baseDir = path.resolve('./');
 
 // for a local linux instance
 // var docker =  new Docker({socketPath: '/var/run/docker.sock'});
@@ -26,6 +27,9 @@ var AppManager = function(appPath) {
     obj.cidfile = path.resolve(self.cidPath, key);
     if (fs.existsSync(obj.cidfile)) {
       obj.cid = fs.readFileSync(obj.cidfile);
+    }
+    if (obj.build) {
+      obj.src = path.resolve(obj.src);
     }
   });
 };
@@ -125,8 +129,10 @@ var buildImage = function(obj, components, deferred) {
   console.log('building ' + obj.image);
 
   var filename = obj.key + '.tar';
-  var origdir = process.cwd();
+  var file = path.resolve(obj.src, filename);
+
   try {
+    console.log(obj.src);
     process.chdir(obj.src);
   }
   catch (err) {
@@ -134,12 +140,12 @@ var buildImage = function(obj, components, deferred) {
   }
 
   var exec = require('child_process').exec;
-  exec('tar -cvf ' + filename + ' *', function (err, stdout, stderr) {
+  exec('tar -cvf ' + file+ ' *', function (err, stdout, stderr) {
     if (err) {
       throw err;
     }
 
-    var data = fs.createReadStream(filename);
+    var data = fs.createReadStream(file);
     docker.buildImage(data, {t: obj.image}, function (err, stream){
       if (err) {
         throw err;
@@ -150,9 +156,8 @@ var buildImage = function(obj, components, deferred) {
       });
 
       stream.on('end', function() {
-        //
-        fs.unlinkSync(filename);
-        process.chdir(origdir);
+        fs.unlinkSync(file);
+        process.chdir(baseDir);
 
         obj.built = true;
         console.log(obj.image + ' build complete.');
