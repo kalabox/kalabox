@@ -1,36 +1,79 @@
+/**
+ * gulp list
+ * gulp init --app myd8site
+ * gulp start --app myd8site
+ * gulp stop --app myd8site
+ * gulp restart --app myd8site
+ * gulp kill --app myd8site
+ * gulp remove --app myd8site
+ * gulp pull-images --app myd8site
+ * gulp build-images --app myd8site
+ */
+var _ = require('lodash');
 var gulp = require('gulp');
-var AppManager = require('./appmanager.js');
-var am = new AppManager('./myd8site');
+var gutil = require('gulp-util');
+var fs = require('fs');
+var path = require('path');
+var am = require('./lib/appmanager.js');
+
+var appname = gutil.env.app ? gutil.env.app : null;
+if (appname) {
+  try {
+    var app = new am.App(appname);
+  }
+  catch (err) {
+    throw err;
+  }
+}
+
+gulp.task('list', function() {
+  var apps = am.getApps();
+  var i = 1;
+  gutil.log(' ');
+  gutil.log('Kalabox Apps:');
+  for (var x in apps) {
+    gutil.log('  ', i + ')', apps[x].config.name);
+    i++;
+  }
+  gutil.log(' ');
+});
 
 // Creates app containers
 gulp.task('init', ['build-images', 'pull-images'], function() {
-  return am.init();
+  return app.init();
 });
 
 gulp.task('start', function() {
-  am.start();
+  gutil.log('Starting', appname);
+  app.start();
 });
 
 gulp.task('stop', function() {
-  am.stop();
+  gutil.log('Stopping', appname);
+  app.stop();
 });
 
 gulp.task('restart', function() {
-  am.restart();
+  gutil.log('Restarting', appname);
+  app.restart();
 });
 
 gulp.task('kill', function() {
-  am.kill();
+  gutil.log('Killing', appname);
+  app.kill();
 });
 
 gulp.task('remove', function() {
-  am.remove();
+  gutil.log('Removing', appname);
+  app.remove();
 });
 
 gulp.task('pull-images', function() {
-  return am.pullImages();
+  gutil.log('Pulling images for', appname);
+  return app.pullImages();
 });
 
 gulp.task('build-images', function(done) {
-  return am.buildImages(done);
+  gutil.log('Building images for', appname);
+  return app.buildImages(done);
 });

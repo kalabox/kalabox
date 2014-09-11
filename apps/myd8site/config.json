@@ -8,11 +8,6 @@
       "build": true,
       "src": "./dockerfiles/kalabox/data"
     },
-    "sync": {
-      "image": "kalabox/sinker",
-      "build": true,
-      "src": "./dockerfiles/kalabox/sinker"
-    },
     "web": {
       "image": "pirog/kalastack-docker"
     }
