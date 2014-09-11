@@ -2,7 +2,7 @@
 
 This is currently setup for OSX and Boot2Docker, with the B2D host of: `1.3.3.7`.
 
-You can modify the docker host at the top of `appmanager.js`. See the `dockerode` project for formats.
+You can modify the docker property of config.json. See the `dockerode` project for formats.
 
 
 ## Install
@@ -20,51 +20,50 @@ gulp init
 var AppManager = require('./appmanager.js');
 var am = new AppManager('/path/to/app/config');
 
+// Instantiate an app object
+var app = new am.App('myd8site');
+
 // Pull images defined in config
-am.pullImages();
+app.pullImages();
 
 // Create & start containers
-am.createContainers();
+app.createContainers();
 
 // Stop all app containers
-am.stopContainers();
+app.stopContainers();
 
 // Start all app containers
-am.startContainers();
+app.startContainers();
 
 // Restart all app containers
-am.restartContainers();
+app.restartContainers();
 ```
 
 ## Gulp Demo
 
 Gulp at this point is only used for demonstrating the use of `AppManager`.
-
-You can see the path to the config, `myd8site` is hard coded in `gulpfile.js`.
-
-If gulp were actually going to be used, we would need to parse arguments so the app name
-could be passed in.
-
-
 ```
+# list apps
+gulp list
+
 # pull all defined images (be patient)
-gulp pull-images
+gulp pull-images --app myd8site
 
-# create containers
-gulp init
+# create containers & start app
+gulp init --app myd8site
 
-# start containers
-gulp start
+# start app
+gulp start --app myd8site
 
-# stop containers
-gulp stop
+# stop app
+gulp stop --app myd8site
 
-# restart containers
-gulp restart
+# restart app
+gulp restart --app myd8site
 
-# kill containers
-gulp kill
+# kill app containers
+gulp kill --app myd8site
 
-# remove containers
-gulp remove
+# remove app containers
+gulp remove --app myd8site
 ```
