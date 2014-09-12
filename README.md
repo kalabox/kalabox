@@ -46,6 +46,9 @@ app.start();
 
 // Restart all app containers
 app.restart();
+
+// Remove all app containers
+app.remove();
 ```
 
 ## Gulp Demo
