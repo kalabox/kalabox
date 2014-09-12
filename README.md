@@ -20,23 +20,32 @@ gulp init
 var AppManager = require('./appmanager.js');
 var am = new AppManager('/path/to/app/config');
 
+// Get a list of app configs/states
+var apps = am.getApps();
+
 // Instantiate an app object
 var app = new am.App('myd8site');
 
 // Pull images defined in config
-app.pullImages();
+app.pull();
 
-// Create & start containers
-app.createContainers();
+// Build images defined in config
+app.build();
+
+// pull/build images & create containers
+app.init();
 
 // Stop all app containers
-app.stopContainers();
+app.stop();
 
 // Start all app containers
-app.startContainers();
+app.start();
+
+// Kill all app containers
+app.start();
 
 // Restart all app containers
-app.restartContainers();
+app.restart();
 ```
 
 ## Gulp Demo
