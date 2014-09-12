@@ -56,7 +56,10 @@ Gulp at this point is only used for demonstrating the use of `AppManager`.
 gulp list
 
 # pull all defined images (be patient)
-gulp pull-images --app myd8site
+gulp pull --app myd8site
+
+# build images
+gulp build --app myd8site
 
 # create containers & start app
 gulp init --app myd8site
