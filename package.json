@@ -2,11 +2,14 @@
   "name": "AppManager",
   "description": "An application orchestration concept for Kalabox",
   "version": "0.0.1",
-  "devDependencies": {
+  "dependencies": {
     "dockerode": "~2.0.3",
-    "gulp": "~3.8.7",
     "lodash": "~2.4.1",
     "q": "^1.0.1",
+    "redis": "~0.12.1"
+  },
+  "devDependencies": {
+    "gulp": "~3.8.7",
     "gulp-util": "~3.0.1"
   }
 }
