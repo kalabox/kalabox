@@ -6,8 +6,8 @@
  * gulp restart --app myd8site
  * gulp kill --app myd8site
  * gulp remove --app myd8site
- * gulp pull-images --app myd8site
- * gulp build-images --app myd8site
+ * gulp pull --app myd8site
+ * gulp build --app myd8site
  */
 var _ = require('lodash');
 var gulp = require('gulp');
@@ -39,7 +39,7 @@ gulp.task('list', function() {
 });
 
 // Creates app containers
-gulp.task('init', ['build-images', 'pull-images'], function() {
+gulp.task('init', ['build', 'pull'], function() {
   return app.init();
 });
 
@@ -68,12 +68,12 @@ gulp.task('remove', function() {
   app.remove();
 });
 
-gulp.task('pull-images', function() {
+gulp.task('pull', function() {
   gutil.log('Pulling images for', appname);
   return app.pull();
 });
 
-gulp.task('build-images', function(done) {
+gulp.task('build', function(done) {
   gutil.log('Building images for', appname);
   return app.build(done);
 });
