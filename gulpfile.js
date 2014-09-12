@@ -70,10 +70,10 @@ gulp.task('remove', function() {
 
 gulp.task('pull-images', function() {
   gutil.log('Pulling images for', appname);
-  return app.pullImages();
+  return app.pull();
 });
 
 gulp.task('build-images', function(done) {
   gutil.log('Building images for', appname);
-  return app.buildImages(done);
+  return app.build(done);
 });
