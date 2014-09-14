@@ -11,13 +11,11 @@ npm install -g gulp
 git clone git@github.com:mikemilano/appmanager.git
 cd appmanager
 npm install
-gulp pull-images
-gulp init
 ```
 
 ## Gulp Demo
 
-Gulp at this point is only used for demonstrating the use of `AppManager`.
+Gulp is only used for demonstrating the use of `AppManager`.
 ```
 # list apps
 gulp list
@@ -124,7 +122,7 @@ case alphanumeric characters and hyphens. `/a-z0-9-/`
 The app name is used for the directory name, as well as the domain name.
 
 
-## Service Discovery via DNS
+## Inter-container DNS
 
 SkyDNS and SkyDock are used on the docker bridge for containers
 to resolve IP addresses by a structured name.
@@ -205,7 +203,7 @@ docker run -d -P hipache
 
 ## Wildcard *.kbox DNS
 
-We may be able to use `skydns` eventually, but for now, dnsmasq is used for
+We may be able to use `skydns` eventually, but for now, `dnsmasq` is used for
 the user's local system to resolve .kbox addresses to the proxy service.
 
 There is a dnsmasq docker build in the `dockerfiles` directory that is setup
