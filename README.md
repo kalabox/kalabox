@@ -168,6 +168,24 @@ docker run -d -p 172.17.42.1:53:53/udp --name skydns crosbymichael/skydns -names
 docker run -d -v /var/run/docker.sock:/docker.sock -v /skydock.js:/skydock.js --name skydock crosbymichael/skydock -ttl 30  -environment dev -s /docker.sock -domain kbox -name skydns -plugins /skydock.js
 ```
 
+## Environment Variables
+
+Each container has the following environment variables available:
+```
+APPNAME
+APPDOMAIN
+```
+
+`APPDOMAIN` is: `<appname>.kbox`. In the examples here, it would be `myd7site.kbox`.
+
+Applications can programatically access other containers by appending `APPDOMAIN` to
+the key of the component they want to connect to.
+
+For example, if you have a `mysql` component which has a component key of `db`, then
+it would be accessable by all containers via: `'db' + APPDOMAIN`, or in the case of
+this example: `db.myd7site.kbox`.
+
+
 ## Hipache Proxy
 
 Hipache is used to proxy requests from the user's local system over `1.3.3.7` to the
