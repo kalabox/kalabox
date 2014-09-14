@@ -1,6 +1,5 @@
 {
   "title": "My Drupal 7 Site",
-  "desc": "A Drupal 7 site based on the Kalabox D7 profile.",
   "name": "myd7site",
   "components": {
     "data": {

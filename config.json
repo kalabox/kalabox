@@ -1,6 +1,6 @@
 {
   "appDir": "./apps",
-  "hostname": "kbox",
+  "domain": "kbox",
   "docker": {
     "host": "http://1.3.3.7",
     "port": 2375
