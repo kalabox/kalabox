@@ -1,9 +1,9 @@
 FROM kalabox/ubuntu
 
-# Install Nginx.
+# Install PHP.
 RUN \
   apt-get update && \
-  apt-get -y install php5-fpm php5-cli php5-mcrypt php5-mysqlnd php5-xdebug php-apc
+  apt-get -y install php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-xdebug php-apc
 
 # The data container will manage these config files.
 RUN rm /etc/php5/fpm/php.ini
