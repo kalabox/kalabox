@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM kalabox/ubuntu
 
 # Install Nginx.
 RUN \

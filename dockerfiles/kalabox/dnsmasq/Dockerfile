@@ -2,7 +2,7 @@
 # docker build -t kalabox/dnsmasq .
 # docker run -d -p 1.3.3.7:53:53/udp --name dnsmasq kalabox/dnsmasq
 
-FROM ubuntu:14.04
+FROM kalabox/ubuntu
 
 RUN apt-get update && apt-get install -y dnsmasq dnsutils && apt-get clean
 
