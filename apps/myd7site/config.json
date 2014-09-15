@@ -1,6 +1,9 @@
 {
   "title": "My Drupal 7 Site",
   "name": "myd7site",
+  "plugins": [
+    "hipache"
+  ],
   "components": {
     "data": {
       "image": "kalabox/data",

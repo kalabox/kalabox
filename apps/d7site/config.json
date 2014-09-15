@@ -1,0 +1,35 @@
+{
+  "title": "Drupal 7",
+  "name": "d7site",
+  "plugins": [
+    "hipache"
+  ],
+  "components": {
+    "data": {
+      "image": "kalabox/d7-data",
+      "build": true,
+      "src": "./dockerfiles/kalabox/d7-data"
+    },
+    "db": {
+      "image": "kalabox/d7-mariadb",
+      "build": true,
+      "src": "./dockerfiles/kalabox/d7-mariadb"
+    },
+    "php": {
+      "image": "kalabox/d7-php",
+      "build": true,
+      "src": "./dockerfiles/kalabox/d7-php"
+    },
+    "web": {
+      "image": "kalabox/d7-nginx",
+      "build": true,
+      "src": "./dockerfiles/kalabox/d7-nginx",
+      "proxy": [
+        {
+          "port": "80/tcp",
+          "default": true
+        }
+      ]
+    }
+  }
+}

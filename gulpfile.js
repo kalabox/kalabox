@@ -17,6 +17,8 @@ var path = require('path');
 var am = require('./lib/appmanager.js');
 
 var appname = gutil.env.app ? gutil.env.app : null;
+console.log(appname);
+
 if (appname) {
   try {
     var app = new am.App(appname);
@@ -39,7 +41,7 @@ gulp.task('list', function() {
 });
 
 // Creates app containers
-gulp.task('init', ['build', 'pull'], function() {
+gulp.task('init', function() {
   return app.init();
 });
 
