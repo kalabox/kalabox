@@ -6,24 +6,24 @@
   ],
   "components": {
     "data": {
-      "image": "kalabox/d7-data",
+      "image": "kalabox/data-d7",
       "build": true,
-      "src": "./dockerfiles/kalabox/d7-data"
+      "src": "./dockerfiles/kalabox/data-d7"
     },
     "db": {
-      "image": "kalabox/d7-mariadb",
+      "image": "kalabox/mariadb",
       "build": true,
-      "src": "./dockerfiles/kalabox/d7-mariadb"
+      "src": "./dockerfiles/kalabox/mariadb"
     },
     "php": {
-      "image": "kalabox/d7-php",
+      "image": "kalabox/php-fpm",
       "build": true,
-      "src": "./dockerfiles/kalabox/d7-php"
+      "src": "./dockerfiles/kalabox/php-fpm"
     },
     "web": {
-      "image": "kalabox/d7-nginx",
+      "image": "kalabox/nginx",
       "build": true,
-      "src": "./dockerfiles/kalabox/d7-nginx",
+      "src": "./dockerfiles/kalabox/nginx",
       "proxy": [
         {
           "port": "80/tcp",

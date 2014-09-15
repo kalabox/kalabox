@@ -65,7 +65,7 @@ gulp.task('kill', function() {
   app.kill();
 });
 
-gulp.task('remove', function() {
+gulp.task('rm', function() {
   gutil.log('Removing', appname);
   app.remove();
 });

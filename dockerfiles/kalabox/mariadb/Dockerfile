@@ -19,6 +19,8 @@ RUN \
 RUN rm /etc/mysql/my.cnf
 RUN ln -s /data/config/my.cnf /etc/mysql/my.cnf
 
+User root
+
 # Define working directory.
 WORKDIR /data
 
