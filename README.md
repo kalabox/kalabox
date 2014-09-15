@@ -21,28 +21,28 @@ Gulp is only used for demonstrating the use of `AppManager`.
 gulp list
 
 # pull all defined images (be patient)
-gulp pull --app myd7site
+gulp pull --app d7site
 
 # build images
-gulp build --app myd7site
+gulp build --app d7site
 
 # create containers & start app
-gulp init --app myd7site
+gulp init --app d7site
 
 # start app
-gulp start --app myd7site
+gulp start --app d7site
 
 # stop app
-gulp stop --app myd7site
+gulp stop --app d7site
 
 # restart app
-gulp restart --app myd7site
+gulp restart --app d7site
 
 # kill app containers
-gulp kill --app myd7site
+gulp kill --app d7site
 
 # remove app containers
-gulp remove --app myd7site
+gulp rm --app d7site
 ```
 
 ## AppManager API
@@ -54,7 +54,7 @@ var am = new AppManager('/path/to/app/config');
 var apps = am.getApps();
 
 // Instantiate an app object
-var app = new am.App('myd7site');
+var app = new am.App('d7site');
 
 // Pull images defined in config
 app.pull();
@@ -95,7 +95,7 @@ levels, before and after the containers are started.
 ```
 var AppManager = require('./appmanager.js');
 var am = new AppManager('/path/to/app/config');
-var app = new am.App('myd7site');
+var app = new am.App('d7site');
 
 app.on('pre-start', function() {
   console.log(app.name, 'is about to start');
@@ -176,14 +176,14 @@ APPNAME
 APPDOMAIN
 ```
 
-`APPDOMAIN` is: `<appname>.kbox`. In the examples here, it would be `myd7site.kbox`.
+`APPDOMAIN` is: `<appname>.kbox`. In the examples here, it would be `d7site.kbox`.
 
 Applications can programatically access other containers by appending `APPDOMAIN` to
 the key of the component they want to connect to.
 
 For example, if you have a `mysql` component which has a component key of `db`, then
 it would be accessable by all containers via: `'db' + APPDOMAIN`, or in the case of
-this example: `db.myd7site.kbox`.
+this example: `db.d7site.kbox`.
 
 
 ## Hipache Proxy
