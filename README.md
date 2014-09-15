@@ -136,7 +136,7 @@ format.
 
 The plugin below sets the following hostname format
 ```
-<role>.<appname>.kbox`
+<component key>.<appname>.kbox`
 ```
 
 The Plugin: `/skydock.js` on the Docker host system:
