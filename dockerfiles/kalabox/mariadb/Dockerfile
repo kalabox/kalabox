@@ -17,7 +17,12 @@ RUN \
 
 # The data container will manage these config files.
 RUN rm /etc/mysql/my.cnf
-RUN ln -s /data/config/my.cnf /etc/mysql/my.cnf
+RUN ln -s /data/config/mysql/my.cnf /etc/mysql/my.cnf
+
+# Can't write data to /data/data because this
+# needs to be run on the mounted volume.
+# RUN mysql_install_db --user=mysql --basedir=/usr --datadir=/data/data
+VOLUME ["/var/lib/mysql"]
 
 User root
 

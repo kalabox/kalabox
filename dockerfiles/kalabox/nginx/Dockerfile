@@ -9,9 +9,9 @@ RUN \
 
 # The data container will manage these config files.
 RUN rm /etc/nginx/nginx.conf
-RUN ln -s /data/config/nginx.conf /etc/nginx/nginx.conf
+RUN ln -s /data/config/nginx/nginx.conf /etc/nginx/nginx.conf
 RUN rm /etc/nginx/sites-enabled/default
-RUN ln -s /data/config/nginx-site.conf /etc/nginx/sites-enabled/default
+RUN ln -s /data/config/nginx/site.conf /etc/nginx/sites-enabled/default
 
 # Define working directory.
 WORKDIR /etc/nginx
