@@ -34,7 +34,7 @@ gulp.task('list', function() {
   gutil.log(' ');
   gutil.log('Kalabox Apps:');
   for (var x in apps) {
-    gutil.log('  ', i + ')', apps[x].config.name);
+    gutil.log('  ', i + ')', apps[x].config.name, "\t", apps[x].url);
     i++;
   }
   gutil.log(' ');
