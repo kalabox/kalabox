@@ -84,9 +84,10 @@ function handleArguments(env) {
   env.config = require(env.configPath);
   env.name = env.config.name;
   env.app = new am.App(env.configBase);
-  console.log('Using config file', chalk.magenta(tildify(env.configPath)));
+
   if (argv.verbose) {
     console.log(chalk.red('APP CONFIG:'), env.config);
+    console.log('Using config file', chalk.magenta(tildify(env.configPath)));
   }
 
   processTask(env);
@@ -94,42 +95,10 @@ function handleArguments(env) {
 
 function processTask(env) {
   var cmd = argv._[0];
-
-  console.log('cmd:', cmd);
-  var resp;
-  switch (cmd) {
-    case 'init':
-      resp = env.app.init();
-      break;
-
-    case 'start':
-      resp = env.app.start();
-      break;
-
-    case 'stop':
-      resp = env.app.stop();
-      break;
-
-    case 'restart':
-      resp = env.app.restart();
-      break;
-
-    case 'kill':
-      resp = env.app.kill();
-      break;
-
-    case 'rm':
-      resp = env.app.remove();
-      break;
-
-    case 'pull':
-      resp = env.app.pull();
-      break;
-
-    case 'build':
-      resp = env.app.build();
-      break;
+  if (env.app.tasks[cmd]) {
+    env.app.tasks[cmd]();
   }
-
-  return resp;
+  else {
+    console.log(chalk.red('Command'), chalk.cyan(cmd), chalk.red('not found.'));
+  }
 }

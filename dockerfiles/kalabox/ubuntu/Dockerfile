@@ -8,7 +8,8 @@ RUN \
   apt-get -y upgrade && \
   apt-get install -y build-essential && \
   apt-get install -y software-properties-common && \
-  apt-get install -y byobu curl git htop man unzip vim wget dnsutils mysql-client && \
+  apt-get install -y byobu curl git htop man unzip vim wget dnsutils && \
+  apt-get install -y drush mysql-client php5-cli php5-dev php5-gd php5-mcrypt php5-mysqlnd && \
   rm -rf /var/lib/apt/lists/*
 
 # Add files.
