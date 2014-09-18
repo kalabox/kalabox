@@ -1,19 +1,5 @@
 ## App Manager Concept
 
-Goals:
-- The user's project directory can be anywhere on their system
-- App manager will not dictate the directory structure of a codebase. i.e. the public directory can be anywhere in the codebase.
--- ** Actual images used may dictate this, but custom images may be used
-- App manager supports images defined in core, global plugins, or images defined in the codebase
-- A project can be initialized (loaded into Kalabox) via the command line. i.e. `kbox init` in the project directory
-- A VM is not required if Docker can run directly on the user's system
-
-This is currently setup for OSX and Boot2Docker, with the B2D host of: `1.3.3.7`.
-It could be run on a Ubuntu system w/o a VM
-
-You can modify the docker property of config.json. See the `dockerode` project for formats.
-
-
 ## Install
 ```
 npm install -g gulp
@@ -314,3 +300,16 @@ Windows:
 ```
 ???
 ```
+
+Goals:
+- The user's project directory can be anywhere on their system
+- App manager will not dictate the directory structure of a codebase. i.e. the public directory can be anywhere in the codebase.
+-- ** Actual images used may dictate this, but custom images may be used
+- App manager supports images defined in core, global plugins, or images defined in the codebase
+- A project can be initialized (loaded into Kalabox) via the command line. i.e. `kbox init` in the project directory
+- A VM is not required if Docker can run directly on the user's system
+
+This is currently setup for OSX and Boot2Docker, with the B2D host of: `1.3.3.7`.
+It could be run on a Ubuntu system w/o a VM
+
+You can modify the docker property of config.json. See the `dockerode` project for formats.
