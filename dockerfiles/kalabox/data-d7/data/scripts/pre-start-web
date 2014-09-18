@@ -1,0 +1,3 @@
+#!/bin/sh
+PHP_HOST=$(dig +short php.$APPDOMAIN)
+sed -i -e "s/fastcgi_pass localhost:9000/fastcgi_pass ${$PHP_HOST:9000}/g" /data/config/nginx/site.conf

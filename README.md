@@ -1,6 +1,15 @@
 ## App Manager Concept
 
+Goals:
+- The user's project directory can be anywhere on their system
+- App manager will not dictate the directory structure of a codebase. i.e. the public directory can be anywhere in the codebase.
+-- ** Actual images used may dictate this, but custom images may be used
+- App manager supports images defined in core, global plugins, or images defined in the codebase
+- A project can be initialized (loaded into Kalabox) via the command line. i.e. `kbox init` in the project directory
+- A VM is not required if Docker can run directly on the user's system
+
 This is currently setup for OSX and Boot2Docker, with the B2D host of: `1.3.3.7`.
+It could be run on a Ubuntu system w/o a VM
 
 You can modify the docker property of config.json. See the `dockerode` project for formats.
 
@@ -11,38 +20,93 @@ npm install -g gulp
 git clone git@github.com:mikemilano/appmanager.git
 cd appmanager
 npm install
+ln -s bin/kbox.js /usr/local/bin/kbox
 ```
 
-## Gulp Demo
+## .kalabox file
 
-Gulp is only used for demonstrating the use of `AppManager`.
+Create a .kalabox.json file at the root of any project.
+
+Example config of an app to use separate containers for each component:
+```
+{
+  "title": "My D7 Site",
+  "name": "d7site",
+  "plugins": [
+    "hipache"
+  ],
+  "components": {
+    "data": {
+      "image": "kalabox/data-d7",
+      "build": true,
+      "src": "./dockerfiles/kalabox/data-d7"
+    },
+    "db": {
+      "image": "kalabox/mariadb",
+      "build": true,
+      "src": "./dockerfiles/kalabox/mariadb"
+    },
+    "php": {
+      "image": "kalabox/php-fpm",
+      "build": true,
+      "src": "./dockerfiles/kalabox/php-fpm"
+    },
+    "web": {
+      "image": "kalabox/nginx",
+      "build": true,
+      "src": "./dockerfiles/kalabox/nginx",
+      "proxy": [
+        {
+          "port": "80/tcp",
+          "default": true
+        }
+      ]
+    }
+  }
+}
+
+```
+When `build` is set to `true`, the module will look for the `src` in the following order:
+- Relative to the .kalabox.json file
+- In the ~/.kalabox directory
+- In the App manager source directory
+
+When `build` is false, or not present, the module will attempt to pull the image via `docker pull`.
+
+
+## kbox executable
+
+Run `kbox` from the directory where the `.kalabox.json` file exists. It will
+run the commands for whichever application is defined.
+
+Meta data about the app an containers are stored in `~/.kalabox/apps/<appname>`
 ```
 # list apps
-gulp list
+kbox list
 
 # pull all defined images (be patient)
-gulp pull --app d7site
+kbox pull
 
 # build images
-gulp build --app d7site
+kbox build
 
-# create containers & start app
-gulp init --app d7site
+# create containers
+kbox init
 
 # start app
-gulp start --app d7site
+kbox start
 
 # stop app
-gulp stop --app d7site
+kbox stop
 
 # restart app
-gulp restart --app d7site
+kbox restart
 
 # kill app containers
-gulp kill --app d7site
+kbox kill
 
 # remove app containers
-gulp rm --app d7site
+kbox rm
 ```
 
 ## AppManager API
