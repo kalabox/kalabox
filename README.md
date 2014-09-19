@@ -67,9 +67,6 @@ run the commands for whichever application is defined.
 
 Meta data about the app an containers are stored in `~/.kalabox/apps/<appname>`
 ```
-# list apps
-kbox list
-
 # pull all defined images (be patient)
 kbox pull
 
@@ -98,7 +95,6 @@ kbox rm
 ## AppManager API
 ```
 var AppManager = require('./appmanager.js');
-var am = new AppManager('/path/to/app/config');
 
 // Get a list of app configs/states
 var apps = am.getApps();
