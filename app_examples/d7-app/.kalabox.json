@@ -1,0 +1,43 @@
+{
+  "title": "Drupal 7 App",
+  "name": "d7-app",
+  "plugins": {
+    "d7": {},
+    "rsync": {
+      "src": "./",
+      "volume": "/data",
+      "dest": "code",
+      "recursive": true,
+      "exclude": ["settings.php", "files"],
+      "deleteAll": true
+    }
+  },
+  "components": {
+    "data": {
+      "image": "kalabox/data-d7",
+      "build": true,
+      "src": "dockerfiles/kalabox/data-d7"
+    },
+    "db": {
+      "image": "kalabox/mariadb",
+      "build": true,
+      "src": "dockerfiles/kalabox/mariadb"
+    },
+    "php": {
+      "image": "kalabox/php-fpm",
+      "build": true,
+      "src": "dockerfiles/kalabox/php-fpm"
+    },
+    "web": {
+      "image": "kalabox/nginx",
+      "build": true,
+      "src": "dockerfiles/kalabox/nginx",
+      "proxy": [
+        {
+          "port": "80/tcp",
+          "default": true
+        }
+      ]
+    }
+  }
+}

@@ -1,3 +1,5 @@
+# docker build -t kalabox/nginx .
+
 FROM kalabox/ubuntu
 
 # Install Nginx.

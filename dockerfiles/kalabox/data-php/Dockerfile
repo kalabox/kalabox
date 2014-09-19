@@ -1,4 +1,4 @@
-# docker build -t kalabox/data-d7 .
+# docker build -t kalabox/data-php
 
 FROM busybox
 

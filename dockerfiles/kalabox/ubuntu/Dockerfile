@@ -1,4 +1,5 @@
-# Pull base image.
+# docker build -t kalabox/ubuntu .
+
 FROM ubuntu:14.04
 
 # Install.
@@ -8,7 +9,7 @@ RUN \
   apt-get -y upgrade && \
   apt-get install -y build-essential && \
   apt-get install -y software-properties-common && \
-  apt-get install -y byobu curl git htop man unzip vim wget dnsutils && \
+  apt-get install -y byobu curl git htop man unzip vim wget dnsutils vim && \
   apt-get install -y drush mysql-client php5-cli php5-dev php5-gd php5-mcrypt php5-mysqlnd && \
   rm -rf /var/lib/apt/lists/*
 
@@ -25,3 +26,4 @@ WORKDIR /root
 
 # Define default command.
 CMD ["bash"]
+

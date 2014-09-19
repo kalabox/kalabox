@@ -1,3 +1,5 @@
+# docker build -t kalabox/php-fpm
+
 FROM kalabox/ubuntu
 
 # Install PHP.

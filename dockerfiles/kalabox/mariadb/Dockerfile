@@ -1,4 +1,5 @@
-# Pull base image.
+# docker build -t kalabox/mariadb .
+
 FROM kalabox/ubuntu
 
 # Install MariaDB.

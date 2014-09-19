@@ -1,3 +1,5 @@
+# docker build -t kalabox/drush .
+
 FROM kalabox/ubuntu
 
 RUN \
