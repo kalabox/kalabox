@@ -9,5 +9,6 @@ RUN apt-get update && \
 
 EXPOSE 873
 ADD ./run /usr/local/bin/run
+RUN chmod a+x /usr/local/bin/run
 
 ENTRYPOINT ["/usr/local/bin/run"]
