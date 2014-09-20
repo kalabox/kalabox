@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+/**
+ * This file is meant to be linked as a "kbox" executable.
+ */
 
 var fs = require('fs');
 var path = require('path');
