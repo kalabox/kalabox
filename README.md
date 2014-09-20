@@ -2,11 +2,13 @@
 
 ## Install
 ```
-npm install -g gulp
 git clone git@github.com:mikemilano/appmanager.git
 cd appmanager
 npm install
 ln -s bin/kbox.js /usr/local/bin/kbox
+
+# The setup script is OSX specific as of right now
+bin/kalabox_setup
 ```
 
 ## .kalabox file
