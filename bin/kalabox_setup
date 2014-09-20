@@ -1,0 +1,30 @@
+BASEDIR=$(dirname $0)
+cd $BASEDIR
+
+# OSX/Boot2Docker
+export DOCKER_HOST=tcp://1.3.3.7:2375
+sudo echo 'nameserver 1.3.3.7' > /etc/resolver/kbox
+
+# Pull/Build/Start core images
+
+docker build -t kalabox/kdata ../dockerfiles/kalabox/kdata
+docker run -d --name kalabox_data kalabox/kdata
+
+docker pull crosbymichael/skydns
+docker run -d -p 172.17.42.1:53:53/udp --name kalabox_skydns crosbymichael/skydns -nameserver 8.8.8.8:53 -domain kbox
+
+docker pull crosbymichael/skydock
+docker run -d --volumes-from kalabox_data -v /var/run/docker.sock:/docker.sock -v /skydock.js:/skydock.js --name kalabox_skydock crosbymichael/skydock -ttl 30 -environment dev -s /docker.sock -domain kbox -name kalabox_skydns -plugins /data/config/skydock.js
+
+docker pull hipache
+docker run -d -p 80:80 -p 6379:6379 --name kalabox_hipache hipache
+
+docker build -t kalabox/ubuntu ../dockerfiles/kalabox/ubuntu
+docker build -t kalabox/python ../dockerfiles/kalabox/python
+docker build -t kalabox/nodejs ../dockerfiles/kalabox/nodejs
+
+docker build -t kalabox/dnsmasq ../dockerfiles/kalabox/dnsmasq
+docker run -d --name kalabox_dnsmasq -p 1.3.3.7:53:53/udp kalabox/dnsmasq
+
+docker build -t kalabox/rsync ../dockerfiles/kalabox/rsync
+docker run -d --name kalabox_rsync -p 873:873 -v /mnt:/mnt --privileged=true kalabox/rsync
