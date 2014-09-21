@@ -14,24 +14,32 @@
   },
   "components": {
     "data": {
-      "image": "kalabox/data",
-      "build": true,
-      "src": "dockerfiles/kalabox/data"
+      "image": {
+        "name": "kalabox/data",
+        "build": true,
+        "src": "dockerfiles/kalabox/data"
+      }
     },
     "db": {
-      "image": "kalabox/mariadb",
-      "build": true,
-      "src": "dockerfiles/kalabox/mariadb"
+      "image": {
+        "name": "kalabox/mariadb",
+        "build": true,
+        "src": "dockerfiles/kalabox/mariadb"
+      }
     },
     "php": {
-      "image": "kalabox/php-fpm",
-      "build": true,
-      "src": "dockerfiles/kalabox/php-fpm"
+      "image": {
+        "name": "kalabox/php-fpm",
+        "build": true,
+        "src": "dockerfiles/kalabox/php-fpm"
+      }
     },
     "web": {
-      "image": "kalabox/nginx",
-      "build": true,
-      "src": "dockerfiles/kalabox/nginx",
+      "image": {
+        "name": "kalabox/nginx",
+        "build": true,
+        "src": "dockerfiles/kalabox/nginx"
+      },
       "proxy": [
         {
           "port": "80/tcp",
