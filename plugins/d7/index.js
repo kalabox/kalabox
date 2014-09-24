@@ -21,7 +21,7 @@ module.exports = function(plugin, app) {
       },
       {
         'VolumesFrom': app.dataCname,
-        'Links': [app.config.components.db.cname + ':db']
+        'Links': [app.components.db.cname + ':db']
       },
       function (err, data, container) {
         app.docker.getContainer(container.id).remove(function(err, data) {
