@@ -27,6 +27,7 @@ docker pull hipache
 docker build -t kalabox/ubuntu ../dockerfiles/kalabox/ubuntu
 docker build -t kalabox/python ../dockerfiles/kalabox/python
 docker build -t kalabox/nodejs ../dockerfiles/kalabox/nodejs
+docker build -t kalabox/drush ../dockerfiles/kalabox/drush
 docker build -t kalabox/dnsmasq ../dockerfiles/kalabox/dnsmasq
 docker build -t kalabox/rsync ../dockerfiles/kalabox/rsync
 
