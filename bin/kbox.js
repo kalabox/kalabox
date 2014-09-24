@@ -12,8 +12,11 @@ var chalk = require('chalk');
 var Liftoff = require('liftoff');
 var tildify = require('tildify');
 
+var homePath = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+var dataPath = path.resolve(homePath, '.kalabox');
+var appDataPath = path.resolve(dataPath, 'apps');
+
 var am = require('../lib/appmanager.js');
-var config;
 
 // set env var for ORIGINAL cwd
 // before anything touches it
@@ -56,7 +59,8 @@ cli.launch({
   configPath: argv.kalaboxfile,
   require: argv.require,
   completion: argv.completion,
-  verbose: argv.verbose
+  verbose: argv.verbose,
+  app: argv.app
 }, handleArguments);
 
 function handleArguments(env) {
@@ -71,22 +75,33 @@ function handleArguments(env) {
     console.log(chalk.cyan('KALABOX PACKAGE.JSON'), require('../package'));
   }
 
-  if (!env.configPath) {
-    console.log(chalk.red('No .kalabox file found.'));
+  var workingDir = env.configBase;
+  var configPath = env.configPath;
+
+  if (argv.app) {
+    var apppath = path.resolve(appDataPath, argv.app);
+    if (!fs.existsSync(apppath) || !fs.existsSync(path.resolve(apppath, 'app.json'))) {
+      console.log(chalk.red('App config not found.'));
+      process.exit(1);
+    }
+
+    // Load up the app data from ~/.kalabox/apps/<app>/app.json
+    var appdata = require(path.resolve(apppath, 'app.json'));
+    console.log(appdata.path);
+    workingDir = appdata.path;
+    configPath = path.resolve(appdata.path, '.kalabox.json');
+  }
+
+  process.chdir(workingDir);
+
+  if (!configPath) {
+    console.log(chalk.red('No .kalabox.json file found.'));
     process.exit(1);
   }
 
-  if (process.cwd() !== env.cwd) {
-    process.chdir(env.cwd);
-    console.log(
-      'Working directory changed to',
-      chalk.magenta(tildify(env.cwd))
-    );
-  }
-
-  env.config = require(env.configPath);
-  env.name = env.config.name;
-  env.app = new am.App(env.configBase);
+  //env.config = require(env.configPath);
+  //env.name = env.config.name;
+  env.app = new am.App(workingDir);
 
   if (argv.verbose) {
     console.log(chalk.red('APP CONFIG:'), env.config);
