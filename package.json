@@ -13,6 +13,7 @@
     "liftoff": "~0.13.2",
     "rsyncwrapper": "~0.4.1",
     "bunyan": "~1.0.1",
-    "vasync": "~1.6.0"
+    "vasync": "~1.6.0",
+    "rimraf": "~2.2.8"
   }
 }

@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
+var rimraf = require('rimraf');
 var chalk = require('chalk');
 
 var baseDir = path.resolve(__dirname, '../../');
@@ -36,6 +37,11 @@ module.exports = function(plugin, app) {
       });
       console.log('');
     });
+  });
+
+  app.manager.RegisterTask(app, 'purge', function(){
+    //console.log(app.dataPath);
+    rimraf.sync(app.dataPath);
   });
 
   app.manager.RegisterTask(app, 'init', function(){
