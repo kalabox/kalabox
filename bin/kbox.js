@@ -12,11 +12,9 @@ var chalk = require('chalk');
 var Liftoff = require('liftoff');
 var tildify = require('tildify');
 
-var homePath = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
-var dataPath = path.resolve(homePath, '.kalabox');
-var appDataPath = path.resolve(dataPath, 'apps');
-
-var am = require('../lib/appmanager.js');
+var kconfig = require('../lib/config.js');
+//var app = require('../lib/app.js');
+var manager = require('../lib/manager.js');
 
 // set env var for ORIGINAL cwd
 // before anything touches it
@@ -79,7 +77,7 @@ function handleArguments(env) {
   var configPath = env.configPath;
 
   if (argv.app) {
-    var apppath = path.resolve(appDataPath, argv.app);
+    var apppath = path.resolve(kconfig.appDataPath, argv.app);
     if (!fs.existsSync(apppath) || !fs.existsSync(path.resolve(apppath, 'app.json'))) {
       console.log(chalk.red('App config not found.'));
       process.exit(1);
@@ -101,7 +99,7 @@ function handleArguments(env) {
 
   //env.config = require(env.configPath);
   //env.name = env.config.name;
-  env.app = new am.App(workingDir);
+  env.app = new manager.App(manager, workingDir);
 
   if (argv.verbose) {
     console.log(chalk.red('APP CONFIG:'), env.config);
