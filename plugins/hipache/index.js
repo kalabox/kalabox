@@ -1,7 +1,7 @@
 var redis = require('redis');
 var config = require('./config.json');
 
-module.exports = function(plugin, app) {
+module.exports = function(plugin, manager, app) {
   /**
    * Listens for post-start-component
    * - Creates a proxy record via redis for components with proxy definitions.

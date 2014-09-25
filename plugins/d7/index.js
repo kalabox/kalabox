@@ -1,8 +1,8 @@
 var argv = require('minimist')(process.argv.slice(2));
 
-module.exports = function(plugin, app) {
+module.exports = function(plugin, manager, app) {
 
-  app.manager.RegisterTask(app, 'd7.install', function(){
+  app.manager.registerTask(app, 'd7.install', function(){
     var profile = 'standard';
     if (argv._[1]) {
       profile = argv._[1];
@@ -30,7 +30,7 @@ module.exports = function(plugin, app) {
     );
   });
 
-  app.manager.RegisterTask(app, 'd7.status', function(){
+  app.manager.registerTask(app, 'd7.status', function(){
     app.docker.run(
       'kalabox/drush',
       ['@dev', 'status'],

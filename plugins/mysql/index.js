@@ -1,7 +1,7 @@
 
-module.exports = function(plugin, app) {
+module.exports = function(plugin, manager, app) {
 
-  app.manager.RegisterTask(app, 'mysql.uname', function(){
+  app.manager.registerTask(app, 'mysql.uname', function(){
     app.docker.run(
       'ubuntu',
       ['bash', '-c', 'uname -a'],
@@ -18,7 +18,7 @@ module.exports = function(plugin, app) {
     );
   });
 
-  app.manager.RegisterTask(app, 'mysql.appdomain', function(){
+  app.manager.registerTask(app, 'mysql.appdomain', function(){
     app.docker.run(
       'ubuntu',
       ['bash', '-c', 'echo $APPDOMAIN'],

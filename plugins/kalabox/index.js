@@ -4,34 +4,26 @@ var _ = require('lodash');
 var rimraf = require('rimraf');
 var chalk = require('chalk');
 
-var baseDir = path.resolve(__dirname, '../../');
-var config = require(path.resolve(baseDir, 'config.json'));
+module.exports = function(plugin, manager, app) {
 
-// Data path setup ~/.kalabox
-var homePath = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
-var dataPath = path.resolve(homePath, '.kalabox');
-var appPath = path.resolve(dataPath, 'apps');
-
-module.exports = function(plugin, app) {
-
-  app.manager.RegisterTask(app, 'list', function(){
+  manager.registerTask(app, 'list', function(){
     var i = 1;
-    app.manager.GetApps(function(apps) {
+    manager.getApps(function(apps) {
       console.log('');
 
       _(apps).each(function(a) {
         var status = '';
         if (a.status == 'enabled') {
           status = 'Enabled';
-          console.log(chalk.green(" " + i + ". " + a.config.title + " (" + a.appname + ")\t\t", a.url + "\t\t", status));
+          console.log(chalk.green(" " + i + ". " + a.config.title + " (" + a.name + ")\t\t", a.url + "\t\t", status));
         }
         else if (a.status == 'disabled') {
           status = 'Disabled';
-          console.log(chalk.magenta(" " + i + ". " + a.config.title + " (" + a.appname + ")\t\t", a.url + "\t\t", status));
+          console.log(chalk.magenta(" " + i + ". " + a.config.title + " (" + a.name + ")\t\t", a.url + "\t\t", status));
         }
         else {
           status = 'Uninstalled';
-          console.log(chalk.red(" " + i + ". " + a.config.title + " (" + a.appname + ")\t\t", a.url + "\t\t", status));
+          console.log(chalk.red(" " + i + ". " + a.config.title + " (" + a.name + ")\t\t", a.url + "\t\t", status));
         }
         i++;
       });
@@ -39,41 +31,40 @@ module.exports = function(plugin, app) {
     });
   });
 
-  app.manager.RegisterTask(app, 'purge', function(){
-    //console.log(app.dataPath);
+  manager.registerTask(app, 'purge', function(){
     rimraf.sync(app.dataPath);
   });
 
-  app.manager.RegisterTask(app, 'init', function(){
-    app.init();
+  manager.registerTask(app, 'init', function(){
+    manager.init(app);
   });
 
-  app.manager.RegisterTask(app, 'start', function(){
-    app.start();
+  manager.registerTask(app, 'start', function(){
+    manager.start(app);
   });
 
-  app.manager.RegisterTask(app, 'stop', function(){
-    app.stop();
+  manager.registerTask(app, 'stop', function(){
+    manager.stop(app);
   });
 
-  app.manager.RegisterTask(app, 'restart', function(){
-    app.restart();
+  manager.registerTask(app, 'restart', function(){
+    manager.restart(app);
   });
 
-  app.manager.RegisterTask(app, 'kill', function(){
-    app.kill();
+  manager.registerTask(app, 'kill', function(){
+    manager.kill(app);
   });
 
-  app.manager.RegisterTask(app, 'remove', function(){
-    app.remove();
+  manager.registerTask(app, 'remove', function(){
+    manager.remove(app);
   });
 
-  app.manager.RegisterTask(app, 'pull', function(){
-    app.pull();
+  manager.registerTask(app, 'pull', function(){
+    manager.pull(app);
   });
 
-  app.manager.RegisterTask(app, 'build', function(){
-    app.build();
+  manager.registerTask(app, 'build', function(){
+    manager.build(app);
   });
 
   app.on('post-init', function(){

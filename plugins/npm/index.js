@@ -1,7 +1,7 @@
 var path = require('path');
 
-module.exports = function(plugin, app) {
-  app.manager.RegisterTask(app, 'npm.install', function(){
+module.exports = function(plugin, manager, app) {
+  app.manager.registerTask(app, 'npm.install', function(){
     app.docker.run(
       'kalabox/nodejs',
       ['npm', 'install'],
