@@ -1,8 +1,10 @@
+'use strict';
+
 var path = require('path');
 var rsync = require("rsyncwrapper").rsync;
 
 module.exports = function(plugin, manager, app) {
-  app.manager.registerTask(app, 'rsync', function(){
+  app.manager.registerTask('rsync', function(){
     var container = app.docker.getContainer(app.config.components.data.cid);
     container.inspect(function(err, data){
       var dataPath = data.Volumes[plugin.volume];

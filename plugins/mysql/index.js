@@ -1,7 +1,8 @@
+'use strict';
 
 module.exports = function(plugin, manager, app) {
 
-  app.manager.registerTask(app, 'mysql.uname', function(){
+  app.manager.registerTask('mysql.uname', function(){
     app.docker.run(
       'ubuntu',
       ['bash', '-c', 'uname -a'],
@@ -18,7 +19,7 @@ module.exports = function(plugin, manager, app) {
     );
   });
 
-  app.manager.registerTask(app, 'mysql.appdomain', function(){
+  app.manager.registerTask('mysql.appdomain', function(){
     app.docker.run(
       'ubuntu',
       ['bash', '-c', 'echo $APPDOMAIN'],

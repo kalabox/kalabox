@@ -1,12 +1,11 @@
-var fs = require('fs');
-var path = require('path');
+'use strict';
+
 var _ = require('lodash');
-var rimraf = require('rimraf');
 var chalk = require('chalk');
 
-module.exports = function(plugin, manager, app) {
+module.exports = function(plugin, manager) {
 
-  manager.registerTask(app, 'list', function(){
+  manager.registerTask('list', function(){
     var i = 1;
     manager.getApps(function(apps) {
       console.log('');
@@ -29,48 +28,6 @@ module.exports = function(plugin, manager, app) {
       });
       console.log('');
     });
-  });
-
-  manager.registerTask(app, 'purge', function(){
-    rimraf.sync(app.dataPath);
-  });
-
-  manager.registerTask(app, 'init', function(){
-    manager.init(app);
-  });
-
-  manager.registerTask(app, 'start', function(){
-    manager.start(app);
-  });
-
-  manager.registerTask(app, 'stop', function(){
-    manager.stop(app);
-  });
-
-  manager.registerTask(app, 'restart', function(){
-    manager.restart(app);
-  });
-
-  manager.registerTask(app, 'kill', function(){
-    manager.kill(app);
-  });
-
-  manager.registerTask(app, 'remove', function(){
-    manager.remove(app);
-  });
-
-  manager.registerTask(app, 'pull', function(){
-    manager.pull(app);
-  });
-
-  manager.registerTask(app, 'build', function(){
-    manager.build(app);
-  });
-
-  app.on('post-init', function(){
-    var a = _.cloneDeep(app);
-    delete a.components;
-    fs.writeFileSync(path.resolve(app.dataPath, 'app.json'), JSON.stringify(a));
   });
 
 };

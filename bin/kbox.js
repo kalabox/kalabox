@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+
+'use strict';
+
+
 /**
  * This file is meant to be linked as a "kbox" executable.
  */
@@ -90,16 +94,19 @@ function handleArguments(env) {
     configPath = path.resolve(appdata.path, '.kalabox.json');
   }
 
-  process.chdir(workingDir);
+  if (configPath) {
+    process.chdir(workingDir);
+    env.app = new manager.App(manager, workingDir);
+  }
 
+  /*
   if (!configPath) {
     console.log(chalk.red('No .kalabox.json file found.'));
     process.exit(1);
   }
+  */
 
-  //env.config = require(env.configPath);
-  //env.name = env.config.name;
-  env.app = new manager.App(manager, workingDir);
+  env.manager = manager;
 
   if (argv.verbose) {
     console.log(chalk.red('APP CONFIG:'), env.config);
@@ -110,9 +117,17 @@ function handleArguments(env) {
 }
 
 function processTask(env) {
+
+  console.log(env.manager.tasks);
+
   var cmd = argv._[0];
-  if (env.app.tasks[cmd]) {
-    env.app.tasks[cmd]();
+  // Run command against app if it exists
+  if (env.app && env.app.manager.tasks[cmd]) {
+    env.manager.tasks[cmd]();
+  }
+  // If not, run as a manager task if it exists
+  else if (env.manager.tasks[cmd]) {
+    env.manager.tasks[cmd]();
   }
   else {
     console.log(chalk.red('Command'), chalk.cyan(cmd), chalk.red('not found.'));
