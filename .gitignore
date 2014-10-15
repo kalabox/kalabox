@@ -2,5 +2,6 @@
 .idea/
 *.log
 cache
+coverage
 node_modules
 cids
