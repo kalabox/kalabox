@@ -1,12 +1,11 @@
 'use strict';
 
+var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
 var rimraf = require('rimraf');
 
 module.exports = function(plugin, manager, app) {
-
-  console.log('asdf');
 
   manager.registerTask('purge', function(){
     rimraf.sync(app.dataPath);
