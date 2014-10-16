@@ -291,7 +291,7 @@ sudo echo 'nameserver 1.3.3.7' > /etc/resolver/kbox
 
 Linux:
 ```
-sudo echo 'nameserver 1.3.3.7' >> /etc/resolv.cnf
+sudo echo 'nameserver 127.0.0.1' >> /etc/resolv.cnf
 ```
 
 Windows:
