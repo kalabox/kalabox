@@ -117,9 +117,6 @@ function handleArguments(env) {
 }
 
 function processTask(env) {
-
-  console.log(env.manager.tasks);
-
   var cmd = argv._[0];
   // Run command against app if it exists
   if (env.app && env.app.manager.tasks[cmd]) {

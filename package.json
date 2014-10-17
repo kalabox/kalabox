@@ -1,7 +1,11 @@
 {
-  "name": "Kalabox",
-  "description": "An application orchestration concept for Kalabox",
-  "version": "0.0.1",
+  "name": "kalabox",
+  "description": "A Docker orchestration library & CLI tool",
+  "version": "0.1.0",
+  "repository": "kalabox/kalabox",
+  "bin": {
+    "kbox": "./bin/kbox.js"
+  },
   "scripts": {
     "test": "istanbul cover _mocha"
   },
