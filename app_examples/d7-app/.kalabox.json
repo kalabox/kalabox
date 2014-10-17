@@ -2,15 +2,7 @@
   "title": "Drupal 7 App",
   "name": "d7-app",
   "plugins": {
-    "d7": {},
-    "rsync": {
-      "src": "./",
-      "volume": "/data",
-      "dest": "code",
-      "recursive": true,
-      "exclude": ["settings.php", "files"],
-      "deleteAll": true
-    }
+    "d7": {}
   },
   "components": {
     "data": {
