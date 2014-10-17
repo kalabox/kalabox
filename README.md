@@ -1,14 +1,26 @@
-## App Manager Concept
+# Kalabox
 
-## Install
+This project is currently under heavy development. The
+documentation here is currently directed towards developers
+working on the project.
+
+
+## Developer Install
 ```
-git clone git@github.com:mikemilano/appmanager.git
-cd appmanager
+git clone git@github.com:kalabox/kalabox.git
+cd kalabox
 npm install
+
+# link kbox executable
 ln -s bin/kbox.js /usr/local/bin/kbox
 
-# The setup script is OSX specific as of right now
-bin/kalabox_setup
+# OSX
+# Install Boot2Docker First
+bin/setup_osx
+
+# Ubuntu
+# Install Docker First
+bin/setup_linux
 ```
 
 ## .kalabox file
@@ -18,31 +30,39 @@ Create a .kalabox.json file at the root of any project.
 Example config of an app to use separate containers for each component:
 ```
 {
-  "title": "My D7 Site",
-  "name": "d7site",
-  "plugins": [
-    "hipache"
-  ],
+  "title": "Drupal 7 App",
+  "name": "d7-app",
+  "plugins": {
+    "d7": {}
+  },
   "components": {
     "data": {
-      "image": "kalabox/data-d7",
-      "build": true,
-      "src": "./dockerfiles/kalabox/data-d7"
+      "image": {
+        "name": "kalabox/data-d7",
+        "build": true,
+        "src": "dockerfiles/kalabox/data-d7"
+      }
     },
     "db": {
-      "image": "kalabox/mariadb",
-      "build": true,
-      "src": "./dockerfiles/kalabox/mariadb"
+      "image": {
+        "name": "kalabox/mariadb",
+        "build": true,
+        "src": "dockerfiles/kalabox/mariadb"
+      }
     },
     "php": {
-      "image": "kalabox/php-fpm",
-      "build": true,
-      "src": "./dockerfiles/kalabox/php-fpm"
+      "image": {
+        "name": "kalabox/php-fpm",
+        "build": true,
+        "src": "dockerfiles/kalabox/php-fpm"
+      }
     },
     "web": {
-      "image": "kalabox/nginx",
-      "build": true,
-      "src": "./dockerfiles/kalabox/nginx",
+      "image": {
+        "name": "kalabox/nginx",
+        "build": true,
+        "src": "dockerfiles/kalabox/nginx"
+      },
       "proxy": [
         {
           "port": "80/tcp",
@@ -52,8 +72,8 @@ Example config of an app to use separate containers for each component:
     }
   }
 }
-
 ```
+
 When `build` is set to `true`, the module will look for the `src` in the following order:
 - Relative to the .kalabox.json file
 - In the ~/.kalabox directory
@@ -94,57 +114,23 @@ kbox kill
 kbox rm
 ```
 
-## AppManager API
-```
-var AppManager = require('./appmanager.js');
+## Plugin system
 
-// Get a list of app configs/states
-var apps = am.getApps();
+TODO: Plugin documentation
 
-// Instantiate an app object
-var app = new am.App('d7site');
 
-// Pull images defined in config
-app.pull();
-
-// Build images defined in config
-app.build();
-
-// pull/build images & create containers
-app.init();
-
-// Stop all app containers
-app.stop();
-
-// Start all app containers
-app.start();
-
-// Kill all app containers
-app.start();
-
-// Restart all app containers
-app.restart();
-
-// Remove all app containers
-app.remove();
-```
-
-## AppManager.App Events
+## App Events
 
 Events are based around the API tasks defined above. Events
 are triggered before and after the task is complete.
 
-There are 2 levels of events that appmanager emits:
+There are 2 levels of events that an app object emits:
 - App level: Before and after all containers have been processed.
 - Component level: Before and after each container has been processed.
 
 The following example demonstrates listening for `start`, at both
 levels, before and after the containers are started.
 ```
-var AppManager = require('./appmanager.js');
-var am = new AppManager('/path/to/app/config');
-var app = new am.App('d7site');
-
 app.on('pre-start', function() {
   console.log(app.name, 'is about to start');
 });
