@@ -1,3 +1,4 @@
+#!/bin/bash
 # Developer setup
 # Install Boot2Docker before running this script.
 
@@ -8,18 +9,13 @@ cd $BASEDIR
 export DOCKER_HOST=tcp://1.3.3.7:2375
 sudo echo 'nameserver 1.3.3.7' > /etc/resolver/kbox
 
-# Cleanup for a re-install
-docker kill kalabox_skydns
-docker kill kalabox_skydock
-docker kill kalabox_hipache
-docker kill kalabox_dnsmasq
-docker kill kalabox_rsync
-docker kill kalabox_data
-docker rm kalabox_skydns
-docker rm kalabox_skydock
-docker rm kalabox_hipache
-docker rm kalabox_dnsmasq
-docker rm kalabox_data
+# Cleanup for a re-install (-f forces the removal of running containers with a SIGKILL)
+docker rm -f kalabox_skydns
+docker rm -f kalabox_skydock
+docker rm -f kalabox_hipache
+docker rm -f kalabox_dnsmasq
+docker rm -f kalabox_rsync
+docker rm -f kalabox_data
 
 # Pull/Build Core Images
 docker build -t kalabox/kdata ../dockerfiles/kalabox/kdata
