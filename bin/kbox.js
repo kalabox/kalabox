@@ -25,7 +25,7 @@ var manager = require('../lib/manager.js');
 process.env.INIT_CWD = process.cwd();
 
 var cli = new Liftoff({
-  name: 'kalabox',
+  name: 'profile',
   configName: '.kalabox',
   extensions: {
     '.json': null
@@ -77,8 +77,8 @@ function handleArguments(env) {
     console.log(chalk.cyan('KALABOX PACKAGE.JSON'), require('../package'));
   }
 
-  var workingDir = env.configBase;
-  var configPath = env.configPath;
+  var workingDir = env.cwd;
+  var configPath = path.join(env.cwd, '.kalabox', 'profile.json');
 
   if (argv.app) {
     var apppath = path.resolve(kconfig.appDataPath, argv.app);
@@ -91,20 +91,13 @@ function handleArguments(env) {
     var appdata = require(path.resolve(apppath, 'app.json'));
     console.log(appdata.path);
     workingDir = appdata.path;
-    configPath = path.resolve(appdata.path, '.kalabox.json');
+    configPath = path.resolve(appdata.profilePath, 'profile.json');
   }
 
   if (configPath) {
     process.chdir(workingDir);
     env.app = new manager.App(manager, workingDir);
   }
-
-  /*
-  if (!configPath) {
-    console.log(chalk.red('No .kalabox.json file found.'));
-    process.exit(1);
-  }
-  */
 
   env.manager = manager;
 

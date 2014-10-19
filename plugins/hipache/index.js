@@ -1,7 +1,7 @@
 'use strict';
 
 var redis = require('redis');
-var config = require('./config.json');
+var config = require('../../config.json');
 
 module.exports = function(plugin, manager, app) {
   /**
@@ -20,11 +20,7 @@ module.exports = function(plugin, manager, app) {
 
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
-            var dst = 'http://1.3.3.7:' + port;
-
-            console.log(rkey);
-            console.log(dst);
-
+            var dst = 'http://' + config.docker_host + ':' + port;
             client.multi()
               .del(rkey)
               .rpush(rkey, component.cname)
