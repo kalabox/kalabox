@@ -1,8 +1,9 @@
 {
   "title": "Drupal 7 App",
   "name": "d7-app",
+  "profile": "kalabox-profile-drupal7",
   "plugins": {
-    "d7": {}
+    "kalabox-plugin-drupal7": {}
   },
   "components": {
     "data": {

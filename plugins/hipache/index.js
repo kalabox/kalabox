@@ -22,6 +22,9 @@ module.exports = function(plugin, manager, app) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
             var dst = 'http://1.3.3.7:' + port;
 
+            console.log(rkey);
+            console.log(dst);
+
             client.multi()
               .del(rkey)
               .rpush(rkey, component.cname)

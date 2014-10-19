@@ -13,7 +13,6 @@ docker kill kalabox_skydns
 docker kill kalabox_skydock
 docker kill kalabox_hipache
 docker kill kalabox_dnsmasq
-docker kill kalabox_rsync
 docker kill kalabox_data
 docker rm kalabox_skydns
 docker rm kalabox_skydock
