@@ -3,7 +3,8 @@
   "name": "d7-app",
   "profile": "kalabox-profile-drupal7",
   "plugins": {
-    "kalabox-plugin-drupal7": {}
+    "kalabox-plugin-drupal7": {},
+    "kalabox-plugin-drush": {}
   },
   "components": {
     "data": {

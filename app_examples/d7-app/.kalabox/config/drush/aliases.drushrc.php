@@ -1,7 +1,10 @@
 <?php
+/**
+ * This file is automatically updated by kalabox-plugin-drush.
+ */
 $aliases['dev'] = array(
   'uri' => 'localhost',
-  'root' => '/data/code/public',
+  'root' => '/src/public',
   'databases' =>
     array (
       'default' =>
@@ -9,10 +12,10 @@ $aliases['dev'] = array(
           'default' =>
             array (
               'driver' => 'mysql',
-              'username' => 'root',
+              'username' => 'kalabox',
               'password' => '',
               'port' => 3306,
-              'host' => $_SERVER['DB_PORT_3306_TCP_ADDR'],
+              'host' => 'app.kbox',
               'database' => 'kalabox',
             ),
         ),
