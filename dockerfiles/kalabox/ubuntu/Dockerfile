@@ -18,6 +18,9 @@ ADD root/.bashrc /root/.bashrc
 ADD root/.gitconfig /root/.gitconfig
 ADD root/.scripts /root/.scripts
 
+# Setup mount so actual /src can be mounted at startup/docker run
+VOLUME ["/src"]
+
 # Set environment variables.
 ENV HOME /root
 
