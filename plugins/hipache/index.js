@@ -17,11 +17,6 @@ module.exports = function(plugin, manager, app) {
           var hostname = proxy.default ? app.appdomain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
-          console.log(component.app.kconfig.redis);
-          console.log(hostname);
-          console.log(rkey);
-          console.log(port);
-
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
             var dst = 'http://' +component.app.kconfig.dockerHost + ':' + port;
