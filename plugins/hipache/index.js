@@ -17,9 +17,15 @@ module.exports = function(plugin, manager, app) {
           var hostname = proxy.default ? app.appdomain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
+          console.log(component.app.kconfig.redis);
+          console.log(hostname);
+          console.log(rkey);
+          console.log(port);
+
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
-            var dst = 'http://' +component.app.kconfig.docker_host + ':' + port;
+            var dst = 'http://' +component.app.kconfig.dockerHost + ':' + port;
+
             client.multi()
               .del(rkey)
               .rpush(rkey, component.cname)
@@ -46,6 +52,7 @@ module.exports = function(plugin, manager, app) {
         for (var x in component.proxy) {
           var proxy = component.proxy[x];
           var client = redis.createClient(component.app.kconfig.redis.port, component.app.kconfig.redis.host);
+          var hostname = proxy.default ? app.appdomain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
           client.del(rkey, function (err, replies) {
