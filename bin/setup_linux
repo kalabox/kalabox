@@ -8,7 +8,8 @@ cd $BASEDIR
 # All this permission wrangling may not be needed. Needs a revisit with a fresh install.
 sudo touch /etc/resolvconf/resolv.conf.d/tail
 sudo chmod 666 /etc/resolvconf/resolv.conf.d/tail
-sudo echo 'nameserver 127.0.0.1' > /etc/resolvconf/resolv.conf.d/tail
+sudo echo 'nameserver 8.8.8.8' >> /etc/resolvconf/resolv.conf.d/tail
+sudo echo 'nameserver 127.0.0.1' >> /etc/resolvconf/resolv.conf.d/tail
 sudo resolvconf -u
 sudo chmod 644 /etc/resolvconf/resolv.conf.d/tail
 
