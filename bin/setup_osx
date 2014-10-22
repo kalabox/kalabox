@@ -19,7 +19,6 @@ docker rm -f kalabox_skydns
 docker rm -f kalabox_skydock
 docker rm -f kalabox_hipache
 docker rm -f kalabox_dnsmasq
-docker rm -f kalabox_rsync
 docker rm -f kalabox_data
 
 
@@ -28,9 +27,7 @@ docker build -t kalabox/kdata ../dockerfiles/kalabox/kdata
 docker pull crosbymichael/skydns
 docker pull crosbymichael/skydock
 docker pull hipache
-docker build -t kalabox/ubuntu ../dockerfiles/kalabox/ubuntu
-docker build -t kalabox/python ../dockerfiles/kalabox/python
-docker build -t kalabox/nodejs ../dockerfiles/kalabox/nodejs
+docker build -t kalabox/ubuntu ../dockerfiles/kalabox/debian
 docker build -t kalabox/drush ../dockerfiles/kalabox/drush
 docker build -t kalabox/dnsmasq ../dockerfiles/kalabox/dnsmasq
 
