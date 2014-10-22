@@ -1,12 +1,14 @@
 # docker build -t kalabox/mariadb .
 
-FROM kalabox/ubuntu
+FROM debian:wheezy
 
 # Install MariaDB.
 RUN \
-  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0xcbcb082a1bb943db && \
-  echo "deb http://mariadb.mirror.iweb.com/repo/10.0/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/mariadb.list && \
-  apt-get update && \
+  apt-get update -y && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties && \
+  apt-key adv --recv-keys --keyserver keyserver.ubuntu.com --recv 0xcbcb082a1bb943db && \
+  add-apt-repository 'deb http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.0/debian wheezy main' && \
+  apt-get update -y && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server && \
   rm -rf /var/lib/apt/lists/* && \
   sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf && \
@@ -27,7 +29,7 @@ VOLUME ["/var/lib/mysql"]
 User root
 
 # Define working directory.
-WORKDIR /data
+WORKDIR /var/lib/mysql
 
 # Define default command.
 CMD ["mysqld_safe"]
