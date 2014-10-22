@@ -1,6 +1,6 @@
 # docker build -t kalabox/mariadb .
 
-FROM debian:wheezy
+FROM kalabox/debian
 
 # Install MariaDB.
 RUN \
@@ -9,7 +9,7 @@ RUN \
   apt-key adv --recv-keys --keyserver keyserver.ubuntu.com --recv 0xcbcb082a1bb943db && \
   add-apt-repository 'deb http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.0/debian wheezy main' && \
   apt-get update -y && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server && apt-get clean \
   rm -rf /var/lib/apt/lists/* && \
   sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf && \
   echo "mysqld_safe &" > /tmp/config && \
