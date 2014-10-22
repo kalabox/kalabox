@@ -30,8 +30,7 @@ module.exports = function(plugin, manager) {
   });
 
   manager.registerTask('pc', function(){
-    manager.purgeContainers(function(){
-      console.log(container);
+    manager.purgeContainers(function(data){
     });
   });
 };
