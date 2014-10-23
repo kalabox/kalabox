@@ -30,6 +30,7 @@
     "grunt-contrib-copy": "^0.6.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-shell": "^1.1.1",
+    "istanbul": "^0.3.2",
     "matchdep": "^0.3.0",
     "mocha": "^1.21.5",
     "rewire": "^2.1.0",
