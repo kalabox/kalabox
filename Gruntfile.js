@@ -29,6 +29,14 @@ module.exports = function(grunt) {
           + ' --functions ' + COVERAGE_MIN
           + ' --branches ' + COVERAGE_MIN
       }
+    },
+
+    watch: {
+      // bcauldwell: I'm just using this to make developing unit tests easier.
+      unit: {
+        files: ['**/*.js'],
+        tasks: ['unit']
+      }
     }
 
   };
