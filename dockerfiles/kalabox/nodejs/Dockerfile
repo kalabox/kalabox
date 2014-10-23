@@ -19,7 +19,7 @@ RUN \
 RUN npm install -g nodemon
 
 # Define working directory.
-WORKDIR /data/code
+WORKDIR /src
 
 # Define default command.
 CMD ["bash"]

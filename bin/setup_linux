@@ -5,32 +5,32 @@ BASEDIR=$(dirname $0)
 cd $BASEDIR
 
 # Ubuntu running resolvconf
-sudo echo 'nameserver 127.0.0.1' > /etc/resolvconf/resolve.conf.d/tail
+# All this permission wrangling may not be needed. Needs a revisit with a fresh install.
+sudo touch /etc/resolvconf/resolv.conf.d/tail
+sudo chmod 666 /etc/resolvconf/resolv.conf.d/tail
+sudo echo 'nameserver 8.8.8.8' >> /etc/resolvconf/resolv.conf.d/tail
+sudo echo 'nameserver 127.0.0.1' >> /etc/resolvconf/resolv.conf.d/tail
 sudo resolvconf -u
+sudo chmod 644 /etc/resolvconf/resolv.conf.d/tail
+
 
 # Cleanup for a re-install
-docker kill kalabox_skydns
-docker kill kalabox_skydock
-docker kill kalabox_hipache
-docker kill kalabox_dnsmasq
-docker kill kalabox_rsync
-docker kill kalabox_data
-docker rm kalabox_skydns
-docker rm kalabox_skydock
-docker rm kalabox_hipache
-docker rm kalabox_dnsmasq
-docker rm kalabox_data
+docker rm -f kalabox_skydns
+docker rm -f kalabox_skydock
+docker rm -f kalabox_hipache
+docker rm -f kalabox_dnsmasq
+docker rm -f kalabox_data
+
 
 # Pull/Build Core Images
 docker build -t kalabox/kdata ../dockerfiles/kalabox/kdata
 docker pull crosbymichael/skydns
 docker pull crosbymichael/skydock
 docker pull hipache
-docker build -t kalabox/ubuntu ../dockerfiles/kalabox/ubuntu
-docker build -t kalabox/python ../dockerfiles/kalabox/python
-docker build -t kalabox/nodejs ../dockerfiles/kalabox/nodejs
+docker build -t kalabox/debian ../dockerfiles/kalabox/debian
+docker build -t kalabox/dnsmasq ../dockerfiles/kalabox/dnsmasq_linux
 docker build -t kalabox/drush ../dockerfiles/kalabox/drush
-docker build -t kalabox/dnsmasq ../dockerfiles/kalabox/dnsmasq
+
 
 # Create/Start Core Services
 docker run -d --name kalabox_data kalabox/kdata

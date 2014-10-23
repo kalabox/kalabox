@@ -7,13 +7,6 @@
     "kalabox-plugin-drush": {}
   },
   "components": {
-    "data": {
-      "image": {
-        "name": "kalabox/data-d7",
-        "build": true,
-        "src": "dockerfiles/kalabox/data-d7"
-      }
-    },
     "db": {
       "image": {
         "name": "kalabox/mariadb",

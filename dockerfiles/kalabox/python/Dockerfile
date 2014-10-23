@@ -1,10 +1,9 @@
 # docker build -t kalabox/python .
 
-FROM kalabox/ubuntu
+FROM kalabox/debian
 
 # Install Python.
 RUN \
-  apt-get update && \
   apt-get install -y python python-dev python-pip python-virtualenv && \
   rm -rf /var/lib/apt/lists/*
 

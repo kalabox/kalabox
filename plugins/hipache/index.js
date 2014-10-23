@@ -1,7 +1,6 @@
 'use strict';
 
 var redis = require('redis');
-var config = require('../../config.json');
 
 module.exports = function(plugin, manager, app) {
   /**
@@ -14,13 +13,14 @@ module.exports = function(plugin, manager, app) {
       c.inspect(function(err, data) {
         for (var x in component.proxy) {
           var proxy = component.proxy[x];
-          var client = redis.createClient(config.redis.port, config.redis.host);
+          var client = redis.createClient(component.app.kconfig.redis.port, component.app.kconfig.redis.host);
           var hostname = proxy.default ? app.appdomain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
-            var dst = 'http://' + config.docker_host + ':' + port;
+            var dst = 'http://' +component.app.kconfig.dockerHost + ':' + port;
+
             client.multi()
               .del(rkey)
               .rpush(rkey, component.cname)
@@ -46,7 +46,7 @@ module.exports = function(plugin, manager, app) {
       c.inspect(function(err, data) {
         for (var x in component.proxy) {
           var proxy = component.proxy[x];
-          var client = redis.createClient(config.redis.port, config.redis.host);
+          var client = redis.createClient(component.app.kconfig.redis.port, component.app.kconfig.redis.host);
           var hostname = proxy.default ? app.appdomain : component.hostname;
           var rkey = 'frontend:' + hostname;
 

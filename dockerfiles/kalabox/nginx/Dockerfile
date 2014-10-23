@@ -1,13 +1,13 @@
 # docker build -t kalabox/nginx .
 
-FROM kalabox/ubuntu
+FROM kalabox/debian
 
 # Install Nginx.
 RUN \
   apt-get update && \
-  apt-get install -y nginx dnsutils && \
-  rm -rf /var/lib/apt/lists/* && \
-  chown -R www-data:www-data /var/lib/nginx
+  apt-get install -y nginx dnsutils && apt-get clean
+
+RUN chown -R www-data:www-data /var/lib/nginx
 
 # The data container will manage these config files.
 RUN rm /etc/nginx/nginx.conf

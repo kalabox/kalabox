@@ -17,8 +17,8 @@ var Liftoff = require('liftoff');
 var tildify = require('tildify');
 
 var kconfig = require('../lib/config.js');
-//var app = require('../lib/app.js');
 var manager = require('../lib/manager.js');
+var App = require('../lib/app.js');
 
 // set env var for ORIGINAL cwd
 // before anything touches it
@@ -89,14 +89,13 @@ function handleArguments(env) {
 
     // Load up the app data from ~/.kalabox/apps/<app>/app.json
     var appdata = require(path.resolve(apppath, 'app.json'));
-    console.log(appdata.path);
     workingDir = appdata.path;
     configPath = path.resolve(appdata.profilePath, 'profile.json');
   }
 
-  if (configPath) {
+  if (fs.existsSync(configPath)) {
     process.chdir(workingDir);
-    env.app = new manager.App(manager, workingDir);
+    env.app = new App(manager, workingDir);
   }
 
   env.manager = manager;
@@ -113,8 +112,9 @@ function processTask(env) {
   var cmd = argv._[0];
   // Run command against app if it exists
   if (env.app && env.app.manager.tasks[cmd]) {
-    env.manager.tasks[cmd]();
+    env.app.manager.tasks[cmd]();
   }
+
   // If not, run as a manager task if it exists
   else if (env.manager.tasks[cmd]) {
     env.manager.tasks[cmd]();

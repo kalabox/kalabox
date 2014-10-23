@@ -1,6 +1,6 @@
-# docker build -t kalabox/php-fpm
+# docker build -t kalabox/php-fpm .
 
-FROM kalabox/ubuntu
+FROM kalabox/debian
 
 # Install PHP.
 RUN \
@@ -12,7 +12,8 @@ RUN rm /etc/php5/fpm/php.ini
 RUN ln -s /src/.kalabox/config/php/php.ini /etc/php5/fpm/php.ini
 RUN rm /etc/php5/fpm/pool.d/www.conf
 RUN ln -s /src/.kalabox/config/php/www.conf /etc/php5/fpm/pool.d/www.conf
+RUN sed -i 's/;daemonize = yes/daemonize = no/g' /etc/php5/fpm/php-fpm.conf
 
 EXPOSE 9000
 
-CMD ["/usr/sbin/php5-fpm", "-F"]
+CMD ["/usr/sbin/php5-fpm", "-R"]

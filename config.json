@@ -1,14 +1,5 @@
 {
   "domain": "kbox",
-  "docker_host": "1.3.3.7",
-  "docker": {
-    "host": "http://1.3.3.7",
-    "port": 2375
-  },
-  "redis": {
-    "host": "1.3.3.7",
-    "port": 6379
-  },
   "plugins": {
     "global": {
       "kalabox": {}
