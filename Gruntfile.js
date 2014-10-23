@@ -19,11 +19,11 @@ module.exports = function(grunt) {
 
     shell: {
       // @todo: Maybe remove the .istanbul.yml file and put config here
-      test_unit: { command: 'istanbul test _mocha' },
-      test_coverage: { command: 'istanbul cover _mocha' },
+      test_unit: { command: 'node_modules/istanbul/lib/cli.js  test node_modules/mocha/bin/_mocha' },
+      test_coverage: { command: 'node_modules/istanbul/lib/cli.js  cover node_modules/mocha/bin/_mocha' },
       test_check_coverage: {
         command:
-          'istanbul check-coverage coverage/coverage.json'
+          'node_modules/istanbul/lib/cli.js check-coverage coverage/coverage.json'
           + ' --statements ' + COVERAGE_MIN
           + ' --lines ' + COVERAGE_MIN
           + ' --functions ' + COVERAGE_MIN
