@@ -1,9 +1,5 @@
 // @todo: add use strict here, doing it this way to test jshint
 
-var
-  COVERAGE_MIN = 30
-  ;
-
 module.exports = function(grunt) {
 
   //--------------------------------------------------------------------------
@@ -24,10 +20,10 @@ module.exports = function(grunt) {
       test_check_coverage: {
         command:
           'node_modules/istanbul/lib/cli.js check-coverage coverage/coverage.json'
-          + ' --statements ' + COVERAGE_MIN
-          + ' --lines ' + COVERAGE_MIN
-          + ' --functions ' + COVERAGE_MIN
-          + ' --branches ' + COVERAGE_MIN
+          + ' --statements ' + 80 
+          + ' --branches ' + 50
+          + ' --functions ' + 80
+          + ' --lines ' + 80
       }
     },
 
