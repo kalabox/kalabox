@@ -169,7 +169,8 @@ describe('container.js', function () {
 
     describe('#parse()', function () {
       it('Should return an object with the correct properties.', function () {
-        var input = 'kb_foo-app_data';
+        // for some reason dockerode puts a space in front of container names
+        var input = ' kb_foo-app_data';
         var expected = {
           prefix: 'kb',
           app_name: 'foo-app',
@@ -177,32 +178,30 @@ describe('container.js', function () {
         };
         expect(ctn.name.parse(input)).deep.to.equal(expected);
       });
-    });
-
-    describe('#parsePrefix()', function () {
-      it('Should return the correct parsed prefix.', function () {
-        var fn = function (input, expected) {
-          expect(ctn.name.parsePrefix(input)).to.equal(expected);
-        };
-        fn('kb_bob_dole', 'kb');
-        fn('kalabox_bill_clinton', 'kalabox');
+      it('Should return null when name is not a kalabox name.', function () {
+        var inputs = ['Bobs_burgers'];
+        inputs.forEach(function (input) {
+          expect(ctn.name.parse(input)).to.be.equal(null);
+        });
       });
     });
 
-    describe('#isUserDefinedName()', function () {
+    describe('#isUserDefined()', function () {
       it('Should return true for a user defined ctn name.', function () {
         var fn = function (input, expected) {
-          expect(ctn.name.isUserDefinedName(input)).to.equal(expected);
+          var name = ctn.name.parse(input);
+          expect(ctn.name.isUserDefined(name)).to.equal(expected, name);
         };
         fn('kb_bill_clinton', true);
         fn('kalabox_big_deal', false);
       });
     });
 
-    describe('#isBuiltInName()', function () {
+    describe('#isBuiltIn()', function () {
       it('Should return true for a built in ctn name.', function () {
         var fn = function (input, expected) {
-          expect(ctn.name.isBuiltInName(input)).to.equal(expected);
+          var name = ctn.name.parse(input);
+          expect(ctn.name.isBuiltIn(name)).to.equal(expected, name);
         };
         fn('kb_tom_clancy', false);
         fn('kalabox_clive_cussler', true);
@@ -212,7 +211,8 @@ describe('container.js', function () {
     describe('#isKalaboxName()', function () {
       it('Should return true for a kalabox ctn name.', function () {
         var fn = function (input, expected) {
-          expect(ctn.name.isKalaboxName(input)).to.equal(expected);
+          var name = ctn.name.parse(input);
+          expect(ctn.name.isKalaboxName(name)).to.equal(expected, name);
         };
         fn('kb_betty_grable', true);
         fn('kalabox_tom_petty', true);

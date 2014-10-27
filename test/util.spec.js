@@ -36,6 +36,42 @@ describe('util.js', function () {
         fn('this_is_a_test', ['this', 'is', 'a', 'test']);
         fn('unit-tests_are_cool', ['unit-tests', 'are', 'cool']);
       });
+      it('Should return null when it parses an invalid name.', function () {
+        var inputs = [
+          'InvalidName',
+          '_',
+          '$$$$'
+        ];
+        inputs.forEach(function (input) {
+          expect(util.name.parse(input)).to.be.equal(null, input);
+        });
+      });
+    });
+
+    describe('#isValidPart()', function () {
+      var iter = function (inputs, expected) {
+        expect(inputs.length).to.be.above(1);
+        inputs.forEach(function (input) {
+          expect(util.name.isValidPart(input)).to.be.equal(expected, input);
+        });
+      };
+      it('Should return true when part is valid.', function () {
+        var inputs = [
+          'foo7',
+          'bar3',
+          'bob'
+        ];
+        iter(inputs, true);
+      });
+      it('Should return false when part is NOT valid.', function () {
+        var inputs = [
+          '7foo',
+          '_dog',
+          'cat_bird',
+          'AAA'
+        ];
+        iter(inputs, false);
+      });
     });
 
     describe('#validatePart()', function () {
@@ -72,7 +108,7 @@ describe('util.js', function () {
         var fn = function (key) {
           expect(function () {
             util.name.create([key]);
-          }).to.throw(Error, /Invalid name part .*/);          
+          }).to.throw(Error, /Invalid name part .*/, key);          
         };
 
         fn('ab_c');
