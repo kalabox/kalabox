@@ -3,51 +3,53 @@
 var argv = require('minimist')(process.argv.slice(2));
 
 module.exports = function(plugin, manager, app) {
-
-  app.manager.registerTask('d7.install', function(){
-    var profile = 'standard';
-    if (argv._[1]) {
-      profile = argv._[1];
-    }
-    var theme = 'garland';
-    if (argv._[2]) {
-      theme = argv._[2];
-    }
-
-    app.docker.run(
-      'kalabox/ubuntu',
-      ['/bin/sh', '/data/scripts/install.sh'],
-      process.stdout,
-      {
-        'Env': ['APPDOMAIN=' + app.appdomain, 'DRUPAL_PROFILE=' + profile, 'DRUPAL_THEME=' + theme]
-      },
-      {
-        'VolumesFrom': app.dataCname,
-        'Links': [app.components.db.cname + ':db']
-      },
-      function (err, data, container) {
-        app.docker.getContainer(container.id).remove(function(err, data) {
-        });
-      }
-    );
-  });
-
-  app.manager.registerTask('d7.status', function(){
+  /**
+   * Run and remove an image.
+   *
+   * @param cmd Array of drush command args
+   * @param callback optional callback that is called when process is complete.
+   **/
+  var runRmDrush = function(cmd, callback) {
     app.docker.run(
       'kalabox/drush',
-      ['@dev', 'status'],
+      cmd,
       process.stdout,
       {
-        'Env': ['APPDOMAIN=' + app.appdomain]
+        Env: ['APPNAME=' +  app.appname, 'APPDOMAIN=' +  app.appdomain],
+        Volumes: { '/src': {} }
       },
       {
-        'VolumesFrom': app.dataCname,
-        'Links': [app.components.db.cname + ':db']
+        Binds: [app.path + ':/src:rw']
       },
       function (err, data, container) {
-        app.docker.getContainer(container.id).remove(function(err, data) {
+        if (err) {
+          throw err;
+        }
+        app.manager.docker.getContainer(container.id).remove(function(err, data) {
+          if (callback) {
+            callback(err, data);
+          }
         });
       }
     );
+  };
+
+  app.manager.registerTask('d7.dl', function(){
+    var cmd = ['dl', 'drupal', '-y', '--destination=/src', '--drupal-project-rename=public'];
+    runRmDrush(cmd, function(err, data){
+      if (err) {
+        throw err;
+      }
+    });
   });
+
+  app.manager.registerTask('d7.install', function(){
+    var cmd = ['@dev', 'site-install', '-y', '--site-name=' + app.config.title, '--account-pass=kalabox'];
+    runRmDrush(cmd, function(err, data){
+      if (err) {
+        throw err;
+      }
+    });
+  });
+
 };

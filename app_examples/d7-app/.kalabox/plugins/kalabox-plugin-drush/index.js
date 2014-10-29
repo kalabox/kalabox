@@ -3,18 +3,22 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
-var argv = require('minimist')(process.argv.slice(3));
+var vasync = require('vasync');
+
+//var argv = require('minimist')(process.argv.slice(3));
 
 module.exports = function(plugin, manager, app) {
 
-  // Drush wrapper: kbox drush status
-  app.manager.registerTask('drush', function(){
-    var args = argv._;
-    args.unshift('@dev');
-
+  /**
+   * Run and remove an image.
+   *
+   * @param cmd Array of drush command args
+   * @param callback optional callback that is called when process is complete.
+   **/
+  var runRmDrush = function(cmd, callback) {
     app.docker.run(
       'kalabox/drush',
-      args,
+      cmd,
       process.stdout,
       {
         Env: ['APPNAME=' +  app.appname, 'APPDOMAIN=' +  app.appdomain],
@@ -24,11 +28,30 @@ module.exports = function(plugin, manager, app) {
         Binds: [app.path + ':/src:rw']
       },
       function (err, data, container) {
+        if (err) {
+          throw err;
+        }
         app.manager.docker.getContainer(container.id).remove(function(err, data) {
+          if (callback) {
+            callback(err, data);
+          }
         });
       }
     );
+  };
+
+  // Drush wrapper: kbox drush status
+  app.manager.registerTask('drush', function(){
+    var args = process.argv.slice(3);
+    args.unshift('@dev');
+
+    runRmDrush(args, function(err, data) {
+      if (err) {
+        throw err;
+      }
+    });
   });
+
 
   // Updates kalabox aliases when app is started.
   // This allows for both kbox drush to be used
