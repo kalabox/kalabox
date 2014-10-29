@@ -1,8 +1,0 @@
-{
-  "name": "nodejs-app",
-  "version": "0.1.0",
-  "description": "NodeJS App",
-  "dependencies": {
-    "express": "~4.9.3"
-  }
-}
