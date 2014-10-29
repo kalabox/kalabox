@@ -23,12 +23,16 @@ bin/setup_osx
 bin/setup_linux
 ```
 
-**Note: ** DNS resolvers for '*.kbox` may need to be setup manually for now.
+**Note:** DNS resolvers for '*.kbox` may need to be setup manually for now.
 
 For OSX create a file at `/etc/resolver/kbox` and add the following line:
 ```
 nameserver 1.3.3.7
 ```
+
+Kalabox runs a nameserver on the Docker Host, and the goal here is to
+add this as a nameserver to your system. As of right now, it's a little
+spotty to do this programmatically.
 
 
 ## Run the D7 Example App profile
