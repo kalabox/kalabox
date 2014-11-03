@@ -35,8 +35,8 @@ before-script() {
 # Run the tests.
 #
 script() {
-  ln -s bin/kbox.js /usr/local/bin/kbox
-  # Code linting and standards
+  sudo ln -s bin/kbox.js /usr/local/bin/kbox
+  # Code l/hinting and standards
   grunt test:code
   # Unit tests and coverage reports
   grunt test
@@ -116,7 +116,8 @@ set_error() {
 # Runs a command and sets an error if it fails.
 run_command() {
   set -xv
-  if ! $@; then
+  es=$?
+  if [[ $es != 0 ]] ; then
     set_error
   fi
   set +xv
