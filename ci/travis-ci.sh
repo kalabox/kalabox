@@ -27,8 +27,7 @@ before-install() {
 # Setup Drupal to run the tests.
 #
 before-script() {
-  npm install -g grunt-cli bower
-  bower install
+  npm install -g grunt-cli
 }
 
 # script
@@ -37,6 +36,9 @@ before-script() {
 #
 script() {
   ln -s bin/kbox.js /usr/local/bin/kbox
+  # Code linting and standards
+  grunt test:code
+  # Unit tests and coverage reports
   grunt test
 }
 
