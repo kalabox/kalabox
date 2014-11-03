@@ -38,6 +38,12 @@ script() {
   sudo ln -s bin/kbox.js /usr/local/bin/kbox
   # Code l/hinting and standards
   grunt test:code
+  # @todo clean this up
+  EXIT_STATUS=$?
+  if [[ $EXIT_STATUS != 0 ]] ; then
+    exit $EXIT_STATUS
+  fi
+
   # Unit tests and coverage reports
   grunt test
 }
@@ -112,7 +118,6 @@ after-deploy() {
 set_error() {
   EXIT_VALUE=1
   echo "$@"
-  exit $EXIT_VALUE
 }
 
 # Runs a command and sets an error if it fails.
