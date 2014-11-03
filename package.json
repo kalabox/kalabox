@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "chai": "^1.9.2",
-    "grunt": "^0.4.5",
+    "grunt": "~0.4.5",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-copy": "^0.6.0",
     "grunt-contrib-watch": "^0.6.1",
@@ -35,6 +35,7 @@
     "mocha": "^1.21.5",
     "mock-fs": "^2.3.1",
     "rewire": "^2.1.0",
-    "sinon": "^1.10.3"
+    "sinon": "^1.10.3",
+    "grunt-bump": "0.0.16"
   }
 }
