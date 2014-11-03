@@ -111,13 +111,14 @@ after-deploy() {
 # Sets the exit level to error.
 set_error() {
   EXIT_VALUE=1
+  echo "$@"
+  exit $EXIT_VALUE
 }
 
 # Runs a command and sets an error if it fails.
 run_command() {
   set -xv
-  es=$?
-  if [[ $es != 0 ]] ; then
+  if ! $@; then
     set_error
   fi
   set +xv
