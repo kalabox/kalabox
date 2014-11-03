@@ -20,10 +20,24 @@ module.exports = function(grunt) {
       test_check_coverage: {
         command:
           'node_modules/istanbul/lib/cli.js check-coverage coverage/coverage.json'
-          + ' --statements ' + 80 
+          + ' --statements ' + 80
           + ' --branches ' + 50
           + ' --functions ' + 80
           + ' --lines ' + 80
+      }
+    },
+
+    bump: {
+      options: {
+        files: ['package.json'],
+        updateConfigs: [],
+        commit: true,
+        commitMessage: 'Release v%VERSION%',
+        commitFiles: ['package.json', 'bower.json'],
+        createTag: true,
+        tagName: 'v%VERSION%',
+        tagMessage: 'Version %VERSION%',
+        push: false
       }
     },
 
@@ -62,6 +76,10 @@ module.exports = function(grunt) {
     'clean:coverage',
     'shell:test_coverage',
     'shell:test_check_coverage'
+  ]);
+
+  grunt.registerTask('bump-patch', [
+    'bump-only:patch'
   ]);
 
   grunt.registerTask('test', [
