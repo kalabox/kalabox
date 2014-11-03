@@ -9,6 +9,7 @@ module.exports = function(grunt) {
   // setup task config
   var config = {
 
+    // Arrays of relevant code classified by type
     files: {
       js: {
         src: [
@@ -52,6 +53,7 @@ module.exports = function(grunt) {
       }
     },
 
+    // Some linting and code standards
     jshint: {
       options: {
         jshintrc: '.jshintrc',
@@ -59,7 +61,6 @@ module.exports = function(grunt) {
       },
       all: ['Gruntfile.js', '<%= files.js.src %>']
     },
-
     jscs: {
       src: ['Gruntfile.js', '<%= files.js.src %>'],
       options: {
