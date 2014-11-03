@@ -9,6 +9,16 @@ module.exports = function(grunt) {
   // setup task config
   var config = {
 
+    files: {
+      js: {
+        src: [
+          'lib/*.js',
+          'plugins/**/*.js',
+          'test/*.js'
+        ]
+      }
+    },
+
     clean: {
       coverage: ['coverage']
     },
@@ -27,6 +37,7 @@ module.exports = function(grunt) {
       }
     },
 
+    // This handles automatic version bumping in travis
     bump: {
       options: {
         files: ['package.json'],
@@ -38,6 +49,21 @@ module.exports = function(grunt) {
         tagName: 'v%VERSION%',
         tagMessage: 'Version %VERSION%',
         push: false
+      }
+    },
+
+    jshint: {
+      options: {
+        jshintrc: '.jshintrc',
+        reporter: require('jshint-stylish')
+      },
+      all: ['Gruntfile.js', '<%= files.js.src %>']
+    },
+
+    jscs: {
+      src: ['Gruntfile.js', '<%= files.js.src %>'],
+      options: {
+        config: '.jscsrc'
       }
     },
 
@@ -85,6 +111,11 @@ module.exports = function(grunt) {
   grunt.registerTask('test', [
     'unit',
     'coverage'
+  ]);
+
+  grunt.registerTask('test:code', [
+    'jshint',
+    'jscs',
   ]);
 
 }
