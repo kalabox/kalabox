@@ -1,13 +1,13 @@
 'use strict';
 
-var rewire = require('rewire'),
-  cmp = rewire('../lib/component.js'),
-  expect = require('chai').expect,
-  sinon = require('sinon');
+var rewire = require('rewire');
+var cmp = rewire('../lib/component.js');
+var expect = require('chai').expect;
+var sinon = require('sinon');
 
-describe('component', function () {
+describe('component', function() {
 
-  describe('#Constructor()', function () {
+  describe('#Constructor()', function() {
 
     var appApi = {
       appdomain: 'myappdomain',
@@ -15,9 +15,9 @@ describe('component', function () {
       dataCname: 'data',
       hasData: true,
       prefix: 'myapp1'
-    },
-    key = 'db',
-    cmpApi = {
+    };
+    var key = 'db';
+    var cmpApi = {
       image: {
         build: false
       }
@@ -37,47 +37,47 @@ describe('component', function () {
 
   });
 
-  describe('#actions', function () {
+  describe('#actions', function() {
 
     var sandbox;
 
-    beforeEach(function () {
+    beforeEach(function() {
       sandbox = sinon.sandbox.create();
     });
 
-    afterEach(function () {
+    afterEach(function() {
       sandbox.restore();
     });
 
     var fakeCmp = {
       app: {
-        event: function () {}
+        event: function() {}
       }
-    },
-    fakeCtn = {
-      create: function () {},
-      start: function () {},
-      stop: function () {},
-      kill: function () {},
-      remove: function () {}
+    };
+    var fakeCtn = {
+      create: function() {},
+      start: function() {},
+      stop: function() {},
+      kill: function() {},
+      remove: function() {}
     };
 
     [
-      { name: 'create', fn: cmp.create, msg: 'init' },
-      { name: 'start', fn: cmp.start, msg: 'start' },
-      { name: 'stop', fn: cmp.stop, msg: 'stop' },
-      { name: 'kill', fn: cmp.kill, msg: 'kill' },
-      { name: 'remove', fn: cmp.remove, msg: 'remove' }
-    ].forEach(function (x) {
+      {name: 'create', fn: cmp.create, msg: 'init'},
+      {name: 'start', fn: cmp.start, msg: 'start'},
+      {name: 'stop', fn: cmp.stop, msg: 'stop'},
+      {name: 'kill', fn: cmp.kill, msg: 'kill'},
+      {name: 'remove', fn: cmp.remove, msg: 'remove'}
+    ].forEach(function(x) {
 
-      describe('#' + x.name + '()', function () {
+      describe('#' + x.name + '()', function() {
 
-        it('Should call container.' + x.name + '() with the correct args.', function () {
+        it('Should call container.' + x.name + '() with the correct args.', function() {
 
           // create stubs
-          var spyEvent = sandbox.spy(fakeCmp.app, 'event'),
-          spyCb = sandbox.spy(),
-          stubFn = sandbox.stub(fakeCtn, x.name, function (_, cb) { cb(); });
+          var spyEvent = sandbox.spy(fakeCmp.app, 'event');
+          var spyCb = sandbox.spy();
+          var stubFn = sandbox.stub(fakeCtn, x.name, function(_, cb) { cb(); });
 
           // override modules
           cmp.__set__('container', fakeCtn);

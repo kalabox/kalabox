@@ -25,7 +25,7 @@ module.exports = function(plugin, manager, app) {
 
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
-            var dst = 'http://' +component.app.kconfig.dockerHost + ':' + port;
+            var dst = 'http://' + component.app.kconfig.dockerHost + ':' + port;
 
             client.multi()
               .del(rkey)

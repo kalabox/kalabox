@@ -1,24 +1,24 @@
 'use strict';
 
-var util = require('../lib/util.js'),
-  chai = require('chai'),
-  assert = chai.assert,
-  expect = chai.expect;
+var util = require('../lib/util.js');
+var chai = require('chai');
+var assert = chai.assert;
+var expect = chai.expect;
 
-describe('util', function () {
+describe('util', function() {
 
-  describe('#name module', function () {
+  describe('#name module', function() {
 
-    describe('#delim', function () {
+    describe('#delim', function() {
       var expectedDelim = '_';
-      it('Should be set to "' + expectedDelim + '"', function () {
+      it('Should be set to "' + expectedDelim + '"', function() {
         assert(util.name.delim === expectedDelim);
       });
     });
 
-    describe('#create()', function () {
-      it('Should return a string with the expected value.', function () {
-        var fn = function (parts, expected) {
+    describe('#create()', function() {
+      it('Should return a string with the expected value.', function() {
+        var fn = function(parts, expected) {
           var result = util.name.create(parts);
           expect(result).to.equal(expected);
         };
@@ -28,35 +28,35 @@ describe('util', function () {
       });
     });
 
-    describe('#parse()', function () {
-      it('Should return an array with the proper parsed values.', function () {
-        var fn = function (name, expected) {
+    describe('#parse()', function() {
+      it('Should return an array with the proper parsed values.', function() {
+        var fn = function(name, expected) {
           var result = util.name.parse(name);
           expect(result).to.deep.equal(expected);
         };
         fn('this_is_a_test', ['this', 'is', 'a', 'test']);
         fn('unit-tests_are_cool', ['unit-tests', 'are', 'cool']);
       });
-      it('Should return null when it parses an invalid name.', function () {
+      it('Should return null when it parses an invalid name.', function() {
         var inputs = [
           'InvalidName',
           '_',
           '$$$$'
         ];
-        inputs.forEach(function (input) {
+        inputs.forEach(function(input) {
           expect(util.name.parse(input)).to.be.equal(null, input);
         });
       });
     });
 
-    describe('#isValidPart()', function () {
-      var iter = function (inputs, expected) {
+    describe('#isValidPart()', function() {
+      var iter = function(inputs, expected) {
         expect(inputs.length).to.be.above(1);
-        inputs.forEach(function (input) {
+        inputs.forEach(function(input) {
           expect(util.name.isValidPart(input)).to.be.equal(expected, input);
         });
       };
-      it('Should return true when part is valid.', function () {
+      it('Should return true when part is valid.', function() {
         var inputs = [
           'foo7',
           'bar3',
@@ -64,7 +64,7 @@ describe('util', function () {
         ];
         iter(inputs, true);
       });
-      it('Should return false when part is NOT valid.', function () {
+      it('Should return false when part is NOT valid.', function() {
         var inputs = [
           '7foo',
           '_dog',
@@ -75,21 +75,21 @@ describe('util', function () {
       });
     });
 
-    describe('#validatePart()', function () {
-      var iterAsciiChars = function (fnFilter, fnTest) {
-        for (var i=0; i<127; ++i) {
+    describe('#validatePart()', function() {
+      var iterAsciiChars = function(fnFilter, fnTest) {
+        for (var i = 0; i < 127; ++i) {
           var str = String.fromCharCode(i);
           if (fnFilter(str)) {
             fnTest('abc' + str);
           }
         }
-      },
-      regexFilter = /[a-z0-9\-]/;
+      };
+      var regexFilter = /[a-z0-9\-]/;
 
-      it('Should NOT throw an error when valid characters are used.', function (){
+      it('Should NOT throw an error when valid characters are used.', function() {
 
-        var fn = function (key) {
-          expect(function () {
+        var fn = function(key) {
+          expect(function() {
             util.name.create([key]);
           }).to.not.throw(Error);
         };
@@ -98,16 +98,16 @@ describe('util', function () {
         fn('ab-c');
         fn('abc7');
 
-        iterAsciiChars(function (str) {
+        iterAsciiChars(function(str) {
           return (str.search(regexFilter) >= 0);
         }, fn);
 
       });
 
-      it('Should throw an error when invalid characters are used.', function (){
+      it('Should throw an error when invalid characters are used.', function() {
 
-        var fn = function (key) {
-          expect(function () {
+        var fn = function(key) {
+          expect(function() {
             util.name.create([key]);
           }).to.throw(Error, /Invalid name part .*/, key);
         };
@@ -121,7 +121,7 @@ describe('util', function () {
         fn('aBc');
         fn('abC');
 
-        iterAsciiChars(function (str) {
+        iterAsciiChars(function(str) {
           return (str.search(regexFilter) < 0);
         }, fn);
 

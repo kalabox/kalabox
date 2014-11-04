@@ -1,110 +1,135 @@
 'use strict';
 
-var assert = require('chai').assert,
-  expect = require('chai').expect,
-  sinon = require('sinon'),
-  rewire = require('rewire'),
-  manager = rewire('../lib/manager.js'),
-  timeout = 10,
-  _ = require('lodash'),
-  path = require('path'),
-  testUtil = require('../lib/test_util.js');
+var assert = require('chai').assert;
+var expect = require('chai').expect;
+var sinon = require('sinon');
+var rewire = require('rewire');
+var manager = rewire('../lib/manager.js');
+var timeout = 10;
+var _ = require('lodash');
+var path = require('path');
+var testUtil = require('../lib/test_util.js');
 
-describe('manager', function () {
+describe('manager', function() {
 
-    function FakeDocker() {
+  function FakeDocker() {
 
-      var ctnsEnabled = [
-        { Names: [' kb_myapp1_data'] },
-        { Names: [' kb_myapp4_data'] }
-      ];
+    var ctnsEnabled = [{
+      Names: [' kb_myapp1_data']
+    }, {
+      Names: [' kb_myapp4_data']
+    }];
 
-      var ctnsDisabled = [
-        { Names: [' kb_myapp2_data'] },
-        { Names: [' kb_myapp5_data'] },
-        { Names: ['purge_me_1'], Id: '1234' },
-        { Names: ['purge_me_2'], Id: '5678' },
-        { Names: ['purge_me_3'], Id: '1428' }
-      ];
+    var ctnsDisabled = [{
+      Names: [' kb_myapp2_data']
+    }, {
+      Names: [' kb_myapp5_data']
+    }, {
+      Names: ['purge_me_1'],
+      Id: '1234'
+    }, {
+      Names: ['purge_me_2'],
+      Id: '5678'
+    }, {
+      Names: ['purge_me_3'],
+      Id: '1428'
+    }];
 
-      var containerApi = {
-        remove: function () {}
-      };
+    var containerApi = {
+      remove: function() {}
+    };
 
-      this.api = {
-        listContainers: function () {},
-        getContainer: function () {}
-      };
+    this.api = {
+      listContainers: function() {},
+      getContainer: function() {}
+    };
 
-      this.containerApi = containerApi;
+    this.containerApi = containerApi;
 
-      this.listContainers = function (filter, callback) {
-        var _callback = callback ? callback : filter;
-        var containers =
-          callback ? ctnsEnabled.concat(ctnsDisabled) : ctnsEnabled;
-        var err = null;
-        _callback(err, containers);
-      };
+    this.listContainers = function(filter, callback) {
+      var _callback = callback ? callback : filter;
+      var containers =
+        callback ? ctnsEnabled.concat(ctnsDisabled) : ctnsEnabled;
+      var err = null;
+      _callback(err, containers);
+    };
 
-      this.stubs = {};
+    this.stubs = {};
 
-      this.stubs.listContainers =
-        sinon.stub(this.api, 'listContainers', this.listContainers);
+    this.stubs.listContainers =
+      sinon.stub(this.api, 'listContainers', this.listContainers);
 
-      this.stubs.getContainer =
-        sinon.stub(this.api, 'getContainer', function () { return containerApi; });
-
-      this.remove = function (callback) { callback(null, 'somedata'); };
-      this.stubs.remove = sinon.stub(containerApi, 'remove', this.remove);
-    }
-
-    describe('#getApps()', function () {
-
-      var fakeDocker = new FakeDocker(),
-      mockFs;
-
-      beforeEach(function () {
-        mockFs = testUtil.mockFs.create();
+    this.stubs.getContainer =
+      sinon.stub(this.api, 'getContainer', function() {
+        return containerApi;
       });
 
-      afterEach(function () {
-        mockFs.restore();
-      });
+    this.remove = function(callback) {
+      callback(null, 'somedata');
+    };
+    this.stubs.remove = sinon.stub(containerApi, 'remove', this.remove);
+  }
 
-      it('Should return an array of apps.', function (done) {
-        var expected = {
-          myapp1: { name: 'myapp1', status: 'enabled' },
-          myapp2: { name: 'myapp2', status: 'disabled' },
-          myapp3: { name: 'myapp3', status: 'uninstalled' },
-          myapp4: { name: 'myapp4', status: 'enabled' },
-          myapp5: { name: 'myapp5', status: 'disabled' },
-        };
-        // setup modules
-        var mockFs = require;
-        manager.__with__({
-          docker: fakeDocker.api
-        })(function () {
-          // run unit being tested
-          var result = manager.getApps(function (apps) {
-            //verify
-            var stubList = fakeDocker.stubs.listContainers;
-            sinon.assert.callCount(stubList, 2);
-            sinon.assert.calledWithExactly(stubList, sinon.match.func);
-            sinon.assert.calledWithExactly(stubList, sinon.match.object, sinon.match.func);
-            expect(apps).to.be.deep.equal(expected);
-            done();
-          });
-        });
+  describe('#getApps()', function() {
 
-      });
+    var fakeDocker = new FakeDocker();
+    var mockFs;
 
+    beforeEach(function() {
+      mockFs = testUtil.mockFs.create();
     });
 
-  describe('#purgeContainers()', function () {
-    it('Should call docker.container.remove with the correct args.', function () {
+    afterEach(function() {
+      mockFs.restore();
+    });
 
-      var fakeDocker = new FakeDocker(),
-      spyCallback = sinon.spy();
+    it('Should return an array of apps.', function(done) {
+      var expected = {
+        myapp1: {
+          name: 'myapp1',
+          status: 'enabled'
+        },
+        myapp2: {
+          name: 'myapp2',
+          status: 'disabled'
+        },
+        myapp3: {
+          name: 'myapp3',
+          status: 'uninstalled'
+        },
+        myapp4: {
+          name: 'myapp4',
+          status: 'enabled'
+        },
+        myapp5: {
+          name: 'myapp5',
+          status: 'disabled'
+        },
+      };
+      // setup modules
+      var mockFs = require;
+      manager.__with__({
+        docker: fakeDocker.api
+      })(function() {
+        // run unit being tested
+        var result = manager.getApps(function(apps) {
+          //verify
+          var stubList = fakeDocker.stubs.listContainers;
+          sinon.assert.callCount(stubList, 2);
+          sinon.assert.calledWithExactly(stubList, sinon.match.func);
+          sinon.assert.calledWithExactly(stubList, sinon.match.object, sinon.match.func);
+          expect(apps).to.be.deep.equal(expected);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('#purgeContainers()', function() {
+    it('Should call docker.container.remove with the correct args.', function() {
+
+      var fakeDocker = new FakeDocker();
+      var spyCallback = sinon.spy();
 
       var manager = rewire('../lib/manager.js');
       manager.__set__('docker', fakeDocker.api);
@@ -112,7 +137,9 @@ describe('manager', function () {
 
       var stubList = fakeDocker.stubs.listContainers;
       sinon.assert.calledOnce(stubList);
-      sinon.assert.calledWith(stubList, {all: 1});
+      sinon.assert.calledWith(stubList, {
+        all: 1
+      });
 
       var stubGet = fakeDocker.stubs.getContainer;
       sinon.assert.callCount(stubGet, 3);
@@ -129,24 +156,22 @@ describe('manager', function () {
     });
   });
 
-  var runTest = function (name, fnManager) {
-
-    describe('#' + name + '()', function () {
-      it('Should call app.emit with the correct args.', function (done) {
+  var runTest = function(name, fnManager) {
+    describe('#' + name + '()', function() {
+      it('Should call app.emit with the correct args.', function(done) {
         var mockAppApi = {
-          emit: function () {}
+          emit: function() {}
         };
         var mock = sinon.mock(mockAppApi);
         mock.expects('emit').withArgs('pre-' + name);
         mock.expects('emit').withArgs('post-' + name);
         fnManager(mockAppApi);
-        setTimeout(function () {
+        setTimeout(function() {
           mock.verify();
           done();
         }, timeout);
       });
     });
-
   };
 
   var tests = [
@@ -158,9 +183,7 @@ describe('manager', function () {
     ['pull', manager.pull],
     ['build', manager.build]
   ];
-
-  _.map(tests, function (arr) {
+  _.map(tests, function(arr) {
     runTest(arr[0], arr[1]);
   });
-
 });
