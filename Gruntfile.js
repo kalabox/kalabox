@@ -1,4 +1,4 @@
-// @todo: add use strict here, doing it this way to test jshint
+'use strict';
 
 module.exports = function(grunt) {
 
@@ -26,15 +26,15 @@ module.exports = function(grunt) {
 
     shell: {
       // @todo: Maybe remove the .istanbul.yml file and put config here
-      test_unit: { command: 'node_modules/istanbul/lib/cli.js  test node_modules/mocha/bin/_mocha' },
-      test_coverage: { command: 'node_modules/istanbul/lib/cli.js  cover node_modules/mocha/bin/_mocha' },
-      test_check_coverage: {
+      testUnit: {command: 'node_modules/istanbul/lib/cli.js  test node_modules/mocha/bin/_mocha' },
+      testCoverage: { command: 'node_modules/istanbul/lib/cli.js  cover node_modules/mocha/bin/_mocha' },
+      testCheckCoverage: {
         command:
-          'node_modules/istanbul/lib/cli.js check-coverage coverage/coverage.json'
-          + ' --statements ' + 80
-          + ' --branches ' + 50
-          + ' --functions ' + 80
-          + ' --lines ' + 80
+          'node_modules/istanbul/lib/cli.js check-coverage coverage/coverage.json' +
+          ' --statements ' + 80 +
+          ' --branches ' + 50 +
+          ' --functions ' + 80 +
+          ' --lines ' + 80
       }
     },
 
@@ -96,13 +96,13 @@ module.exports = function(grunt) {
   //--------------------------------------------------------------------------
 
   // unit testing
-  grunt.registerTask('unit', ['shell:test_unit']);
+  grunt.registerTask('unit', ['shell:testUnit']);
 
   // testing code coverage
   grunt.registerTask('coverage', [
     'clean:coverage',
-    'shell:test_coverage',
-    'shell:test_check_coverage'
+    'shell:testCoverage',
+    'shell:testCheckCoverage'
   ]);
 
   grunt.registerTask('bump-patch', [
@@ -119,4 +119,4 @@ module.exports = function(grunt) {
     'jscs',
   ]);
 
-}
+};

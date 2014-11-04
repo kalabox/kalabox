@@ -5,11 +5,11 @@ var rewire = require('rewire'),
   expect = require('chai').expect,
   sinon = require('sinon');
 
-describe('component.js', function () {
+describe('component', function () {
 
   describe('#Constructor()', function () {
-    
-    var app_api = {
+
+    var appApi = {
       appdomain: 'myappdomain',
       cidPath: 'foo',
       dataCname: 'data',
@@ -17,7 +17,7 @@ describe('component.js', function () {
       prefix: 'myapp1'
     },
     key = 'db',
-    cmp_api = {
+    cmpApi = {
       image: {
         build: false
       }
@@ -25,7 +25,7 @@ describe('component.js', function () {
 
     it('Should set the correct properties.', function() {
 
-      var x = new cmp.Component(app_api, key, cmp_api);
+      var x = new cmp.Component(appApi, key, cmpApi);
 
       expect(x).to.have.property('key', 'db');
       expect(x).to.have.property('hostname', 'db.myappdomain');
@@ -49,12 +49,12 @@ describe('component.js', function () {
       sandbox.restore();
     });
 
-    var fake_cmp = {
+    var fakeCmp = {
       app: {
         event: function () {}
       }
     },
-    fake_ctn = {
+    fakeCtn = {
       create: function () {},
       start: function () {},
       stop: function () {},
@@ -73,28 +73,28 @@ describe('component.js', function () {
       describe('#' + x.name + '()', function () {
 
         it('Should call container.' + x.name + '() with the correct args.', function () {
-          
+
           // create stubs
-          var spy_event = sandbox.spy(fake_cmp.app, 'event'),
-          spy_cb = sandbox.spy(),
-          stub_fn = sandbox.stub(fake_ctn, x.name, function (_, cb) { cb(); });
+          var spyEvent = sandbox.spy(fakeCmp.app, 'event'),
+          spyCb = sandbox.spy(),
+          stubFn = sandbox.stub(fakeCtn, x.name, function (_, cb) { cb(); });
 
           // override modules
-          cmp.__set__('container', fake_ctn);
+          cmp.__set__('container', fakeCtn);
 
           // run unit being tested
-          x.fn(fake_cmp, spy_cb);    
+          x.fn(fakeCmp, spyCb);
 
           // verify
-          sinon.assert.calledWithExactly(stub_fn, sinon.match.object, sinon.match.func);
-          sinon.assert.callCount(stub_fn, 1);
+          sinon.assert.calledWithExactly(stubFn, sinon.match.object, sinon.match.func);
+          sinon.assert.callCount(stubFn, 1);
 
-          sinon.assert.calledWithExactly(spy_event, 'pre-' + x.msg + '-component', sinon.match.object);
-          sinon.assert.calledWithExactly(spy_event, 'post-' + x.msg + '-component', sinon.match.object);
-          sinon.assert.callCount(spy_event, 2);
+          sinon.assert.calledWithExactly(spyEvent, 'pre-' + x.msg + '-component', sinon.match.object);
+          sinon.assert.calledWithExactly(spyEvent, 'post-' + x.msg + '-component', sinon.match.object);
+          sinon.assert.callCount(spyEvent, 2);
 
-          sinon.assert.calledWithExactly(spy_cb);
-          sinon.assert.callCount(spy_cb, 1);
+          sinon.assert.calledWithExactly(spyCb);
+          sinon.assert.callCount(spyCb, 1);
 
         });
 

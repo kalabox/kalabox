@@ -8,18 +8,18 @@ var assert = require('chai').assert,
   timeout = 10,
   _ = require('lodash'),
   path = require('path'),
-  test_util = require('../lib/test_util.js');
+  testUtil = require('../lib/test_util.js');
 
-describe('manager.js', function () {
+describe('manager', function () {
 
-    function Fake_docker() {
+    function FakeDocker() {
 
-      var ctns_enabled = [
+      var ctnsEnabled = [
         { Names: [' kb_myapp1_data'] },
         { Names: [' kb_myapp4_data'] }
       ];
 
-      var ctns_disabled = [
+      var ctnsDisabled = [
         { Names: [' kb_myapp2_data'] },
         { Names: [' kb_myapp5_data'] },
         { Names: ['purge_me_1'], Id: '1234' },
@@ -27,7 +27,7 @@ describe('manager.js', function () {
         { Names: ['purge_me_3'], Id: '1428' }
       ];
 
-      var container_api = {
+      var containerApi = {
         remove: function () {}
       };
 
@@ -36,39 +36,39 @@ describe('manager.js', function () {
         getContainer: function () {}
       };
 
-      this.container_api = container_api;
+      this.containerApi = containerApi;
 
       this.listContainers = function (filter, callback) {
         var _callback = callback ? callback : filter;
         var containers =
-          callback ? ctns_enabled.concat(ctns_disabled) : ctns_enabled;
-        var err = null;   
-        _callback(err, containers);  
+          callback ? ctnsEnabled.concat(ctnsDisabled) : ctnsEnabled;
+        var err = null;
+        _callback(err, containers);
       };
 
       this.stubs = {};
 
-      this.stubs['listContainers'] =
+      this.stubs.listContainers =
         sinon.stub(this.api, 'listContainers', this.listContainers);
 
-      this.stubs['getContainer'] =
-        sinon.stub(this.api, 'getContainer', function () { return container_api; });  
+      this.stubs.getContainer =
+        sinon.stub(this.api, 'getContainer', function () { return containerApi; });
 
-      this.remove = function (callback) { callback(null, 'somedata'); }
-      this.stubs['remove'] = sinon.stub(container_api, 'remove', this.remove);
-    };
+      this.remove = function (callback) { callback(null, 'somedata'); };
+      this.stubs.remove = sinon.stub(containerApi, 'remove', this.remove);
+    }
 
     describe('#getApps()', function () {
 
-      var fake_docker = new Fake_docker(),
-      mock_fs;
+      var fakeDocker = new FakeDocker(),
+      mockFs;
 
       beforeEach(function () {
-        mock_fs = test_util.mock_fs.create();
+        mockFs = testUtil.mockFs.create();
       });
 
       afterEach(function () {
-        mock_fs.restore();
+        mockFs.restore();
       });
 
       it('Should return an array of apps.', function (done) {
@@ -80,17 +80,17 @@ describe('manager.js', function () {
           myapp5: { name: 'myapp5', status: 'disabled' },
         };
         // setup modules
-        var mock_fs = require
+        var mockFs = require;
         manager.__with__({
-          docker: fake_docker.api
+          docker: fakeDocker.api
         })(function () {
           // run unit being tested
           var result = manager.getApps(function (apps) {
             //verify
-            var stub_list = fake_docker.stubs['listContainers'];
-            sinon.assert.callCount(stub_list, 2);
-            sinon.assert.calledWithExactly(stub_list, sinon.match.func);
-            sinon.assert.calledWithExactly(stub_list, sinon.match.object, sinon.match.func);
+            var stubList = fakeDocker.stubs.listContainers;
+            sinon.assert.callCount(stubList, 2);
+            sinon.assert.calledWithExactly(stubList, sinon.match.func);
+            sinon.assert.calledWithExactly(stubList, sinon.match.object, sinon.match.func);
             expect(apps).to.be.deep.equal(expected);
             done();
           });
@@ -103,43 +103,43 @@ describe('manager.js', function () {
   describe('#purgeContainers()', function () {
     it('Should call docker.container.remove with the correct args.', function () {
 
-      var fake_docker = new Fake_docker(),
-      spy_callback = sinon.spy();
+      var fakeDocker = new FakeDocker(),
+      spyCallback = sinon.spy();
 
       var manager = rewire('../lib/manager.js');
-      manager.__set__('docker', fake_docker.api);
-      manager.purgeContainers(spy_callback);
+      manager.__set__('docker', fakeDocker.api);
+      manager.purgeContainers(spyCallback);
 
-      var stub_list = fake_docker.stubs['listContainers'];
-      sinon.assert.calledOnce(stub_list);
-      sinon.assert.calledWith(stub_list, {all: 1});
+      var stubList = fakeDocker.stubs.listContainers;
+      sinon.assert.calledOnce(stubList);
+      sinon.assert.calledWith(stubList, {all: 1});
 
-      var stub_get = fake_docker.stubs['getContainer'];
-      sinon.assert.callCount(stub_get, 3);
-      sinon.assert.calledWithExactly(stub_get, '1234');
-      sinon.assert.calledWithExactly(stub_get, '5678');
-      sinon.assert.calledWithExactly(stub_get, '1428');
+      var stubGet = fakeDocker.stubs.getContainer;
+      sinon.assert.callCount(stubGet, 3);
+      sinon.assert.calledWithExactly(stubGet, '1234');
+      sinon.assert.calledWithExactly(stubGet, '5678');
+      sinon.assert.calledWithExactly(stubGet, '1428');
 
-      var stub_remove = fake_docker.stubs['remove'];
-      sinon.assert.callCount(stub_remove, 3);
-      sinon.assert.alwaysCalledWithExactly(stub_remove, sinon.match.func);
+      var stubRemove = fakeDocker.stubs.remove;
+      sinon.assert.callCount(stubRemove, 3);
+      sinon.assert.alwaysCalledWithExactly(stubRemove, sinon.match.func);
 
-      sinon.assert.callCount(spy_callback, 3);
-      sinon.assert.alwaysCalledWithExactly(spy_callback, sinon.match.object);
+      sinon.assert.callCount(spyCallback, 3);
+      sinon.assert.alwaysCalledWithExactly(spyCallback, sinon.match.object);
     });
   });
 
-  var run_test = function (name, fn_manager) {
+  var runTest = function (name, fnManager) {
 
     describe('#' + name + '()', function () {
       it('Should call app.emit with the correct args.', function (done) {
-        var mock_app_api = {
-          emit: function () {}  
+        var mockAppApi = {
+          emit: function () {}
         };
-        var mock = sinon.mock(mock_app_api);
+        var mock = sinon.mock(mockAppApi);
         mock.expects('emit').withArgs('pre-' + name);
         mock.expects('emit').withArgs('post-' + name);
-        fn_manager(mock_app_api);
+        fnManager(mockAppApi);
         setTimeout(function () {
           mock.verify();
           done();
@@ -160,7 +160,7 @@ describe('manager.js', function () {
   ];
 
   _.map(tests, function (arr) {
-    run_test(arr[0], arr[1]);
+    runTest(arr[0], arr[1]);
   });
 
 });

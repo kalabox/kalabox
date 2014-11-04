@@ -2,20 +2,20 @@
 
 var assert = require('chai').assert,
   expect = require('chai').expect,
-  test_util = require('../lib/test_util.js'),
+  testUtil = require('../lib/test_util.js'),
   fs = require('fs'),
   path = require('path');
 
-describe('test_util.js', function () {
+describe('test util', function () {
 
-  describe('#mock_fs', function () {
-  
+  describe('#mockFs', function () {
+
     var iterFilesAndVerify = function (files, shouldExist) {
       files.forEach(function (file) {
         expect(fs.existsSync(file)).to.equal(shouldExist, '[' + file + ']');
-      }); 
+      });
     },
-    HOME_DIR = process.env['HOME'],
+    HOME_DIR = process.env.HOME,
     APPS_DIR = path.join(HOME_DIR, '.kalabox/apps/'),
     join = function (x) { return path.join(APPS_DIR, x); },
     files = [
@@ -29,22 +29,22 @@ describe('test_util.js', function () {
 
     it('Should return an empty fs if passed create options.', function () {
       // create and verify
-      var mock_fs = test_util.mock_fs.create({});
-      expect(mock_fs).to.have.property('restore');
+      var mockFs = testUtil.mockFs.create({});
+      expect(mockFs).to.have.property('restore');
       iterFilesAndVerify(files, false);
 
       // make sure teardown works
-      mock_fs.restore();
+      mockFs.restore();
     });
-     
-    it('Should return a mock_fs that is setup correctly.', function () {
+
+    it('Should return a mockFs that is setup correctly.', function () {
       // create and verify
-      var mock_fs = test_util.mock_fs.create();
-      expect(mock_fs).to.have.property('restore');
+      var mockFs = testUtil.mockFs.create();
+      expect(mockFs).to.have.property('restore');
       iterFilesAndVerify(files, true);
 
       // make sure teardown works
-      mock_fs.restore();
+      mockFs.restore();
     });
 
   });

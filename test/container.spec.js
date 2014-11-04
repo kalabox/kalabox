@@ -7,7 +7,7 @@ var assert = require('chai').assert,
   sinon = require('sinon'),
   _ = require('lodash');
 
-describe('container.js', function () {
+describe('container', function () {
 
   var cmp = {
     hostname: 'myhostname' ,
@@ -29,12 +29,12 @@ describe('container.js', function () {
       bar: 'mybar'
     }
   },
-  mock_docker_api = {
+  mockDockerApi = {
     createContainer: function () {},
     getContainer: function () {}
   };
 
-  ctn.__set__('docker', mock_docker_api);
+  ctn.__set__('docker', mockDockerApi);
 
   describe('#createOpts()', function () {
 
@@ -58,7 +58,7 @@ describe('container.js', function () {
       var opts = ctn.startOpts(cmp, cmp.createOpts);
 
       expect(opts).to.have.property('Hostname', 'myhostname');
-      expect(opts).to.have.property('PublishAllPorts').to.be.true;
+      expect(opts).to.have.property('PublishAllPorts', true);
       expect(opts).to.have.property('foo', 'myfoo');
       expect(opts).to.have.property('bar', 'mybar');
    });
@@ -66,28 +66,28 @@ describe('container.js', function () {
   });
 
   describe('#create()', function () {
-  
+
     it('Should call Docker.createContainer with the correct args.', function () {
-      var mock = sinon.mock(mock_docker_api);
+      var mock = sinon.mock(mockDockerApi);
       mock.expects('createContainer').once();
       ctn.create(cmp, function () {});
       mock.verify();
     });
-    
+
   });
 
   describe('#actions', function () {
 
-    var fake_docker = {
+    var fakeDocker = {
       getContainer: function () {}
     },
-    fake_cmp = {
+    fakeCmp = {
       cid: 'mycid6',
       app: {
         path: ''
       }
     },
-    fake_ctn = {
+    fakeCtn = {
       start: function () {},
       stop: function () {},
       kill: function () {},
@@ -109,32 +109,32 @@ describe('container.js', function () {
       { name: 'kill', fn: ctn.kill},
       { name: 'remove', fn: ctn.remove}
     ].forEach(function (x) {
-      
+
       describe('#' + x.name + '()', function () {
 
         it('Should call Docker.getContainer and .' + x.name + ' with the correct args.', function () {
           // create stubs
-          var spy_cb = sandbox.spy(),
-          stub_getCtn = sandbox.stub(fake_docker, 'getContainer', function () { 
-            return fake_ctn
+          var spyCb = sandbox.spy(),
+          stubGetCtn = sandbox.stub(fakeDocker, 'getContainer', function () {
+            return fakeCtn;
           }),
-          stub_action = sandbox.stub(fake_ctn, x.name, function (a, b) {
+          stubAction = sandbox.stub(fakeCtn, x.name, function (a, b) {
             var fn = b ? b : a;
             fn(null, 'some data');
           });
 
           // setup modules
-          ctn.__set__('docker', fake_docker);
+          ctn.__set__('docker', fakeDocker);
 
           // run unit being tested
-          x.fn(fake_cmp, spy_cb);
+          x.fn(fakeCmp, spyCb);
 
           // verify
-          sinon.assert.callCount(stub_getCtn, 1);
-          sinon.assert.calledWithExactly(stub_getCtn, 'mycid6');
+          sinon.assert.callCount(stubGetCtn, 1);
+          sinon.assert.calledWithExactly(stubGetCtn, 'mycid6');
 
-          sinon.assert.callCount(spy_cb, 1);
-          sinon.assert.calledWithExactly(spy_cb, 'some data');
+          sinon.assert.callCount(spyCb, 1);
+          sinon.assert.calledWithExactly(spyCb, 'some data');
 
         });
       });
@@ -147,9 +147,9 @@ describe('container.js', function () {
 
     describe('#createBuiltIn()', function () {
       it('Should return a string set to the correct container name.', function () {
-        var fn = function (app_name, component_name, expected) {
+        var fn = function (appName, componentName, expected) {
           expect(
-            ctn.name.createBuiltIn(app_name, component_name)
+            ctn.name.createBuiltIn(appName, componentName)
           ).to.equal(expected);
         };
         fn('myapp1', 'mycmp3', 'kalabox_myapp1_mycmp3');
@@ -158,9 +158,9 @@ describe('container.js', function () {
 
     describe('#createUserDefined()', function () {
       it('Should return a string set to the correct container name.', function () {
-        var fn = function (app_name, component_name, expected) {
+        var fn = function (appName, componentName, expected) {
           expect(
-            ctn.name.createUserDefined(app_name, component_name)
+            ctn.name.createUserDefined(appName, componentName)
           ).to.equal(expected);
         };
         fn('myapp1', 'mycmp3', 'kb_myapp1_mycmp3');
@@ -173,8 +173,8 @@ describe('container.js', function () {
         var input = ' kb_foo-app_data';
         var expected = {
           prefix: 'kb',
-          app_name: 'foo-app',
-          component_name: 'data'
+          appName: 'foo-app',
+          componentName: 'data'
         };
         expect(ctn.name.parse(input)).deep.to.equal(expected);
       });
@@ -219,7 +219,7 @@ describe('container.js', function () {
         fn('uneven_pavement', false);
       });
     });
-    
+
   });
 
 });

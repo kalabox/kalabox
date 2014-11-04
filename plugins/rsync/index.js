@@ -1,7 +1,7 @@
 'use strict';
 
 var path = require('path');
-var rsync = require("rsyncwrapper").rsync;
+var rsync = require('rsyncwrapper').rsync;
 
 module.exports = function(plugin, manager, app) {
   app.manager.registerTask('rsync', function(){

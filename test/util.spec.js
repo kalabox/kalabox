@@ -1,17 +1,18 @@
 'use strict';
 
 var util = require('../lib/util.js'),
-  assert = require('chai').assert,
-  expect = require('chai').expect;
+  chai = require('chai'),
+  assert = chai.assert,
+  expect = chai.expect;
 
-describe('util.js', function () {
+describe('util', function () {
 
   describe('#name module', function () {
-    
+
     describe('#delim', function () {
-      var expected_delim = '_';
-      it('Should be set to "' + expected_delim + '"', function () {
-        assert(util.name.delim === expected_delim);
+      var expectedDelim = '_';
+      it('Should be set to "' + expectedDelim + '"', function () {
+        assert(util.name.delim === expectedDelim);
       });
     });
 
@@ -75,15 +76,15 @@ describe('util.js', function () {
     });
 
     describe('#validatePart()', function () {
-      var iterAsciiChars = function (fn_filter, fn_test) {
+      var iterAsciiChars = function (fnFilter, fnTest) {
         for (var i=0; i<127; ++i) {
           var str = String.fromCharCode(i);
-          if (fn_filter(str)) {
-            fn_test('abc' + str);
-          };
-        };
+          if (fnFilter(str)) {
+            fnTest('abc' + str);
+          }
+        }
       },
-      regex_filter = /[a-z0-9\-]/;
+      regexFilter = /[a-z0-9\-]/;
 
       it('Should NOT throw an error when valid characters are used.', function (){
 
@@ -98,17 +99,17 @@ describe('util.js', function () {
         fn('abc7');
 
         iterAsciiChars(function (str) {
-          return (str.search(regex_filter) >= 0);      
+          return (str.search(regexFilter) >= 0);
         }, fn);
 
-      });      
+      });
 
       it('Should throw an error when invalid characters are used.', function (){
 
         var fn = function (key) {
           expect(function () {
             util.name.create([key]);
-          }).to.throw(Error, /Invalid name part .*/, key);          
+          }).to.throw(Error, /Invalid name part .*/, key);
         };
 
         fn('ab_c');
@@ -121,10 +122,10 @@ describe('util.js', function () {
         fn('abC');
 
         iterAsciiChars(function (str) {
-          return (str.search(regex_filter) < 0);      
+          return (str.search(regexFilter) < 0);
         }, fn);
 
-      });      
+      });
 
     });
 
