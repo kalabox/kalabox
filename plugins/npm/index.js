@@ -3,7 +3,7 @@
 var path = require('path');
 
 module.exports = function(plugin, manager, app) {
-  app.manager.registerTask('npm.install', function(){
+  app.manager.registerTask('npm.install', function() {
     app.docker.run(
       'kalabox/nodejs',
       ['npm', 'install'],
@@ -15,7 +15,7 @@ module.exports = function(plugin, manager, app) {
       {
         'VolumesFrom': app.dataCname
       },
-      function (err, data, container) {
+      function(err, data, container) {
         app.docker.getContainer(container.id).remove(function(err, data) {
         });
       }

@@ -2,7 +2,7 @@
 
 module.exports = function(plugin, manager, app) {
 
-  app.manager.registerTask('mysql.uname', function(){
+  app.manager.registerTask('mysql.uname', function() {
     app.docker.run(
       'ubuntu',
       ['bash', '-c', 'uname -a'],
@@ -12,14 +12,14 @@ module.exports = function(plugin, manager, app) {
         'Env': '["APPDOMAIN="' + app.domain + '"]',
         'VolumesFrom': app.dataCname
       },
-      function (err, data, container) {
+      function(err, data, container) {
         app.docker.getContainer(container.id).remove(function(err, data) {
         });
       }
     );
   });
 
-  app.manager.registerTask('mysql.appdomain', function(){
+  app.manager.registerTask('mysql.appdomain', function() {
     app.docker.run(
       'ubuntu',
       ['bash', '-c', 'echo $APPDOMAIN'],
@@ -28,7 +28,7 @@ module.exports = function(plugin, manager, app) {
         'Env': ['APPDOMAIN=' + app.appdomain, 'forcerm=1'],
         'VolumesFrom': app.dataCname
       },
-      function (err, data, container) {
+      function(err, data, container) {
         app.docker.getContainer(container.id).remove(function(err, data) {
         });
       }

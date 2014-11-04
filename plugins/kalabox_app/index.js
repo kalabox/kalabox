@@ -8,43 +8,43 @@ var rimraf = require('rimraf');
 
 module.exports = function(plugin, manager, app) {
 
-  manager.registerTask('purge', function(){
+  manager.registerTask('purge', function() {
     rimraf.sync(app.dataPath);
   });
 
-  manager.registerTask('init', function(){
+  manager.registerTask('init', function() {
     manager.init(app);
   });
 
-  manager.registerTask('start', function(){
+  manager.registerTask('start', function() {
     manager.start(app);
   });
 
-  manager.registerTask('stop', function(){
+  manager.registerTask('stop', function() {
     manager.stop(app);
   });
 
-  manager.registerTask('restart', function(){
+  manager.registerTask('restart', function() {
     manager.restart(app);
   });
 
-  manager.registerTask('kill', function(){
+  manager.registerTask('kill', function() {
     manager.kill(app);
   });
 
-  manager.registerTask('remove', function(){
+  manager.registerTask('remove', function() {
     manager.remove(app);
   });
 
-  manager.registerTask('pull', function(){
+  manager.registerTask('pull', function() {
     manager.pull(app);
   });
 
-  manager.registerTask('build', function(){
+  manager.registerTask('build', function() {
     manager.build(app);
   });
 
-  app.on('post-init', function(){
+  app.on('post-init', function() {
     var a = _.cloneDeep(app);
     delete a.components;
     fs.writeFileSync(path.resolve(app.dataPath, 'app.json'), JSON.stringify(a));

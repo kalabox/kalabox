@@ -1,4 +1,4 @@
-// @todo: add use strict here, doing it this way to test jshint
+'use strict';
 
 module.exports = function(grunt) {
 
@@ -9,24 +9,36 @@ module.exports = function(grunt) {
   // setup task config
   var config = {
 
+    // Arrays of relevant code classified by type
+    files: {
+      js: {
+        src: [
+          'lib/*.js',
+          'plugins/**/*.js',
+          'test/*.js'
+        ]
+      }
+    },
+
     clean: {
       coverage: ['coverage']
     },
 
     shell: {
       // @todo: Maybe remove the .istanbul.yml file and put config here
-      test_unit: { command: 'node_modules/istanbul/lib/cli.js  test node_modules/mocha/bin/_mocha' },
-      test_coverage: { command: 'node_modules/istanbul/lib/cli.js  cover node_modules/mocha/bin/_mocha' },
-      test_check_coverage: {
+      testUnit: {command: 'node_modules/istanbul/lib/cli.js  test node_modules/mocha/bin/_mocha'},
+      testCoverage: {command: 'node_modules/istanbul/lib/cli.js  cover node_modules/mocha/bin/_mocha'},
+      testCheckCoverage: {
         command:
-          'node_modules/istanbul/lib/cli.js check-coverage coverage/coverage.json'
-          + ' --statements ' + 80
-          + ' --branches ' + 50
-          + ' --functions ' + 80
-          + ' --lines ' + 80
+          'node_modules/istanbul/lib/cli.js check-coverage coverage/coverage.json' +
+          ' --statements ' + 80 +
+          ' --branches ' + 50 +
+          ' --functions ' + 80 +
+          ' --lines ' + 80
       }
     },
 
+    // This handles automatic version bumping in travis
     bump: {
       options: {
         files: ['package.json'],
@@ -38,6 +50,21 @@ module.exports = function(grunt) {
         tagName: 'v%VERSION%',
         tagMessage: 'Version %VERSION%',
         push: false
+      }
+    },
+
+    // Some linting and code standards
+    jshint: {
+      options: {
+        jshintrc: '.jshintrc',
+        reporter: require('jshint-stylish')
+      },
+      all: ['Gruntfile.js', '<%= files.js.src %>']
+    },
+    jscs: {
+      src: ['Gruntfile.js', '<%= files.js.src %>'],
+      options: {
+        config: '.jscsrc'
       }
     },
 
@@ -69,13 +96,13 @@ module.exports = function(grunt) {
   //--------------------------------------------------------------------------
 
   // unit testing
-  grunt.registerTask('unit', ['shell:test_unit']);
+  grunt.registerTask('unit', ['shell:testUnit']);
 
   // testing code coverage
   grunt.registerTask('coverage', [
     'clean:coverage',
-    'shell:test_coverage',
-    'shell:test_check_coverage'
+    'shell:testCoverage',
+    'shell:testCheckCoverage'
   ]);
 
   grunt.registerTask('bump-patch', [
@@ -87,4 +114,9 @@ module.exports = function(grunt) {
     'coverage'
   ]);
 
-}
+  grunt.registerTask('test:code', [
+    'jshint',
+    'jscs',
+  ]);
+
+};

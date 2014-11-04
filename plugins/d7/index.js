@@ -4,7 +4,7 @@ var argv = require('minimist')(process.argv.slice(2));
 
 module.exports = function(plugin, manager, app) {
 
-  app.manager.registerTask('d7.install', function(){
+  app.manager.registerTask('d7.install', function() {
     var profile = 'standard';
     if (argv._[1]) {
       profile = argv._[1];
@@ -25,14 +25,14 @@ module.exports = function(plugin, manager, app) {
         'VolumesFrom': app.dataCname,
         'Links': [app.components.db.cname + ':db']
       },
-      function (err, data, container) {
+      function(err, data, container) {
         app.docker.getContainer(container.id).remove(function(err, data) {
         });
       }
     );
   });
 
-  app.manager.registerTask('d7.status', function(){
+  app.manager.registerTask('d7.status', function() {
     app.docker.run(
       'kalabox/drush',
       ['@dev', 'status'],
@@ -44,7 +44,7 @@ module.exports = function(plugin, manager, app) {
         'VolumesFrom': app.dataCname,
         'Links': [app.components.db.cname + ':db']
       },
-      function (err, data, container) {
+      function(err, data, container) {
         app.docker.getContainer(container.id).remove(function(err, data) {
         });
       }

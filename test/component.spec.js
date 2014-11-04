@@ -1,23 +1,23 @@
 'use strict';
 
-var rewire = require('rewire'),
-  cmp = rewire('../lib/component.js'),
-  expect = require('chai').expect,
-  sinon = require('sinon');
+var rewire = require('rewire');
+var cmp = rewire('../lib/component.js');
+var expect = require('chai').expect;
+var sinon = require('sinon');
 
-describe('component.js', function () {
+describe('component', function() {
 
-  describe('#Constructor()', function () {
-    
-    var app_api = {
+  describe('#Constructor()', function() {
+
+    var appApi = {
       appdomain: 'myappdomain',
       cidPath: 'foo',
       dataCname: 'data',
       hasData: true,
       prefix: 'myapp1'
-    },
-    key = 'db',
-    cmp_api = {
+    };
+    var key = 'db';
+    var cmpApi = {
       image: {
         build: false
       }
@@ -25,7 +25,7 @@ describe('component.js', function () {
 
     it('Should set the correct properties.', function() {
 
-      var x = new cmp.Component(app_api, key, cmp_api);
+      var x = new cmp.Component(appApi, key, cmpApi);
 
       expect(x).to.have.property('key', 'db');
       expect(x).to.have.property('hostname', 'db.myappdomain');
@@ -37,64 +37,64 @@ describe('component.js', function () {
 
   });
 
-  describe('#actions', function () {
+  describe('#actions', function() {
 
     var sandbox;
 
-    beforeEach(function () {
+    beforeEach(function() {
       sandbox = sinon.sandbox.create();
     });
 
-    afterEach(function () {
+    afterEach(function() {
       sandbox.restore();
     });
 
-    var fake_cmp = {
+    var fakeCmp = {
       app: {
-        event: function () {}
+        event: function() {}
       }
-    },
-    fake_ctn = {
-      create: function () {},
-      start: function () {},
-      stop: function () {},
-      kill: function () {},
-      remove: function () {}
+    };
+    var fakeCtn = {
+      create: function() {},
+      start: function() {},
+      stop: function() {},
+      kill: function() {},
+      remove: function() {}
     };
 
     [
-      { name: 'create', fn: cmp.create, msg: 'init' },
-      { name: 'start', fn: cmp.start, msg: 'start' },
-      { name: 'stop', fn: cmp.stop, msg: 'stop' },
-      { name: 'kill', fn: cmp.kill, msg: 'kill' },
-      { name: 'remove', fn: cmp.remove, msg: 'remove' }
-    ].forEach(function (x) {
+      {name: 'create', fn: cmp.create, msg: 'init'},
+      {name: 'start', fn: cmp.start, msg: 'start'},
+      {name: 'stop', fn: cmp.stop, msg: 'stop'},
+      {name: 'kill', fn: cmp.kill, msg: 'kill'},
+      {name: 'remove', fn: cmp.remove, msg: 'remove'}
+    ].forEach(function(x) {
 
-      describe('#' + x.name + '()', function () {
+      describe('#' + x.name + '()', function() {
 
-        it('Should call container.' + x.name + '() with the correct args.', function () {
-          
+        it('Should call container.' + x.name + '() with the correct args.', function() {
+
           // create stubs
-          var spy_event = sandbox.spy(fake_cmp.app, 'event'),
-          spy_cb = sandbox.spy(),
-          stub_fn = sandbox.stub(fake_ctn, x.name, function (_, cb) { cb(); });
+          var spyEvent = sandbox.spy(fakeCmp.app, 'event');
+          var spyCb = sandbox.spy();
+          var stubFn = sandbox.stub(fakeCtn, x.name, function(_, cb) { cb(); });
 
           // override modules
-          cmp.__set__('container', fake_ctn);
+          cmp.__set__('container', fakeCtn);
 
           // run unit being tested
-          x.fn(fake_cmp, spy_cb);    
+          x.fn(fakeCmp, spyCb);
 
           // verify
-          sinon.assert.calledWithExactly(stub_fn, sinon.match.object, sinon.match.func);
-          sinon.assert.callCount(stub_fn, 1);
+          sinon.assert.calledWithExactly(stubFn, sinon.match.object, sinon.match.func);
+          sinon.assert.callCount(stubFn, 1);
 
-          sinon.assert.calledWithExactly(spy_event, 'pre-' + x.msg + '-component', sinon.match.object);
-          sinon.assert.calledWithExactly(spy_event, 'post-' + x.msg + '-component', sinon.match.object);
-          sinon.assert.callCount(spy_event, 2);
+          sinon.assert.calledWithExactly(spyEvent, 'pre-' + x.msg + '-component', sinon.match.object);
+          sinon.assert.calledWithExactly(spyEvent, 'post-' + x.msg + '-component', sinon.match.object);
+          sinon.assert.callCount(spyEvent, 2);
 
-          sinon.assert.calledWithExactly(spy_cb);
-          sinon.assert.callCount(spy_cb, 1);
+          sinon.assert.calledWithExactly(spyCb);
+          sinon.assert.callCount(spyCb, 1);
 
         });
 

@@ -1,190 +1,220 @@
 'use strict';
 
-var App = require('../lib/app.js'),
-  assert = require('chai').assert,
-  expect = require('chai').expect,
-  path = require('path'),
-  rewire = require('rewire'),
-  app = rewire('../lib/app.js'),
-  fs = require('fs'),
-  sinon = require('sinon'),
-  _ = require('lodash'),
-  test_util = require('../lib/test_util.js');
+var App = require('../lib/app.js');
+var assert = require('chai').assert;
+var expect = require('chai').expect;
+var path = require('path');
+var rewire = require('rewire');
+var app = rewire('../lib/app.js');
+var fs = require('fs');
+var sinon = require('sinon');
+var _ = require('lodash');
+var testUtil = require('../lib/test_util.js');
 
-describe('app.js', function () {
+describe('app', function() {
 
-  describe('#loadConfig()', function () {
+  describe('#loadConfig()', function() {
 
     // setup mocks
-    var mock_path = {
-      resolve: function () { }
-    },    
-    mock_fs = {
-      existsSync: function () {}
-    },
-    mock_require = {
-      require: function () { return mock_app_config; }
-    },
-    /*mock_require = function (path) {
-      return mock_app_config;
+    var mockPath = {
+      resolve: function() {}
+    };
+    var mockFs = {
+      existsSync: function() {}
+    };
+    var mockRequire = {
+      require: function() {
+        return mockAppConfig;
+      }
+    };
+    /*mockRequire = function(path) {
+      return mockAppConfig;
     },*/
-    mock_app = {
+    var mockApp = {
       kconfig: {
         appDataPath: '/path/to/data/',
         domain: 'mydomain3'
       },
       path: '/path/to/app/'
-    },
-    mock_app_config = {
+    };
+    var mockAppConfig = {
       name: 'myapp5',
-      components: { data: { name: 'dataname6' } }
-    },
-    sandbox;
+      components: {
+        data: {
+          name: 'dataname6'
+        }
+      }
+    };
+    var sandbox;
 
     // setup modules being tested
-    var app = rewire('../lib/app.js'),
-    loadConfig = app.__get__('loadConfig');
-    app.__set__('fs', mock_fs);
-    app.__set__('path', mock_path);
-    app.__set__('require', mock_require.require);
+    var app = rewire('../lib/app.js');
+    var loadConfig = app.__get__('loadConfig');
+    app.__set__('fs', mockFs);
+    app.__set__('path', mockPath);
+    app.__set__('require', mockRequire.require);
 
     // stubs
-    var stub_existsSync,
-      stub_resolve;
+    var stubExistsSync;
+    var stubResolve;
 
-    beforeEach(function () {
+    beforeEach(function() {
       sandbox = sinon.sandbox.create();
-      stub_existsSync = sandbox.stub(mock_fs, 'existsSync');
-      stub_resolve = sandbox.stub(mock_path, 'resolve', path.join);
+      stubExistsSync = sandbox.stub(mockFs, 'existsSync');
+      stubResolve = sandbox.stub(mockPath, 'resolve', path.join);
     });
 
-    afterEach(function () {
+    afterEach(function() {
       sandbox.restore();
     });
 
     [
       ['app.profilePath', '/path/to/app/.kalabox'],
       ['configFile', '/path/to/app/.kalabox/profile.json']
-    ].forEach(function (arr) {
-      it('Should throw an error when ' + arr[0] + ' doesnt exist', function () {
+    ].forEach(function(arr) {
+      it('Should throw an error when ' + arr[0] + ' doesnt exist', function() {
         // setup stubs
-        stub_existsSync.withArgs(arr[1]).returns(false);
-        stub_existsSync.returns(true);
+        stubExistsSync.withArgs(arr[1]).returns(false);
+        stubExistsSync.returns(true);
         // run unit being tested
-        var fn = function () { loadConfig(mock_app) };
+        var fn = function() {
+          loadConfig(mockApp);
+        };
         // verify expectations
         expect(fn).to.throw(Error, 'File does not exist: /path/to/app/.kalabox');
       });
     });
 
-    it('Should set the correct properties of the passed in app object.', function () {
+    it('Should set the correct properties of the passed in app object.', function() {
 
       // setup stubs
-      stub_existsSync.returns(true);
-      
+      stubExistsSync.returns(true);
+
       // run unit being tested
-      loadConfig(mock_app);
+      loadConfig(mockApp);
 
       // verify expectations
-      assert.deepEqual(mock_app.kconfig, {
+      assert.deepEqual(mockApp.kconfig, {
         appDataPath: '/path/to/data/',
         domain: 'mydomain3'
       });
 
-      assert.deepEqual(mock_app.tasks, {});
-      assert.equal(mock_app.profilePath, '/path/to/app/.kalabox');
-      assert.deepEqual(mock_app.config, mock_app_config);
-      assert.equal(mock_app.name, 'myapp5');
-      assert.equal(mock_app.appdomain, 'myapp5.mydomain3');
-      assert.equal(mock_app.dataPath, '/path/to/data/myapp5');
-      assert.equal(mock_app.cidPath, '/path/to/data/myapp5/cids');
-      assert.equal(mock_app.url, 'http://myapp5.mydomain3');
-      assert.equal(mock_app.prefix, 'myapp5_');
-      assert.equal(mock_app.hasData, true);
-      assert.equal(mock_app.dataCname, 'kb_myapp5_data');
+      assert.deepEqual(mockApp.tasks, {});
+      assert.equal(mockApp.profilePath, '/path/to/app/.kalabox');
+      assert.deepEqual(mockApp.config, mockAppConfig);
+      assert.equal(mockApp.name, 'myapp5');
+      assert.equal(mockApp.appdomain, 'myapp5.mydomain3');
+      assert.equal(mockApp.dataPath, '/path/to/data/myapp5');
+      assert.equal(mockApp.cidPath, '/path/to/data/myapp5/cids');
+      assert.equal(mockApp.url, 'http://myapp5.mydomain3');
+      assert.equal(mockApp.prefix, 'myapp5_');
+      assert.equal(mockApp.hasData, true);
+      assert.equal(mockApp.dataCname, 'kb_myapp5_data');
 
-      sinon.assert.callCount(stub_existsSync, 2);
-      sinon.assert.calledWithExactly(stub_existsSync, '/path/to/app/.kalabox');
-      sinon.assert.calledWithExactly(stub_existsSync, '/path/to/app/.kalabox/profile.json');
+      sinon.assert.callCount(stubExistsSync, 2);
+      sinon.assert.calledWithExactly(stubExistsSync, '/path/to/app/.kalabox');
+      sinon.assert.calledWithExactly(stubExistsSync, '/path/to/app/.kalabox/profile.json');
 
-      sinon.assert.callCount(stub_resolve, 4);
+      sinon.assert.callCount(stubResolve, 4);
       [
         ['/path/to/app/', '.kalabox'],
         ['/path/to/app/', '.kalabox'],
         ['/path/to/data/', 'myapp5'],
         ['/path/to/data/myapp5', 'cids']
-      ].forEach(function (arr) {
-        sinon.assert.calledWithExactly(stub_resolve, arr[0], arr[1]);
+      ].forEach(function(arr) {
+        sinon.assert.calledWithExactly(stubResolve, arr[0], arr[1]);
       });
     });
 
   });
 
-  describe('#loadComponents()', function () {
+  describe('#loadComponents()', function() {
 
-    var mock_app_api = {
+    var mockAppApi = {
       config: {
         components: {
-          data: { name: 'mydata4' },
-          web: { name: 'my-webby' },
-          db: { name: 'reddis' },
-          foo: { name: 'bar' },
-          all: { name: 'thethings' }
+          data: {
+            name: 'mydata4'
+          },
+          web: {
+            name: 'my-webby'
+          },
+          db: {
+            name: 'reddis'
+          },
+          foo: {
+            name: 'bar'
+          },
+          all: {
+            name: 'thethings'
+          }
         }
       }
-    },
-    mock_cmp_api = {
-      Component: function () {}
+    };
+    var mockCmpApi = {
+      Component: function() {}
     };
 
-    it('Should call component.Component with the correct arguments.', function () {
-    
-      // setup modules  
-      var app = rewire('../lib/app.js'),
-      loadComponents = app.__get__('loadComponents');
-      app.__set__('cmp', mock_cmp_api);
+    it('Should call component.Component with the correct arguments.', function() {
+
+      // setup modules
+      var app = rewire('../lib/app.js');
+      var loadComponents = app.__get__('loadComponents');
+      app.__set__('cmp', mockCmpApi);
 
       // create stubs
-      var mock_cmp = sinon.mock(mock_cmp_api);
-      [ 
-        {key: 'data', name: 'mydata4'},
-        {key: 'web', name: 'my-webby'},
-        {key: 'db', name: 'reddis'},
-        {key: 'foo', name: 'bar'},
-        {key: 'all', name: 'thethings'}
-      ].forEach(function (x) {
-        mock_cmp.expects('Component').withExactArgs(
+      var mockCmp = sinon.mock(mockCmpApi);
+      [{
+        key: 'data',
+        name: 'mydata4'
+      }, {
+        key: 'web',
+        name: 'my-webby'
+      }, {
+        key: 'db',
+        name: 'reddis'
+      }, {
+        key: 'foo',
+        name: 'bar'
+      }, {
+        key: 'all',
+        name: 'thethings'
+      }].forEach(function(x) {
+        mockCmp.expects('Component').withExactArgs(
           sinon.match.object,
-          x.key,
-          { name: x.name }
+          x.key, {
+            name: x.name
+          }
         );
       });
 
-      // run unit being tested 
-      loadComponents(mock_app_api);
+      // run unit being tested
+      loadComponents(mockAppApi);
 
       // verify expectations
-      mock_cmp.verify();
+      mockCmp.verify();
 
       // check properties
-      ['data', 'web', 'db', 'foo', 'all'].forEach(function (x) {
-        expect(mock_app_api.components).to.have.property(x);
+      ['data', 'web', 'db', 'foo', 'all'].forEach(function(x) {
+        expect(mockAppApi.components).to.have.property(x);
       });
 
     });
 
   });
 
-  describe('#loadPath()', function () {
+  describe('#loadPath()', function() {
 
     // mock modules
-    var mock_path_api = {
-      resolve: function (a, b) { return path.join(a, b); }
-    },
-    mock_fs_api = {
-      existsSync: function () {}
-    },
-    mock_app_api = {
+    var mockPathApi = {
+      resolve: function(a, b) {
+        return path.join(a, b);
+      }
+    };
+    var mockFsApi = {
+      existsSync: function() {}
+    };
+    var mockAppApi = {
       profilePath: '/app/profile/path/',
       kconfig: {
         dataPath: '/kconfig/path/',
@@ -193,84 +223,89 @@ describe('app.js', function () {
     };
 
     // setup module being tested
-    var app = rewire('../lib/app.js'),
-    loadPath = app.__get__('loadPath');
-    app.__set__('path', mock_path_api);
-    app.__set__('fs', mock_fs_api);
+    var app = rewire('../lib/app.js');
+    var loadPath = app.__get__('loadPath');
+    app.__set__('path', mockPathApi);
+    app.__set__('fs', mockFsApi);
 
     //create stubs
-    var stub = sinon.stub(mock_fs_api, 'existsSync');
+    var stub = sinon.stub(mockFsApi, 'existsSync');
 
-    [
-      {name: 'profilePath', path: mock_app_api.profilePath },
-      {name: 'kconfig.dataPath', path: mock_app_api.kconfig.dataPath },
-      {name: 'kconfig.baseDir', path: mock_app_api.kconfig.baseDir }
-    ].forEach(function (x) {
-      it('Should return the correct path when ' + x.name + ' exists.', function () {
+    [{
+      name: 'profilePath',
+      path: mockAppApi.profilePath
+    }, {
+      name: 'kconfig.dataPath',
+      path: mockAppApi.kconfig.dataPath
+    }, {
+      name: 'kconfig.baseDir',
+      path: mockAppApi.kconfig.baseDir
+    }].forEach(function(x) {
+      it('Should return the correct path when ' + x.name + ' exists.', function() {
         var expected = path.join(x.path, 'relative/path/');
         // setup stub
         stub.withArgs(expected).onFirstCall().returns(true);
         // run unit being tested
-        var result = loadPath(mock_app_api, '/relative/path/');
+        var result = loadPath(mockAppApi, '/relative/path/');
         // verify expectations
         assert.equal(result, expected);
       });
     });
 
-    it('Should return false when none of the config paths exist.', function () {
+    it('Should return false when none of the config paths exist.', function() {
       var expected = false;
       // setup stub
       stub.returns(false);
       // run unit being tested
-      var result = loadPath(mock_app_api, '/this/path/does/not/exist/');
+      var result = loadPath(mockAppApi, '/this/path/does/not/exist/');
       // verify expectations
       assert.equal(result, expected);
     });
-        
+
   });
 
-  describe('#setDataPath()', function () {
+  describe('#setDataPath()', function() {
 
-    var mock_fs,
-    mock_fs_config = {
+    var mockFs;
+    var mockFsConfig = {
       '/home/elvis/': {},
       'home': {
         'elvis': {}
       }
-    },
-    home_path = '/home/elvis/',
-    dataPath = path.join(home_path, '.kalabox'),
-    appDataPath = path.join(dataPath, 'apps'),
-    appName = 'myappyapp',
-    appPath = path.join(appDataPath, appName),
-    cidPath = path.join(appPath, 'cids'),
-    fake_app = {
+    };
+    var homePath = '/home/elvis/';
+    var dataPath = path.join(homePath, '.kalabox');
+    var appDataPath = path.join(dataPath, 'apps');
+    var appName = 'myappyapp';
+    var appPath = path.join(appDataPath, appName);
+    var cidPath = path.join(appPath, 'cids');
+    var fakeApp = {
       name: appName,
       kconfig: {
         appDataPath: appDataPath,
         dataPath: dataPath,
       }
     };
-    
-    beforeEach(function () {
-      mock_fs = test_util.mock_fs.create(mock_fs_config);
+
+    beforeEach(function() {
+      mockFs = testUtil.mockFs.create(mockFsConfig);
     });
 
-    afterEach(function () {
-      mock_fs.restore();
+    afterEach(function() {
+      mockFs.restore();
     });
 
-    it('Should create app.kconfig.dataPath if it doesnt exist.', function () {
+    it('Should create app.kconfig.dataPath if it doesnt exist.', function() {
       // setup
       var files = [
-        fake_app.kconfig.dataPath,
-        fake_app.kconfig.appDataPath,
+        fakeApp.kconfig.dataPath,
+        fakeApp.kconfig.appDataPath,
         appPath,
         cidPath
-      ],
-      setDataPath = app.__get__('setDataPath'),
-      verify = function (expected) {
-        files.forEach(function (file) {
+      ];
+      var setDataPath = app.__get__('setDataPath');
+      var verify = function(expected) {
+        files.forEach(function(file) {
           expect(fs.existsSync(file)).to.be.equal(expected, file);
         });
       };
@@ -278,11 +313,11 @@ describe('app.js', function () {
       // pre-verify
       verify(false);
       // run unit being tested
-      setDataPath(fake_app);
+      setDataPath(fakeApp);
       // post-verify
       verify(true);
     });
-    
+
   });
 
 });

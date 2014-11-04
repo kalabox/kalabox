@@ -27,8 +27,7 @@ before-install() {
 # Setup Drupal to run the tests.
 #
 before-script() {
-  npm install -g grunt-cli bower
-  bower install
+  npm install -g grunt-cli
 }
 
 # script
@@ -36,7 +35,16 @@ before-script() {
 # Run the tests.
 #
 script() {
-  ln -s bin/kbox.js /usr/local/bin/kbox
+  sudo ln -s bin/kbox.js /usr/local/bin/kbox
+  # Code l/hinting and standards
+  grunt test:code
+  # @todo clean this up
+  EXIT_STATUS=$?
+  if [[ $EXIT_STATUS != 0 ]] ; then
+    exit $EXIT_STATUS
+  fi
+
+  # Unit tests and coverage reports
   grunt test
 }
 
@@ -109,6 +117,7 @@ after-deploy() {
 # Sets the exit level to error.
 set_error() {
   EXIT_VALUE=1
+  echo "$@"
 }
 
 # Runs a command and sets an error if it fails.

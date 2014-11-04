@@ -3,6 +3,12 @@
 var redis = require('redis');
 
 module.exports = function(plugin, manager, app) {
+  // @todo need a better name for this just jshinting now
+  function errorThing (err, replies, client) {
+    if (err) { throw err; }
+    client.quit();
+  }
+
   /**
    * Listens for post-start-component
    * - Creates a proxy record via redis for components with proxy definitions.
@@ -19,16 +25,13 @@ module.exports = function(plugin, manager, app) {
 
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
-            var dst = 'http://' +component.app.kconfig.dockerHost + ':' + port;
+            var dst = 'http://' + component.app.kconfig.dockerHost + ':' + port;
 
             client.multi()
               .del(rkey)
               .rpush(rkey, component.cname)
               .rpush(rkey, dst)
-              .exec(function (err, replies) {
-                if (err) throw err;
-                client.quit();
-              });
+              .exec(errorThing);
           }
         }
       });
@@ -50,10 +53,7 @@ module.exports = function(plugin, manager, app) {
           var hostname = proxy.default ? app.appdomain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
-          client.del(rkey, function (err, replies) {
-            if (err) throw err;
-            client.quit();
-          });
+          client.del(errorThing);
         }
       });
     }

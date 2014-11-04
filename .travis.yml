@@ -33,6 +33,3 @@ notifications:
     - ben@kalamuna.com
     - coder1@gmail.com
     on_success: always
-env:
-  global:
-    secure: Zx94toqGScUIRZ/LBx0h8L/y/Lff4YFV+5QMbec+73ZpQMlATLqa4bl0PFy9Cp2RNNN9ljqkMoUQLanBetaPdL3Wxqo6qUloCrnPN/mzIVrL/mbbmG7bz6dVjtcB3CmheYTmdSBjNv+5n/gtb6DWfuX5Pdd9gVxruRqwHT3tW3g=
