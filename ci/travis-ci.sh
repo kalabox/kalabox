@@ -82,7 +82,7 @@ after-success() {
     # Set up our repos
     # We need to re-add this in because our clone was originally read-only
     git remote rm origin
-    git remote add origin git@github.com:kalabox/kalabox-ui.git
+    git remote add origin git@github.com:$TRAVIS_REPO_SLUG.git
     git checkout $TRAVIS_BRANCH
     git add -A
     if [ -z $TRAVIS_TAG ]; then
@@ -153,7 +153,7 @@ case $COMMAND in
     ;;
 
   after-script)
-    run_command after_script
+    run_command after-script
     ;;
 
   after-success)
