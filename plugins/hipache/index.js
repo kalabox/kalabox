@@ -3,11 +3,6 @@
 var redis = require('redis');
 
 module.exports = function(plugin, manager, app) {
-  // @todo need a better name for this just jshinting now
-  function errorThing (err, replies, client) {
-    if (err) { throw err; }
-    client.quit();
-  }
 
   /**
    * Listens for post-start-component
@@ -56,10 +51,10 @@ module.exports = function(plugin, manager, app) {
           var hostname = proxy.default ? app.appdomain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
-          client.del(function(err, replies) {
-                if (err) { throw err; }
-                client.quit();
-              });
+          client.del(rkey, function (err, replies) {
+            if (err) { throw err; }
+            client.quit();
+          });
         }
       });
     }
