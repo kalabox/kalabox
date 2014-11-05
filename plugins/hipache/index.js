@@ -51,7 +51,7 @@ module.exports = function(plugin, manager, app) {
           var hostname = proxy.default ? app.appdomain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
-          client.del(rkey, function (err, replies) {
+          client.del(rkey, function(err, replies) {
             if (err) { throw err; }
             client.quit();
           });
