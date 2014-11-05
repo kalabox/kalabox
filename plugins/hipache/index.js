@@ -31,7 +31,10 @@ module.exports = function(plugin, manager, app) {
               .del(rkey)
               .rpush(rkey, component.cname)
               .rpush(rkey, dst)
-              .exec(errorThing);
+              .exec(function(err, replies) {
+                if (err) { throw err; }
+                client.quit();
+              });
           }
         }
       });
@@ -53,7 +56,10 @@ module.exports = function(plugin, manager, app) {
           var hostname = proxy.default ? app.appdomain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
-          client.del(errorThing);
+          client.del(function(err, replies) {
+                if (err) { throw err; }
+                client.quit();
+              });
         }
       });
     }
