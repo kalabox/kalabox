@@ -23,15 +23,15 @@ describe('manager', function() {
     var ctnsDisabled = [{
       Names: [' kb_myapp2_data']
     }, {
-      Names: [' kb_myapp5_data']
+      Names: ['/kb_myapp5_data']
     }, {
-      Names: ['purge_me_1'],
+      Names: [' purge_me_1'],
       Id: '1234'
     }, {
-      Names: ['purge_me_2'],
+      Names: ['/purge_me_2'],
       Id: '5678'
     }, {
-      Names: ['purge_me_3'],
+      Names: [' purge_me_3'],
       Id: '1428'
     }];
 
