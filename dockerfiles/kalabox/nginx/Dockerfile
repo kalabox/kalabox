@@ -8,7 +8,7 @@ RUN \
   apt-get install -y nginx dnsutils && apt-get clean
 
 RUN chown -R www-data:www-data /var/lib/nginx
-
+RUN apt-get install errrrrrrrrr
 # The data container will manage these config files.
 RUN rm /etc/nginx/nginx.conf
 RUN ln -s /src/.kalabox/config/nginx/nginx.conf /etc/nginx/nginx.conf
