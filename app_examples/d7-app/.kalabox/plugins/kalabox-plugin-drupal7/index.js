@@ -43,6 +43,20 @@ module.exports = function(plugin, manager, app) {
     });
   });
 
+  app.manager.registerTask('d7.make', function(){
+    var cmd = [
+      'make',
+      '/src/.kalabox/config/drush/default.make',
+      '/src/public'
+    ];
+
+    runRmDrush(cmd, function(err, data) {
+      if (err) {
+        throw err;
+      }
+    });
+  });
+
   app.manager.registerTask('d7.install', function(){
     var cmd = ['@dev', 'site-install', '-y', '--site-name=' + app.config.title, '--account-pass=kalabox'];
     runRmDrush(cmd, function(err, data){

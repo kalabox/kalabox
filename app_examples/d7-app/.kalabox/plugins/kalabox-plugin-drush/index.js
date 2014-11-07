@@ -52,7 +52,6 @@ module.exports = function(plugin, manager, app) {
     });
   });
 
-
   // Updates kalabox aliases when app is started.
   // This allows for both kbox drush to be used
   // and local drush to be used via: drush @<appname> status
@@ -132,7 +131,6 @@ module.exports = function(plugin, manager, app) {
               Binds: [app.path + ':/src:rw']
             },
             function (err, data, container) {
-              console.log(err);
               app.manager.docker.getContainer(container.id).remove(function(err, data) {
               });
             }
