@@ -143,7 +143,7 @@ describe('util', function() {
 
     describe('#isValid()', function() {
 
-      var fn_test = function(inputs, expected) {
+      var fnTest = function(inputs, expected) {
         it('should return ' + expected + ' for expected inputs.', function() {
           assert(inputs.length > 0);
           inputs.forEach(function(input) {
@@ -153,12 +153,12 @@ describe('util', function() {
         });
       };
 
-      // valid inputs 
-      fn_test([
+      // valid inputs
+      fnTest([
         'adfd'
       ], true);
       // invalid inputs
-      fn_test([
+      fnTest([
         'a',
         'ab',
         'aaaaaaaaaaaaaaaaaaaaa',
@@ -168,7 +168,7 @@ describe('util', function() {
       ], false);
 
     });
-    
-  })
+
+  });
 
 });

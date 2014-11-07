@@ -15,7 +15,7 @@ describe('app', function() {
 
   describe('#verifyAppNameIsValid()', function() {
 
-    var fn_test = function (inputs, shouldThrow) {
+    var fnTest = function(inputs, shouldThrow) {
       var msg = shouldThrow ? 'throw' : 'NOT throw';
       it('should ' + msg + ' an error when the appName is valid.', function() {
         inputs.forEach(function(input) {
@@ -32,15 +32,15 @@ describe('app', function() {
       });
     };
 
-    // should NOT throw an error 
+    // should NOT throw an error
     // @todo: add more example data here.
-    fn_test([
+    fnTest([
       'abc',
       'abc-def-g',
       'aaaaaaaaaaaaaaaaaaaa'
     ], false);
     // should throw an error
-    fn_test([
+    fnTest([
       '',
       '-abc',
       'aaaaaaaaaaaaaaaaaaaaa'
