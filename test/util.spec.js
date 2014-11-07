@@ -131,4 +131,44 @@ describe('util', function() {
 
   });
 
+  describe('#longname module', function() {
+
+    describe('#getValidateRegex()', function() {
+      it('should return the correct regex', function() {
+        var expected = /^[a-z][a-z0-9\-]{2,19}$/;
+        var result = util.longname.getValidateRegex();
+        expect(result).to.deep.equal(expected);
+      });
+    });
+
+    describe('#isValid()', function() {
+
+      var fnTest = function(inputs, expected) {
+        it('should return ' + expected + ' for expected inputs.', function() {
+          assert(inputs.length > 0);
+          inputs.forEach(function(input) {
+            var result = util.longname.isValid(input);
+            expect(result).to.equal(expected, input);
+          });
+        });
+      };
+
+      // valid inputs
+      fnTest([
+        'adfd'
+      ], true);
+      // invalid inputs
+      fnTest([
+        'a',
+        'ab',
+        'aaaaaaaaaaaaaaaaaaaaa',
+        '7abc',
+        '-abc',
+        'a_b'
+      ], false);
+
+    });
+
+  });
+
 });
