@@ -67,14 +67,14 @@ describe('image', function() {
       expect(fn).to.throw('Test Error!');
     });
 
-    it('should complete after stream.on(end) is called.', function (done) {
+    it('should complete after stream.on(end) is called.', function(done) {
       // setup stubs
       var onEnd;
       var stubPull = sandbox.stub(mockDockerApi, 'pull', function(name, cb) {
         cb(null, mockStreamApi);
         onEnd();
       });
-      var stubOn = sandbox.stub(mockStreamApi, 'on', function (key, cb) {
+      var stubOn = sandbox.stub(mockStreamApi, 'on', function(key, cb) {
         if (key === 'data') {
           // do nothing
         } else if (key === 'end') {
@@ -84,7 +84,7 @@ describe('image', function() {
         }
       });
       // run unit being testing
-      img.pull(mockImage, function (err, data) {
+      img.pull(mockImage, function(err, data) {
         // verify
         expect(err).to.equal(null);
         expect(data).to.equal(undefined);
@@ -92,14 +92,14 @@ describe('image', function() {
       });
     });
 
-    it('should throw an error when dockerode streams back an error.', function () {
+    it('should throw an error when dockerode streams back an error.', function() {
       // setup stubs
       var onData;
-      var stubPull = sandbox.stub(mockDockerApi, 'pull', function (name, cb) {
+      var stubPull = sandbox.stub(mockDockerApi, 'pull', function(name, cb) {
         cb(null, mockStreamApi);
         onData('{"errorDetail":{"message":"elvis lives!"}}');
       });
-      var stubOn = sandbox.stub(mockStreamApi, 'on', function (key, cb) {
+      var stubOn = sandbox.stub(mockStreamApi, 'on', function(key, cb) {
         if (key === 'data') {
           onData = cb;
         } else if (key === 'end') {
@@ -113,7 +113,7 @@ describe('image', function() {
         img.pull(mockImage, function() {});
       };
       // verify
-      expect(fn).to.throw(Error,/elvis lives/);
+      expect(fn).to.throw(Error, /elvis lives/);
     });
 
   });
