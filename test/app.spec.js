@@ -13,6 +13,41 @@ var testUtil = require('../lib/test_util.js');
 
 describe('app', function() {
 
+  describe('#verifyAppNameIsValid()', function() {
+
+    var fn_test = function (inputs, shouldThrow) {
+      var msg = shouldThrow ? 'throw' : 'NOT throw';
+      it('should ' + msg + ' an error when the appName is valid.', function() {
+        inputs.forEach(function(input) {
+          var fn = function() {
+            app.__get__('verifyAppNameIsValid')(input);
+          };
+          if (shouldThrow) {
+            expect(fn).to.throw(Error, sinon.match.string, input);
+          } else {
+            expect(fn).to.not.throw(input);
+          }
+
+        });
+      });
+    };
+
+    // should NOT throw an error 
+    // @todo: add more example data here.
+    fn_test([
+      'abc',
+      'abc-def-g',
+      'aaaaaaaaaaaaaaaaaaaa'
+    ], false);
+    // should throw an error
+    fn_test([
+      '',
+      '-abc',
+      'aaaaaaaaaaaaaaaaaaaaa'
+    ], true);
+
+  });
+
   describe('#loadConfig()', function() {
 
     // setup mocks
