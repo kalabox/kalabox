@@ -2,7 +2,9 @@
 
 var rewire = require('rewire');
 var img = rewire('../lib/image.js');
-var expect = require('chai').expect;
+var chai = require('chai');
+var assert = chai.assert;
+var expect = chai.expect;
 var path = require('path');
 var sinon = require('sinon');
 
@@ -63,6 +65,55 @@ describe('image', function() {
       };
       // verify
       expect(fn).to.throw('Test Error!');
+    });
+
+    it('should complete after stream.on(end) is called.', function (done) {
+      // setup stubs
+      var onEnd;
+      var stubPull = sandbox.stub(mockDockerApi, 'pull', function(name, cb) {
+        cb(null, mockStreamApi);
+        onEnd();
+      });
+      var stubOn = sandbox.stub(mockStreamApi, 'on', function (key, cb) {
+        if (key === 'data') {
+          // do nothing
+        } else if (key === 'end') {
+          onEnd = cb;
+        } else {
+          assert.notOk(key, 'should be unreachable');
+        }
+      });
+      // run unit being testing
+      img.pull(mockImage, function (err, data) {
+        // verify
+        expect(err).to.equal(null);
+        expect(data).to.equal(undefined);
+        done();
+      });
+    });
+
+    it('should throw an error when dockerode streams back an error.', function () {
+      // setup stubs
+      var onData;
+      var stubPull = sandbox.stub(mockDockerApi, 'pull', function (name, cb) {
+        cb(null, mockStreamApi);
+        onData('{"errorDetail":{"message":"elvis lives!"}}');
+      });
+      var stubOn = sandbox.stub(mockStreamApi, 'on', function (key, cb) {
+        if (key === 'data') {
+          onData = cb;
+        } else if (key === 'end') {
+          // do nothing
+        } else {
+          assert.notOk(key, 'should be unreachable');
+        }
+      });
+      // run unit being tested
+      var fn = function() {
+        img.pull(mockImage, function() {});
+      };
+      // verify
+      expect(fn).to.throw(Error,/elvis lives/);
     });
 
   });
