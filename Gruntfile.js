@@ -67,6 +67,14 @@ module.exports = function(grunt) {
         config: '.jscsrc'
       }
     },
+    jsdoc: {
+      target: {
+        src: ['lib/**/*.js'],
+        options: {
+          destination: 'doc'
+        }
+      }
+    },
 
     watch: {
       // bcauldwell: I'm just using this to make developing unit tests easier.
