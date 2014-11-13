@@ -7,6 +7,8 @@ working on the project.
 
 ## Developer Install
 ```
+cd ~/
+mkdir kalabox
 git clone git@github.com:kalabox/kalabox.git
 cd kalabox
 npm install
