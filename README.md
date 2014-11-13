@@ -54,6 +54,9 @@ git clone https://github.com/kalabox/kalabox-app-examples.git
 # Change directories
 cd kalabox-app-examples/d7-app
 
+# Load all node dependencies
+npm install
+
 # Build all dependencies
 kbox build
 
