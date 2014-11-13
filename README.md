@@ -40,6 +40,9 @@ spotty to do this programmatically.
 # Change directories
 cd app_examples/d7-app
 
+# Load all node dependencies
+npm install
+
 # Build all dependencies
 kbox build
 
