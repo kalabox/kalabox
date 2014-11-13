@@ -34,6 +34,14 @@ Kalabox runs a nameserver on the Docker Host, and the goal here is to
 add this as a nameserver to your system. As of right now, it's a little
 spotty to do this programmatically.
 
+## Make a project directory (to use the plugin system) and put the kalabox repo in that directory, then re-link your binary
+```
+cd ~/
+mkdir kalaboxprojects
+mv kalabox kalaboxprojects/
+rm -rf /usr/local/bin/kbox
+ln -s /Users/<username>/kalaboxprojects/kalabox/bin/kbox.js /usr/local/bin/kbox
+```
 
 ## Run the D7 Example App profile
 ```
