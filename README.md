@@ -37,8 +37,13 @@ spotty to do this programmatically.
 
 ## Run the D7 Example App profile
 ```
+cd ~/kalaprojects
+
+# clone app_examples outside of the kalabox repo folder in ~/kalaprojects
+git clone https://github.com/kalabox/kalabox-app-examples.git
+
 # Change directories
-cd app_examples/d7-app
+cd kalabox-app-examples/d7-app
 
 # Build all dependencies
 kbox build
