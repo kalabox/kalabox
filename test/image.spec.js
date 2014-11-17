@@ -100,7 +100,7 @@ describe('image', function() {
     it('should not throw an error when dockerode stream returns partial data.', function(done) {
       // setup spys
       var spyPull = sandbox.spy(fakeDocker, 'pull');
-      fakeDocker.setPullHook(function (stream) {
+      fakeDocker.setPullHook(function(stream) {
         stream.data('{"errorDetail":{"message":"incomplete json -->"');
         stream.end();
       });

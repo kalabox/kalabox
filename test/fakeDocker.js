@@ -6,7 +6,7 @@ function FakeDocker() {
   this._fakeStream = new FakeStream();
   this._pullHook = null;
   this._pullError = null;
-};
+}
 
 FakeDocker.prototype.restore = function() {
   this._fakeStream.restore();
