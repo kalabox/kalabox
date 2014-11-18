@@ -1,7 +1,7 @@
 {
   "name": "kalabox",
   "description": "A Docker orchestration library & CLI tool",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "repository": "kalabox/kalabox",
   "bin": {
     "kbox": "./bin/kbox.js"
