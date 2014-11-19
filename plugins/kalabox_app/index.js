@@ -8,7 +8,7 @@ var rimraf = require('rimraf');
 var plugin = require('../../lib/plugin.js');
 
 module.exports = function() {
-  plugin.init(function(manager, app) {
+  plugin.init(function(manager, app, docker) {
 
     manager.registerTask('info', function() {
       console.log('app: ' + app.name);
