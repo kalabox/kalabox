@@ -10,52 +10,55 @@ var plugin = require('../../lib/plugin.js');
 module.exports = function() {
   plugin.init(function(manager, app, docker) {
 
-    manager.registerTask('info', function() {
+    manager.registerTask('info', function(done) {
       console.log('app: ' + app.name);
+      done();
     });
 
-    manager.registerTask('purge', function() {
-      rimraf.sync(app.dataPath);
+    manager.registerTask('init', function(done) {
+      manager.init(app, done);
     });
 
-    manager.registerTask('init', function() {
-      manager.init(app);
+    manager.registerTask('start', function(done) {
+      manager.start(app, done);
     });
 
-    manager.registerTask('start', function() {
-      manager.start(app);
+    manager.registerTask('stop', function(done) {
+      manager.stop(app, done);
     });
 
-    manager.registerTask('stop', function() {
-      manager.stop(app);
+    manager.registerTask('restart', function(done) {
+      manager.stop(app, function(err) {
+        if (err) {
+          done(err);
+        } else {
+          manager.start(app, done);
+        }
+      });
     });
 
-    manager.registerTask('restart', function() {
-      manager.restart(app);
+    manager.registerTask('kill', function(done) {
+      manager.kill(app, done);
     });
 
-    manager.registerTask('kill', function() {
-      manager.kill(app);
+    manager.registerTask('remove', function(done) {
+      manager.remove(app, done);
     });
 
-    manager.registerTask('remove', function() {
-      manager.remove(app);
+    manager.registerTask('pull', function(done) {
+      manager.pull(app, done);
     });
 
-    manager.registerTask('pull', function() {
-      manager.pull(app);
+    manager.registerTask('build', function(done) {
+      manager.build(app, done);
     });
 
-    manager.registerTask('build', function() {
-      manager.build(app);
-    });
-
-    app.on('post-init', function() {
+    app.on('post-init', function(done) {
       var a = _.cloneDeep(app);
       delete a.components;
       fs.writeFileSync(path.resolve(app.dataPath, 'app.json'), JSON.stringify(a));
+      done();
     });
 
   });
-
 };

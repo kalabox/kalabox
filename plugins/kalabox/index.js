@@ -7,7 +7,7 @@ var plugin = require('../../lib/plugin.js');
 module.exports = function() {
   plugin.init(function(manager) {
 
-    manager.registerTask('list', function() {
+    manager.registerTask('list', function(done) {
       var i = 1;
       manager.getApps(function(apps) {
         console.log('');
@@ -30,11 +30,18 @@ module.exports = function() {
         });
         console.log('');
       });
+      console.log('');
+      done();
     });
 
-    manager.registerTask('pc', function() {
-      manager.purgeContainers(function(data) {
-      });
+    manager.registerTask('pc', function(done) {
+      var onRemove = function(data) {
+        // container was removed
+      };
+      var onDone = function() {
+        done();
+      };
+      manager.purgeContainers(onRemove, onDone);
     });
 
   });
