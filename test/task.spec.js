@@ -137,7 +137,7 @@ describe('task module', function() {
       expect(fn).to.throw(Error, 'Invalid event name "fakeEventName"');
       done();
     });
-    
+
   });
 
 });
