@@ -126,14 +126,16 @@ describe('manager', function() {
   });
 
   describe('#purgeContainers()', function() {
-    it('Should call docker.container.remove with the correct args.', function() {
+    it('Should call docker.container.remove with the correct args.', function(done) {
 
       var fakeDocker = new FakeDocker();
       var spyCallback = sinon.spy();
 
       var manager = rewire('../lib/manager.js');
       manager.__set__('docker', fakeDocker.api);
-      manager.purgeContainers(spyCallback);
+      manager.purgeContainers(spyCallback, function() {
+        done();
+      });
 
       var stubList = fakeDocker.stubs.listContainers;
       sinon.assert.calledOnce(stubList);
@@ -186,4 +188,5 @@ describe('manager', function() {
   _.map(tests, function(arr) {
     runTest(arr[0], arr[1]);
   });
+
 });
