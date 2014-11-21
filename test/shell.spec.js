@@ -20,10 +20,10 @@ describe('#shell module', function() {
 
     it('should return an error when the cmd fails.', function(done) {
       var cmd = 'not_a_real_program';
-      var expected = 'code: 127, msg: /bin/sh: not_a_real_program: command not found\n';
+      var regex = /code: 127, msg: \/bin\/sh: not_a_real_program: [a-z ]*not found\n/;
       shell.exec(cmd, function(err, output) {
         expect(err).to.not.equal(null);
-        expect(err.message).to.equal(expected);
+        expect(err.message).to.match(regex);
         done();
       });
     });
