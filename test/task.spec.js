@@ -13,7 +13,7 @@ describe('task module', function() {
       var description = 'my task 7';
       var cmd = function(next) { next(null); };
       var timeout = 10 * 1000;
-      var task = new Task(description, cmd, timeout);
+      var task = new Task(description, timeout, cmd);
       expect(task.getDescription()).to.deep.equal(description);
       expect(task.getCommand()).to.deep.equal(cmd);
       expect(task.getTimeout()).to.deep.equal(timeout);
@@ -77,7 +77,7 @@ describe('task module', function() {
       };
       var timeout = 75; // 75ms
       var expectedMsg = 'While running task [some task] Error: Task timed out after 75ms.';
-      var task = new Task(desc, cmd, timeout);
+      var task = new Task(desc, timeout, cmd);
       task.run(function(err) {
         expect(err).to.not.equal(null);
         expect(err.message).to.equal(expectedMsg);
@@ -119,7 +119,7 @@ describe('task module', function() {
         // Never calls next, so never completes.
       };
       var timeout = 50; // 50ms
-      var task = new Task('never ending task', cmd, timeout);
+      var task = new Task('never ending task', timeout, cmd);
       task.on('timeout', function() {
         done();
       });

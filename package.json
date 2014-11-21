@@ -10,18 +10,19 @@
     "test": "istanbul cover _mocha"
   },
   "dependencies": {
+    "bunyan": "~1.0.1",
+    "chalk": "~0.5.1",
     "dockerode": "~2.0.3",
+    "liftoff": "~0.13.2",
     "lodash": "~2.4.1",
+    "minimist": "~1.1.0",
     "q": "^1.0.1",
     "redis": "~0.12.1",
-    "minimist": "~1.1.0",
-    "tildify": "~1.0.0",
-    "chalk": "~0.5.1",
-    "liftoff": "~0.13.2",
+    "rimraf": "~2.2.8",
     "rsyncwrapper": "~0.4.1",
-    "bunyan": "~1.0.1",
-    "vasync": "~1.6.0",
-    "rimraf": "~2.2.8"
+    "shelljs": "^0.3.0",
+    "tildify": "~1.0.0",
+    "vasync": "~1.6.0"
   },
   "devDependencies": {
     "chai": "^1.9.2",
