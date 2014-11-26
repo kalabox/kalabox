@@ -13,7 +13,7 @@ describe('#b2d module', function() {
     exec: function() {}
   };
   var sandbox = sinon.sandbox.create();
-  deps.register('shell', fakeShell);
+  //deps.register('shell', fakeShell);
 
   afterEach(function() {
     sandbox.restore();
@@ -26,10 +26,12 @@ describe('#b2d module', function() {
         expect(cmd).to.equal('which boot2docker');
         callback(null, '/usr/local/bin/boot2docker\n');
       });
-      b2d.isInstalled(function(err, isInstalled) {
-        expect(err).to.equal(null);
-        expect(isInstalled).to.equal(true);
-        done();
+      deps.override({shell:fakeShell}, function() {
+        b2d.isInstalled(function(err, isInstalled) {
+          expect(err).to.equal(null);
+          expect(isInstalled).to.equal(true);
+          done();
+        });
       });
     });
 
@@ -38,10 +40,12 @@ describe('#b2d module', function() {
         expect(cmd).to.equal('which boot2docker');
         callback(null, null);
       });
-      b2d.isInstalled(function(err, isInstalled) {
-        expect(err).to.equal(null);
-        expect(isInstalled).to.equal(false);
-        done();
+      deps.override({shell:fakeShell}, function() {
+        b2d.isInstalled(function(err, isInstalled) {
+          expect(err).to.equal(null);
+          expect(isInstalled).to.equal(false);
+          done();
+        });
       });
     });
 
@@ -53,11 +57,13 @@ describe('#b2d module', function() {
         var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
           callback(null, null);
         });
-        b2d[action](function() {
-          sinon.assert.callCount(stub, 2);
-          sinon.assert.calledWithExactly(stub, 'which boot2docker', sinon.match.func);
-          sinon.assert.calledWithExactly(stub, 'boot2docker ' + action, sinon.match.func);
-          done();
+        deps.override({shell:fakeShell}, function() {
+          b2d[action](function() {
+            sinon.assert.callCount(stub, 2);
+            sinon.assert.calledWithExactly(stub, 'which boot2docker', sinon.match.func);
+            sinon.assert.calledWithExactly(stub, 'boot2docker ' + action, sinon.match.func);
+            done();
+          });
         });
       });
     });
@@ -68,9 +74,11 @@ describe('#b2d module', function() {
       var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
         callback(null, 'running\n');
       });
-      b2d.status(function(status) {
-        expect(status).to.equal('running');
-        done();
+      deps.override({shell:fakeShell}, function() {
+        b2d.status(function(status) {
+          expect(status).to.equal('running');
+          done();
+        });
       });
     });
   });
@@ -81,10 +89,12 @@ describe('#b2d module', function() {
         callback(null, '\nThe VM\'s Host only interface IP address is: \n\n1.3.3.7\n');
       });
       this.timeout(60 * 1000);
-      b2d.ip(function(err, ip) {
-        expect(err).to.equal(null);
-        expect(ip).to.equal('1.3.3.7');
-        done();
+      deps.override({shell:fakeShell}, function() {
+        b2d.ip(function(err, ip) {
+          expect(err).to.equal(null);
+          expect(ip).to.equal('1.3.3.7');
+          done();
+        });
       });
     });
   });
