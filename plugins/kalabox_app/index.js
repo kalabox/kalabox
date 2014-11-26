@@ -53,11 +53,10 @@ module.exports = function() {
       manager.build(app, done);
     });
 
-    app.on('post-init', function(done) {
+    app.on('post-init', function() {
       var a = _.cloneDeep(app);
       delete a.components;
       fs.writeFileSync(path.resolve(app.dataPath, 'app.json'), JSON.stringify(a));
-      done();
     });
 
   });
