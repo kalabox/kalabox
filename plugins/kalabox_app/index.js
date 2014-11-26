@@ -10,11 +10,6 @@ var plugin = require('../../lib/plugin.js');
 module.exports = function() {
   plugin.init(function(manager, app, docker) {
 
-    manager.registerTask('info', function(done) {
-      console.log('app: ' + app.name);
-      done();
-    });
-
     manager.registerTask('init', function(done) {
       manager.init(app, done);
     });
@@ -53,11 +48,10 @@ module.exports = function() {
       manager.build(app, done);
     });
 
-    app.on('post-init', function(done) {
+    app.on('post-init', function() {
       var a = _.cloneDeep(app);
       delete a.components;
       fs.writeFileSync(path.resolve(app.dataPath, 'app.json'), JSON.stringify(a));
-      done();
     });
 
   });

@@ -19,6 +19,7 @@ var tildify = require('tildify');
 var kconfig = require('../lib/config.js');
 var manager = require('../lib/manager.js');
 var App = require('../lib/app.js');
+var deps = require('../lib/deps.js');
 
 // set env var for ORIGINAL cwd
 // before anything touches it
@@ -105,21 +106,31 @@ function handleArguments(env) {
     console.log('Using config file', chalk.magenta(tildify(env.configPath)));
   }
 
-  processTask(env);
+  try {
+    // Run the task.
+    processTask(env);
+  } catch (err) {
+    // Log error.
+    logError(err);
+  }
+}
+
+function logError(err) {
+  console.log(chalk.red(err.message));
 }
 
 function processTask(env) {
-  var cmd = argv._[0];
-  // Run command against app if it exists
-  if (env.app && env.app.manager.tasks[cmd]) {
-    env.app.manager.tasks[cmd]();
-  }
-
-  // If not, run as a manager task if it exists
-  else if (env.manager.tasks[cmd]) {
-    env.manager.tasks[cmd]();
-  }
-  else {
-    console.log(chalk.red('Command'), chalk.cyan(cmd), chalk.red('not found.'));
-  }
+  // Get dependencies.
+  deps.call(function(manager) {
+    // Map taskName to task function.
+    var taskName = argv._[0];
+    var task = manager.tasks[taskName];
+    if (task) {
+      // Run task function.
+      task();
+    } else {
+      // Task not found.
+      throw new Error('Command "' + taskName + '" NOT found!');
+    }
+  });
 }

@@ -21,6 +21,17 @@ describe('#deps module', function() {
       expect(result).to.equal(expected);
     });
 
+    it('should throw an error when registering a dep that is already registered.', function() {
+      var key = 'donut';
+      var value = 'jelly';
+      deps.register(key, value);
+      var fn = function() {
+        deps.register(key, value);
+      };
+      var expectedMsg = 'Tried to register a dependency "donut" that was already registered.';
+      expect(fn).to.throw(Error, expectedMsg);
+    });
+
   });
 
   describe('#lookup()', function() {
@@ -55,6 +66,18 @@ describe('#deps module', function() {
 
   });
 
+  describe('#remove()', function() {
+    it('should remove a specific dependency.', function() {
+      var key = 'oscar';
+      var value = 'the grouch';
+      expect(deps.contains(key)).to.equal(false);
+      deps.register(key, value);
+      expect(deps.contains(key)).to.equal(true);
+      deps.remove(key);
+      expect(deps.contains(key)).to.equal(false);
+    });
+  });
+
   describe('#clear()', function() {
 
     it('should remove all dependencies.', function() {
@@ -68,6 +91,22 @@ describe('#deps module', function() {
       expect(deps.contains(key)).to.equal(false);
     });
 
+  });
+
+  describe('#override()', function() {
+    it('should override a dependency for the life of the callback.', function(done) {
+      var key = 'mode';
+      var modeDev = 'dev';
+      var modeProd = 'prod';
+      deps.register(key, modeDev);
+      expect(deps.lookup(key)).to.equal(modeDev);
+      deps.override({mode:modeProd}, function(next) {
+        expect(deps.lookup(key)).to.equal(modeProd);
+        next();
+        done();
+      });
+      expect(deps.lookup(key)).to.equal(modeDev);
+    });
   });
 
   describe('#call()', function() {

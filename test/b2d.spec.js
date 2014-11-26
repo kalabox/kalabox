@@ -14,7 +14,6 @@ describe('#b2d module', function() {
   };
   var sandbox = sinon.sandbox.create();
   deps.register('shell', fakeShell);
-  //deps.register('shell', require('../lib/shell.js'));
 
   afterEach(function() {
     sandbox.restore();

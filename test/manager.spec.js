@@ -162,12 +162,18 @@ describe('manager', function() {
     describe('#' + name + '()', function() {
       it('Should call app.emit with the correct args.', function(done) {
         var mockAppApi = {
+          name: 'myappname1234',
           emit: function() {}
         };
         var mock = sinon.mock(mockAppApi);
+        var fakeDocker = new FakeDocker();
         mock.expects('emit').withArgs('pre-' + name);
         mock.expects('emit').withArgs('post-' + name);
-        fnManager(mockAppApi);
+        manager.__with__({
+          docker: fakeDocker.api
+        })(function() {
+          fnManager(mockAppApi);
+        });
         setTimeout(function() {
           mock.verify();
           done();
