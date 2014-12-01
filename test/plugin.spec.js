@@ -14,12 +14,14 @@ describe('#plugin module', function() {
       var _app = {name:'myappname'};
       var _manager = {start: function() {}};
       deps.register('app', _app);
-      deps.register('manager', _manager);
-      plugin.init(function(app, manager) {
-        expect(app).to.equal(_app);
-        deps.clear();
-        expect(manager).to.equal(_manager);
-        done();
+      deps.override({manager:_manager}, function(next) {
+        plugin.init(function(app, manager) {
+          expect(app).to.equal(_app);
+          deps.clear();
+          expect(manager).to.equal(_manager);
+          next();
+          done();
+        });
       });
     });
 
