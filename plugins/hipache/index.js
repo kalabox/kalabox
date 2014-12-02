@@ -2,7 +2,7 @@
 
 var redis = require('redis');
 
-module.exports = function(plugin, manager, app) {
+module.exports = function(manager, app) {
 
   /**
    * Listens for post-start-component
