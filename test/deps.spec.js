@@ -124,6 +124,12 @@ describe('#deps module', function() {
       });
     });
 
+    it('should work if a callback with zero arguments is used.', function(done) {
+      deps.call(function() {
+        done();
+      });
+    });
+
     it('should throw an error when a dependency is NOT found.', function() {
       var fn = function() {
         deps.call(function(dbCooper) {
