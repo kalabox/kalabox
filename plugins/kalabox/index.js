@@ -4,12 +4,11 @@ var _ = require('lodash');
 var chalk = require('chalk');
 var plugin = require('../../lib/plugin.js');
 
-module.exports = function(manager) {
+module.exports = function(plugin, manager) {
 
   manager.registerTask('list', function(done) {
     var i = 1;
     manager.getApps(function(apps) {
-      console.log('');
 
       _(apps).each(function(a) {
         var status = '';
