@@ -94,7 +94,10 @@ after-success() {
     git push origin $TRAVIS_BRANCH
 
     # Publish the things
-    openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/npmrc.enc -out $HOME/.npmrc -d
+    npm config set //registry.npmjs.org/:_password $NPM_PASS
+    npm config set //registry.npmjs.org/:username $NPM_USER
+    npm config set //registry.npmjs.org/:email $NPM_EMAIL
+    npm config set //registry.npmjs.org/:always-auth false
     npm publish ./
   else
     exit $EXIT_VALUE
