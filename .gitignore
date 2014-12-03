@@ -16,3 +16,4 @@ doc
 node_modules
 cids
 .boot2docker
+built

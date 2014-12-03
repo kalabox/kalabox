@@ -99,7 +99,9 @@ after-success() {
 # Clean up after the tests.
 #
 before-deploy() {
-  echo
+  cd $TRAVIS_BUILD_DIR
+  grunt build
+  cd $TRAVIS_BUILD_DIR
 }
 
 # after-deploy
