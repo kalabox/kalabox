@@ -17,7 +17,6 @@ before-install() {
     [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ]; then
       openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/travis.id_rsa.enc -out $HOME/.ssh/travis.id_rsa -d
-      openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/npmrc.enc -out $HOME/.npmrc -d
   fi
 }
 
@@ -79,6 +78,7 @@ after-success() {
     chmod 600 $HOME/.ssh/travis.id_rsa
     eval "$(ssh-agent)"
     ssh-add $HOME/.ssh/travis.id_rsa
+
     # Set a user for things
     git config --global user.name "Kala C. Bot"
     git config --global user.email "kalacommitbot@kalamuna.com"
@@ -92,6 +92,9 @@ after-success() {
       git commit -m "KALABOT BUILDING NEGATIVE POWER COUPLING VERSION ${BUILD_VERSION} [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
     fi
     git push origin $TRAVIS_BRANCH
+
+    # Publish the things
+    openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/npmrc.enc -out $HOME/.npmrc -d
     npm publish ./
   else
     exit $EXIT_VALUE
