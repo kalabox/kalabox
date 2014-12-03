@@ -127,7 +127,9 @@ function processTask(env) {
     var task = manager.tasks[taskName];
     if (task) {
       // Run task function.
-      task();
+      task(function(err) {
+        throw err;  
+      });
     } else {
       // Task not found.
       throw new Error('Command "' + taskName + '" NOT found!');
