@@ -13,9 +13,11 @@ describe('#plugin module', function() {
     it('should call callback with dependencies automatically set.', function(done) {
       var _app = {name:'myappname'};
       var _manager = {start: function() {}};
+      var _plugin = {key:'mykey'};
       deps.register('app', _app);
       deps.override({manager:_manager}, function(next) {
-        plugin.init(function(app, manager) {
+        plugin.init(_plugin, function(plugin, app, manager) {
+          expect(_plugin.key).to.equal('mykey');
           expect(app).to.equal(_app);
           deps.clear();
           expect(manager).to.equal(_manager);

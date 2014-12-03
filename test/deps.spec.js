@@ -94,6 +94,7 @@ describe('#deps module', function() {
   });
 
   describe('#override()', function() {
+
     it('should override a dependency for the life of the callback.', function(done) {
       var key = 'mode';
       var modeDev = 'dev';
@@ -106,6 +107,24 @@ describe('#deps module', function() {
         done();
       });
       expect(deps.lookup(key)).to.equal(modeDev);
+    });
+
+    it('should work properly within nested called to override.', function(done1) {
+      var key = 'foo';
+      var getValue = function() { return deps.lookup(key); };
+      deps.register(key, 'A');
+      expect(getValue()).to.equal('A');
+      deps.override({foo:'B'}, function(done2) {
+        expect(getValue()).to.equal('B');
+        deps.override({foo:'C'}, function(done3) {
+          expect(getValue()).to.equal('C');
+          done3();
+          expect(getValue()).to.equal('B');
+          done2();
+          expect(getValue()).to.equal('A');
+          done1();
+        });
+      });
     });
   });
 
