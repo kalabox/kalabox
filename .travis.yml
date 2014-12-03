@@ -39,3 +39,5 @@ deploy:
   on:
     repo: kalabox/kalabox
     branch: master
+  skip_cleanup: true
+
