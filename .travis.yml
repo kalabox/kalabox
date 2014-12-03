@@ -35,7 +35,7 @@ deploy:
   email:
     secure: Y9wveqCc7ZbJcGGCKS+mhZ/rJZvkpfguvcaskTgjpCil4+FNmY04uJphTHripRok9jT/GTsreLNk4pPbilNCzj746wHZeMET0AcnBNAhvNn+8MKzJk9RSVstsmlAMB1dQaBwjK1KBIB97G3M94mOzU1YPh7kxvFP1SRuKumllys=
   api_key:
-    secure: hvTYEvSXO6/C6MSwOGJYWGVIAWKYXY41qHqbOg7H2O/+VqkefqrjNMbA4XyEdIvZ2EVSrlAHCxe9tUJj9kF4WDVHT4O1gbPLCcuDSYW68B2Xb+hQ4IUxJ8C3FmV/+hFmg6+InBtCK+wHuGOeRqCSxjwZk55frX0m5SZcLbHmXqI=
+    secure: Ijcv0458VlPdMjs9IK8bD1SwGyWCLCFpCmXrm3iYx71L2wPrSt63QIWlAa3+ujvqsJV1ISI8cCPtNQP8CKlX72NKSWMovIu3dWsuv3UKj/PxMmBuHcXPCqABTuwbWOZaekade+h9DqoI4Gj81mntzCmt4tlKNQ26N3F3EXD/c+8=
   on:
     repo: kalabox/kalabox
     branch: master
