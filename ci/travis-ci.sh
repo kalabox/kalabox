@@ -17,6 +17,7 @@ before-install() {
     [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ]; then
       openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/travis.id_rsa.enc -out $HOME/.ssh/travis.id_rsa -d
+      openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/npmrc.enc -out $HOME/.npmrc -d
   fi
 }
 
@@ -28,6 +29,8 @@ before-install() {
 #
 before-script() {
   npm install -g grunt-cli
+  # Upgrade to lastest NPM
+  npm install -g npm
 }
 
 # script
@@ -89,6 +92,7 @@ after-success() {
       git commit -m "KALABOT BUILDING NEGATIVE POWER COUPLING VERSION ${BUILD_VERSION} [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
     fi
     git push origin $TRAVIS_BRANCH
+    npm publish ./
   else
     exit $EXIT_VALUE
   fi
@@ -99,9 +103,7 @@ after-success() {
 # Clean up after the tests.
 #
 before-deploy() {
-  cd $TRAVIS_BUILD_DIR
-  grunt build
-  npm config set registry http://registry.npmjs.org
+  echo
 }
 
 # after-deploy
@@ -109,8 +111,7 @@ before-deploy() {
 # Clean up after the tests.
 #
 after-deploy() {
-  cd $TRAVIS_BUILD_DIR/built
-  npm publish ./
+  echo
 }
 
 ##

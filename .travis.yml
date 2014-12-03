@@ -30,14 +30,3 @@ notifications:
     - ben@kalamuna.com
     - coder1@gmail.com
     on_success: always
-deploy:
-  provider: npm
-  email:
-    secure: Y9wveqCc7ZbJcGGCKS+mhZ/rJZvkpfguvcaskTgjpCil4+FNmY04uJphTHripRok9jT/GTsreLNk4pPbilNCzj746wHZeMET0AcnBNAhvNn+8MKzJk9RSVstsmlAMB1dQaBwjK1KBIB97G3M94mOzU1YPh7kxvFP1SRuKumllys=
-  api_key:
-    secure: Ijcv0458VlPdMjs9IK8bD1SwGyWCLCFpCmXrm3iYx71L2wPrSt63QIWlAa3+ujvqsJV1ISI8cCPtNQP8CKlX72NKSWMovIu3dWsuv3UKj/PxMmBuHcXPCqABTuwbWOZaekade+h9DqoI4Gj81mntzCmt4tlKNQ26N3F3EXD/c+8=
-  on:
-    repo: kalabox/kalabox
-    branch: master
-  skip_cleanup: true
-
