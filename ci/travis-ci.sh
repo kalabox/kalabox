@@ -101,7 +101,7 @@ after-success() {
 before-deploy() {
   cd $TRAVIS_BUILD_DIR
   grunt build
-  rm -rf $TRAVIS_BUILD_DIR/built/node_modules
+  npm config set registry http://registry.npmjs.org
 }
 
 # after-deploy
