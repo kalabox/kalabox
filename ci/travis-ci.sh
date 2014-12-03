@@ -109,7 +109,8 @@ before-deploy() {
 # Clean up after the tests.
 #
 after-deploy() {
-  echo
+  cd $TRAVIS_BUILD_DIR/built
+  npm publish ./
 }
 
 ##
