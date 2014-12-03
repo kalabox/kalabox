@@ -11,7 +11,7 @@ git clone git@github.com:kalabox/kalabox.git
 cd kalabox
 npm install
 
-# link kbox executable, you may have to remove /usrlocal/bin/kbox first!!! - 
+# link kbox executable, you may have to remove /usrlocal/bin/kbox first!!! -
 # USE FULL PATH TO bin, like in OS X: ln -s /Users/<username>/kalabox/bin/kbox.js /usr/local/bin/kbox
 ln -s bin/kbox.js /usr/local/bin/kbox
 
