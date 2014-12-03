@@ -101,7 +101,6 @@ after-success() {
 before-deploy() {
   cd $TRAVIS_BUILD_DIR
   grunt build
-  cd $TRAVIS_BUILD_DIR
 }
 
 # after-deploy
@@ -109,7 +108,15 @@ before-deploy() {
 # Clean up after the tests.
 #
 after-deploy() {
-  echo
+  # npm deploy on travis seems buggy, doing this for now
+  if ([ $TRAVIS_BRANCH == "master" ] || [ ! -z $TRAVIS_TAG ])
+  [ $TRAVIS_PULL_REQUEST == "false" ] &&
+  [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ]; then
+    cd $TRAVIS_BUILD_DIR
+    npm publish ./
+  else
+    exit $EXIT_VALUE
+  fi
 }
 
 ##
