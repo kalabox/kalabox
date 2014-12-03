@@ -21,7 +21,8 @@ module.exports = function(grunt) {
     },
 
     clean: {
-      coverage: ['coverage']
+      coverage: ['coverage'],
+      built: ['built']
     },
 
     shell: {
@@ -76,6 +77,20 @@ module.exports = function(grunt) {
       }
     },
 
+    // This is part of our build process
+    copy: {
+      main: {
+        files: [
+          {
+            expand: true,
+            src: ['**'],
+            dest: 'built/'
+            // eventually we want to exlude node_modules so this is faster
+          }
+        ]
+      }
+    },
+
     watch: {
       // bcauldwell: I'm just using this to make developing unit tests easier.
       unit: {
@@ -124,7 +139,12 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test:code', [
     'jshint',
-    'jscs',
+    'jscs'
+  ]);
+
+  grunt.registerTask('build', [
+    'clean:built',
+    'copy'
   ]);
 
 };
