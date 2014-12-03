@@ -101,7 +101,7 @@ after-success() {
 before-deploy() {
   cd $TRAVIS_BUILD_DIR
   grunt build
-  rm -rf built/node_modules
+  rm -rf $TRAVIS_BUILD_DIR/built/node_modules
 }
 
 # after-deploy
