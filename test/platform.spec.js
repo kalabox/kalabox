@@ -16,7 +16,7 @@ var platform = process.platform;
 
 var assertExpectedPlatform = function() {
   expect(PLATFORMS).to.contain(platform);
-}
+};
 
 describe('#process.platform', function() {
   it('should be an expected value.', function() {
