@@ -33,3 +33,7 @@ module.exports.PLATFORM_LINUX = PLATFORM_LINUX;
 module.exports.PLATFORM_WINDOWS = PLATFORM_WINDOWS;
 
 module.exports.assertExpectedPlatform = assertExpectedPlatform;
+
+module.exports.ifOsx = function(callback) {
+  callback();
+};

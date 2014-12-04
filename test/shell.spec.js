@@ -5,6 +5,7 @@ var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;
 var sinon = require('sinon');
+var platformSpec = require('./platform.spec.js');
 
 describe('#shell module', function() {
 
@@ -75,15 +76,17 @@ describe('#shell module', function() {
       child.stdout.on('end', onEnd);
     });
 
-    it('should call the correct child.stderr callbacks.', function(done) {
-      var cmd = 'not-a-real-command';
-      var expectedOutput = '/bin/sh: not-a-real-command: command not found\n';
-      var child = shell.execAsync(cmd);
-      var onData = sinon.spy();
-      child.stderr.on('data', onData);
-      child.stdout.on('end', function() {
-        expect(onData.callCount).to.be.above(0);
-        done();
+    platformSpec.ifOsx(function() {
+      it('should call the correct child.stderr callbacks.', function(done) {
+        var cmd = 'not-a-real-command';
+        var expectedOutput = '/bin/sh: not-a-real-command: command not found\n';
+        var child = shell.execAsync(cmd);
+        var onData = sinon.spy();
+        child.stderr.on('data', onData);
+        child.stdout.on('end', function() {
+          expect(onData.callCount).to.be.above(0);
+          done();
+        });
       });
     });
 
