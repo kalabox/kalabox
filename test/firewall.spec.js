@@ -1,18 +1,18 @@
 'use strict';
 
-var assert = require('chai').assert,
-  expect = require('chai').expect,
-  sinon = require('sinon'),
-  rewire = require('rewire'),
-  firewall = rewire('../lib/firewall.js');
+var assert = require('chai').assert;
+var expect = require('chai').expect;
+var sinon = require('sinon');
+var rewire = require('rewire');
+var firewall = rewire('../lib/firewall.js');
 
-describe('firewall.js', function () {
-  
-  describe('#isBlockingAll()', function () {
+describe('firewall.js', function() {
 
-    it('should return false.', function (done) {
+  describe('#isBlockingAll()', function() {
+
+    it('should return false.', function(done) {
       var expected = false;
-      firewall.isBlockingAll(function (err, isBlockingAll) {
+      firewall.isBlockingAll(function(err, isBlockingAll) {
         expect(err).to.equal(null);
         expect(isBlockingAll).to.equal(expected);
         done();

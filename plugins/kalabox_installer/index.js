@@ -9,7 +9,7 @@ var installer = require('../../lib/install.js');
 module.exports = function(plugin, manager) {
 
   // @todo: infinite timeout?
-  manager.registerTask('install', 60*60*1000 ,function(done) {
+  manager.registerTask('install', 60 * 60 * 1000, function(done) {
     installer.run(done);
   });
 
