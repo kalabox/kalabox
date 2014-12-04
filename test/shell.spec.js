@@ -31,10 +31,9 @@ describe('#shell module', function() {
 
     it('should return a null error and the correct output.', function(done) {
       var cmd = 'which node';
-      var expected = '/usr/local/bin/node\n';
       shell.exec(cmd, function(err, output) {
         expect(err).to.equal(null);
-        expect(output).to.equal(expected);
+        expect(output).to.match(/node\n/);
         done();
       });
     });
