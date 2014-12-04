@@ -8,6 +8,7 @@ var firewall = rewire('../lib/firewall.js');
 var platformSpec = require('./platform.spec.js');
 
 // Only run these OSX specific tests, if unit test are running on OSX.
+platformSpec.assertExpectedPlatform();
 if (process.platform === platformSpec.PLATFORM_OSX) {
 
   describe('firewall.js', function() {

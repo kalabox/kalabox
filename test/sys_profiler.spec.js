@@ -10,6 +10,7 @@ var platformSpec = require('./platform.spec.js');
 var TIMEOUT = 45 * 1000;
 
 // Only run these unit tests if we are on OSX.
+platformSpec.assertExpectedPlatform();
 if (process.platform === platformSpec.PLATFORM_OSX) {
 
   describe('sys_profiler.js', function() {
