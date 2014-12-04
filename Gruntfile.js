@@ -27,14 +27,15 @@ module.exports = function(grunt) {
     shell: {
       // @todo: Maybe remove the .istanbul.yml file and put config here
       testUnit: {command: 'node_modules/istanbul/lib/cli.js  test node_modules/mocha/bin/_mocha'},
+      testLarge: {command: 'node_modules/mocha/bin/_mocha --bail test/large'},
       testCoverage: {command: 'node_modules/istanbul/lib/cli.js  cover node_modules/mocha/bin/_mocha'},
       testCheckCoverage: {
         command:
           'node_modules/istanbul/lib/cli.js check-coverage coverage/coverage.json' +
-          ' --statements ' + 80 +
+          ' --statements ' + 65 +
           ' --branches ' + 50 +
-          ' --functions ' + 80 +
-          ' --lines ' + 80
+          ' --functions ' + 60 +
+          ' --lines ' + 65
       }
     },
 
@@ -104,7 +105,9 @@ module.exports = function(grunt) {
   //--------------------------------------------------------------------------
 
   // unit testing
-  grunt.registerTask('unit', ['shell:testUnit']);
+  grunt.registerTask('unit', [
+    'shell:testUnit'
+  ]);
 
   // testing code coverage
   grunt.registerTask('coverage', [
@@ -120,6 +123,11 @@ module.exports = function(grunt) {
   grunt.registerTask('test', [
     'unit',
     'coverage'
+  ]);
+
+  // large functional testing
+  grunt.registerTask('test:large', [
+    'shell:test_large'
   ]);
 
   grunt.registerTask('test:code', [

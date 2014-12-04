@@ -3,7 +3,8 @@
   "plugins": {
     "global": {
       "b2d": {},
-      "kalabox": {}
+      "kalabox": {},
+      "kalabox_installer": {}
     },
     "app": {
       "kalabox_app": {},
