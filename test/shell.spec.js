@@ -95,7 +95,9 @@ describe('#shell module', function() {
     it('should contain a grep command.', function(done) {
       var expected = 'ps -A';
       shell.psAll(function(err, output) {
+        console.log('output: ' + output);
         var match = output.match(/(ps -A)/);
+        console.log('match: ' + match);
         expect(err).to.equal(null);
         expect(match).to.not.equal(null);
         expect(match[1]).to.not.equal(null);
