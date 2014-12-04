@@ -35,5 +35,7 @@ module.exports.PLATFORM_WINDOWS = PLATFORM_WINDOWS;
 module.exports.assertExpectedPlatform = assertExpectedPlatform;
 
 module.exports.ifOsx = function(callback) {
-  callback();
+  if (platform === PLATFORM_OSX) {
+    callback();
+  }
 };
