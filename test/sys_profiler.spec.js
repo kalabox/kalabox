@@ -5,27 +5,12 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var rewire = require('rewire');
 var sp = rewire('../lib/sys_profiler.js');
+var platformSpec = require('./platform.spec.js');
 
 var TIMEOUT = 45 * 1000;
 
-var PLATFORM_OSX = 'darwin';
-var PLATFORM_WINDOWS = 'win32';
-var PLATFORM_LINUX = 'linux';
-
-describe('#process.platform', function() {
-  it('should be an expected value.', function() {
-    var expectedPlatforms = [
-      PLATFORM_OSX,
-      PLATFORM_LINUX,
-      PLATFORM_WINDOWS
-    ];
-    var platform = process.platform;
-    expect(expectedPlatforms).to.contain(process.platform);
-  });
-});
-
 // Only run these unit tests if we are on OSX.
-if (process.platform === PLATFORM_OSX) {
+if (process.platform === platformSpec.PLATFORM_OSX) {
 
   describe('sys_profiler.js', function() {
 

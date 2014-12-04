@@ -5,20 +5,26 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var rewire = require('rewire');
 var firewall = rewire('../lib/firewall.js');
+var platformSpec = require('./platform.spec.js');
 
-describe('firewall.js', function() {
+// Only run these OSX specific tests, if unit test are running on OSX.
+if (process.platform === platformSpec.PLATFORM_OSX) {
 
-  describe('#isBlockingAll()', function() {
+  describe('firewall.js', function() {
 
-    it('should return false.', function(done) {
-      var expected = false;
-      firewall.isBlockingAll(function(err, isBlockingAll) {
-        expect(err).to.equal(null);
-        expect(isBlockingAll).to.equal(expected);
-        done();
+    describe('#isBlockingAll()', function() {
+
+      it('should return false.', function(done) {
+        var expected = false;
+        firewall.isBlockingAll(function(err, isBlockingAll) {
+          expect(err).to.equal(null);
+          expect(isBlockingAll).to.equal(expected);
+          done();
+        });
       });
+
     });
 
   });
 
-});
+}
