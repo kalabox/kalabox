@@ -128,7 +128,7 @@ function processTask(env) {
     if (task) {
       // Run task function.
       task(function(err) {
-        throw err;  
+        if (err) throw err;
       });
     } else {
       // Task not found.
