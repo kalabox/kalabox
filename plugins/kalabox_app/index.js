@@ -53,4 +53,10 @@ module.exports = function(manager, app, docker) {
     fs.writeFileSync(path.resolve(app.dataPath, 'app.json'), JSON.stringify(a));
   });
 
+  app.on('post-remove', function() {
+    rimraf(app.dataPath, function (er) {
+      if (er) throw er
+    });
+  });
+
 };
