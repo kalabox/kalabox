@@ -3,17 +3,47 @@
 var _ = require('lodash');
 var chalk = require('chalk');
 var plugin = require('../../lib/plugin.js');
-var _ = require('lodash');
-var chalk = require('chalk');
-var plugin = require('../../lib/plugin.js');
 var deps = require('../../lib/deps.js');
 var installer = require('../../lib/install.js');
 
-module.exports = function(plugin, manager) {
+var B2D_UP_TIMEOUT = 120 * 1000;
+var B2D_DOWN_TIMEOUT = 60 * 1000;
+
+module.exports = function(b2d, plugin, manager) {
 
   // @todo: infinite timeout?
   manager.registerTask('install', 60 * 60 * 1000, function(done) {
     installer.run(done);
+  });
+
+  // Start the kalabox VM and our core containers
+  manager.registerTask('up', B2D_UP_TIMEOUT, function(done) {
+    b2d.up(done);
+  });
+
+  // Stop the kalabox VM
+  manager.registerTask('down', B2D_DOWN_TIMEOUT, function(done) {
+    b2d.down(done);
+  });
+
+  // Get the UP address of the kalabox vm
+  manager.registerTask('ip', function(done) {
+    b2d.ip(function(err, ip) {
+      if (err) {
+        throw err;
+      } else {
+        console.log(ip);
+        done();
+      }
+    });
+  });
+
+  // Check status of kbox
+  manager.registerTask('status', function(done) {
+    b2d.status(function(status) {
+      console.log(status);
+      done();
+    });
   });
 
   // @todo: not sure the status of these commands
