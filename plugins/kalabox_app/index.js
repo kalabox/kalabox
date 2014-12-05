@@ -54,8 +54,10 @@ module.exports = function(manager, app, docker) {
   });
 
   app.on('post-remove', function() {
-    rimraf(app.dataPath, function (er) {
-      if (er) throw er
+    rimraf(app.dataPath, function (err) {
+      if (err) {
+        throw err;
+      }
     });
   });
 
