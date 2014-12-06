@@ -130,7 +130,11 @@ function processTask(env) {
     if (!taskNode || !taskNode.task) {
       tasks.prettyPrint(taskNode);
     } else {
-      taskNode.task();
+      taskNode.task(function(err) {
+        if (err) {
+          throw err;
+        }
+      });
     }
   });
 }
