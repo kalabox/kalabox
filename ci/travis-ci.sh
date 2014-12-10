@@ -13,7 +13,7 @@ EXIT_VALUE=0
 #
 before-install() {
   # Add our key
-  if ([ $TRAVIS_BRANCH == "master" ] || [ ! -z $TRAVIS_TAG ]) &&
+  if ([ $TRAVIS_BRANCH == "master" ] || [ ! -z "$TRAVIS_TAG" ]) &&
     [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ]; then
       openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/travis.id_rsa.enc -out $HOME/.ssh/travis.id_rsa -d
@@ -63,7 +63,7 @@ after-script() {
 # Clean up after the tests.
 #
 after-success() {
-  if ([ $TRAVIS_BRANCH == "master" ] || [ ! -z $TRAVIS_TAG ])
+  if ([ $TRAVIS_BRANCH == "master" ] || [ ! -z "$TRAVIS_TAG" ]) &&
     [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ]; then
 
@@ -93,11 +93,9 @@ after-success() {
     fi
     git push origin $TRAVIS_BRANCH
 
+    # Config the things
+    $HOME/npm-config.sh > /dev/null
     # Publish the things
-    npm config set //registry.npmjs.org/:_password $NPM_PASS
-    npm config set //registry.npmjs.org/:username $NPM_USER
-    npm config set //registry.npmjs.org/:email $NPM_EMAIL
-    npm config set //registry.npmjs.org/:always-auth false
     npm publish ./
   else
     exit $EXIT_VALUE

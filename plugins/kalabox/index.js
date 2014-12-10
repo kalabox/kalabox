@@ -10,7 +10,7 @@ var B2D_UP_TIMEOUT = 120 * 1000;
 var B2D_DOWN_TIMEOUT = 60 * 1000;
 var KBOX_INSTALL_TIMEOUT = 60 * 60 * 1000;
 
-module.exports = function(b2d, plugin, manager, docker) {
+module.exports = function(b2d, plugin, manager, tasks, docker, kConfig) {
 
   // @todo: infinite timeout?
   manager.registerTask('install', KBOX_INSTALL_TIMEOUT, function(done) {
@@ -45,8 +45,13 @@ module.exports = function(b2d, plugin, manager, docker) {
     });
   });
 
-  // @todo: not sure the status of these commands
-  manager.registerTask('list', function(done) {
+  tasks.registerTask('config', function(done) {
+    var globalConfig = kConfig.getGlobalConfig();
+    console.log(JSON.stringify(globalConfig, null, '\t'));
+    done();
+  });
+
+  tasks.registerTask('list', function(done) {
     var i = 1;
     manager.getApps(function(apps) {
 
@@ -72,7 +77,7 @@ module.exports = function(b2d, plugin, manager, docker) {
     done();
   });
 
-  manager.registerTask('pc', function(done) {
+  tasks.registerTask('pc', function(done) {
     var onRemove = function(data) {
       // container was removed
     };
