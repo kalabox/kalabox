@@ -23,6 +23,9 @@ tasks.init();
 deps.register('tasks', tasks);
 var manager = require('../lib/manager.js');
 var App = require('../lib/app.js');
+var kConfig = require('../lib/kConfig.js');
+deps.register('kConfig', kConfig);
+manager.setup();
 
 // set env var for ORIGINAL cwd
 // before anything touches it
@@ -96,6 +99,8 @@ function handleArguments(env) {
     workingDir = appdata.path;
     configPath = path.resolve(appdata.profilePath, 'profile.json');
   }
+
+  //deps.register('config', kConfig.getGlobalConfig());
 
   if (fs.existsSync(configPath)) {
     process.chdir(workingDir);

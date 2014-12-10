@@ -7,21 +7,27 @@ var _ = require('lodash');
 var rimraf = require('rimraf');
 var plugin = require('../../lib/plugin.js');
 
-module.exports = function(manager, app, docker) {
+module.exports = function(manager, app, docker, tasks, kConfig) {
 
-  manager.registerTask('init', function(done) {
+  tasks.registerTask([app.name, 'config'], function(done) {
+    var appConfig = kConfig.getAppConfig(app);
+    console.log(JSON.stringify(appConfig, null, '\t'));
+    done();
+  });
+
+  tasks.registerTask([app.name, 'init'], function(done) {
     manager.init(app, done);
   });
 
-  manager.registerTask('start', function(done) {
+  tasks.registerTask([app.name, 'start'], function(done) {
     manager.start(app, done);
   });
 
-  manager.registerTask('stop', function(done) {
+  tasks.registerTask([app.name, 'stop'], function(done) {
     manager.stop(app, done);
   });
 
-  manager.registerTask('restart', function(done) {
+  tasks.registerTask([app.name, 'restart'], function(done) {
     manager.stop(app, function(err) {
       if (err) {
         done(err);
@@ -31,19 +37,19 @@ module.exports = function(manager, app, docker) {
     });
   });
 
-  manager.registerTask('kill', function(done) {
+  tasks.registerTask([app.name, 'kill'], function(done) {
     manager.kill(app, done);
   });
 
-  manager.registerTask('remove', function(done) {
+  tasks.registerTask([app.name, 'remove'], function(done) {
     manager.remove(app, done);
   });
 
-  manager.registerTask('pull', function(done) {
+  tasks.registerTask([app.name, 'pull'], function(done) {
     manager.pull(app, done);
   });
 
-  manager.registerTask('build', function(done) {
+  tasks.registerTask([app.name, 'build'], function(done) {
     manager.build(app, done);
   });
 

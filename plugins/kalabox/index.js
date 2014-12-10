@@ -4,9 +4,15 @@ var _ = require('lodash');
 var chalk = require('chalk');
 var plugin = require('../../lib/plugin.js');
 
-module.exports = function(plugin, manager) {
+module.exports = function(plugin, manager, tasks, kConfig) {
 
-  manager.registerTask('list', function(done) {
+  tasks.registerTask('config', function(done) {
+    var globalConfig = kConfig.getGlobalConfig();
+    console.log(JSON.stringify(globalConfig, null, '\t'));
+    done();
+  });
+
+  tasks.registerTask('list', function(done) {
     var i = 1;
     manager.getApps(function(apps) {
 
@@ -32,7 +38,7 @@ module.exports = function(plugin, manager) {
     done();
   });
 
-  manager.registerTask('pc', function(done) {
+  tasks.registerTask('pc', function(done) {
     var onRemove = function(data) {
       // container was removed
     };

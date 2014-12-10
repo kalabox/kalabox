@@ -32,10 +32,10 @@ module.exports = function(grunt) {
       testCheckCoverage: {
         command:
           'node_modules/istanbul/lib/cli.js check-coverage coverage/coverage.json' +
-          ' --statements ' + 70 +
+          ' --statements ' + 65 +
           ' --branches ' + 55 +
           ' --functions ' + 65 +
-          ' --lines ' + 70
+          ' --lines ' + 65
       }
     },
 
