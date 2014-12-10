@@ -17,9 +17,12 @@ var Liftoff = require('liftoff');
 var tildify = require('tildify');
 
 var kconfig = require('../lib/config.js');
+var deps = require('../lib/deps.js');
+var tasks = require('../lib/tasks.js');
+tasks.init();
+deps.register('tasks', tasks);
 var manager = require('../lib/manager.js');
 var App = require('../lib/app.js');
-var deps = require('../lib/deps.js');
 
 // set env var for ORIGINAL cwd
 // before anything touches it
@@ -121,18 +124,17 @@ function logError(err) {
 
 function processTask(env) {
   // Get dependencies.
-  deps.call(function(manager) {
+  deps.call(function(manager, tasks) {
     // Map taskName to task function.
-    var taskName = argv._[0];
-    var task = manager.tasks[taskName];
-    if (task) {
-      // Run task function.
-      task(function(err) {
-        if (err) throw err;
-      });
+    var taskNode = tasks.getTask(argv._);
+    if (!taskNode || !taskNode.task) {
+      tasks.prettyPrint(taskNode);
     } else {
-      // Task not found.
-      throw new Error('Command "' + taskName + '" NOT found!');
+      taskNode.task(function(err) {
+        if (err) {
+          throw err;
+        }
+      });
     }
   });
 }
