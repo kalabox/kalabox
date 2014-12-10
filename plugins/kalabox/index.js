@@ -8,11 +8,12 @@ var installer = require('../../lib/install.js');
 
 var B2D_UP_TIMEOUT = 120 * 1000;
 var B2D_DOWN_TIMEOUT = 60 * 1000;
+var KBOX_INSTALL_TIMEOUT = 60 * 60 * 1000;
 
-module.exports = function(b2d, plugin, manager) {
+module.exports = function(b2d, plugin, manager, docker) {
 
   // @todo: infinite timeout?
-  manager.registerTask('install', 60 * 60 * 1000, function(done) {
+  manager.registerTask('install', KBOX_INSTALL_TIMEOUT, function(done) {
     installer.run(done);
   });
 
@@ -20,8 +21,6 @@ module.exports = function(b2d, plugin, manager) {
   manager.registerTask('up', B2D_UP_TIMEOUT, function(done) {
     b2d.up(done);
   });
-
-  // Stop the kalabox VM
   manager.registerTask('down', B2D_DOWN_TIMEOUT, function(done) {
     b2d.down(done);
   });
