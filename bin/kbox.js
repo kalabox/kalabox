@@ -24,7 +24,7 @@ deps.register('tasks', tasks);
 var manager = require('../lib/manager.js');
 var App = require('../lib/app.js');
 var kConfig = require('../lib/kConfig.js');
-
+deps.register('kConfig', kConfig);
 manager.setup();
 
 // set env var for ORIGINAL cwd
@@ -128,8 +128,6 @@ function logError(err) {
 }
 
 function processTask(env) {
-  // Load configs.
-  loadConfig(env);
   // Get dependencies.
   deps.call(function(manager, tasks) {
     // Map taskName to task function.

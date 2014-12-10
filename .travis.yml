@@ -4,6 +4,8 @@ node_js:
 before_install:
 - cp ci/travis-ci.sh $HOME/
 - chmod +x $HOME/travis-ci.sh
+- cp ci/npm-config.sh $HOME/
+- chmod +x $HOME/npm-config.sh
 - $HOME/travis-ci.sh before-install
 before_script:
 - $HOME/travis-ci.sh before-script
@@ -30,12 +32,9 @@ notifications:
     - ben@kalamuna.com
     - coder1@gmail.com
     on_success: always
-deploy:
-  provider: npm
-  email:
-    secure: Y9wveqCc7ZbJcGGCKS+mhZ/rJZvkpfguvcaskTgjpCil4+FNmY04uJphTHripRok9jT/GTsreLNk4pPbilNCzj746wHZeMET0AcnBNAhvNn+8MKzJk9RSVstsmlAMB1dQaBwjK1KBIB97G3M94mOzU1YPh7kxvFP1SRuKumllys=
-  api_key:
-    secure: hvTYEvSXO6/C6MSwOGJYWGVIAWKYXY41qHqbOg7H2O/+VqkefqrjNMbA4XyEdIvZ2EVSrlAHCxe9tUJj9kF4WDVHT4O1gbPLCcuDSYW68B2Xb+hQ4IUxJ8C3FmV/+hFmg6+InBtCK+wHuGOeRqCSxjwZk55frX0m5SZcLbHmXqI=
-  on:
-    repo: kalabox/kalabox
-    branch: master
+env:
+  global:
+  - secure: PL3L4KbkfxEwH24D/eVwYMeucjpYwtKifVE8nQRJBzXWGI5U6clG96WAO8GZjsde/e9Mw3WTfrRbNXyDPalPU+Bn3T/esRNhHedjXO6ZLODNSJsavesXNOZ/To5NjnARg8KjmBz8/A31F11F5oOUxPKhq0Lw3OGcQqkK3CkqFNo=
+  - secure: N+6OhnQY9QEDkXkKSZ6/gvhlmX/2I0yKA3GexgXbIW3sHuRczoJw/5gva18z6/KxaWzyNZOgnmxi+tFDz64s0APa1xdtqYgJ6S2RgCASQ8sXrSzpXTFtIzQ81EahPtIiAZsm50W1sUpKPR0MZJG8jZhN6+NE9MqjNcnAUvjzhrE=
+  - secure: bJGGxFBQPXCR5Z0T0Bcx3XfNSGQ+uLHyFHa3HOsngN074B2He1yLvQZTAjCXCpG7125+Nmtcb9FEs2NFhrBl7vfCI6a+jhec9pQe7zmdNTRyARt9a20Kbm6qBuzPbypRPPJVRauFGLjpJksDdAxeVZPJRhOauq3Wl40O3ft0UoU=
+
