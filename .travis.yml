@@ -4,6 +4,8 @@ node_js:
 before_install:
 - cp ci/travis-ci.sh $HOME/
 - chmod +x $HOME/travis-ci.sh
+- cp ci/npm-config.sh $HOME/
+- chmod +x $HOME/npm-config.sh
 - $HOME/travis-ci.sh before-install
 before_script:
 - $HOME/travis-ci.sh before-script
