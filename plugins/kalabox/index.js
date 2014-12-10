@@ -6,27 +6,23 @@ var plugin = require('../../lib/plugin.js');
 var deps = require('../../lib/deps.js');
 var installer = require('../../lib/install.js');
 
-var B2D_UP_TIMEOUT = 120 * 1000;
-var B2D_DOWN_TIMEOUT = 60 * 1000;
-var KBOX_INSTALL_TIMEOUT = 60 * 60 * 1000;
-
 module.exports = function(b2d, plugin, manager, tasks, docker, kConfig) {
 
   // @todo: infinite timeout?
-  manager.registerTask('install', KBOX_INSTALL_TIMEOUT, function(done) {
+  tasks.registerTask('install', function(done) {
     installer.run(done);
   });
 
   // Start the kalabox VM and our core containers
-  manager.registerTask('up', B2D_UP_TIMEOUT, function(done) {
+  tasks.registerTask('up', function(done) {
     b2d.up(done);
   });
-  manager.registerTask('down', B2D_DOWN_TIMEOUT, function(done) {
+  tasks.registerTask('down', function(done) {
     b2d.down(done);
   });
 
   // Get the UP address of the kalabox vm
-  manager.registerTask('ip', function(done) {
+  tasks.registerTask('ip', function(done) {
     b2d.ip(function(err, ip) {
       if (err) {
         throw err;
@@ -38,7 +34,7 @@ module.exports = function(b2d, plugin, manager, tasks, docker, kConfig) {
   });
 
   // Check status of kbox
-  manager.registerTask('status', function(done) {
+  tasks.registerTask('status', function(done) {
     b2d.status(function(status) {
       console.log(status);
       done();
@@ -54,7 +50,6 @@ module.exports = function(b2d, plugin, manager, tasks, docker, kConfig) {
   tasks.registerTask('list', function(done) {
     var i = 1;
     manager.getApps(function(apps) {
-
       _(apps).each(function(a) {
         var status = '';
         if (a.status === 'enabled') {
