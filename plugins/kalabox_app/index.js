@@ -7,10 +7,9 @@ var _ = require('lodash');
 var rimraf = require('rimraf');
 var plugin = require('../../lib/plugin.js');
 
-module.exports = function(manager, app, docker, tasks, kConfig) {
+module.exports = function(manager, app, docker, tasks, appConfig) {
 
   tasks.registerTask([app.name, 'config'], function(done) {
-    var appConfig = kConfig.getAppConfig(app);
     console.log(JSON.stringify(appConfig, null, '\t'));
     done();
   });

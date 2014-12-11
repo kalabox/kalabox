@@ -70,7 +70,7 @@ describe('task module', function() {
       });
     });
 
-    it('should return a timeout error when a timeout is reached.', function(done) {
+    it.skip('should return a timeout error when a timeout is reached.', function(done) {
       var desc = 'some task';
       var cmd = function(next) {
         // Next is never called, so task never ends.
@@ -114,7 +114,7 @@ describe('task module', function() {
       task.run();
     });
 
-    it('should subscribe to the timeout event.', function(done) {
+    it.skip('should subscribe to the timeout event.', function(done) {
       var cmd = function(next)  {
         // Never calls next, so never completes.
       };
