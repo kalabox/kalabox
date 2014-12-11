@@ -8,6 +8,7 @@ var installer = require('../../lib/install.js');
 
 module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
 
+  // Tasks
   // @todo: infinite timeout?
   tasks.registerTask('install', function(done) {
     installer.run(done);
@@ -18,7 +19,7 @@ module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
     b2d.up(done);
   });
   tasks.registerTask('down', function(done) {
-    b2d.down(done);
+    b2d.down(b2d, done);
   });
 
   // Get the UP address of the kalabox vm
@@ -79,6 +80,11 @@ module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
       done();
     };
     manager.purgeContainers(onRemove, onDone);
+  });
+
+  // Events
+  b2d.events.on('pre-down', function() {
+    console.log('DO IT NOW!!! IM HERE!!! KILL ME NOW!!!');
   });
 
 };

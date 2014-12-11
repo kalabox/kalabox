@@ -22,6 +22,26 @@ var tasks = require('../lib/tasks.js');
 var manager = require('../lib/manager.js');
 var App = require('../lib/app.js');
 var kConfig = require('../lib/kConfig.js');
+var b2d = require('../lib/b2d.js');
+var kenv = require('../lib/kEnv.js');
+
+// Set env
+var setEnv = function(conf) {
+  var b2dProf = conf.sysConfRoot + '/b2d.profile';
+  kenv.setB2dProf(b2dProf);
+  b2d.status(function(status) {
+    if (status === 'running') {
+      b2d.ip(function(err, ip) {
+        if (err) {
+          throw err;
+        } else {
+          var dockerHost = 'tcp://' + ip + ':2375';
+          kenv.setDockerHost(dockerHost);
+        }
+      });
+    }
+  });
+}
 
 var init = function() {
   // manager
@@ -33,6 +53,8 @@ var init = function() {
   var globalConfig = kConfig.getGlobalConfig();
   deps.register('globalConfig', globalConfig);
   deps.register('config', globalConfig);
+  // environment
+  setEnv(globalConfig);
   // manager
   manager.setup();
 };
