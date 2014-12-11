@@ -29,10 +29,6 @@ manager.setup();
 
 // set env var for ORIGINAL cwd before anything touches it
 process.env.INIT_CWD = process.cwd();
-// Do other ENV things so we dont mess with the users default choices
-// @todo actually get this going
-// process.env['DOCKER_HOST'] = config.dip or mayybe b2d.shellinit?
-// process.env['BOOT2DOCKER_PROFILE'] = config.b2dprof?
 
 var cli = new Liftoff({
   name: 'profile',
