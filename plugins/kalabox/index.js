@@ -6,7 +6,7 @@ var plugin = require('../../lib/plugin.js');
 var deps = require('../../lib/deps.js');
 var installer = require('../../lib/install.js');
 
-module.exports = function(b2d, plugin, manager, tasks, docker, kConfig) {
+module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
 
   // @todo: infinite timeout?
   tasks.registerTask('install', function(done) {
@@ -42,7 +42,6 @@ module.exports = function(b2d, plugin, manager, tasks, docker, kConfig) {
   });
 
   tasks.registerTask('config', function(done) {
-    var globalConfig = kConfig.getGlobalConfig();
     console.log(JSON.stringify(globalConfig, null, '\t'));
     done();
   });
