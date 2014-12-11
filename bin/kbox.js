@@ -19,13 +19,32 @@ var tildify = require('tildify');
 var kconfig = require('../lib/config.js');
 var deps = require('../lib/deps.js');
 var tasks = require('../lib/tasks.js');
-tasks.init();
-deps.register('tasks', tasks);
 var manager = require('../lib/manager.js');
 var App = require('../lib/app.js');
 var kConfig = require('../lib/kConfig.js');
-deps.register('kConfig', kConfig);
-manager.setup();
+
+var init = function() {
+  // manager
+  deps.register('manager', manager);
+  // tasks
+  tasks.init();
+  deps.register('tasks', tasks);
+  // globalConfig
+  var globalConfig = kConfig.getGlobalConfig();
+  deps.register('globalConfig', globalConfig);
+  deps.register('config', globalConfig);
+  // manager
+  manager.setup();
+};
+
+var initWithApp = function(app) {
+  // appConfig
+  var appConfig = kConfig.getAppConfig(app);
+  deps.register('appConfig', appConfig);
+  // app
+  deps.register('app', app);
+  app.setup();
+};
 
 // set env var for ORIGINAL cwd
 // before anything touches it
@@ -52,8 +71,8 @@ process.once('exit', function(code) {
 var cliPackage = require('../package');
 var versionFlag = argv.v || argv.version;
 var tasksFlag = argv.T || argv.tasks;
-var tasks = argv._;
-var toRun = tasks.length ? tasks : ['default'];
+//var tasks = argv._;
+//var toRun = tasks.length ? tasks : ['default'];
 
 cli.on('require', function (name) {
   console.log('Requiring external module', chalk.magenta(name));
@@ -100,11 +119,12 @@ function handleArguments(env) {
     configPath = path.resolve(appdata.profilePath, 'profile.json');
   }
 
-  //deps.register('config', kConfig.getGlobalConfig());
+  init();
 
   if (fs.existsSync(configPath)) {
     process.chdir(workingDir);
     env.app = new App(manager, workingDir);
+    initWithApp(env.app);
   }
 
   env.manager = manager;
@@ -129,7 +149,11 @@ function logError(err) {
 
 function processTask(env) {
   // Get dependencies.
-  deps.call(function(manager, tasks) {
+  deps.call(function(tasks) {
+    // Replace app with the app name.
+    if (argv._[0] === 'app' && env.app) {
+      argv._[0] = env.app.name;
+    }
     // Map taskName to task function.
     var taskNode = tasks.getTask(argv._);
     if (!taskNode || !taskNode.task) {
