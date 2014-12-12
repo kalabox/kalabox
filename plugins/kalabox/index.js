@@ -4,7 +4,7 @@ var _ = require('lodash');
 var chalk = require('chalk');
 var plugin = require('../../lib/plugin.js');
 
-module.exports = function(plugin, manager, tasks, globalConfig) {
+module.exports = function(plugin, manager, tasks, globalConfig, argv) {
 
   tasks.registerTask('config', function(done) {
     console.log(JSON.stringify(globalConfig, null, '\t'));
