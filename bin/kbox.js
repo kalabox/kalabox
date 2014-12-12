@@ -26,11 +26,13 @@ var b2d = require('../lib/b2d.js');
 var kenv = require('../lib/kEnv.js');
 
 // Set env
-var setEnv = function(conf) {
-  var b2dProf = conf.sysConfRoot + '/b2d.profile';
-  kenv.setB2dProf(b2dProf);
+var setDockerHost = function(conf) {
+  // @todo: it would be great to get this to run RIGHT BEFORE a dockerode call
+  // because that would likely mean the VM is on and we can do a B2D ip check.
+  // We'd also be able to do this only once and in a place that
+  // makes more sense
   b2d.status(function(status) {
-    if (status === 'running') {
+    if (status === 'running' && argv._[0] !== 'down') {
       b2d.ip(function(err, ip) {
         if (err) {
           throw err;
@@ -41,7 +43,7 @@ var setEnv = function(conf) {
       });
     }
   });
-}
+};
 
 var init = function() {
   // manager
@@ -54,7 +56,7 @@ var init = function() {
   deps.register('globalConfig', globalConfig);
   deps.register('config', globalConfig);
   // environment
-  setEnv(globalConfig);
+  setDockerHost();
   // manager
   manager.setup();
 };

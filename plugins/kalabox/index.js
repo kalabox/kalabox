@@ -6,6 +6,9 @@ var plugin = require('../../lib/plugin.js');
 var deps = require('../../lib/deps.js');
 var installer = require('../../lib/install.js');
 
+var B2D_UP_ATTEMPTS = 3;
+var B2D_DOWN_ATTEMPTS = 3;
+
 module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
 
   // Tasks
@@ -16,10 +19,10 @@ module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
 
   // Start the kalabox VM and our core containers
   tasks.registerTask('up', function(done) {
-    b2d.up(done);
+    b2d.up(b2d, done, B2D_UP_ATTEMPTS);
   });
   tasks.registerTask('down', function(done) {
-    b2d.down(b2d, done);
+    b2d.down(b2d, done, B2D_DOWN_ATTEMPTS);
   });
 
   // Get the UP address of the kalabox vm
@@ -83,8 +86,11 @@ module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
   });
 
   // Events
-  b2d.events.on('pre-down', function() {
-    console.log('DO IT NOW!!! IM HERE!!! KILL ME NOW!!!');
+  b2d.events.on('post-up', function() {
+    console.log(chalk.green('Kalabox has been activated.'));
   });
 
+  b2d.events.on('post-down', function() {
+    console.log(chalk.red('Kalabox has been deactivated.'));
+  });
 };
