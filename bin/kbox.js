@@ -48,8 +48,7 @@ var initWithApp = function(app) {
   app.setup();
 };
 
-// set env var for ORIGINAL cwd
-// before anything touches it
+// set env var for ORIGINAL cwd before anything touches it
 process.env.INIT_CWD = process.cwd();
 
 var cli = new Liftoff({
