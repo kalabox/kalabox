@@ -12,6 +12,11 @@ describe('#b2d module', function() {
   var fakeShell = {
     exec: function() {}
   };
+
+  var fakeConfig = {
+    sysConfRoot: null
+  };
+
   var sandbox = sinon.sandbox.create();
   //deps.register('shell', fakeShell);
 
@@ -55,11 +60,11 @@ describe('#b2d module', function() {
     describe('#' + action + '()', function() {
       it('should run the correct shell command.', function(done) {
         var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
-          callback(null, null);
+          callback(null, null, null);
         });
-        deps.override({shell:fakeShell}, function() {
-          b2d[action](function() {
-            sinon.assert.callCount(stub, 2);
+        deps.override({shell:fakeShell, config:fakeConfig}, function() {
+          b2d[action](b2d, 3, function() {
+            sinon.assert.callCount(stub, 3);
             sinon.assert.calledWithExactly(stub, 'which boot2docker', sinon.match.func);
             sinon.assert.calledWithExactly(stub, 'boot2docker ' + action, sinon.match.func);
             done();

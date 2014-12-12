@@ -8,6 +8,8 @@ var installer = require('../../lib/install.js');
 
 var B2D_UP_ATTEMPTS = 3;
 var B2D_DOWN_ATTEMPTS = 3;
+var B2D_STATUS_ATTEMPTS = 3;
+var B2D_IP_ATTEMPTS = 3;
 
 module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
 
@@ -19,15 +21,15 @@ module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
 
   // Start the kalabox VM and our core containers
   tasks.registerTask('up', function(done) {
-    b2d.up(b2d, done, B2D_UP_ATTEMPTS);
+    b2d.up(b2d, B2D_UP_ATTEMPTS, done);
   });
   tasks.registerTask('down', function(done) {
-    b2d.down(b2d, done, B2D_DOWN_ATTEMPTS);
+    b2d.down(b2d, B2D_DOWN_ATTEMPTS, done);
   });
 
   // Get the UP address of the kalabox vm
   tasks.registerTask('ip', function(done) {
-    b2d.ip(function(err, ip) {
+    b2d.ip(B2D_IP_ATTEMPTS, function(err, ip) {
       if (err) {
         throw err;
       } else {
@@ -39,8 +41,8 @@ module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
 
   // Check status of kbox
   tasks.registerTask('status', function(done) {
-    b2d.status(function(status) {
-      console.log(status);
+    b2d.state(B2D_STATUS_ATTEMPTS, function(message) {
+      console.log(message);
       done();
     });
   });

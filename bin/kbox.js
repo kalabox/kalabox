@@ -31,9 +31,9 @@ var setDockerHost = function(conf) {
   // because that would likely mean the VM is on and we can do a B2D ip check.
   // We'd also be able to do this only once and in a place that
   // makes more sense
-  b2d.status(function(status) {
+  b2d.state(3, function(status) {
     if (status === 'running' && argv._[0] !== 'down') {
-      b2d.ip(function(err, ip) {
+      b2d.ip(3, function(err, ip) {
         if (err) {
           throw err;
         } else {
