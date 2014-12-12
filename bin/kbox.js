@@ -24,6 +24,8 @@ var App = require('../lib/app.js');
 var kConfig = require('../lib/kConfig.js');
 
 var init = function() {
+  // argv
+  deps.register('argv', argv);
   // manager
   deps.register('manager', manager);
   // tasks
@@ -154,11 +156,12 @@ function processTask(env) {
       argv._[0] = env.app.name;
     }
     // Map taskName to task function.
-    var taskNode = tasks.getTask(argv._);
-    if (!taskNode || !taskNode.task) {
-      tasks.prettyPrint(taskNode);
+    var result = tasks.getTask(argv._);
+    if (!result || !result.task || !result.task.task) {
+      tasks.prettyPrint(result.task);
     } else {
-      taskNode.task(function(err) {
+      argv._ = result.args;
+      result.task.task(function(err) {
         if (err) {
           throw err;
         }

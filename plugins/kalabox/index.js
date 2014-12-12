@@ -6,7 +6,7 @@ var plugin = require('../../lib/plugin.js');
 var deps = require('../../lib/deps.js');
 var installer = require('../../lib/install.js');
 
-module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
+module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
 
   // @todo: infinite timeout?
   tasks.registerTask('install', function(done) {
