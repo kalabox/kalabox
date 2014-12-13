@@ -89,10 +89,10 @@ module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
 
   // Events
   b2d.events.on('post-up', function() {
-    console.log(chalk.green('Kalabox has been activated.'));
+    console.log(chalk.green('Kalabox VM has been activated.'));
   });
 
   b2d.events.on('post-down', function() {
-    console.log(chalk.red('Kalabox has been deactivated.'));
+    console.log(chalk.red('Kalabox VM has been deactivated.'));
   });
 };

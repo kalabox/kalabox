@@ -102,7 +102,7 @@ describe('#b2d module', function() {
         };
         var mockFs = testUtil.mockFs.create(config);
         var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
-          callback(null, null);
+          callback(null, true);
         });
         deps.override({shell:fakeShell, config:fakeConfig}, function() {
           b2d[action](b2d, 3, function() {
@@ -126,7 +126,7 @@ describe('#b2d module', function() {
       };
       var mockFs = testUtil.mockFs.create(config);
       var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
-        callback(null, null);
+        callback(null, true);
       });
       deps.override({shell:fakeShell, config:fakeConfig}, function() {
         b2d.init(3, function() {
