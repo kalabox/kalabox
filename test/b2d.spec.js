@@ -18,6 +18,7 @@ describe('#b2d module', function() {
   var fakeConfig = {
     sysConfRoot: kenv.getHomeDir() + '/.kalabox'
   };
+  console.log(fakeConfig);
 
   var sandbox = sinon.sandbox.create();
   //deps.register('shell', fakeShell);
