@@ -2,6 +2,8 @@
 
 var deps = require('../lib/deps.js');
 var b2d = require('../lib/b2d.js');
+var kenv = require('../lib/kEnv.js');
+var testUtil = require('../lib/testUtil.js');
 var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;
@@ -14,7 +16,7 @@ describe('#b2d module', function() {
   };
 
   var fakeConfig = {
-    sysConfRoot: null
+    sysConfRoot: kenv.getHomeDir() + '/.kalabox'
   };
 
   var sandbox = sinon.sandbox.create();
@@ -56,15 +58,49 @@ describe('#b2d module', function() {
 
   });
 
+  describe('#hasProfile()', function(done) {
+
+    it('Should return true if a file exists.', function(done) {
+      var config = {
+        '.kalabox' : {
+          'b2d.profile': ''
+        }
+      };
+      var mockFs = testUtil.mockFs.create(config);
+      deps.override({config:fakeConfig}, function() {
+        b2d.hasProfile(function(hasProfile) {
+          expect(hasProfile).to.equal(true);
+          mockFs.restore();
+          done();
+        });
+      });
+    });
+
+    it('Should return false if a file does not exists.', function(done) {
+      var config = {
+        '.kalabox' : {}
+      };
+      var mockFs = testUtil.mockFs.create(config);
+      deps.override({config:fakeConfig}, function() {
+        b2d.hasProfile(function(hasProfile) {
+          expect(hasProfile).to.equal(false);
+          mockFs.restore();
+          done();
+        });
+      });
+    });
+
+  });
+
   ['down', 'up'].forEach(function(action) {
     describe('#' + action + '()', function() {
       it('should run the correct shell command.', function(done) {
         var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
-          callback(null, null, null);
+          callback(null, null);
         });
         deps.override({shell:fakeShell, config:fakeConfig}, function() {
           b2d[action](b2d, 3, function() {
-            sinon.assert.callCount(stub, 3);
+            sinon.assert.callCount(stub, 2);
             sinon.assert.calledWithExactly(stub, 'which boot2docker', sinon.match.func);
             sinon.assert.calledWithExactly(stub, 'boot2docker ' + action, sinon.match.func);
             done();
@@ -74,14 +110,14 @@ describe('#b2d module', function() {
     });
   });
 
-  describe('#status()', function() {
+  describe('#state()', function() {
     it('should return the correct status.', function(done) {
       var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
         callback(null, 'running\n');
       });
-      deps.override({shell:fakeShell}, function() {
-        b2d.status(function(status) {
-          expect(status).to.equal('running');
+      deps.override({shell:fakeShell, config:fakeConfig}, function() {
+        b2d.state(3, function(message) {
+          expect(message).to.equal('running');
           done();
         });
       });
@@ -94,8 +130,8 @@ describe('#b2d module', function() {
         callback(null, '\nThe VM\'s Host only interface IP address is: \n\n1.3.3.7\n');
       });
       this.timeout(60 * 1000);
-      deps.override({shell:fakeShell}, function() {
-        b2d.ip(function(err, ip) {
+      deps.override({shell:fakeShell, config:fakeConfig}, function() {
+        b2d.ip(3, function(err, ip) {
           expect(err).to.equal(null);
           expect(ip).to.equal('1.3.3.7');
           done();

@@ -3,7 +3,7 @@
 var kConfig = require('../lib/kConfig.js');
 var chai = require('chai');
 var expect = chai.expect;
-var testUtil = require('../lib/test_util.js');
+var testUtil = require('../lib/testUtil.js');
 
 describe('kConfig module', function() {
 
