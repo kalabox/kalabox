@@ -18,7 +18,6 @@ describe('#b2d module', function() {
   var fakeConfig = {
     sysConfRoot: kenv.getHomeDir() + '/.kalabox'
   };
-  console.log(fakeConfig);
 
   var sandbox = sinon.sandbox.create();
   //deps.register('shell', fakeShell);
@@ -96,6 +95,12 @@ describe('#b2d module', function() {
   ['down', 'up'].forEach(function(action) {
     describe('#' + action + '()', function() {
       it('should run the correct shell command.', function(done) {
+        var config = {
+          '.kalabox' : {
+            'b2d.profile': ''
+          }
+        };
+        var mockFs = testUtil.mockFs.create(config);
         var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
           callback(null, null);
         });
@@ -104,6 +109,7 @@ describe('#b2d module', function() {
             sinon.assert.callCount(stub, 2);
             sinon.assert.calledWithExactly(stub, 'which boot2docker', sinon.match.func);
             sinon.assert.calledWithExactly(stub, 'boot2docker ' + action, sinon.match.func);
+            mockFs.restore();
             done();
           });
         });
@@ -113,12 +119,19 @@ describe('#b2d module', function() {
 
   describe('#state()', function() {
     it('should return the correct status.', function(done) {
+      var config = {
+        '.kalabox' : {
+          'b2d.profile': ''
+        }
+      };
+      var mockFs = testUtil.mockFs.create(config);
       var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
         callback(null, 'running\n');
       });
       deps.override({shell:fakeShell, config:fakeConfig}, function() {
         b2d.state(3, function(message) {
           expect(message).to.equal('running');
+          mockFs.restore();
           done();
         });
       });
@@ -127,6 +140,12 @@ describe('#b2d module', function() {
 
   describe('#ip()', function() {
     it('should return the b2d ip address.', function(done) {
+      var config = {
+        '.kalabox' : {
+          'b2d.profile': ''
+        }
+      };
+      var mockFs = testUtil.mockFs.create(config);
       var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
         callback(null, '\nThe VM\'s Host only interface IP address is: \n\n1.3.3.7\n');
       });
@@ -135,6 +154,7 @@ describe('#b2d module', function() {
         b2d.ip(3, function(err, ip) {
           expect(err).to.equal(null);
           expect(ip).to.equal('1.3.3.7');
+          mockFs.restore();
           done();
         });
       });
