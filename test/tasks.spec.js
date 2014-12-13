@@ -17,10 +17,10 @@ describe('tasks module', function() {
       var fn = function(done) { done(); };
       tasks.registerTask(['a', 'b', 'c'], fn, 0);
       expect(tasks.getCount()).to.equal(1);
-      var task = tasks.getTask(['a', 'b', 'c']);
-      expect(task).to.not.equal(null);
-      expect(task).to.not.equal(undefined);
-      task.task(function() {
+      var result = tasks.getTask(['a', 'b', 'c']);
+      expect(result.task).to.not.equal(null);
+      expect(result.task).to.not.equal(undefined);
+      result.task.task(function() {
         done();
       });
     });
@@ -28,8 +28,8 @@ describe('tasks module', function() {
     it('should only need one name to register a task.', function(done) {
       var fn = function(done) { done(); };
       tasks.registerTask('d', fn);
-      var task = tasks.getTask('d');
-      task.task(function() {
+      var result = tasks.getTask('d');
+      result.task.task(function() {
         done();
       });
     });
@@ -46,10 +46,19 @@ describe('tasks module', function() {
   });
 
   describe('#getTask()', function() {
+
     it('should return null if a task does not exist.', function() {
       var task = tasks.getTask('e');
       expect(task).to.equal(null);
     });
+
+    it('should return the task and remaining names.', function() {
+      var result = tasks.getTask(['a', 'b', 'c', 'd', '-v']);
+      console.log(JSON.stringify(result));
+      expect(result).to.have.deep.property('task');
+      expect(result.args).to.deep.equal(['d', '-v']);
+    });
+
   });
 
   describe('#prettyPrint()', function() {

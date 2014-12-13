@@ -6,12 +6,13 @@ var plugin = require('../../lib/plugin.js');
 var deps = require('../../lib/deps.js');
 var installer = require('../../lib/install.js');
 
+
 var B2D_UP_ATTEMPTS = 3;
 var B2D_DOWN_ATTEMPTS = 3;
 var B2D_STATUS_ATTEMPTS = 3;
 var B2D_IP_ATTEMPTS = 3;
 
-module.exports = function(b2d, plugin, manager, tasks, docker, globalConfig) {
+module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
 
   // Tasks
   // @todo: infinite timeout?
