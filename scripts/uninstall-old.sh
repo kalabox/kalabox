@@ -65,7 +65,7 @@ if [ "$my_answer" == "1" ]; then
     VBOX=$(which VBoxManage)
     kala_files=()
     append kala_files "/Applications/boot2docker.app"
-    append kala_files "~/.boot2docker"
+    append kala_files "$HOME/.boot2docker"
     append kala_files "$B2D"
     append kala_files "$DOCKER"
     append kala_files "/usr/local/share/boot2docker"
@@ -78,6 +78,7 @@ if [ "$my_answer" == "1" ]; then
 
     if [ "$B2D" ]; then
         if [ "$VBOX" ]; then
+            export BOOT2DOCKER_PROFILE=$HOME/.kalabox/b2d.profile
             $B2D poweroff
             $B2D destroy
         fi

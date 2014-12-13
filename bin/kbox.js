@@ -2,7 +2,6 @@
 
 'use strict';
 
-
 /**
  * This file is meant to be linked as a "kbox" executable.
  */
@@ -26,23 +25,20 @@ var b2d = require('../lib/b2d.js');
 var kenv = require('../lib/kEnv.js');
 
 // Set env
-var setDockerHost = function(conf) {
+var setDockerHost = function() {
   // @todo: it would be great to get this to run RIGHT BEFORE a dockerode call
   // because that would likely mean the VM is on and we can do a B2D ip check.
   // We'd also be able to do this only once and in a place that
-  // makes more sense
-  b2d.state(3, function(status) {
-    if (status === 'running' && argv._[0] !== 'down') {
-      b2d.ip(3, function(err, ip) {
-        if (err) {
-          throw err;
-        } else {
-          var dockerHost = 'tcp://' + ip + ':2375';
-          kenv.setDockerHost(dockerHost);
-        }
-      });
-    }
-  });
+  // makes more sense.
+  //
+  // Originally we were going to do a b2d.ip here but that only works if b2d is
+  // installed first.
+  var PLATFORM_LINUX = 'linux';
+  var platformIsLinux = process.platform === PLATFORM_LINUX;
+  if (!platformIsLinux) {
+    var dockerHost = 'tcp://1.3.3.7:2375';
+    kenv.setDockerHost(dockerHost);
+  }
 };
 
 var init = function() {
@@ -57,7 +53,8 @@ var init = function() {
   var globalConfig = kConfig.getGlobalConfig();
   deps.register('globalConfig', globalConfig);
   deps.register('config', globalConfig);
-  // environment
+  // set dockerhoststub
+  // @todo: see @todo in setDockerHost()
   setDockerHost();
   // manager
   manager.setup();
@@ -99,32 +96,38 @@ var tasksFlag = argv.T || argv.tasks;
 //var tasks = argv._;
 //var toRun = tasks.length ? tasks : ['default'];
 
-cli.on('require', function (name) {
-  console.log('Requiring external module', chalk.magenta(name));
-});
+function logError(err) {
+  console.log(chalk.red(err.message));
+}
 
-cli.on('requireFail', function (name) {
-  console.log(chalk.red('Failed to load external module'), chalk.magenta(name));
-});
-
-cli.launch({
-  cwd: argv.cwd,
-  configPath: argv.kalaboxfile,
-  require: argv.require,
-  completion: argv.completion,
-  verbose: argv.verbose,
-  app: argv.app
-}, handleArguments);
+function processTask(env) {
+  // Get dependencies.
+  deps.call(function(tasks) {
+    // Replace app with the app name.
+    if (argv._[0] === 'app' && env.app) {
+      argv._[0] = env.app.name;
+    }
+    // Map taskName to task function.
+    var result = tasks.getTask(argv._);
+    if (!result || !result.task || !result.task.task) {
+      tasks.prettyPrint(result.task);
+    } else {
+      argv._ = result.args;
+      result.task.task(function(err) {
+        if (err) {
+          throw err;
+        }
+      });
+    }
+  });
+}
 
 function handleArguments(env) {
   if (argv.verbose) {
-    console.log(chalk.yellow('LIFTOFF SETTINGS:'), this);
     console.log(chalk.yellow('CLI OPTIONS:'), argv);
     console.log(chalk.yellow('CWD:'), env.cwd);
     console.log(chalk.red('APP CONFIG LOCATION:'),  env.configPath);
     console.log(chalk.red('APP CONFIG BASE DIR:'), env.configBase);
-    console.log(chalk.cyan('KALABOX MODULE LOCATION:'), this.modulePath);
-    console.log(chalk.cyan('KALABOX PACKAGE.JSON LOCATION:'), this.modulePackage);
     console.log(chalk.cyan('KALABOX PACKAGE.JSON'), require('../package'));
   }
 
@@ -168,28 +171,19 @@ function handleArguments(env) {
   }
 }
 
-function logError(err) {
-  console.log(chalk.red(err.message));
-}
+cli.on('require', function(name) {
+  console.log('Requiring external module', chalk.magenta(name));
+});
 
-function processTask(env) {
-  // Get dependencies.
-  deps.call(function(tasks) {
-    // Replace app with the app name.
-    if (argv._[0] === 'app' && env.app) {
-      argv._[0] = env.app.name;
-    }
-    // Map taskName to task function.
-    var result = tasks.getTask(argv._);
-    if (!result || !result.task || !result.task.task) {
-      tasks.prettyPrint(result.task);
-    } else {
-      argv._ = result.args;
-      result.task.task(function(err) {
-        if (err) {
-          throw err;
-        }
-      });
-    }
-  });
-}
+cli.on('requireFail', function(name) {
+  console.log(chalk.red('Failed to load external module'), chalk.magenta(name));
+});
+
+cli.launch({
+  cwd: argv.cwd,
+  configPath: argv.kalaboxfile,
+  require: argv.require,
+  completion: argv.completion,
+  verbose: argv.verbose,
+  app: argv.app
+}, handleArguments);

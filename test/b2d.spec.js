@@ -117,6 +117,29 @@ describe('#b2d module', function() {
     });
   });
 
+  describe('#init()', function() {
+    it('should run the correct shell command.', function(done) {
+      var config = {
+        '.kalabox' : {
+          'b2d.profile': ''
+        }
+      };
+      var mockFs = testUtil.mockFs.create(config);
+      var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
+        callback(null, null);
+      });
+      deps.override({shell:fakeShell, config:fakeConfig}, function() {
+        b2d.init(3, function() {
+          sinon.assert.callCount(stub, 2);
+          sinon.assert.calledWithExactly(stub, 'which boot2docker', sinon.match.func);
+          sinon.assert.calledWithExactly(stub, 'boot2docker init', sinon.match.func);
+          mockFs.restore();
+          done();
+        });
+      });
+    });
+  });
+
   describe('#state()', function() {
     it('should return the correct status.', function(done) {
       var config = {
