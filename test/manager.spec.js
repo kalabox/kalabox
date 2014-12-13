@@ -8,7 +8,7 @@ var manager = rewire('../lib/manager.js');
 var timeout = 10;
 var _ = require('lodash');
 var path = require('path');
-var testUtil = require('../lib/test_util.js');
+var testUtil = require('../lib/testUtil.js');
 
 describe('manager', function() {
 

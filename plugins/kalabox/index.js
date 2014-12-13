@@ -6,8 +6,14 @@ var plugin = require('../../lib/plugin.js');
 var deps = require('../../lib/deps.js');
 var installer = require('../../lib/install.js');
 
+var B2D_UP_ATTEMPTS = 3;
+var B2D_DOWN_ATTEMPTS = 3;
+var B2D_STATUS_ATTEMPTS = 3;
+var B2D_IP_ATTEMPTS = 3;
+
 module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
 
+  // Tasks
   // @todo: infinite timeout?
   tasks.registerTask('install', function(done) {
     installer.run(done);
@@ -15,15 +21,15 @@ module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
 
   // Start the kalabox VM and our core containers
   tasks.registerTask('up', function(done) {
-    b2d.up(done);
+    b2d.up(b2d, B2D_UP_ATTEMPTS, done);
   });
   tasks.registerTask('down', function(done) {
-    b2d.down(done);
+    b2d.down(b2d, B2D_DOWN_ATTEMPTS, done);
   });
 
   // Get the UP address of the kalabox vm
   tasks.registerTask('ip', function(done) {
-    b2d.ip(function(err, ip) {
+    b2d.ip(B2D_IP_ATTEMPTS, function(err, ip) {
       if (err) {
         throw err;
       } else {
@@ -35,8 +41,8 @@ module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
 
   // Check status of kbox
   tasks.registerTask('status', function(done) {
-    b2d.status(function(status) {
-      console.log(status);
+    b2d.state(B2D_STATUS_ATTEMPTS, function(message) {
+      console.log(message);
       done();
     });
   });
@@ -81,4 +87,12 @@ module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
     manager.purgeContainers(onRemove, onDone);
   });
 
+  // Events
+  b2d.events.on('post-up', function() {
+    console.log(chalk.green('Kalabox has been activated.'));
+  });
+
+  b2d.events.on('post-down', function() {
+    console.log(chalk.red('Kalabox has been deactivated.'));
+  });
 };

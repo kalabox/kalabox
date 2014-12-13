@@ -9,7 +9,7 @@ var app = rewire('../lib/app.js');
 var fs = require('fs');
 var sinon = require('sinon');
 var _ = require('lodash');
-var testUtil = require('../lib/test_util.js');
+var testUtil = require('../lib/testUtil.js');
 
 describe('app', function() {
 

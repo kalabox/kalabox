@@ -2,7 +2,7 @@
 
 var assert = require('chai').assert;
 var expect = require('chai').expect;
-var testUtil = require('../lib/test_util.js');
+var testUtil = require('../lib/testUtil.js');
 var fs = require('fs');
 var path = require('path');
 
