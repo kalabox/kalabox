@@ -2,7 +2,8 @@
   "domain": "kbox",
   "plugins": {
     "global": {
-      "kalabox": {}
+      "kalabox": {},
+      "kalabox_b2d": {}
     },
     "app": {
       "kalabox_app": {},
