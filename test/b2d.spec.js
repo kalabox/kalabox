@@ -102,7 +102,7 @@ describe('#b2d module', function() {
         };
         var mockFs = testUtil.mockFs.create(config);
         var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
-          callback(null, null);
+          callback(null, true);
         });
         deps.override({shell:fakeShell, config:fakeConfig}, function() {
           b2d[action](b2d, 3, function() {
@@ -112,6 +112,29 @@ describe('#b2d module', function() {
             mockFs.restore();
             done();
           });
+        });
+      });
+    });
+  });
+
+  describe('#init()', function() {
+    it('should run the correct shell command.', function(done) {
+      var config = {
+        '.kalabox' : {
+          'b2d.profile': ''
+        }
+      };
+      var mockFs = testUtil.mockFs.create(config);
+      var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
+        callback(null, true);
+      });
+      deps.override({shell:fakeShell, config:fakeConfig}, function() {
+        b2d.init(3, function() {
+          sinon.assert.callCount(stub, 2);
+          sinon.assert.calledWithExactly(stub, 'which boot2docker', sinon.match.func);
+          sinon.assert.calledWithExactly(stub, 'boot2docker init', sinon.match.func);
+          mockFs.restore();
+          done();
         });
       });
     });
