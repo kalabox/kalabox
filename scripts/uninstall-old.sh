@@ -65,10 +65,11 @@ if [ "$my_answer" == "1" ]; then
     VBOX=$(which VBoxManage)
     kala_files=()
     append kala_files "/Applications/boot2docker.app"
-    append kala_files "~/.boot2docker"
+    append kala_files "$HOME/.boot2docker"
     append kala_files "$B2D"
     append kala_files "$DOCKER"
     append kala_files "/usr/local/share/boot2docker"
+
     # Print the files and directories that are to be removed and verify
     # with the user that that is what he/she really wants to do.
     echo "The following files and directories will be removed:"
@@ -78,6 +79,7 @@ if [ "$my_answer" == "1" ]; then
 
     if [ "$B2D" ]; then
         if [ "$VBOX" ]; then
+            export BOOT2DOCKER_PROFILE=$HOME/.kalabox/b2d.profile
             $B2D poweroff
             $B2D destroy
         fi
@@ -85,6 +87,7 @@ if [ "$my_answer" == "1" ]; then
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f $B2D
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.boot2docker
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /usr/local/share/boot2docker
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f $BOOT2DOCKER_PROFILE
     fi
 
     if [ "$DOCKER" ]; then
