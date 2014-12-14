@@ -24,23 +24,6 @@ var kConfig = require('../lib/kConfig.js');
 var b2d = require('../lib/b2d.js');
 var kenv = require('../lib/kEnv.js');
 
-// Set env
-var setDockerHost = function() {
-  // @todo: it would be great to get this to run RIGHT BEFORE a dockerode call
-  // because that would likely mean the VM is on and we can do a B2D ip check.
-  // We'd also be able to do this only once and in a place that
-  // makes more sense.
-  //
-  // Originally we were going to do a b2d.ip here but that only works if b2d is
-  // installed first.
-  var PLATFORM_LINUX = 'linux';
-  var platformIsLinux = process.platform === PLATFORM_LINUX;
-  if (!platformIsLinux) {
-    var dockerHost = 'tcp://1.3.3.7:2375';
-    kenv.setDockerHost(dockerHost);
-  }
-};
-
 var init = function() {
   // argv
   deps.register('argv', argv);
@@ -53,9 +36,6 @@ var init = function() {
   var globalConfig = kConfig.getGlobalConfig();
   deps.register('globalConfig', globalConfig);
   deps.register('config', globalConfig);
-  // set dockerhoststub
-  // @todo: see @todo in setDockerHost()
-  setDockerHost();
   // manager
   manager.setup();
 };
