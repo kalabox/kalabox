@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * This contains all the core commands that kalabox can run on every machine
+ */
+
 var _ = require('lodash');
 var chalk = require('chalk');
 var plugin = require('../../lib/plugin.js');
@@ -11,42 +15,15 @@ var B2D_DOWN_ATTEMPTS = 3;
 var B2D_STATUS_ATTEMPTS = 3;
 var B2D_IP_ATTEMPTS = 3;
 
-module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
+module.exports = function(argv, globalConfig, manager, plugin, tasks) {
 
   // Tasks
-  // @todo: infinite timeout?
+  // Installs the dependencies for kalabox to run
   tasks.registerTask('install', function(done) {
     installer.run(done);
   });
 
-  // Start the kalabox VM and our core containers
-  tasks.registerTask('up', function(done) {
-    b2d.up(b2d, B2D_UP_ATTEMPTS, done);
-  });
-  tasks.registerTask('down', function(done) {
-    b2d.down(b2d, B2D_DOWN_ATTEMPTS, done);
-  });
-
-  // Get the UP address of the kalabox vm
-  tasks.registerTask('ip', function(done) {
-    b2d.ip(B2D_IP_ATTEMPTS, function(err, ip) {
-      if (err) {
-        throw err;
-      } else {
-        console.log(ip);
-        done();
-      }
-    });
-  });
-
-  // Check status of kbox
-  tasks.registerTask('status', function(done) {
-    b2d.state(B2D_STATUS_ATTEMPTS, function(message) {
-      console.log(message);
-      done();
-    });
-  });
-
+  // Prints out the config based on context
   tasks.registerTask('config', function(done) {
     console.log(JSON.stringify(globalConfig, null, '\t'));
     done();
@@ -87,12 +64,4 @@ module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
     manager.purgeContainers(onRemove, onDone);
   });
 
-  // Events
-  b2d.events.on('post-up', function() {
-    console.log(chalk.green('Kalabox VM has been activated.'));
-  });
-
-  b2d.events.on('post-down', function() {
-    console.log(chalk.red('Kalabox VM has been deactivated.'));
-  });
 };
