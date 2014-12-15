@@ -7,6 +7,7 @@ var testUtil = require('../lib/testUtil.js');
 var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;
+var path = require('path');
 var sinon = require('sinon');
 
 describe('#b2d module', function() {
@@ -16,7 +17,7 @@ describe('#b2d module', function() {
   };
 
   var fakeConfig = {
-    sysConfRoot: kenv.getHomeDir() + '/.kalabox'
+    sysConfRoot: path.join(kenv.getHomeDir(), '.kalabox')
   };
 
   var sandbox = sinon.sandbox.create();
