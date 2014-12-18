@@ -23,18 +23,17 @@ docker rm -f kalabox_data
 
 
 # Pull/Build Core Images
-docker build -t kalabox/kdata ../dockerfiles/kalabox/kdata
-docker pull crosbymichael/skydns
-docker pull crosbymichael/skydock
-docker pull hipache
-docker build -t kalabox/debian ../dockerfiles/kalabox/debian
-docker build -t kalabox/dnsmasq ../dockerfiles/kalabox/dnsmasq_linux
-docker build -t kalabox/drush ../dockerfiles/kalabox/drush
+docker pull kalabox/debian
+docker pull kalabox/dnsmasq
+docker pull kalabox/data
+docker pull kalabox/hipache
+docker pull kalabox/skydock
+docker pull kalabox/skydns
 
 
 # Create/Start Core Services
 docker run -d --name kalabox_data kalabox/kdata
-docker run -d -p 172.17.42.1:53:53/udp --name kalabox_skydns crosbymichael/skydns -nameserver 8.8.8.8:53 -domain kbox
-docker run -d --volumes-from kalabox_data -v /var/run/docker.sock:/docker.sock -v /skydock.js:/skydock.js --name kalabox_skydock crosbymichael/skydock -ttl 30 -environment dev -s /docker.sock -domain kbox -name kalabox_skydns -plugins /data/config/skydock.js
-docker run -d -p 80:80 -p 6379:6379 --name kalabox_hipache hipache
-docker run -d --name kalabox_dnsmasq -p 127.0.0.1:53:53/udp kalabox/dnsmasq
+docker run -d -p 172.17.42.1:53:53/udp --name kalabox_skydns kalabox/skydns
+docker run -d --volumes-from kalabox_data -v /var/run/docker.sock:/docker.sock -v /skydock.js:/skydock.js --name kalabox_skydock kalabox/skydock
+docker run -d -p 80:80 -p 6379:6379 --name kalabox_hipache kalabox/hipache
+docker run -d --name kalabox_dnsmasq -e KALABOX_IP=127.0.0.1 -p 127.0.0.1:53:53/udp kalabox/dnsmasq
