@@ -13,7 +13,7 @@ var TIMEOUT = 45 * 1000;
 platformSpec.assertExpectedPlatform();
 if (process.platform === platformSpec.PLATFORM_OSX) {
 
-  describe('sys_profiler.js', function() {
+  describe.skip('sys_profiler.js', function() {
 
     describe('#getAppData()', function() {
 

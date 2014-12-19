@@ -18,6 +18,23 @@ var B2D_IP_ATTEMPTS = 3;
 module.exports = function(argv, globalConfig, manager, plugin, tasks) {
 
   // Tasks
+
+  // Display list of apps.
+  tasks.registerTask('apps', function(done) {
+    var apps = require('../../lib/apps.js');
+    apps.getApps(function(err, apps) {
+      if (err) {
+        done(err);
+      } else {
+        for (var index in apps) {
+          console.log(apps[index]);
+        }
+        done();
+      }
+    });
+  });
+
+  // @todo: infinite timeout?
   // Installs the dependencies for kalabox to run
   tasks.registerTask('install', function(done) {
     installer.run(done);
@@ -25,7 +42,12 @@ module.exports = function(argv, globalConfig, manager, plugin, tasks) {
 
   // Prints out the config based on context
   tasks.registerTask('config', function(done) {
-    console.log(JSON.stringify(globalConfig, null, '\t'));
+    var query = argv._[0];
+    var target = globalConfig;
+    if (query !== undefined) {
+      target = target[query];
+    }
+    console.log(JSON.stringify(target, null, '\t'));
     done();
   });
 

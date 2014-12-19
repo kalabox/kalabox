@@ -7,10 +7,15 @@ var _ = require('lodash');
 var rimraf = require('rimraf');
 var plugin = require('../../lib/plugin.js');
 
-module.exports = function(manager, app, docker, tasks, appConfig) {
+module.exports = function(manager, app, docker, tasks, appConfig, argv) {
 
   tasks.registerTask([app.name, 'config'], function(done) {
-    console.log(JSON.stringify(appConfig, null, '\t'));
+    var query = argv._[0];
+    var target = appConfig;
+    if (query !== undefined) {
+      target = target[query];
+    }
+    console.log(JSON.stringify(target, null, '\t'));
     done();
   });
 
@@ -52,11 +57,11 @@ module.exports = function(manager, app, docker, tasks, appConfig) {
     manager.build(app, done);
   });
 
-  app.on('post-init', function() {
+  /*app.on('post-init', function() {
     var a = _.cloneDeep(app);
     delete a.components;
     fs.writeFileSync(path.resolve(app.dataPath, 'app.json'), JSON.stringify(a));
-  });
+  });*/
 
   app.on('post-remove', function() {
     rimraf(app.dataPath, function(err) {

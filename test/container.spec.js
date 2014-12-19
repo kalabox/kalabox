@@ -14,11 +14,14 @@ describe('container', function() {
       cid: 'mycid',
       cname: 'mycname',
       app: {
-        appname: 'myappname',
-        appdomain: 'myappdomain',
+        name: 'myappname',
+        appDomain: 'myappdomain',
         docker: {
           createContainer: function() {},
           getContainer: function() {}
+        },
+        config: {
+          appRoot: 'myapproot'
         }
       },
       image: {
@@ -84,7 +87,10 @@ describe('container', function() {
     var fakeCmp = {
         cid: 'mycid6',
         app: {
-          path: ''
+          path: '',
+          config: {
+            appRoot: 'myapproot'
+          }
         }
       };
     var fakeCtn = {
@@ -141,7 +147,7 @@ describe('container', function() {
           sinon.assert.calledWithExactly(stubGetCtn, 'mycid6');
 
           sinon.assert.callCount(spyCb, 1);
-          sinon.assert.calledWithExactly(spyCb, 'some data');
+          sinon.assert.calledWithExactly(spyCb, null, 'some data');
 
         });
       });

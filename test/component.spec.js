@@ -10,11 +10,14 @@ describe('component', function() {
   describe('#Constructor()', function() {
 
     var appApi = {
-      appdomain: 'myappdomain',
-      cidPath: 'foo',
+      appDomain: 'myappdomain',
+      //cidPath: 'foo',
       dataCname: 'data',
       hasData: true,
-      prefix: 'myapp1'
+      name: 'myapp1',
+      config: {
+        appCidsRoot: 'foo'
+      }
     };
     var key = 'db';
     var cmpApi = {
@@ -31,8 +34,8 @@ describe('component', function() {
       expect(x).to.have.property('hostname', 'db.myappdomain');
       expect(x).to.have.property('url', 'http://db.myappdomain');
       expect(x).to.have.property('dataCname', 'data');
-      expect(x).to.have.property('cname', 'kb_myapp1db');
-      expect(x).to.have.property('cidfile').to.match(/.*\/foo\/db$/);
+      expect(x).to.have.property('cname', 'kb_myapp1_db');
+      expect(x).to.have.property('cidfile').to.match(/.*foo\/db$/);
     });
 
   });
@@ -93,7 +96,7 @@ describe('component', function() {
           sinon.assert.calledWithExactly(spyEvent, 'post-' + x.msg + '-component', sinon.match.object);
           sinon.assert.callCount(spyEvent, 2);
 
-          sinon.assert.calledWithExactly(spyCb);
+          sinon.assert.calledWithExactly(spyCb, undefined, undefined);
           sinon.assert.callCount(spyCb, 1);
 
         });
