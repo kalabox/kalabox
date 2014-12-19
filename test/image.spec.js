@@ -120,7 +120,8 @@ describe('image', function() {
     it('Should call Docker.buildImage with the correct args.', function() {
       // mocks
       var mockPath = {
-          resolve: function() {}
+          resolve: function() {},
+          dirname: function(x) { return path.dirname(x); }
         };
       var mockProcess = {
           chdir: function() {}
@@ -151,13 +152,13 @@ describe('image', function() {
       });
 
       // verify
-      sinon.assert.calledWithExactly(stubResolve, '/my/path/1/', 'archive.tar');
+      sinon.assert.calledWithExactly(stubResolve, '/my/path', 'archive.tar');
       sinon.assert.callCount(stubResolve, 1);
 
-      sinon.assert.calledWithExactly(stubChdir, '/my/path/1/');
+      sinon.assert.calledWithExactly(stubChdir, '/my/path');
       sinon.assert.callCount(stubChdir, 1);
 
-      sinon.assert.calledWithExactly(stubFs, '/my/path/1/archive.tar');
+      sinon.assert.calledWithExactly(stubFs, '/my/path/archive.tar');
       sinon.assert.callCount(stubFs, 1);
 
       sinon.assert.calledWithExactly(spyBuildImage,

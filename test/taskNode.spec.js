@@ -14,7 +14,7 @@ describe('taskNode module', function() {
     function test(aSortIndex, bSortIndex, expected) {
       var a = createNode('a', aSortIndex);
       var b = createNode('b', bSortIndex);
-      var result = taskNode.TaskNode.compare(a, b);
+      var result = taskNode.TaskNode.compareSortIndex(a, b);
       expect(result).to.equal(expected);
     }
 

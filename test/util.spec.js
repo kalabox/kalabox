@@ -4,6 +4,8 @@ var util = require('../lib/util.js');
 var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;
+var testUtil = require('../lib/test_util.js');
+var _path = require('path');
 
 describe('util', function() {
 
@@ -167,6 +169,104 @@ describe('util', function() {
         'a_b'
       ], false);
 
+    });
+
+  });
+
+  describe('helpers', function() {
+
+    describe('#find()', function() {
+
+      it('should return null if no item is found.', function() {
+        var inputs = [1, 2, 3];
+        var expected = null;
+        var result = util.helpers.find(inputs, function(n) { return n === 4; });
+        expect(result).to.equal(expected);
+      });
+
+      it('should return the correct item if it is found.', function() {
+        var inputs = [1, 2, 3];
+        var expected = 2;
+        var result = util.helpers.find(inputs, function(n) {return n === 2;});
+        expect(result).to.equal(expected);
+      });
+
+    });
+
+    describe('#findMap()', function() {
+
+      it('should return the correct mapped value if it is found.', function() {
+        var inputs = [1, 2, 3];
+        var expected = 9;
+        var filter = function(input) { return input === 3; };
+        var map = function(input) { return input * input; };
+        var result = util.helpers.findMap(inputs, filter, map);
+        expect(result).to.equal(expected);
+      });
+
+    });
+
+    describe('#filterMap()', function() {
+
+      it('should filter and map correctly.', function() {
+        var inputs = [1, 3, 4, 6];
+        var filter = function(num) {
+          return num % 2 === 0;
+        };
+        var map = function(num) {
+          return num * num;
+        };
+        var result = util.helpers.filterMap(inputs, filter, map);
+        expect(result).to.deep.equal([16, 36]);
+      });
+
+    });
+
+  });
+
+  describe('searchForPath', function() {
+
+    var fakeFs = null;
+
+    var homePath = process.env.HOME;
+
+    var mapToHome = function(paths) {
+      return paths.map(function(path) {
+        return _path.join(homePath, path);
+      });
+    };
+
+    beforeEach(function() {
+      fakeFs = testUtil.mockFs.create({
+        'kalabox': {
+          'foo' : {}
+        }
+      });
+    });
+
+    afterEach(function() {
+      fakeFs.restore();
+    });
+
+    it('should return the correct path if it exists.', function() {
+      var inputs = mapToHome([
+        '/kalabox/bar/',
+        '/kalabox/foo/',
+        '/kalabox/bazz'
+      ]);
+      var result = util.searchForPath(inputs);
+      expect(result).to.equal(_path.join(homePath, '/kalabox/foo/'));
+    });
+
+    it('should return null when the path doesnt exist.', function() {
+      var inputs = mapToHome([
+        '/kalabox/elvis/',
+        '/kalabox/choppah/',
+        '/kalabox/thatshowwinningisdone/',
+        '/kalabox/kalatuna/'
+      ]);
+      var result = util.searchForPath(inputs);
+      expect(result).to.equal(null);
     });
 
   });

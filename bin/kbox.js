@@ -16,12 +16,13 @@ var chalk = require('chalk');
 var Liftoff = require('liftoff');
 var tildify = require('tildify');
 
-var kconfig = require('../lib/config.js');
 var deps = require('../lib/deps.js');
 var tasks = require('../lib/tasks.js');
 var manager = require('../lib/manager.js');
 var App = require('../lib/app.js');
 var kConfig = require('../lib/kConfig.js');
+var _apps = require('../lib/apps.js');
+var _util = require('../lib/util.js');
 
 var init = function() {
   // argv
@@ -45,7 +46,6 @@ var initWithApp = function(app) {
   deps.register('appConfig', appConfig);
   // app
   deps.register('app', app);
-  app.setup();
 };
 
 // set env var for ORIGINAL cwd before anything touches it
@@ -72,8 +72,6 @@ process.once('exit', function(code) {
 var cliPackage = require('../package');
 var versionFlag = argv.v || argv.version;
 var tasksFlag = argv.T || argv.tasks;
-//var tasks = argv._;
-//var toRun = tasks.length ? tasks : ['default'];
 
 cli.on('require', function (name) {
   console.log('Requiring external module', chalk.magenta(name));
@@ -107,26 +105,37 @@ function handleArguments(env) {
   var workingDir = env.cwd;
   var configPath = path.join(env.cwd, '.kalabox', 'profile.json');
 
-  if (argv.app) {
-    var apppath = path.resolve(kconfig.appDataPath, argv.app);
-    if (!fs.existsSync(apppath) || !fs.existsSync(path.resolve(apppath, 'app.json'))) {
-      console.log(chalk.red('App config not found.'));
-      process.exit(1);
-    }
-
-    // Load up the app data from ~/.kalabox/apps/<app>/app.json
-    var appdata = require(path.resolve(apppath, 'app.json'));
-    workingDir = appdata.path;
-    configPath = path.resolve(appdata.profilePath, 'profile.json');
-  }
-
+  // Init dependencies.
   init();
 
-  if (fs.existsSync(configPath)) {
-    process.chdir(workingDir);
-    env.app = new App(manager, workingDir);
-    initWithApp(env.app);
-  }
+  _apps.getAppNames(function(err, appNames) {
+
+    // Setup all the apps.
+    var apps = {};
+    appNames.forEach(function(appName) {
+      var appConfig = kConfig.getAppConfig({name: appName});
+      apps[appName] = new App(appName, appConfig);
+      apps[appName].setup();
+    });
+
+    // Load target app.
+    var appArgument = argv._[0];
+    var appToLoad = _util.helpers.find(appNames, function(appName) {
+      return appName === appArgument;
+    });
+    if (appToLoad !== null) {
+      env.app = apps[appToLoad];
+      initWithApp(env.app);
+    }
+
+    try {
+      // Run the task.
+      processTask(env);
+    } catch (err) {
+      // Log error.
+      logError(err);
+    }
+  });
 
   env.manager = manager;
 
@@ -134,18 +143,11 @@ function handleArguments(env) {
     console.log(chalk.red('APP CONFIG:'), env.config);
     console.log('Using config file', chalk.magenta(tildify(env.configPath)));
   }
-
-  try {
-    // Run the task.
-    processTask(env);
-  } catch (err) {
-    // Log error.
-    logError(err);
-  }
 }
 
 function logError(err) {
   console.log(chalk.red(err.message));
+  throw err;
 }
 
 function processTask(env) {

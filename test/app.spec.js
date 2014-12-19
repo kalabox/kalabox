@@ -48,7 +48,7 @@ describe('app', function() {
 
   });
 
-  describe('#loadConfig()', function() {
+  /*describe('#loadConfig()', function() {
 
     // setup mocks
     var mockPath = {
@@ -62,9 +62,6 @@ describe('app', function() {
         return mockAppConfig;
       }
     };
-    /*mockRequire = function(path) {
-      return mockAppConfig;
-    },*/
     var mockApp = {
       kconfig: {
         appDataPath: '/path/to/data/',
@@ -161,9 +158,9 @@ describe('app', function() {
       });
     });
 
-  });
+  });*/
 
-  describe('#loadComponents()', function() {
+  /*describe('#loadComponents()', function() {
 
     var mockAppApi = {
       config: {
@@ -236,9 +233,9 @@ describe('app', function() {
 
     });
 
-  });
+  });*/
 
-  describe('#loadPath()', function() {
+  /*describe('#loadPath()', function() {
 
     // mock modules
     var mockPathApi = {
@@ -297,9 +294,9 @@ describe('app', function() {
       assert.equal(result, expected);
     });
 
-  });
+  });*/
 
-  describe('#setDataPath()', function() {
+  /*describe('#setDataPath()', function() {
 
     var mockFs;
     var mockFsConfig = {
@@ -353,6 +350,6 @@ describe('app', function() {
       verify(true);
     });
 
-  });
+  });*/
 
 });
