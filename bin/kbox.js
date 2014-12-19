@@ -2,7 +2,6 @@
 
 'use strict';
 
-
 /**
  * This file is meant to be linked as a "kbox" executable.
  */
@@ -23,6 +22,8 @@ var App = require('../lib/app.js');
 var kConfig = require('../lib/kConfig.js');
 var _apps = require('../lib/apps.js');
 var _util = require('../lib/util.js');
+var b2d = require('../lib/b2d.js');
+var kenv = require('../lib/kEnv.js');
 
 var init = function() {
   // argv
@@ -73,32 +74,38 @@ var cliPackage = require('../package');
 var versionFlag = argv.v || argv.version;
 var tasksFlag = argv.T || argv.tasks;
 
-cli.on('require', function (name) {
-  console.log('Requiring external module', chalk.magenta(name));
-});
+function logError(err) {
+  console.log(chalk.red(err.message));
+}
 
-cli.on('requireFail', function (name) {
-  console.log(chalk.red('Failed to load external module'), chalk.magenta(name));
-});
-
-cli.launch({
-  cwd: argv.cwd,
-  configPath: argv.kalaboxfile,
-  require: argv.require,
-  completion: argv.completion,
-  verbose: argv.verbose,
-  app: argv.app
-}, handleArguments);
+function processTask(env) {
+  // Get dependencies.
+  deps.call(function(tasks) {
+    // Replace app with the app name.
+    if (argv._[0] === 'app' && env.app) {
+      argv._[0] = env.app.name;
+    }
+    // Map taskName to task function.
+    var result = tasks.getTask(argv._);
+    if (!result || !result.task || !result.task.task) {
+      tasks.prettyPrint(result.task);
+    } else {
+      argv._ = result.args;
+      result.task.task(function(err) {
+        if (err) {
+          throw err;
+        }
+      });
+    }
+  });
+}
 
 function handleArguments(env) {
   if (argv.verbose) {
-    console.log(chalk.yellow('LIFTOFF SETTINGS:'), this);
     console.log(chalk.yellow('CLI OPTIONS:'), argv);
     console.log(chalk.yellow('CWD:'), env.cwd);
     console.log(chalk.red('APP CONFIG LOCATION:'),  env.configPath);
     console.log(chalk.red('APP CONFIG BASE DIR:'), env.configBase);
-    console.log(chalk.cyan('KALABOX MODULE LOCATION:'), this.modulePath);
-    console.log(chalk.cyan('KALABOX PACKAGE.JSON LOCATION:'), this.modulePackage);
     console.log(chalk.cyan('KALABOX PACKAGE.JSON'), require('../package'));
   }
 
@@ -150,24 +157,19 @@ function logError(err) {
   throw err;
 }
 
-function processTask(env) {
-  // Get dependencies.
-  deps.call(function(tasks) {
-    // Replace app with the app name.
-    if (argv._[0] === 'app' && env.app) {
-      argv._[0] = env.app.name;
-    }
-    // Map taskName to task function.
-    var result = tasks.getTask(argv._);
-    if (!result || !result.task || !result.task.task) {
-      tasks.prettyPrint(result.task);
-    } else {
-      argv._ = result.args;
-      result.task.task(function(err) {
-        if (err) {
-          throw err;
-        }
-      });
-    }
-  });
-}
+cli.on('require', function(name) {
+  console.log('Requiring external module', chalk.magenta(name));
+});
+
+cli.on('requireFail', function(name) {
+  console.log(chalk.red('Failed to load external module'), chalk.magenta(name));
+});
+
+cli.launch({
+  cwd: argv.cwd,
+  configPath: argv.kalaboxfile,
+  require: argv.require,
+  completion: argv.completion,
+  verbose: argv.verbose,
+  app: argv.app
+}, handleArguments);

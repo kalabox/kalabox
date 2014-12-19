@@ -4,7 +4,7 @@ var util = require('../lib/util.js');
 var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;
-var testUtil = require('../lib/test_util.js');
+var testUtil = require('../lib/testUtil.js');
 var _path = require('path');
 
 describe('util', function() {

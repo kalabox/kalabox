@@ -1,13 +1,25 @@
 'use strict';
 
+/**
+ * This contains all the core commands that kalabox can run on every machine
+ */
+
 var _ = require('lodash');
 var chalk = require('chalk');
 var plugin = require('../../lib/plugin.js');
 var deps = require('../../lib/deps.js');
 var installer = require('../../lib/install.js');
 
-module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
+var B2D_UP_ATTEMPTS = 3;
+var B2D_DOWN_ATTEMPTS = 3;
+var B2D_STATUS_ATTEMPTS = 3;
+var B2D_IP_ATTEMPTS = 3;
 
+module.exports = function(argv, globalConfig, manager, plugin, tasks) {
+
+  // Tasks
+
+  // Display list of apps.
   tasks.registerTask('apps', function(done) {
     var apps = require('../../lib/apps.js');
     apps.getApps(function(err, apps) {
@@ -23,38 +35,12 @@ module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
   });
 
   // @todo: infinite timeout?
+  // Installs the dependencies for kalabox to run
   tasks.registerTask('install', function(done) {
     installer.run(done);
   });
 
-  // Start the kalabox VM and our core containers
-  tasks.registerTask('up', function(done) {
-    b2d.up(done);
-  });
-  tasks.registerTask('down', function(done) {
-    b2d.down(done);
-  });
-
-  // Get the UP address of the kalabox vm
-  tasks.registerTask('ip', function(done) {
-    b2d.ip(function(err, ip) {
-      if (err) {
-        throw err;
-      } else {
-        console.log(ip);
-        done();
-      }
-    });
-  });
-
-  // Check status of kbox
-  tasks.registerTask('status', function(done) {
-    b2d.status(function(status) {
-      console.log(status);
-      done();
-    });
-  });
-
+  // Prints out the config based on context
   tasks.registerTask('config', function(done) {
     var query = argv._[0];
     var target = globalConfig;
@@ -66,27 +52,37 @@ module.exports = function(argv, b2d, globalConfig, manager, plugin, tasks) {
   });
 
   tasks.registerTask('list', function(done) {
-    var i = 1;
-    manager.getApps(function(apps) {
-      _(apps).each(function(a) {
-        var status = '';
-        if (a.status === 'enabled') {
-          status = 'Enabled';
-          console.log(chalk.green(' ' + i + '. ' + a.config.title + ' (' + a.name + ')\t\t', a.url + '\t\t', status));
-        }
-        else if (a.status === 'disabled') {
-          status = 'Disabled';
-          console.log(chalk.magenta(' ' + i + '. ' + a.config.title + ' (' + a.name + ')\t\t', a.url + '\t\t', status));
-        }
-        else {
-          status = 'Uninstalled';
-          console.log(chalk.red(' ' + i + '. ' + a.config.title + ' (' + a.name + ')\t\t', a.url + '\t\t', status));
-        }
-        i++;
+    // --containers will show all built containers
+    if (argv.containers) {
+      manager.list(function(err, containers) {
+        // @todo: pretty print this eventually
+        console.log(containers);
+      });
+    }
+    // --apps will show all built containers
+    if (argv.apps) {
+      var i = 1;
+      manager.getApps(function(apps) {
+        _(apps).each(function(a) {
+          var status = '';
+          if (a.status === 'enabled') {
+            status = 'Enabled';
+            console.log(chalk.green(' ' + i + '. ' + a.config.title + ' (' + a.name + ')\t\t', a.url + '\t\t', status));
+          }
+          else if (a.status === 'disabled') {
+            status = 'Disabled';
+            console.log(chalk.magenta(' ' + i + '. ' + a.config.title + ' (' + a.name + ')\t\t', a.url + '\t\t', status));
+          }
+          else {
+            status = 'Uninstalled';
+            console.log(chalk.red(' ' + i + '. ' + a.config.title + ' (' + a.name + ')\t\t', a.url + '\t\t', status));
+          }
+          i++;
+        });
+        console.log('');
       });
       console.log('');
-    });
-    console.log('');
+    }
     done();
   });
 
