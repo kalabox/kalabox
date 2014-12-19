@@ -63,6 +63,7 @@ module.exports = function(manager, app, docker, tasks, appConfig, argv) {
     fs.writeFileSync(path.resolve(app.dataPath, 'app.json'), JSON.stringify(a));
   });*/
 
+  /*
   app.on('post-remove', function() {
     rimraf(app.dataPath, function(err) {
       if (err) {
@@ -70,5 +71,6 @@ module.exports = function(manager, app, docker, tasks, appConfig, argv) {
       }
     });
   });
+*/
 
 };
