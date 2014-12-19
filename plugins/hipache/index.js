@@ -17,13 +17,9 @@ module.exports = function(app, docker) {
           var client = redis.createClient(6379, '1.3.3.7');
           var hostname = proxy.default ? app.appDomain : component.hostname;
           var rkey = 'frontend:' + hostname;
-
           if (data && data.NetworkSettings.Ports[proxy.port]) {
-
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
             var dst = 'http://1.3.3.7' + ':' + port;
-
-
             client.multi()
               .del(rkey)
               .rpush(rkey, component.cname)
