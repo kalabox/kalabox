@@ -2,7 +2,11 @@
 
 var redis = require('redis');
 
-module.exports = function(app, docker) {
+module.exports = function(app, globalConfig, docker) {
+  // Redis information.
+  var redisHost = globalConfig.redis.host;
+  var redisPort = globalConfig.redis.port;
+  var redisUrl = ['http://', redisHost, ':', reditPort].join('');
 
   /**
    * Listens for post-start-component
@@ -14,12 +18,12 @@ module.exports = function(app, docker) {
       c.inspect(function(err, data) {
         for (var x in component.proxy) {
           var proxy = component.proxy[x];
-          var client = redis.createClient(6379, '1.3.3.7');
+          var client = redis.createClient(redisPort, redisHost);
           var hostname = proxy.default ? app.appDomain : component.hostname;
           var rkey = 'frontend:' + hostname;
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
-            var dst = 'http://1.3.3.7' + ':' + port;
+            var dst = redisUrl;
             client.multi()
               .del(rkey)
               .rpush(rkey, component.cname)
@@ -45,7 +49,7 @@ module.exports = function(app, docker) {
       c.inspect(function(err, data) {
         for (var x in component.proxy) {
           var proxy = component.proxy[x];
-          var client = redis.createClient(6379, '1.3.3.7');
+          var client = redis.createClient(redisPort, redisHost);
           var hostname = proxy.default ? app.appDomain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
