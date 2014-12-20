@@ -93,6 +93,19 @@ describe('#deps module', function() {
 
   });
 
+  describe('#inspect()', function() {
+
+    it('should return an array of dependencies required by a function.', function() {
+      var fn = function(alpha, bravo, charlie, delta) {
+        
+      };
+      var result = deps.inspect(fn);
+      var expected = ['alpha', 'bravo', 'charlie', 'delta'];
+      expect(result).to.deep.equal(expected);
+    });
+
+  });
+
   describe('#override()', function() {
 
     it('should override a dependency for the life of the callback.', function(done) {
@@ -141,6 +154,13 @@ describe('#deps module', function() {
         expect(count).to.equal(7);
         expect(regexp).to.deep.equal(/mchammer/);
       });
+    });
+
+    it('should return what the callback returns.', function() {
+      var result = deps.call(function() {
+        return 'foo';
+      });
+      expect(result).to.equal('foo');
     });
 
     it('should work if a callback with zero arguments is used.', function(done) {
