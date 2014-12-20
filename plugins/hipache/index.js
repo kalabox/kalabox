@@ -6,7 +6,7 @@ module.exports = function(app, globalConfig, docker) {
   // Redis information.
   var redisHost = globalConfig.redis.host;
   var redisPort = globalConfig.redis.port;
-  var redisUrl = ['http://', redisHost, ':', reditPort].join('');
+  var redisUrl = ['http://', redisHost, ':', redisPort].join('');
 
   /**
    * Listens for post-start-component
