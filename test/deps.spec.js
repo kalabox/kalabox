@@ -97,7 +97,7 @@ describe('#deps module', function() {
 
     it('should return an array of dependencies required by a function.', function() {
       var fn = function(alpha, bravo, charlie, delta) {
-        
+
       };
       var result = deps.inspect(fn);
       var expected = ['alpha', 'bravo', 'charlie', 'delta'];
