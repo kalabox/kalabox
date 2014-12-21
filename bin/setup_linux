@@ -32,7 +32,7 @@ docker pull kalabox/skydns
 
 
 # Create/Start Core Services
-docker run -d --name kalabox_data kalabox/kdata
+docker run -d --name kalabox_data kalabox/data
 docker run -d -p 172.17.42.1:53:53/udp --name kalabox_skydns kalabox/skydns
 docker run -d --volumes-from kalabox_data -v /var/run/docker.sock:/docker.sock -v /skydock.js:/skydock.js --name kalabox_skydock kalabox/skydock
 docker run -d -p 80:80 -p 6379:6379 --name kalabox_hipache kalabox/hipache
