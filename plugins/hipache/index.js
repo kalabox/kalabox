@@ -6,7 +6,7 @@ module.exports = function(app, globalConfig, docker) {
   // Redis information.
   var redisHost = globalConfig.redis.host;
   var redisPort = globalConfig.redis.port;
-  var redisUrl = ['http://', redisHost, ':', redisPort].join('');
+  //var redisUrl = ['http://', redisHost, ':', redisPort].join('');
 
   /**
    * Listens for post-start-component
@@ -23,7 +23,7 @@ module.exports = function(app, globalConfig, docker) {
           var rkey = 'frontend:' + hostname;
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
-            var dst = redisUrl;
+            var dst = ['http://', globalConfig.dockerHost, ':', port].join('');
             client.multi()
               .del(rkey)
               .rpush(rkey, component.cname)
