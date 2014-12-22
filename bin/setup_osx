@@ -5,23 +5,6 @@
 BASEDIR=$(dirname $0)
 cd $BASEDIR
 
-# Cleanup for a re-install
-docker rm -f kalabox_skydns
-docker rm -f kalabox_skydock
-docker rm -f kalabox_hipache
-docker rm -f kalabox_dnsmasq
-docker rm -f kalabox_data
-
-
-# Pull/Build Core Images
-docker pull kalabox/debian
-docker pull kalabox/dnsmasq
-docker pull kalabox/data
-docker pull kalabox/hipache
-docker pull kalabox/skydns
-docker pull kalabox/skydock
-
-
 # Create/Start Core Services
 docker run -d --name kalabox_data kalabox/data
 docker run -d -p 172.17.42.1:53:53/udp --name kalabox_skydns kalabox/skydns

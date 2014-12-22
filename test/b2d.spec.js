@@ -106,7 +106,7 @@ describe('#b2d module', function() {
           callback(null, true);
         });
         deps.override({shell:fakeShell, config:fakeConfig}, function() {
-          b2d[action](b2d, 3, function() {
+          b2d[action](3, function() {
             sinon.assert.callCount(stub, 2);
             sinon.assert.calledWithExactly(stub, 'which boot2docker', sinon.match.func);
             sinon.assert.calledWithExactly(stub, 'boot2docker ' + action, sinon.match.func);

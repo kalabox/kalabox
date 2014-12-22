@@ -22,12 +22,12 @@ module.exports = function(argv, globalConfig, manager, plugin, tasks) {
   // Display list of apps.
   tasks.registerTask('apps', function(done) {
     var apps = require('../../lib/apps.js');
-    apps.getApps(function(err, apps) {
+    apps.getAppNames(function(err, appNames) {
       if (err) {
         done(err);
       } else {
-        for (var index in apps) {
-          console.log(apps[index]);
+        for (var index in appNames) {
+          console.log(appNames[index]);
         }
         done();
       }

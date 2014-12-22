@@ -15,8 +15,11 @@ describe('#plugin module', function() {
       var _manager = {start: function() {}};
       var _plugin = {key:'mykey'};
       deps.register('app', _app);
+      var overrides = {
+        plugin: _plugin.key
+      };
       deps.override({manager:_manager}, function(next) {
-        plugin.init(_plugin, function(plugin, app, manager) {
+        plugin.init(_plugin, overrides, function(plugin, app, manager) {
           expect(_plugin.key).to.equal('mykey');
           expect(app).to.equal(_app);
           deps.clear();
