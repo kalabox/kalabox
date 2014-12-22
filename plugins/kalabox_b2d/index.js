@@ -21,12 +21,12 @@ module.exports = function(b2d, tasks) {
 
   // Start the kalabox VM and our core containers
   tasks.registerTask('up', function(done) {
-    b2d.up(b2d, B2D_UP_ATTEMPTS, done);
+    b2d.up(B2D_UP_ATTEMPTS, done);
   });
 
   // Stop the kalabox vm
   tasks.registerTask('down', function(done) {
-    b2d.down(b2d, B2D_DOWN_ATTEMPTS, done);
+    b2d.down(B2D_DOWN_ATTEMPTS, done);
   });
 
   // Get the UP address of the kalabox vm
