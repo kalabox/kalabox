@@ -12,7 +12,7 @@ describe('component', function() {
     var appApi = {
       appDomain: 'myappdomain',
       //cidPath: 'foo',
-      dataCname: 'data',
+      dataContainerName: 'data',
       hasData: true,
       name: 'myapp1',
       config: {
@@ -33,7 +33,7 @@ describe('component', function() {
       expect(x).to.have.property('key', 'db');
       expect(x).to.have.property('hostname', 'db.myappdomain');
       expect(x).to.have.property('url', 'http://db.myappdomain');
-      expect(x).to.have.property('dataCname', 'data');
+      expect(x).to.have.property('dataContainerName', 'data');
       expect(x).to.have.property('cname', 'kb_myapp1_db');
       expect(x).to.have.property('cidfile').to.match(/.*foo\/db$/);
     });
