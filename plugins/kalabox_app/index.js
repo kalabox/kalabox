@@ -4,6 +4,7 @@ var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
+var async = require('async');
 var rimraf = require('rimraf');
 var plugin = require('../../lib/plugin.js');
 
@@ -56,21 +57,5 @@ module.exports = function(manager, app, docker, tasks, appConfig, argv) {
   tasks.registerTask([app.name, 'build'], function(done) {
     manager.build(app, done);
   });
-
-  /*app.on('post-init', function() {
-    var a = _.cloneDeep(app);
-    delete a.components;
-    fs.writeFileSync(path.resolve(app.dataPath, 'app.json'), JSON.stringify(a));
-  });*/
-
-  /*
-  app.on('post-remove', function() {
-    rimraf(app.dataPath, function(err) {
-      if (err) {
-        throw err;
-      }
-    });
-  });
-*/
 
 };

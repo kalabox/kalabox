@@ -15,9 +15,7 @@ var B2D_DOWN_ATTEMPTS = 3;
 var B2D_STATUS_ATTEMPTS = 3;
 var B2D_IP_ATTEMPTS = 3;
 
-module.exports = function(argv, globalConfig, manager, plugin, tasks) {
-
-  // Tasks
+module.exports = function(argv, docker, globalConfig, manager, plugin, tasks) {
 
   // Display list of apps.
   tasks.registerTask('apps', function(done) {
