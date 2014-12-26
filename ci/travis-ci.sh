@@ -70,7 +70,7 @@ after-success() {
     COMMIT_MESSAGE=$(git log --format=%B -n 1)
     BUILD_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat $TRAVIS_BUILD_DIR/package.json)")
     # BUMP patch but only on master and not a tag
-    if [ -z $TRAVIS_TAG ] && [ $TRAVIS_BRANCH == "master" ] && [ "${COMMIT_MESSAGE}" != "Release v${BUILD_VERSION}" ] ; then
+    if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_BRANCH == "master" ] && [ "${COMMIT_MESSAGE}" != "Release v${BUILD_VERSION}" ] ; then
       grunt bump-patch
     fi
     # Get updated build version
@@ -88,7 +88,7 @@ after-success() {
     git remote add origin git@github.com:$TRAVIS_REPO_SLUG.git
     git checkout $TRAVIS_BRANCH
     git add -A
-    if [ -z $TRAVIS_TAG ]; then
+    if [ -z "$TRAVIS_TAG" ]; then
       git commit -m "KALABOT BUILDING NEGATIVE POWER COUPLING VERSION ${BUILD_VERSION} [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
     fi
     git push origin $TRAVIS_BRANCH

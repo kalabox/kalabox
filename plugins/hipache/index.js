@@ -2,7 +2,11 @@
 
 var redis = require('redis');
 
-module.exports = function(manager, app) {
+module.exports = function(app, globalConfig, docker) {
+  // Redis information.
+  var redisHost = globalConfig.redis.host;
+  var redisPort = globalConfig.redis.port;
+  //var redisUrl = ['http://', redisHost, ':', redisPort].join('');
 
   /**
    * Listens for post-start-component
@@ -10,18 +14,16 @@ module.exports = function(manager, app) {
    */
   app.on('post-start-component', function(component) {
     if (component.proxy) {
-      var c = app.docker.getContainer(component.cid);
+      var c = docker.getContainer(component.cid);
       c.inspect(function(err, data) {
         for (var x in component.proxy) {
           var proxy = component.proxy[x];
-          var client = redis.createClient(component.app.kconfig.redis.port, component.app.kconfig.redis.host);
-          var hostname = proxy.default ? app.appdomain : component.hostname;
+          var client = redis.createClient(redisPort, redisHost);
+          var hostname = proxy.default ? app.appDomain : component.hostname;
           var rkey = 'frontend:' + hostname;
-
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
-            var dst = 'http://' + component.app.kconfig.dockerHost + ':' + port;
-
+            var dst = ['http://', globalConfig.dockerHost, ':', port].join('');
             client.multi()
               .del(rkey)
               .rpush(rkey, component.cname)
@@ -43,12 +45,12 @@ module.exports = function(manager, app) {
   app.on('post-remove-component', function(component) {
     // Setup the hipache proxy via redis
     if (component.proxy) {
-      var c = app.docker.getContainer(component.cid);
+      var c = docker.getContainer(component.cid);
       c.inspect(function(err, data) {
         for (var x in component.proxy) {
           var proxy = component.proxy[x];
-          var client = redis.createClient(component.app.kconfig.redis.port, component.app.kconfig.redis.host);
-          var hostname = proxy.default ? app.appdomain : component.hostname;
+          var client = redis.createClient(redisPort, redisHost);
+          var hostname = proxy.default ? app.appDomain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
           client.del(rkey, function(err, replies) {

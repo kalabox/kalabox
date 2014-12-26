@@ -1,8 +1,26 @@
 {
   "name": "kalabox",
-  "description": "A Docker orchestration library & CLI tool",
-  "version": "0.1.56",
-  "repository": "kalabox/kalabox",
+  "description": "A Docker orchestration and app building library with CLI",
+  "keywords": [
+    "docker",
+    "kalabox",
+    "drupal",
+    "wordpress"
+  ],
+  "preferGlobal": true,
+  "version": "0.2.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kalabox/kalabox"
+  },
+  "bugs": {
+    "email": "mike@kalamuna.com",
+    "url": "http://github.com/kalabox/kalabox-issues"
+  },
+  "directories": {
+    "lib": "./lib",
+    "bin": "./bin"
+  },
   "bin": {
     "kbox": "./bin/kbox.js"
   },
@@ -26,7 +44,6 @@
     "q": "^1.0.1",
     "redis": "~0.12.1",
     "rimraf": "~2.2.8",
-    "rsyncwrapper": "~0.4.1",
     "shelljs": "^0.3.0",
     "tildify": "~1.0.0",
     "vasync": "~1.6.0"
