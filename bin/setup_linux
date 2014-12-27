@@ -36,7 +36,7 @@ sudo docker pull kalabox/skydns
 # Create/Start Core Services
 sudo docker run -d --name kalabox_data kalabox/data
 sudo docker run -d --restart always -p 172.17.42.1:53:53/udp --name kalabox_skydns kalabox/skydns
-sudo docker run -d --volumes-from kalabox_data -v /var/run/docker.sock:/docker.sock -v /skydock.js:/skydock.js --name kalabox_skydock kalabox/skydock
+sudo docker run -d --restart always -v /var/run/docker.sock:/docker.sock -v /skydock.js:/skydock.js --name kalabox_skydock kalabox/skydock
 sudo docker run -d --restart always -p 80:80 -p 6379:6379 --name kalabox_hipache kalabox/hipache
 sudo docker run -d --restart always --name kalabox_dnsmasq -e KALABOX_IP=127.0.0.1 -p 127.0.0.1:53:53/udp kalabox/dnsmasq
 sudo service docker restart
