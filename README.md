@@ -110,7 +110,7 @@ User's can override some global configuration by putting a file called `kalabox.
             "HostConfig" : {
               "NetworkMode": "bridge",
               "PortBindings": {
-                "53/udp" : [{"HostIp" : "172.17.42.1", "HostPort" : "53"}],
+                "53/udp" : [{"HostIp" : "172.17.42.1", "HostPort" : "53"}]
               }
             }
           },
@@ -135,7 +135,7 @@ User's can override some global configuration by putting a file called `kalabox.
               "NetworkMode": "bridge",
               "PortBindings": {
                 "80/tcp" : [{"HostIp" : "", "HostPort" : "80"}],
-                "6379/tcp" : [{"HostIp" : "", "HostPort" : "6379"}],
+                "6379/tcp" : [{"HostIp" : "", "HostPort" : "6379"}]
               }
             }
           },
@@ -216,7 +216,7 @@ Now visit `http://hotsauce.kbox` in your browser. It will likely tell you "no in
 
 ```
   # May need to set export DOCKER_HOST=tcp://1.3.3.7:2375 first
-  docker exec -it kb_hotsauce_wev /bin/bash
+  docker exec -it kb_hotsauce_web /bin/bash
   # Now should be inside the docker container
   echo "<?php phpinfo(); ?>" > /data/code/index.php
   exit
