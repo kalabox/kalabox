@@ -1,6 +1,8 @@
 # docker build -t kalabox/redis .
 
-FROM kalabox/ubuntu
+FROM kalabox/debian
+
+ENV DEBIAN_FRONTEND noninteractive
 
 # Install Redis.
 RUN \
