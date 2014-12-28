@@ -8,6 +8,7 @@ cd $BASEDIR
 # All this permission wrangling may not be needed. Needs a revisit with a fresh install.
 sudo touch /etc/resolvconf/resolv.conf.d/tail
 sudo chmod 666 /etc/resolvconf/resolv.conf.d/tail
+sudo bash -c "> /etc/resolvconf/resolv.conf.d/tail"
 sudo echo 'nameserver 8.8.8.8' >> /etc/resolvconf/resolv.conf.d/tail
 sudo echo 'nameserver 127.0.0.1' >> /etc/resolvconf/resolv.conf.d/tail
 sudo resolvconf -u
@@ -16,6 +17,7 @@ sudo chmod 644 /etc/resolvconf/resolv.conf.d/tail
 # Setup Docker Config
 sudo sed -i -e "s/#DOCKER_OPTS=/DOCKER_OPTS=/g" /etc/default/docker
 sudo sed -i 's@^DOCKER_OPTS=.*@DOCKER_OPTS=\"--bip=172.17.42.1/16 --dns=172.17.42.1 -H unix:///var/run/docker.sock\"@' /etc/init.d/docker
+sudo service docker stop
 sudo service docker restart
 
 # Cleanup for a re-install
@@ -23,26 +25,23 @@ sudo docker rm -f kalabox_skydns
 sudo docker rm -f kalabox_skydock
 sudo docker rm -f kalabox_hipache
 sudo docker rm -f kalabox_dnsmasq
-sudo docker rm -f kalabox_data
 
 # Pull/Build Core Images
 sudo docker pull kalabox/debian
 sudo docker pull kalabox/dnsmasq
-sudo docker pull kalabox/data
 sudo docker pull kalabox/hipache
 sudo docker pull kalabox/skydock
 sudo docker pull kalabox/skydns
 
 # Create/Start Core Services
-sudo docker run -d --name kalabox_data kalabox/data
 sudo docker run -d --restart always -p 172.17.42.1:53:53/udp --name kalabox_skydns kalabox/skydns
 sudo docker run -d --restart always -v /var/run/docker.sock:/docker.sock -v /skydock.js:/skydock.js --name kalabox_skydock kalabox/skydock
 sudo docker run -d --restart always -p 80:80 -p 6379:6379 --name kalabox_hipache kalabox/hipache
 sudo docker run -d --restart always --name kalabox_dnsmasq -e KALABOX_IP=127.0.0.1 -p 127.0.0.1:53:53/udp kalabox/dnsmasq
-sudo service docker restart
 
 # User Group Setup
 sudo groupadd docker
 sudo usermod -aG docker ${USER}
+sudo service docker stop
 sudo service docker restart
 newgrp docker
