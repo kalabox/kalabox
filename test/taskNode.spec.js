@@ -1,7 +1,8 @@
 'use strict';
 
 var expect = require('chai').expect;
-var taskNode = require('../lib/taskNode.js');
+var kbox = require('../lib/kbox.js');
+var taskNode = kbox.core.taskNode;
 
 describe('taskNode module', function() {
 
