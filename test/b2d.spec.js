@@ -1,8 +1,9 @@
 'use strict';
 
-var deps = require('../lib/deps.js');
+var kbox = require('../lib/kbox.js');
+var deps = kbox.core.deps;
+var env = kbox.core.env;
 var b2d = require('../lib/b2d.js');
-var kenv = require('../lib/kEnv.js');
 var testUtil = require('../lib/testUtil.js');
 var chai = require('chai');
 var assert = chai.assert;
@@ -17,7 +18,7 @@ describe('#b2d module', function() {
   };
 
   var fakeConfig = {
-    sysConfRoot: path.join(kenv.getHomeDir(), '.kalabox')
+    sysConfRoot: path.join(env.getHomeDir(), '.kalabox')
   };
 
   var sandbox = sinon.sandbox.create();
