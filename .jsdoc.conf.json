@@ -1,0 +1,23 @@
+{
+  "tags"      : {
+    "allowUnknownTags" : true
+  },
+
+  "templates" : {
+    "cleverLinks"           : false,
+    "monospaceLinks"        : false,
+    "dateFormat"            : "ddd MMM Do YYYY",
+    "outputSourceFiles"     : true,
+    "outputSourcePath"      : true,
+    "systemName"            : "Kalabox API",
+    "footer"                : "",
+    "copyright"             : "Kalabox API Copyright © 2014 Kalamuna and friends",
+    "navType"               : "vertical",
+    "theme"                 : "cerulean",
+    "linenums"              : true,
+    "collapseSymbols"       : false,
+    "inverseNav"            : true,
+    "highlightTutorialCode" : true,
+    "protocol": "fred://"
+  }
+}
