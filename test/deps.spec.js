@@ -1,6 +1,7 @@
 'use strict';
 
-var deps = require('../lib/deps.js');
+var kbox = require('../lib/kbox.js');
+var deps = kbox.core.deps;
 var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;

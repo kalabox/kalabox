@@ -2,7 +2,7 @@
 
 var expect = require('chai').expect;
 var rewire = require('rewire');
-var tasks = rewire('../lib/tasks.js');
+var tasks = rewire('../lib/core/tasks.js');
 
 describe('tasks module', function() {
 

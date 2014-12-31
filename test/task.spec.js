@@ -3,7 +3,8 @@
 var assert = require('chai').assert;
 var expect = require('chai').expect;
 var sinon = require('sinon');
-var Task = require('../lib/task.js');
+var kbox = require('../lib/kbox.js');
+var Task = kbox.core.task;
 
 describe('task module', function() {
 

@@ -1,7 +1,7 @@
 'use strict';
 
 var rewire = require('rewire');
-var img = rewire('../lib/image.js');
+var img = rewire('../lib/engine/image.js');
 var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;

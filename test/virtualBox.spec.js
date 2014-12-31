@@ -5,7 +5,7 @@ var assert = chai.assert;
 var expect = chai.expect;
 var sinon = require('sinon');
 var rewire = require('rewire');
-var virtualBox = rewire('../lib/virtualBox.js');
+var virtualBox = rewire('../lib/install/virtualBox.js');
 
 describe('virtualBox.js', function() {
 

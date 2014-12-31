@@ -54,7 +54,14 @@ describe('component', function() {
 
     var fakeCmp = {
       app: {
+        config: {
+          appRoot: 'myAppRoot'
+        },
         event: function() {}
+      },
+      cid: 'mycid',
+      image: {
+        name: 'foo'
       }
     };
     var fakeCtn = {
@@ -80,7 +87,14 @@ describe('component', function() {
           // create stubs
           var spyEvent = sandbox.spy(fakeCmp.app, 'event');
           var spyCb = sandbox.spy();
-          var stubFn = sandbox.stub(fakeCtn, x.name, function(_, cb) { cb(); });
+          var stubFn;
+          var isStart = x.name === 'start';
+          var isCreate = x.name === 'create';
+          if (isStart) {
+            stubFn = sandbox.stub(fakeCtn, x.name, function(_1, _2, cb) { cb(); });
+          } else {
+            stubFn = sandbox.stub(fakeCtn, x.name, function(_1, cb) { cb(); });
+          }
 
           // override modules
           cmp.__set__('container', fakeCtn);
@@ -89,7 +103,13 @@ describe('component', function() {
           x.fn(fakeCmp, spyCb);
 
           // verify
-          sinon.assert.calledWithExactly(stubFn, sinon.match.object, sinon.match.func);
+          if (isStart) {
+            sinon.assert.calledWithExactly(stubFn, sinon.match.string, sinon.match.object, sinon.match.func);
+          } else if (isCreate) {
+            sinon.assert.calledWithExactly(stubFn, sinon.match.object, sinon.match.func);
+          } else {
+            sinon.assert.calledWithExactly(stubFn, sinon.match.string, sinon.match.func);
+          }
           sinon.assert.callCount(stubFn, 1);
 
           sinon.assert.calledWithExactly(spyEvent, 'pre-' + x.msg + '-component', sinon.match.object);

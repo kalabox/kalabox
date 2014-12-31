@@ -6,7 +6,6 @@ var path = require('path');
 var _ = require('lodash');
 var async = require('async');
 var rimraf = require('rimraf');
-var plugin = require('../../lib/plugin.js');
 
 module.exports = function(manager, app, docker, tasks, appConfig, argv) {
 
