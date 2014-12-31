@@ -20,11 +20,11 @@ var config = kbox.core.config;
 var deps = kbox.core.deps;
 var env = kbox.core.env;
 var tasks = kbox.core.tasks;
+var manager = kbox.apps.manager;
+var App = kbox.apps.app;
+var _apps = kbox.apps;
+var _util = kbox.util;
 
-var manager = require('../lib/manager.js');
-var App = require('../lib/app.js');
-var _apps = require('../lib/apps.js');
-var _util = require('../lib/util.js');
 var b2d = require('../lib/b2d.js');
 
 var init = function() {

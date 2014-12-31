@@ -4,7 +4,7 @@ var assert = require('chai').assert;
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var rewire = require('rewire');
-var manager = rewire('../lib/manager.js');
+var manager = rewire('../lib/apps/manager.js');
 var timeout = 10;
 var _ = require('lodash');
 var path = require('path');
@@ -131,7 +131,7 @@ describe('manager', function() {
       var fakeDocker = new FakeDocker();
       var spyCallback = sinon.spy();
 
-      var manager = rewire('../lib/manager.js');
+      var manager = rewire('../lib/apps/manager.js');
       manager.__set__('docker', fakeDocker.api);
       manager.purgeContainers(spyCallback, function() {
         done();
