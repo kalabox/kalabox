@@ -48,6 +48,7 @@ script() {
 
   # Unit tests and coverage reports
   grunt test
+  grunt jsdoc
 }
 
 # after-script
@@ -97,6 +98,23 @@ after-success() {
     $HOME/npm-config.sh > /dev/null
     # Publish the things
     npm publish ./
+
+    # Push the JSDOCs
+    rm -rf $TRAVIS_BUILD_DIR/deploy
+    mkdir $TRAVIS_BUILD_DIR/deploy
+    git clone git@github.com:kalabox/kalabox-api.git $TRAVIS_BUILD_DIR/deploy
+    cd $TRAVIS_BUILD_DIR/deploy
+    # move new code into repo and commit
+    rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/doc/ $TRAVIS_BUILD_DIR/deploy/
+    git add --all
+    git commit -m "KALABOT BUILDING COMMIT ${TRAVIS_COMMIT} FROM ${TRAVIS_REPO_SLUG}"
+    if [ -z "$TRAVIS_TAG" ]; then
+      git tag $TRAVIS_TAG
+    fi
+    # deploy it!
+    git push origin master --tags
+    # clean up again
+    rm -rf $TRAVIS_BUILD_DIR/deploy
   else
     exit $EXIT_VALUE
   fi
