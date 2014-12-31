@@ -48,7 +48,7 @@ script() {
 
   # Unit tests and coverage reports
   grunt test
-  kbox config
+  /usr/local/bin/kbox config
   EXIT_STATUS=$?
   if [[ $EXIT_STATUS != 0 ]] ; then
     exit $EXIT_STATUS
