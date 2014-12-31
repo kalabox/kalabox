@@ -9,21 +9,16 @@ var path = require('path');
 
 var b2d = require('../../lib/b2d.js');
 
-var core = require('../../lib/core.js');
-var deps = core.deps;
-
-var util = require('../../lib/util.js');
-var disk = util.disk;
-var download = util.download;
-var firewall = util.firewall;
-var internet = util.internet;
-
-var install = require('../../lib/install.js');
-var cmd = install.cmd;
-var sysProfiler = install.sysProfiler;
-var vb = install.vb;
-
-var image = require('../../lib/image.js');
+var kbox = require('../../lib/kbox.js');
+var deps = kbox.core.deps;
+var disk = kbox.util.disk;
+var image = kbox.engine.image;
+var download = kbox.util.download;
+var firewall = kbox.util.firewall;
+var internet = kbox.util.internet;
+var cmd = kbox.install.cmd;
+var sysProfiler = kbox.install.sysProfiler;
+var vb = kbox.install.vb;
 
 // constants
 var INSTALL_MB = 30 * 1000;
