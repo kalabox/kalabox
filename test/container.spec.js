@@ -3,7 +3,7 @@
 var assert = require('chai').assert;
 var expect = require('chai').expect;
 var rewire = require('rewire');
-var ctn = rewire('../lib/container.js');
+var ctn = rewire('../lib/engine/container.js');
 var sinon = require('sinon');
 var _ = require('lodash');
 
