@@ -48,6 +48,7 @@ script() {
 
   # Unit tests and coverage reports
   grunt test
+  kbox config
   grunt jsdoc
 }
 
