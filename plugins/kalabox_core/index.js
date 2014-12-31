@@ -6,7 +6,6 @@
 
 var _ = require('lodash');
 var chalk = require('chalk');
-var installer = require('../../lib/install.js');
 
 var B2D_UP_ATTEMPTS = 3;
 var B2D_DOWN_ATTEMPTS = 3;
@@ -28,12 +27,6 @@ module.exports = function(argv, docker, globalConfig, manager, plugin, tasks) {
         done();
       }
     });
-  });
-
-  // @todo: infinite timeout?
-  // Installs the dependencies for kalabox to run
-  tasks.registerTask('install', function(done) {
-    installer.run(done);
   });
 
   // Prints out the config based on context

@@ -4,7 +4,7 @@ var assert = require('chai').assert;
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var rewire = require('rewire');
-var sp = rewire('../lib/sys_profiler.js');
+var sp = rewire('../lib/install/sysprofiler.js');
 var platformSpec = require('./platform.spec.js');
 
 var TIMEOUT = 45 * 1000;

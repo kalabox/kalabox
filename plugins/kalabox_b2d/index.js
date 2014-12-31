@@ -6,13 +6,16 @@
  */
 
 var chalk = require('chalk');
+// @todo: not sure if we want this part of the core deps for now, maybe package
+// it in as something like install.vm?
+var b2d = require('../../lib/b2d.js');
 
 var B2D_UP_ATTEMPTS = 3;
 var B2D_DOWN_ATTEMPTS = 3;
 var B2D_STATUS_ATTEMPTS = 3;
 var B2D_IP_ATTEMPTS = 3;
 
-module.exports = function(b2d, tasks) {
+module.exports = function(tasks) {
 
   // @todo: eventually these commands should only show up if you are on a
   // Boot2Docker machine ie Windows or Mac.
