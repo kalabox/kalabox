@@ -13,7 +13,7 @@ module.exports = function(grunt) {
     files: {
       js: {
         src: [
-          'lib/*.js',
+          'lib/**/*.js',
           'plugins/**/*.js',
           'test/*.js',
           'bin/kbox.js'
