@@ -6,8 +6,6 @@
 
 var _ = require('lodash');
 var chalk = require('chalk');
-var plugin = require('../../lib/plugin.js');
-var deps = require('../../lib/deps.js');
 var installer = require('../../lib/install.js');
 
 var B2D_UP_ATTEMPTS = 3;

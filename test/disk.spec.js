@@ -4,7 +4,7 @@ var assert = require('chai').assert;
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var rewire = require('rewire');
-var disk = rewire('../lib/disk.js');
+var disk = rewire('../lib/util/disk.js');
 
 describe('disk.js', function() {
 

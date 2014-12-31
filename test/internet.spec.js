@@ -4,8 +4,8 @@ var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;
 var sinon = require('sinon');
-var rewire = require('rewire');
-var internet = rewire('../lib/internet.js');
+var kbox = require('../lib/kbox.js');
+var internet = kbox.util.internet;
 
 describe('internet.js', function() {
 

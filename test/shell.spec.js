@@ -1,6 +1,7 @@
 'use strict';
 
-var shell = require('../lib/shell.js');
+var kbox = require('../lib/kbox.js');
+var shell = kbox.util.shell;
 var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;

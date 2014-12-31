@@ -1,11 +1,12 @@
 'use strict';
 
-var kConfig = require('../lib/kConfig.js');
+var kbox = require('../lib/kbox.js');
+var core = kbox.core;
 var chai = require('chai');
 var expect = chai.expect;
 var testUtil = require('../lib/testUtil.js');
 
-describe('kConfig module', function() {
+describe('config module', function() {
 
   describe('#normalizeValue()', function() {
     it('should normalize values correctly.', function() {
@@ -14,7 +15,7 @@ describe('kConfig module', function() {
         foo: 'asdf'
       };
       var key = 'bar';
-      kConfig.normalizeValue(key, config);
+      core.config.normalizeValue(key, config);
       expect(config.bar).to.equal('xxasdfxx');
     });
   });
@@ -26,7 +27,7 @@ describe('kConfig module', function() {
         foo: ':bar:B',
         bazz: ':foo:C'
       };
-      kConfig.normalize(config);
+      core.config.normalize(config);
       expect(config.bazz).to.equal('ABC');
     });
   });
@@ -46,14 +47,14 @@ describe('kConfig module', function() {
         b: 'bbb',
         c: '<<bbb>>'
       };
-      kConfig.mixIn(configA, configB);
+      core.config.mixIn(configA, configB);
       expect(configA).to.deep.equal(expected);
     });
   });
 
   describe('#getEnvConfig()', function() {
     it('should return an expected env config object.', function() {
-      var envConfig = kConfig.getEnvConfig();
+      var envConfig = core.config.getEnvConfig();
       expect(envConfig).to.have.property('home');
     });
   });
@@ -61,7 +62,7 @@ describe('kConfig module', function() {
   describe('#getGlobalConfig()', function() {
     it('should return an expected global config object.', function() {
       var mockFs = testUtil.mockFs.create();
-      var globalConfig = kConfig.getGlobalConfig();
+      var globalConfig = core.config.getGlobalConfig();
       expect(globalConfig).to.have.property('home');
       expect(globalConfig).to.have.property('appsRoot');
       expect(globalConfig).to.have.property('someSetting1', 'green');
@@ -75,7 +76,7 @@ describe('kConfig module', function() {
       var fakeApp = {
         name: 'myapp54'
       };
-      var appConfig = kConfig.getAppConfig(fakeApp);
+      var appConfig = core.config.getAppConfig(fakeApp);
       expect(appConfig).to.have.property('home');
       expect(appConfig).to.have.property('appsRoot');
       expect(appConfig).to.have.property('someSetting1', 'green');

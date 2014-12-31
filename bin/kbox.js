@@ -15,15 +15,17 @@ var chalk = require('chalk');
 var Liftoff = require('liftoff');
 var tildify = require('tildify');
 
-var deps = require('../lib/deps.js');
-var tasks = require('../lib/tasks.js');
+var kbox = require('../lib/kbox.js');
+var config = kbox.core.config;
+var deps = kbox.core.deps;
+var env = kbox.core.env;
+var tasks = kbox.core.tasks;
+
 var manager = require('../lib/manager.js');
 var App = require('../lib/app.js');
-var kConfig = require('../lib/kConfig.js');
 var _apps = require('../lib/apps.js');
 var _util = require('../lib/util.js');
 var b2d = require('../lib/b2d.js');
-var kenv = require('../lib/kEnv.js');
 
 var init = function() {
   // argv
@@ -34,7 +36,7 @@ var init = function() {
   tasks.init();
   deps.register('tasks', tasks);
   // globalConfig
-  var globalConfig = kConfig.getGlobalConfig();
+  var globalConfig = config.getGlobalConfig();
   deps.register('globalConfig', globalConfig);
   deps.register('config', globalConfig);
   // manager
@@ -43,7 +45,7 @@ var init = function() {
 
 var initWithApp = function(app) {
   // appConfig
-  var appConfig = kConfig.getAppConfig(app);
+  var appConfig = config.getAppConfig(app);
   deps.register('appConfig', appConfig);
   // app
   deps.register('app', app);
@@ -120,7 +122,7 @@ function handleArguments(env) {
     // Setup all the apps.
     var apps = {};
     appNames.forEach(function(appName) {
-      var appConfig = kConfig.getAppConfig({name: appName});
+      var appConfig = config.getAppConfig({name: appName});
       apps[appName] = new App(appName, appConfig);
       apps[appName].setup();
     });
