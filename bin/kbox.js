@@ -118,6 +118,10 @@ function handleArguments(env) {
   init();
 
   _apps.getAppNames(function(err, appNames) {
+    // Guard against errors.
+    if (err) {
+      throw err;
+    }
 
     // Setup all the apps.
     var apps = {};
