@@ -33,4 +33,23 @@ describe('#plugin module', function() {
 
   });
 
+  describe('#pluginUsesApp()', function() {
+    it('should return true if app is used in the plugin function.', function() {
+      var rawPlugin = function(foo, app, bar) {
+        // do nothing
+      };
+      var result = plugin.pluginUsesApp(rawPlugin);
+      var expected = true;
+      expect(result).to.equal(expected);
+    });
+    it('should return false if app is NOT used in the plugin function.', function() {
+      var rawPlugin = function(foo, bar, bazz) {
+        // do nothing
+      };
+      var result = plugin.pluginUsesApp(rawPlugin);
+      var expected = false;
+      expect(result).to.equal(expected);
+    });
+  });
+
 });

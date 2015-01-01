@@ -73,7 +73,10 @@ module.exports = function(grunt) {
       target: {
         src: ['lib/**/*.js'],
         options: {
-          destination: 'doc'
+          'private': false,
+          destination: 'doc',
+          template : 'node_modules/grunt-jsdoc/node_modules/ink-docstrap/template',
+          configure : '.jsdoc.conf.json'
         }
       }
     },

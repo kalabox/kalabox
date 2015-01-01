@@ -1,11 +1,12 @@
 'use strict';
 
-var App = require('../lib/app.js');
+var kbox = require('../lib/kbox.js');
+var App = kbox.apps.app;
 var assert = require('chai').assert;
 var expect = require('chai').expect;
 var path = require('path');
 var rewire = require('rewire');
-var app = rewire('../lib/app.js');
+var app = rewire('../lib/apps/app.js');
 var fs = require('fs');
 var sinon = require('sinon');
 var _ = require('lodash');

@@ -1,7 +1,7 @@
 'use strict';
 
 var rewire = require('rewire');
-var cmp = rewire('../lib/component.js');
+var cmp = rewire('../lib/apps/component.js');
 var expect = require('chai').expect;
 var sinon = require('sinon');
 

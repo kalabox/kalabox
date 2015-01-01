@@ -112,7 +112,7 @@ after-success() {
     # move new code into repo and commit
     rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/doc/ $TRAVIS_BUILD_DIR/deploy/
     git add --all
-    git commit -m "KALABOT BUILDING COMMIT ${TRAVIS_COMMIT} FROM ${TRAVIS_REPO_SLUG}"
+    git commit -m "Building API DOCS with ${BUILD_VERSION}"
     if [ -z "$TRAVIS_TAG" ]; then
       git tag $TRAVIS_TAG
     fi
