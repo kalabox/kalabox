@@ -3,7 +3,7 @@
 var assert = require('chai').assert;
 var expect = require('chai').expect;
 var kbox = require('../lib/kbox.js');
-var events = kbox.events;
+var events = kbox.core.events;
 
 describe('events module', function() {
   describe('#emit()', function() {
