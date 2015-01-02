@@ -39,6 +39,7 @@ module.exports = function(app, globalConfig, docker, events) {
         }
       });
     }
+    done();
   });
 
   /**
