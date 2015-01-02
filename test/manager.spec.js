@@ -9,6 +9,8 @@ var timeout = 10;
 var _ = require('lodash');
 var path = require('path');
 var testUtil = require('../lib/testUtil.js');
+var kbox = require('../lib/kbox.js');
+var deps = kbox.core.deps;
 
 describe('manager', function() {
 
@@ -163,25 +165,36 @@ describe('manager', function() {
       it('Should call app.emit with the correct args.', function(done) {
         var mockAppApi = {
           name: 'myappname1234',
-          emit: function() {},
           components: {},
+        };
+        var fakeEvents = {
+          emit: function() {}
         };
         var mock = sinon.mock(mockAppApi);
         var fakeDocker = new FakeDocker();
-        mock.expects('emit').withArgs('pre-' + name);
-        mock.expects('emit').withArgs('post-' + name);
+        var stubEmit = sinon.stub(fakeEvents, 'emit', function(name, data, cb) {
+          cb();
+        });
         manager.__with__({
           docker: fakeDocker.api
         })(function() {
-          fnManager(mockAppApi, function() {
-            mock.verify();
-            done();
+          deps.override({events: fakeEvents}, function(doneOverride) {
+            fnManager(mockAppApi, function() {
+              sinon.assert.callCount(stubEmit, 2);
+              sinon.assert.calledWithExactly(stubEmit,
+                'pre-' + name,
+                sinon.match.object,
+                sinon.match.func);
+              sinon.assert.calledWithExactly(stubEmit,
+                'post-' + name,
+                sinon.match.object,
+                sinon.match.func);
+              mock.verify();
+              doneOverride();
+              done();
+            });
           });
         });
-        /*setTimeout(function() {
-          mock.verify();
-          done();
-        }, timeout);*/
       });
     });
   };

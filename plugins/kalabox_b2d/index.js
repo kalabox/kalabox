@@ -15,7 +15,7 @@ var B2D_DOWN_ATTEMPTS = 3;
 var B2D_STATUS_ATTEMPTS = 3;
 var B2D_IP_ATTEMPTS = 3;
 
-module.exports = function(tasks) {
+module.exports = function(events, tasks) {
 
   // @todo: eventually these commands should only show up if you are on a
   // Boot2Docker machine ie Windows or Mac.
@@ -51,11 +51,13 @@ module.exports = function(tasks) {
   });
 
   // Events
-  b2d.events.on('post-up', function() {
+  events.on('post-up', function(done) {
     console.log(chalk.green('Kalabox VM has been activated.'));
+    done();
   });
 
-  b2d.events.on('post-down', function() {
+  events.on('post-down', function(done) {
     console.log(chalk.red('Kalabox VM has been deactivated.'));
+    done();
   });
 };
