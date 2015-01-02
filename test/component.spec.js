@@ -4,6 +4,8 @@ var rewire = require('rewire');
 var cmp = rewire('../lib/apps/component.js');
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var kbox = require('../lib/kbox.js');
+var deps = kbox.core.deps;
 
 describe('component', function() {
 
@@ -52,6 +54,9 @@ describe('component', function() {
       sandbox.restore();
     });
 
+    var fakeEvents = {
+      emit: function() {}
+    };
     var fakeCmp = {
       app: {
         config: {
@@ -82,10 +87,13 @@ describe('component', function() {
 
       describe('#' + x.name + '()', function() {
 
-        it('Should call container.' + x.name + '() with the correct args.', function() {
+        it('Should call container.' + x.name + '() with the correct args.', function(done) {
 
           // create stubs
-          var spyEvent = sandbox.spy(fakeCmp.app, 'event');
+          //var spyEvent = sandbox.spy(fakeCmp.app, 'event');
+          var stubEmit = sandbox.stub(fakeEvents, 'emit', function(name, data, cb) {
+            cb();
+          });
           var spyCb = sandbox.spy();
           var stubFn;
           var isStart = x.name === 'start';
@@ -100,24 +108,34 @@ describe('component', function() {
           cmp.__set__('container', fakeCtn);
 
           // run unit being tested
-          x.fn(fakeCmp, spyCb);
+          deps.override({events: fakeEvents}, function(doneOverride) {
+            x.fn(fakeCmp, spyCb);
 
-          // verify
-          if (isStart) {
-            sinon.assert.calledWithExactly(stubFn, sinon.match.string, sinon.match.object, sinon.match.func);
-          } else if (isCreate) {
-            sinon.assert.calledWithExactly(stubFn, sinon.match.object, sinon.match.func);
-          } else {
-            sinon.assert.calledWithExactly(stubFn, sinon.match.string, sinon.match.func);
-          }
-          sinon.assert.callCount(stubFn, 1);
+            // verify
+            if (isStart) {
+              sinon.assert.calledWithExactly(stubFn, sinon.match.string, sinon.match.object, sinon.match.func);
+            } else if (isCreate) {
+              sinon.assert.calledWithExactly(stubFn, sinon.match.object, sinon.match.func);
+            } else {
+              sinon.assert.calledWithExactly(stubFn, sinon.match.string, sinon.match.func);
+            }
+            sinon.assert.callCount(stubFn, 1);
 
-          sinon.assert.calledWithExactly(spyEvent, 'pre-' + x.msg + '-component', sinon.match.object);
-          sinon.assert.calledWithExactly(spyEvent, 'post-' + x.msg + '-component', sinon.match.object);
-          sinon.assert.callCount(spyEvent, 2);
+            sinon.assert.callCount(stubEmit, 2);
+            sinon.assert.calledWithExactly(stubEmit,
+              'pre-' + x.msg + '-component',
+              sinon.match.object,
+              sinon.match.func);
+            sinon.assert.calledWithExactly(stubEmit,
+              'post-' + x.msg + '-component',
+              sinon.match.object,
+              sinon.match.func);
 
-          sinon.assert.calledWithExactly(spyCb, undefined, undefined);
-          sinon.assert.callCount(spyCb, 1);
+            sinon.assert.calledWithExactly(spyCb, undefined, undefined);
+            sinon.assert.callCount(spyCb, 1);
+            doneOverride();
+            done();
+          });
 
         });
 

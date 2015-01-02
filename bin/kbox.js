@@ -28,6 +28,8 @@ var _util = kbox.util;
 var b2d = require('../lib/b2d.js');
 
 var init = function() {
+  // events
+  deps.register('events', kbox.core.events);
   // argv
   deps.register('argv', argv);
   // manager

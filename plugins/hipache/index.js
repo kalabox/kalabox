@@ -2,7 +2,7 @@
 
 var redis = require('redis');
 
-module.exports = function(app, globalConfig, docker) {
+module.exports = function(app, globalConfig, docker, events) {
   // Redis information.
   var redisHost = globalConfig.redis.host;
   var redisPort = globalConfig.redis.port;
@@ -12,7 +12,7 @@ module.exports = function(app, globalConfig, docker) {
    * Listens for post-start-component
    * - Creates a proxy record via redis for components with proxy definitions.
    */
-  app.on('post-start-component', function(component) {
+  events.on('post-start-component', function(component, done) {
     if (component.proxy) {
       var c = docker.getContainer(component.cid);
       c.inspect(function(err, data) {
@@ -31,18 +31,22 @@ module.exports = function(app, globalConfig, docker) {
               .exec(function(err, replies) {
                 if (err) { throw err; }
                 client.quit();
+                done();
               });
+          } else {
+            done();
           }
         }
       });
     }
+    done();
   });
 
   /**
    * Listens for post-start-component
    * - Removes proxy records via redis.
    */
-  app.on('post-remove-component', function(component) {
+  events.on('post-remove-component', function(component, done) {
     // Setup the hipache proxy via redis
     if (component.proxy) {
       var c = docker.getContainer(component.cid);
@@ -56,9 +60,12 @@ module.exports = function(app, globalConfig, docker) {
           client.del(rkey, function(err, replies) {
             if (err) { throw err; }
             client.quit();
+            done();
           });
         }
       });
+    } else {
+      done();
     }
   });
 };
