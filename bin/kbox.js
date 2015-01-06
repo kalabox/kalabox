@@ -41,6 +41,10 @@ var init = function() {
   var globalConfig = config.getGlobalConfig();
   deps.register('globalConfig', globalConfig);
   deps.register('config', globalConfig);
+  // engine
+  kbox.engine.init(globalConfig);
+  deps.register('engine', kbox.engine);
+  deps.register('docker', kbox.engine.getState().docker);
   // manager
   manager.setup();
 };

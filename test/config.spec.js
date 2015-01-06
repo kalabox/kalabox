@@ -30,6 +30,17 @@ describe('config module', function() {
       core.config.normalize(config);
       expect(config.bazz).to.equal('ABC');
     });
+    // @todo: implement this!
+    it.skip('should normalize a nested object correctly.', function() {
+      var config = {
+        bar: 'Y',
+        foo: {
+          bazz: 'X:bar:Z'
+        }
+      };
+      core.config.normalize(config);
+      expect(config.foo.bazz).to.equal('XYZ');
+    });
   });
 
   describe('#mixIn()', function() {

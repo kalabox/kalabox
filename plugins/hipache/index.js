@@ -2,7 +2,7 @@
 
 var redis = require('redis');
 
-module.exports = function(app, globalConfig, docker, events) {
+module.exports = function(app, globalConfig, engine, docker, events) {
   // Redis information.
   var redisHost = globalConfig.redis.host;
   var redisPort = globalConfig.redis.port;
