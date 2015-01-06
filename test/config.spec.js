@@ -4,6 +4,7 @@ var kbox = require('../lib/kbox.js');
 var core = kbox.core;
 var chai = require('chai');
 var expect = chai.expect;
+var assert = chai.assert;
 var testUtil = require('../lib/testUtil.js');
 
 describe('config module', function() {
@@ -60,6 +61,26 @@ describe('config module', function() {
       };
       core.config.mixIn(configA, configB);
       expect(configA).to.deep.equal(expected);
+    });
+    it('should sort keys after each mixin.', function() {
+      var configA = {
+        c: 'ccc'
+      };
+      var configB = {
+        a: 'aaa',
+        x: 'xxx'
+      };
+      var expected = {
+        a: 'aaa',
+        c: 'ccc',
+        x: 'xxx'
+      };
+      var result = core.config.mixIn(configA, configB);
+      var keysResult = Object.keys(result);
+      var keysExpected = Object.keys(expected);
+      for (var i = 0; i < keysResult.length; ++i) {
+        expect(keysResult[i]).to.equal(keysExpected[i]);
+      }
     });
   });
 
