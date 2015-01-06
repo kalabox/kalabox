@@ -78,7 +78,7 @@ describe('config module', function() {
       var result = core.config.mixIn(configA, configB);
       var keysResult = Object.keys(result);
       var keysExpected = Object.keys(expected);
-      for (var i=0; i<keysResult.length; ++i) {
+      for (var i = 0; i < keysResult.length; ++i) {
         expect(keysResult[i]).to.equal(keysExpected[i]);
       }
     });
