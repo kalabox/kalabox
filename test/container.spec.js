@@ -6,6 +6,7 @@ var rewire = require('rewire');
 var ctn = rewire('../lib/engine/container.js');
 var sinon = require('sinon');
 var _ = require('lodash');
+var kbox = require('../lib/kbox.js');
 
 describe('container', function() {
 
@@ -37,7 +38,8 @@ describe('container', function() {
       getContainer: function() {}
     };
 
-  ctn.__set__('docker', mockDockerApi);
+  //ctn.__set__('docker', mockDockerApi);
+  kbox.core.deps.register('docker', mockDockerApi);
 
   describe.skip('#createOpts()', function() {
 
@@ -138,15 +140,15 @@ describe('container', function() {
               fn(null, 'some data');
             });
 
-          // setup modules
-          ctn.__set__('docker', fakeDocker);
-
           // run unit being tested
-          if (isStart) {
-            x.fn(fakeCmp.cid, null, spyCb);
-          } else {
-            x.fn(fakeCmp.cid, spyCb);
-          }
+          kbox.core.deps.override({docker: fakeDocker}, function(overrideDone) {
+            if (isStart) {
+              x.fn(fakeCmp.cid, null, spyCb);
+            } else {
+              x.fn(fakeCmp.cid, spyCb);
+            }
+            overrideDone();
+          });
 
           // verify
           sinon.assert.callCount(stubGetCtn, 1);

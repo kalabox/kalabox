@@ -7,7 +7,7 @@ var _ = require('lodash');
 var async = require('async');
 var rimraf = require('rimraf');
 
-module.exports = function(manager, app, docker, tasks, appConfig, argv) {
+module.exports = function(manager, app, tasks, appConfig, argv) {
 
   tasks.registerTask([app.name, 'config'], function(done) {
     var query = argv._[0];
