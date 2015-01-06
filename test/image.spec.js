@@ -9,6 +9,7 @@ var path = require('path');
 var sinon = require('sinon');
 var FakeDocker = require('./fakeDocker.js');
 var FakeStream = require('./fakeStream.js');
+var kbox = require('../lib/kbox.js');
 
 describe('image', function() {
 
@@ -28,8 +29,6 @@ describe('image', function() {
     fakeDocker.restore();
   });
 
-  img.__set__('docker', fakeDocker);
-
   describe('#pull()', function() {
 
     it('Should call Docker.pull with the correct args.', function() {
@@ -38,7 +37,9 @@ describe('image', function() {
       var spyOn = sandbox.spy(fakeDocker.getStream(), 'on');
 
       // run unit being tested
-      img.pull(mockImage, function() {});
+      kbox.core.deps.override({docker: fakeDocker}, function(done) {
+        img.pull(mockImage, function() {});
+      });
 
       // verify
       sinon.assert.calledWithExactly(spyPull, 'myimagename', sinon.match.func);
