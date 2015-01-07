@@ -15,7 +15,7 @@ var fakeContainers = [
   'kb_yourapp_d7',
   'kb_yourapp_redis'
 ].map(function(name, index) {
-  return {Names: ['/' + name], Id: index.toString()}
+  return {Names: ['/' + name], Id: index.toString()};
 });
 var fakeDockerode = {
   getContainer: function() {},
@@ -49,7 +49,7 @@ var stubRemove = sinon.stub(fakeContainer, 'remove', function(callback) {
   callback(err, data);
 });
 
-describe.only('docker module', function() {
+describe('docker module', function() {
 
   beforeEach(function() {
     docker.init(fakeDockerode);
