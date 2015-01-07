@@ -13,6 +13,7 @@ npm-debug.log
 cache
 coverage
 doc
+deploy
 node_modules
 cids
 .boot2docker
