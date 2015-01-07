@@ -128,7 +128,7 @@ after-success() {
     TRAVIS_REPO=$(echo $TRAVIS_REPO_SLUG | awk -F'/' '{print $2}')
     git clone git@github.com:kalabox/kalabox-coverage.git $TRAVIS_BUILD_DIR/deploy
     mkdir -p $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
-    rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/doc/ $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
+    rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/coverage/ $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
     git add --all
     git commit -m "Building COVERAGE DOCS with ${BUILD_VERSION}"
     if [ ! -z "$TRAVIS_TAG" ]; then
