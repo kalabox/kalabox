@@ -110,7 +110,7 @@ describe('docker module', function() {
       docker.list(function(err, containers) {
         expect(containers.length).to.equal(6);
         var names = containers.map(function(container) {
-          return container.name;          
+          return container.name;
         });
         expect(names).to.deep.equal([
           'kb_myapp_db',
