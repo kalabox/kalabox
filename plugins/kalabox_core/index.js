@@ -12,19 +12,34 @@ var B2D_DOWN_ATTEMPTS = 3;
 var B2D_STATUS_ATTEMPTS = 3;
 var B2D_IP_ATTEMPTS = 3;
 
-module.exports = function(argv, globalConfig, manager, plugin, tasks) {
+module.exports = function(argv, plugin, kbox) {
+
+  var tasks = kbox.core.tasks;
 
   // Display list of apps.
   tasks.registerTask('apps', function(done) {
-    var apps = require('../../lib/apps.js');
-    apps.getAppNames(function(err, appNames) {
+    kbox.app.list(function(err, apps) {
       if (err) {
         done(err);
       } else {
-        for (var index in appNames) {
-          console.log(appNames[index]);
-        }
+        _.forEach(apps, function(app) {
+          console.log(app.name);
+        });
         done();
+      }
+
+    });
+  });
+
+  // Display list of containers.
+  tasks.registerTask('containers', function(done) {
+    kbox.engine.list(function(err, containers) {
+      if (err) {
+        done(err);
+      } else {
+        _.forEach(containers, function(container) {
+        console.log(container);
+      });
       }
     });
   });
@@ -32,7 +47,7 @@ module.exports = function(argv, globalConfig, manager, plugin, tasks) {
   // Prints out the config based on context
   tasks.registerTask('config', function(done) {
     var query = argv._[0];
-    var target = globalConfig;
+    var target = kbox.core.config.getGlobalConfig();
     if (query !== undefined) {
       target = target[query];
     }
@@ -40,7 +55,7 @@ module.exports = function(argv, globalConfig, manager, plugin, tasks) {
     done();
   });
 
-  tasks.registerTask('list', function(done) {
+  /*tasks.registerTask('list', function(done) {
     // --containers will show all built containers
     if (argv.containers) {
       manager.list(function(err, containers) {
@@ -73,9 +88,10 @@ module.exports = function(argv, globalConfig, manager, plugin, tasks) {
       console.log('');
     }
     done();
-  });
+  });*/
 
-  tasks.registerTask('pc', function(done) {
+  // @todo: Do we need this? If so should it be in engine or app?
+  /*tasks.registerTask('pc', function(done) {
     var onRemove = function(data) {
       // container was removed
     };
@@ -83,6 +99,6 @@ module.exports = function(argv, globalConfig, manager, plugin, tasks) {
       done();
     };
     manager.purgeContainers(onRemove, onDone);
-  });
+  });*/
 
 };

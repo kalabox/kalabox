@@ -9,7 +9,7 @@ var expect = chai.expect;
 
 describe('#plugin module', function() {
 
-  describe('#init()', function() {
+  describe('#initPlugin()', function() {
 
     it('should call callback with dependencies automatically set.', function(done) {
       var _app = {name:'myappname'};
@@ -20,7 +20,7 @@ describe('#plugin module', function() {
         plugin: _plugin.key
       };
       deps.override({manager:_manager}, function(next) {
-        plugin.init(_plugin, overrides, function(plugin, app, manager) {
+        plugin.initPlugin(_plugin, overrides, function(plugin, app, manager) {
           expect(_plugin.key).to.equal('mykey');
           expect(app).to.equal(_app);
           deps.clear();

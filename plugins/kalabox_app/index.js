@@ -7,7 +7,9 @@ var _ = require('lodash');
 var async = require('async');
 var rimraf = require('rimraf');
 
-module.exports = function(manager, app, tasks, appConfig, argv) {
+module.exports = function(argv, app, appConfig, kbox) {
+
+  var tasks = kbox.core.tasks;
 
   tasks.registerTask([app.name, 'config'], function(done) {
     var query = argv._[0];
@@ -19,42 +21,61 @@ module.exports = function(manager, app, tasks, appConfig, argv) {
     done();
   });
 
-  tasks.registerTask([app.name, 'init'], function(done) {
-    manager.init(app, done);
-  });
-
-  tasks.registerTask([app.name, 'start'], function(done) {
-    manager.start(app, done);
-  });
-
-  tasks.registerTask([app.name, 'stop'], function(done) {
-    manager.stop(app, done);
-  });
-
-  tasks.registerTask([app.name, 'restart'], function(done) {
-    manager.stop(app, function(err) {
+  tasks.registerTask([app.name, 'containers'], function(done) {
+    kbox.engine.list(app.name, function(err, containers) {
       if (err) {
         done(err);
       } else {
-        manager.start(app, done);
+        _.forEach(containers, function(container) {
+        console.log(container);
+      });
       }
     });
   });
 
-  tasks.registerTask([app.name, 'kill'], function(done) {
-    manager.kill(app, done);
+  tasks.registerTask([app.name, 'inspect'], function(done) {
+    var targetName = argv._[0];
+    kbox.engine.list(app.name, function(err, containers) {
+      if (err) {
+        done(err);
+      } else {
+        var target = _.find(containers, function(container) {
+          return container.name === targetName;
+        });
+        if (target === undefined) {
+          done(new Error('No item named "' + targetName + '" found!'));
+        } else {
+          kbox.engine.inspect(target.id, function(err, data) {
+            if (err) {
+              done(err);
+            } else {
+              console.log(data);
+              done();
+            }
+          });
+        }
+      }
+    });
   });
 
-  tasks.registerTask([app.name, 'remove'], function(done) {
-    manager.remove(app, done);
+  tasks.registerTask([app.name, 'install'], function(done) {
+    kbox.app.install(app, done);
   });
 
-  tasks.registerTask([app.name, 'pull'], function(done) {
-    manager.pull(app, done);
+  tasks.registerTask([app.name, 'uninstall'], function(done) {
+    kbox.app.uninstall(app, done);
   });
 
-  tasks.registerTask([app.name, 'build'], function(done) {
-    manager.build(app, done);
+  tasks.registerTask([app.name, 'start'], function(done) {
+    kbox.app.start(app, done);
+  });
+
+  tasks.registerTask([app.name, 'stop'], function(done) {
+    kbox.app.stop(app, done);
+  });
+
+  tasks.registerTask([app.name, 'restart'], function(done) {
+    kbox.app.restart(app, done);
   });
 
 };
