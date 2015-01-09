@@ -2,11 +2,13 @@
 
 var redis = require('redis');
 
-module.exports = function(app, globalConfig, engine, docker, events) {
+module.exports = function(kbox, app) {
+  var engine = kbox.engine;
+  var events = kbox.core.events;
+  var globalConfig = kbox.core.config.getGlobalConfig();
   // Redis information.
   var redisHost = globalConfig.redis.host;
   var redisPort = globalConfig.redis.port;
-  //var redisUrl = ['http://', redisHost, ':', redisPort].join('');
 
   /**
    * Listens for post-start-component
@@ -14,19 +16,18 @@ module.exports = function(app, globalConfig, engine, docker, events) {
    */
   events.on('post-start-component', function(component, done) {
     if (component.proxy) {
-      var c = docker.getContainer(component.cid);
-      c.inspect(function(err, data) {
+      engine.inspect(component.containerId, function(err, data) {
         for (var x in component.proxy) {
           var proxy = component.proxy[x];
           var client = redis.createClient(redisPort, redisHost);
-          var hostname = proxy.default ? app.appDomain : component.hostname;
+          var hostname = proxy.default ? app.domain : component.hostname;
           var rkey = 'frontend:' + hostname;
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
             var dst = ['http://', globalConfig.dockerHost, ':', port].join('');
             client.multi()
               .del(rkey)
-              .rpush(rkey, component.cname)
+              .rpush(rkey, component.containerName)
               .rpush(rkey, dst)
               .exec(function(err, replies) {
                 if (err) { throw err; }
@@ -49,12 +50,11 @@ module.exports = function(app, globalConfig, engine, docker, events) {
   events.on('post-remove-component', function(component, done) {
     // Setup the hipache proxy via redis
     if (component.proxy) {
-      var c = docker.getContainer(component.cid);
-      c.inspect(function(err, data) {
+      engine.inspect(component.containerId, function(err, data) {
         for (var x in component.proxy) {
           var proxy = component.proxy[x];
           var client = redis.createClient(redisPort, redisHost);
-          var hostname = proxy.default ? app.appDomain : component.hostname;
+          var hostname = proxy.default ? app.domain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
           client.del(rkey, function(err, replies) {

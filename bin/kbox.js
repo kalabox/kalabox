@@ -20,20 +20,17 @@ var config = kbox.core.config;
 var deps = kbox.core.deps;
 var env = kbox.core.env;
 var tasks = kbox.core.tasks;
-var manager = kbox.apps.manager;
-var App = kbox.apps.app;
-var _apps = kbox.apps;
 var _util = kbox.util;
 
 var b2d = require('../lib/b2d.js');
 
 var init = function() {
+  // kbox
+  deps.register('kbox', kbox);
   // events
   deps.register('events', kbox.core.events);
   // argv
   deps.register('argv', argv);
-  // manager
-  deps.register('manager', manager);
   // tasks
   tasks.init();
   deps.register('tasks', tasks);
@@ -44,9 +41,8 @@ var init = function() {
   // engine
   kbox.engine.init(globalConfig);
   deps.register('engine', kbox.engine);
-  deps.register('docker', kbox.engine.getState().docker);
-  // manager
-  manager.setup();
+  // plugins
+  kbox.core.plugin.init(globalConfig);
 };
 
 var initWithApp = function(app) {
@@ -123,27 +119,18 @@ function handleArguments(env) {
   // Init dependencies.
   init();
 
-  _apps.getAppNames(function(err, appNames) {
-    // Guard against errors.
+  kbox.app.list(function(err, apps) {
     if (err) {
       throw err;
     }
 
-    // Setup all the apps.
-    var apps = {};
-    appNames.forEach(function(appName) {
-      var appConfig = config.getAppConfig({name: appName});
-      apps[appName] = new App(appName, appConfig);
-      apps[appName].setup();
-    });
-
     // Load target app.
     var appArgument = argv._[0];
-    var appToLoad = _util.helpers.find(appNames, function(appName) {
-      return appName === appArgument;
+    var appToLoad = _util.helpers.find(apps, function(app) {
+      return app.name === appArgument;
     });
     if (appToLoad !== null) {
-      env.app = apps[appToLoad];
+      env.app = appToLoad;
       initWithApp(env.app);
     }
 
@@ -154,9 +141,8 @@ function handleArguments(env) {
       // Log error.
       logError(err);
     }
-  });
 
-  env.manager = manager;
+  });
 
   if (argv.verbose) {
     console.log(chalk.red('APP CONFIG:'), env.config);
