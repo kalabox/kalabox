@@ -27,7 +27,7 @@ module.exports = function(argv, app, appConfig, kbox) {
         done(err);
       } else {
         _.forEach(containers, function(container) {
-          console.log(container);
+        console.log(container);
       });
       }
     });

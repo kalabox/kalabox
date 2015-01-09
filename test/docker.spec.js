@@ -49,7 +49,7 @@ var stubRemove = sinon.stub(fakeContainer, 'remove', function(callback) {
   callback(err, data);
 });
 
-describe('docker module', function() {
+describe.skip('docker module', function() {
 
   beforeEach(function() {
     docker.init(fakeDockerode);

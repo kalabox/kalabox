@@ -37,7 +37,7 @@ module.exports = function(argv, plugin, kbox) {
       if (err) {
         done(err);
       } else {
-      _.forEach(containers, function(container) {
+        _.forEach(containers, function(container) {
         console.log(container);
       });
       }
