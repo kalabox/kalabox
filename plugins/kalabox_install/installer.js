@@ -12,7 +12,7 @@ var b2d = require('../../lib/b2d.js');
 var kbox = require('../../lib/kbox.js');
 var deps = kbox.core.deps;
 var disk = kbox.util.disk;
-var image = kbox.engine.image;
+var engine = kbox.engine;
 var download = kbox.util.download;
 var firewall = kbox.util.firewall;
 var internet = kbox.util.internet;
@@ -79,7 +79,6 @@ module.exports.run = function(done) {
     // Check if boot2docker is already installed.
     // @todo: we could remove sysProfile and just check for the b2d cli
     // vis b2d.isInstalled()
-
     function(next) {
       log.header('Checking if Boot2Docker is installed.');
       sysProfiler.isAppInstalled('Boot2Docker', function(err, isInstalled) {
@@ -330,7 +329,7 @@ module.exports.run = function(done) {
       log.header('Installing core services.');
       var services = _.toArray(deps.lookup('config').startupServices);
 
-      image.pullMany(services, function() {
+      engine.build(services, function() {
         log.info('Core services installed.');
         next(null);
       });
