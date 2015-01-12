@@ -10,6 +10,7 @@ var fs = require('fs');
 var path = require('path');
 
 var _ = require('lodash');
+var S = require('string');
 var argv = require('minimist')(process.argv.slice(2));
 var chalk = require('chalk');
 var Liftoff = require('liftoff');
@@ -85,23 +86,81 @@ function logError(err) {
 function processTask(env) {
   // Get dependencies.
   deps.call(function(tasks) {
-    // Replace app with the app name.
-    if (argv._[0] === 'app' && env.app) {
-      argv._[0] = env.app.name;
-    }
-    // Map taskName to task function.
-    var result = tasks.getTask(argv._);
+    // Get app specific task.
+    var appTask = (function() {
+      if (!env.app) {
+        return null;
+      } else {
+        var args = argv._.slice();
+        if (args[0] !== env.app.name) {
+          args.unshift(env.app.name);
+        }
+        return tasks.getTask(args);
+      }
+    })();
+    // Get global task.
+    var globalTask = (function() {
+      var args = argv._.slice();
+      if (env.app && args[0] === env.app.name) {
+        return null;
+      } else {
+        return tasks.getTask(args);
+      }
+    })();
+    // Figure out if the app specific task or the global task should be used.
+    var result = (function() {
+      var result = {
+        task: null,
+        hasGlobalConflict: false,
+        args: null
+      };
+      if (appTask && appTask.task.task && globalTask && globalTask.task.task) {
+        if (argv.g) {
+          result.task = globalTask.task;
+          result.args = globalTask.args;
+        } else {
+          result.task = appTask.task;
+          result.hasGlobalConflict = true;
+          result.args = appTask.args;
+        }
+      } else if (appTask) {
+        result.task = appTask.task;
+        result.args = appTask.args;
+      } else if (globalTask) {
+        result.task = globalTask.task;
+        result.args = globalTask.args;
+      }
+      return result;
+    })();
+    // Display menu choices or run task.
     if (!result || !result.task || !result.task.task) {
       tasks.prettyPrint(result.task);
     } else {
       argv._ = result.args;
       result.task.task(function(err) {
         if (err) {
-          throw err;
+          throw(err);
         }
       });
     }
   });
+}
+
+function getAppContext(apps) {
+  var appFromArgv = _.find(apps, function(app) {
+    var appArg = argv._[0];
+    return app.name === appArg;
+  });
+
+  if (appFromArgv !== undefined) {
+    return appFromArgv;
+  } else {
+    var appFromCwd = _.find(apps, function(app) {
+      var cwd = process.cwd();
+      return S(cwd).startsWith(app.config.appRoot);
+    });
+    return appFromCwd;
+  }
 }
 
 function handleArguments(env) {
@@ -124,14 +183,10 @@ function handleArguments(env) {
       throw err;
     }
 
-    // Load target app.
-    var appArgument = argv._[0];
-    var appToLoad = _util.helpers.find(apps, function(app) {
-      return app.name === appArgument;
-    });
-    if (appToLoad !== null) {
-      env.app = appToLoad;
-      initWithApp(env.app);
+    var appContext = getAppContext(apps);
+    if (appContext !== undefined) {
+      env.app = appContext;
+      initWithApp(appContext);
     }
 
     try {
