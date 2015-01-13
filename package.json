@@ -8,7 +8,7 @@
     "wordpress"
   ],
   "preferGlobal": true,
-  "version": "0.2.13",
+  "version": "0.2.14",
   "repository": {
     "type": "git",
     "url": "https://github.com/kalabox/kalabox"
@@ -46,6 +46,7 @@
     "redis": "~0.12.1",
     "rimraf": "~2.2.8",
     "shelljs": "^0.3.0",
+    "string": "^3.0.0",
     "tildify": "~1.0.0",
     "vasync": "~1.6.0"
   },
