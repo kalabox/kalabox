@@ -110,7 +110,6 @@ module.exports.run = function(done) {
         }
         if (isRunning) {
           log.warn('VirtualBox: is currently running.');
-          log.fail('Please stop VirtualBox and then run install again.');
         } else {
           log.info('VirtualBox: is NOT currently running.');
         }
