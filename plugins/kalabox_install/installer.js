@@ -309,9 +309,12 @@ module.exports.run = function(done) {
         },
 
         function(next) {
+          next(null);
+          /*
           provider.up(PROVIDER_UP_ATTEMPTS, function() {
             next(null);
           });
+          */
         }
 
       ], function(err) {
