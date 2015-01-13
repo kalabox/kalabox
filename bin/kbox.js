@@ -22,8 +22,6 @@ var env = kbox.core.env;
 var tasks = kbox.core.tasks;
 var _util = kbox.util;
 
-var b2d = require('../lib/b2d.js');
-
 var init = function() {
   // kbox
   deps.register('kbox', kbox);

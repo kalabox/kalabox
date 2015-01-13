@@ -7,12 +7,11 @@ var chalk = require('chalk');
 var fs = require('fs');
 var path = require('path');
 
-var b2d = require('../../lib/b2d.js');
-
 var kbox = require('../../lib/kbox.js');
 var deps = kbox.core.deps;
 var disk = kbox.util.disk;
 var engine = kbox.engine;
+var provider = kbox.engine.provider;
 var download = kbox.util.download;
 var firewall = kbox.util.firewall;
 var internet = kbox.util.internet;
@@ -22,16 +21,16 @@ var vb = kbox.install.vb;
 
 // constants
 var INSTALL_MB = 30 * 1000;
-var B2D_URL_V1_3_3 = 'https://github.com/boot2docker/osx-installer/releases/download/v1.3.3/Boot2Docker-1.3.3.pkg';
-var B2D_URL_PROFILE = 'https://raw.githubusercontent.com/kalabox/kalabox-boot2docker/master/profile';
-var B2D_INIT_ATTEMPTS = 3;
-var B2D_UP_ATTEMPTS = 3;
+var PROVIDER_URL_V1_3_3 = 'https://github.com/boot2docker/osx-installer/releases/download/v1.3.3/Boot2Docker-1.3.3.pkg';
+var PROVIDER_URL_PROFILE = 'https://raw.githubusercontent.com/kalabox/kalabox-boot2docker/master/profile';
+var PROVIDER_INIT_ATTEMPTS = 3;
+var PROVIDER_UP_ATTEMPTS = 3;
 // @todo: this will eventually come from the factory
 var KALABOX_DNS_FILE = '/etc/resolver/kbox';
 
 // variables
 var adminCmds = [];
-var b2dIsInstalled;
+var providerIsInstalled;
 var dnsIsSet;
 var profileIsSet;
 var firewallIsOkay;
@@ -77,8 +76,7 @@ module.exports.run = function(done) {
   async.series([
 
     // Check if boot2docker is already installed.
-    // @todo: we could remove sysProfile and just check for the b2d cli
-    // vis b2d.isInstalled()
+    // @todo: we should remove this in favor of provider.isInstalled()
     function(next) {
       log.header('Checking if Boot2Docker is installed.');
       sysProfiler.isAppInstalled('Boot2Docker', function(err, isInstalled) {
@@ -88,7 +86,7 @@ module.exports.run = function(done) {
         var msg = isInstalled ? 'is' : 'is NOT';
         log.info('Boot2Docker ' + msg + ' installed.');
         log.newline();
-        b2dIsInstalled = isInstalled;
+        providerIsInstalled = isInstalled;
         next(null);
       });
     },
@@ -177,11 +175,11 @@ module.exports.run = function(done) {
     // Download dependencies to temp dir.
     function(next) {
       var urls = [];
-      if (!b2dIsInstalled) {
-        urls.unshift(B2D_URL_V1_3_3);
+      if (!providerIsInstalled) {
+        urls.unshift(PROVIDER_URL_V1_3_3);
       }
       if (!profileIsSet) {
-        urls.unshift(B2D_URL_PROFILE);
+        urls.unshift(PROVIDER_URL_PROFILE);
       }
       if (urls.length > 0) {
         var dest = disk.getTempDir();
@@ -198,20 +196,20 @@ module.exports.run = function(done) {
 
     // Install packages.
     function(next) {
-      if (!b2dIsInstalled || !dnsIsSet) {
+      if (!providerIsInstalled || !dnsIsSet) {
         log.header('Setting things up.');
         log.alert('ADMINISTRATIVE PASSWORD WILL BE REQUIRED!');
 
         async.series([
 
           function(next) {
-            if (!b2dIsInstalled) {
+            if (!providerIsInstalled) {
               disk.getMacVolume(function(err, volume) {
                 if (err) {
                   throw err;
                 }
                 var tempDir = disk.getTempDir();
-                var pkg = path.join(tempDir, path.basename(B2D_URL_V1_3_3));
+                var pkg = path.join(tempDir, path.basename(PROVIDER_URL_V1_3_3));
                 log.info('Installing: ' + pkg);
                 adminCmds.unshift(cmd.buildInstallCmd(pkg, volume));
                 next(null);
@@ -277,7 +275,7 @@ module.exports.run = function(done) {
 
           function(next) {
             var tmp = disk.getTempDir();
-            var src = path.join(tmp, path.basename(B2D_URL_PROFILE));
+            var src = path.join(tmp, path.basename(PROVIDER_URL_PROFILE));
             var dest = path.join(deps.lookup('config').sysConfRoot, 'b2d.profile');
             log.info('Setting B2D profile.');
             fs.rename(src, dest, function() {
@@ -305,14 +303,14 @@ module.exports.run = function(done) {
       async.series([
 
         function(next) {
-          b2d.init(B2D_INIT_ATTEMPTS, function(output) {
+          provider.init(PROVIDER_INIT_ATTEMPTS, function(output) {
             log.info(output);
             next(null);
           });
         },
 
         function(next) {
-          b2d.up(B2D_UP_ATTEMPTS, function() {
+          provider.up(PROVIDER_UP_ATTEMPTS, function() {
             next(null);
           });
         }
