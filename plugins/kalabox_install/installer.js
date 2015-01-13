@@ -325,13 +325,10 @@ module.exports.run = function(done) {
 
     function(next) {
       log.header('Installing core services.');
-      var services = _.toArray(deps.lookup('config').startupServices);
-
-      engine.build(services, function() {
+      engine.services.install(function() {
         log.info('Core services installed.');
         next(null);
       });
-
     },
 
     // Init and start boot2docker
