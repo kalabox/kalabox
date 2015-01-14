@@ -41,6 +41,7 @@ var init = function() {
   kbox.engine.init(globalConfig);
   deps.register('engine', kbox.engine);
   // services
+  kbox.services.init(globalConfig);
   deps.register('services', kbox.services);
   // plugins
   kbox.core.plugin.init(globalConfig);
