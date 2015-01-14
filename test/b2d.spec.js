@@ -172,7 +172,7 @@ describe('#b2d module', function() {
       };
       var mockFs = testUtil.mockFs.create(config);
       var stub = sandbox.stub(fakeShell, 'exec', function(cmd, callback) {
-        callback(null, '\nThe VM\'s Host only interface IP address is: \n\n1.3.3.7\n');
+        callback(null, '1.3.3.7');
       });
       this.timeout(60 * 1000);
       deps.override({shell:fakeShell, config:fakeConfig}, function() {
