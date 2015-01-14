@@ -12,6 +12,7 @@ var deps = kbox.core.deps;
 var disk = kbox.util.disk;
 var engine = kbox.engine;
 var provider = kbox.engine.provider;
+var services = kbox.services;
 var download = kbox.util.download;
 var firewall = kbox.util.firewall;
 var internet = kbox.util.internet;
@@ -109,7 +110,7 @@ module.exports.run = function(done) {
           throw err;
         }
         if (isRunning) {
-          log.warn('VirtualBox: is currently running.');
+          log.info('VirtualBox: is currently running.');
         } else {
           log.info('VirtualBox: is NOT currently running.');
         }
@@ -310,6 +311,10 @@ module.exports.run = function(done) {
 
         function(next) {
           next(null);
+          // The installer fails as of commit 329381470cfb4f143bb3c4f2fd077b6028d95ae7
+          // because we dont have an implementation of the provider that contains
+          // this. For now the installer will fail at this point.
+          // To workaround run `boot2docker --vm="Kalabox2" up` and then `kbox install` again.
           /*
           provider.up(PROVIDER_UP_ATTEMPTS, function() {
             next(null);
@@ -327,7 +332,7 @@ module.exports.run = function(done) {
 
     function(next) {
       log.header('Installing core services.');
-      engine.services.install(function() {
+      services.install(function() {
         log.info('Core services installed.');
         next(null);
       });
