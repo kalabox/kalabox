@@ -303,23 +303,10 @@ module.exports.run = function(done) {
       async.series([
 
         function(next) {
-          provider.init(PROVIDER_INIT_ATTEMPTS, function(output) {
+          provider.up(function(err, output) {
             log.info(output);
             next(null);
           });
-        },
-
-        function(next) {
-          next(null);
-          // The installer fails as of commit 329381470cfb4f143bb3c4f2fd077b6028d95ae7
-          // because we dont have an implementation of the provider that contains
-          // this. For now the installer will fail at this point.
-          // To workaround run `boot2docker --vm="Kalabox2" up` and then `kbox install` again.
-          /*
-          provider.up(PROVIDER_UP_ATTEMPTS, function() {
-            next(null);
-          });
-          */
         }
 
       ], function(err) {

@@ -8,8 +8,6 @@ var chalk = require('chalk');
 
 var PROVIDER_UP_ATTEMPTS = 3;
 var PROVIDER_DOWN_ATTEMPTS = 3;
-var PROVIDER_STATUS_ATTEMPTS = 3;
-var PROVIDER_IP_ATTEMPTS = 3;
 
 module.exports = function(engine, events, tasks) {
 
