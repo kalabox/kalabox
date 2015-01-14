@@ -110,7 +110,6 @@ module.exports.run = function(done) {
         }
         if (isRunning) {
           log.warn('VirtualBox: is currently running.');
-          log.fail('Please stop VirtualBox and then run install again.');
         } else {
           log.info('VirtualBox: is NOT currently running.');
         }
@@ -310,9 +309,12 @@ module.exports.run = function(done) {
         },
 
         function(next) {
+          next(null);
+          /*
           provider.up(PROVIDER_UP_ATTEMPTS, function() {
             next(null);
           });
+          */
         }
 
       ], function(err) {
@@ -325,13 +327,10 @@ module.exports.run = function(done) {
 
     function(next) {
       log.header('Installing core services.');
-      var services = _.toArray(deps.lookup('config').startupServices);
-
-      engine.build(services, function() {
+      engine.services.install(function() {
         log.info('Core services installed.');
         next(null);
       });
-
     },
 
     // Init and start boot2docker
