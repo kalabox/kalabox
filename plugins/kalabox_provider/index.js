@@ -9,7 +9,7 @@ var chalk = require('chalk');
 var PROVIDER_UP_ATTEMPTS = 3;
 var PROVIDER_DOWN_ATTEMPTS = 3;
 
-module.exports = function(engine, events, tasks) {
+module.exports = function(engine, events, tasks, services) {
 
   if (engine.provider.hasTasks) {
     // Tasks
@@ -33,6 +33,13 @@ module.exports = function(engine, events, tasks) {
       console.log(chalk.red('Kalabox engine has been deactivated.'));
       done();
     });
+
+    // @todo: remove this when we are done #133
+    /*
+    tasks.registerTask('servicestest', function(done) {
+      services.start(done);
+    });
+    */
   }
 
 };
