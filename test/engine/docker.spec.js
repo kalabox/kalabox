@@ -8,14 +8,14 @@ var assert = chai.assert;
 var sinon = require('sinon');
 var _ = require('lodash');
 
-describe.only('docker module', function() {
-  
+describe('docker module', function() {
+
   var fakeDocker = {
     getContainer: function(cid) {
       if (cid === '7') {
         return {
           Id: cid,
-          Names: [] 
+          Names: []
         };
       } else {
         console.log(cid);
@@ -76,7 +76,7 @@ describe.only('docker module', function() {
         app: 'myapp',
         name: 'web'
       };
-      expect(result).to.deep.equal(expected);   
+      expect(result).to.deep.equal(expected);
     });
     it('should return null in an invalid container name is given.', function() {
       expect(fn('foo_bar_bazz')).to.equal(null);
@@ -140,7 +140,7 @@ describe.only('docker module', function() {
     return {
       Id: cid,
       Names: [name],
-      inspect: function(cb) { cb(null, {State: { Running: isRunning}}); },
+      inspect: function(cb) { cb(null, {State: {Running: isRunning}}); },
       remove: function(cb) { cb(null); },
       start: function(startOptions, cb) {cb(null); },
       stop: function(cb) { cb(null); }
@@ -169,7 +169,7 @@ describe.only('docker module', function() {
   });
 
   describe('#create()', function() {
-    
+
     var spyCreate = sinon.spy(defaultFakeDocker, 'createContainer');
 
     it('should call docker.createContainer with the correct args.', function(done) {
