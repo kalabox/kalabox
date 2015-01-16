@@ -23,8 +23,6 @@ var env = kbox.core.env;
 var tasks = kbox.core.tasks;
 var _util = kbox.util;
 
-var b2d = require('../lib/b2d.js');
-
 var init = function() {
   // kbox
   deps.register('kbox', kbox);
@@ -42,6 +40,9 @@ var init = function() {
   // engine
   kbox.engine.init(globalConfig);
   deps.register('engine', kbox.engine);
+  // services
+  kbox.services.init(globalConfig);
+  deps.register('services', kbox.services);
   // plugins
   kbox.core.plugin.init(globalConfig);
 };

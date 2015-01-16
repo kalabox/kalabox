@@ -12,7 +12,7 @@ var testUtil = require('../lib/testUtil.js');
 var kbox = require('../lib/kbox.js');
 var deps = kbox.core.deps;
 
-describe('manager', function() {
+describe.skip('manager', function() {
 
   function FakeDocker() {
 
