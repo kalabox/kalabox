@@ -33,13 +33,6 @@ module.exports = function(engine, events, tasks, services) {
       console.log(chalk.red('Kalabox engine has been deactivated.'));
       done();
     });
-
-    // @todo: remove this when we are done #133
-    /*
-    tasks.registerTask('servicestest', function(done) {
-      services.start(done);
-    });
-    */
   }
 
 };
