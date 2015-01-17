@@ -7,8 +7,7 @@ module.exports = function(kbox, app) {
   var events = kbox.core.events;
   var globalConfig = kbox.core.config.getGlobalConfig();
   // Redis information.
-  var redisHost = globalConfig.redis.host;
-  var redisPort = globalConfig.redis.port;
+  var redisPort = 8160;
 
   /**
    * Listens for post-start-component
@@ -17,6 +16,7 @@ module.exports = function(kbox, app) {
   events.on('post-start-component', function(component, done) {
     if (component.proxy) {
       engine.inspect(component.containerId, function(err, data) {
+        var redisHost = kbox.core.deps.lookup('engineConfig').host;
         for (var x in component.proxy) {
           var proxy = component.proxy[x];
           var client = redis.createClient(redisPort, redisHost);
@@ -24,7 +24,7 @@ module.exports = function(kbox, app) {
           var rkey = 'frontend:' + hostname;
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
-            var dst = ['http://', globalConfig.dockerHost, ':', port].join('');
+            var dst = ['http://', redisHost, ':', port].join('');
             client.multi()
               .del(rkey)
               .rpush(rkey, component.containerName)
@@ -51,6 +51,7 @@ module.exports = function(kbox, app) {
     // Setup the hipache proxy via redis
     if (component.proxy) {
       engine.inspect(component.containerId, function(err, data) {
+        var redisHost = kbox.core.deps.lookup('engineConfig').host;
         for (var x in component.proxy) {
           var proxy = component.proxy[x];
           var client = redis.createClient(redisPort, redisHost);

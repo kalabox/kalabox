@@ -194,70 +194,6 @@ module.exports.run = function(done) {
       }
     },
 
-    // Install packages.
-    function(next) {
-      if (!providerIsInstalled || !dnsIsSet) {
-        log.header('Setting things up.');
-        log.alert('ADMINISTRATIVE PASSWORD WILL BE REQUIRED!');
-
-        async.series([
-
-          function(next) {
-            if (!providerIsInstalled) {
-              disk.getMacVolume(function(err, volume) {
-                if (err) {
-                  throw err;
-                }
-                var tempDir = disk.getTempDir();
-                var pkg = path.join(tempDir, path.basename(PROVIDER_URL_V1_3_3));
-                log.info('Installing: ' + pkg);
-                adminCmds.unshift(cmd.buildInstallCmd(pkg, volume));
-                next(null);
-              });
-            }
-            else {
-              next(null);
-            }
-          },
-
-          function(next) {
-            if (!dnsIsSet) {
-              log.info('Setting up DNS for Kalabox.');
-              adminCmds.unshift(cmd.buildDnsCmd(KALABOX_DNS_FILE));
-            }
-            next(null);
-          },
-
-          function(next) {
-            if (adminCmds) {
-              var child = cmd.runCmdsAsync(adminCmds);
-              child.stdout.on('data', function(data) {
-                log.info(data);
-              });
-              child.stdout.on('end', function() {
-                log.info('Finished installing');
-                log.newline();
-                next();
-              });
-              child.stderr.on('data', function(data) {
-                log.warn(data);
-              });
-            }
-          }
-
-        ], function(err, results) {
-            if (err) {
-              throw err;
-            }
-            next();
-          });
-
-      }
-      else {
-        next(null);
-      }
-    },
-
     // Setup profile.
     function(next) {
 
@@ -291,6 +227,83 @@ module.exports.run = function(done) {
           }
           next();
         });
+      }
+      else {
+        next(null);
+      }
+    },
+
+    // Install packages.
+    function(next) {
+      if (!providerIsInstalled || !dnsIsSet) {
+        log.header('Setting things up.');
+        log.alert('ADMINISTRATIVE PASSWORD WILL BE REQUIRED!');
+
+        async.series([
+
+          function(next) {
+            if (!providerIsInstalled) {
+              disk.getMacVolume(function(err, volume) {
+                if (err) {
+                  throw err;
+                }
+                var tempDir = disk.getTempDir();
+                var pkg = path.join(tempDir, path.basename(PROVIDER_URL_V1_3_3));
+                log.info('Installing: ' + pkg);
+                adminCmds.unshift(cmd.buildInstallCmd(pkg, volume));
+                next(null);
+              });
+            }
+            else {
+              next(null);
+            }
+          },
+
+          function(next) {
+            if (!dnsIsSet) {
+              log.info('Setting up DNS for Kalabox.');
+              var provider = deps.lookup('providerModule');
+              if (provider.name === 'boot2docker') {
+                provider.getDnsServers(function(ips) {
+                  var ipCmds = cmd.buildDnsCmd(ips, KALABOX_DNS_FILE);
+                  adminCmds = adminCmds.concat(ipCmds);
+                  next(null);
+                });
+              }
+              else {
+                adminCmds.concat(cmd.buildDnsCmd(null, KALABOX_DNS_FILE));
+                next(null);
+              }
+            }
+            else {
+              next(null);
+            }
+          },
+
+          function(next) {
+            if (adminCmds) {
+              var child = cmd.runCmdsAsync(adminCmds);
+              child.stdout.on('data', function(data) {
+                log.info(data);
+              });
+              child.stdout.on('end', function() {
+                log.info('Finished installing');
+                log.newline();
+                next();
+              });
+              child.stderr.on('data', function(data) {
+                log.warn(data);
+              });
+            }
+          }
+
+        ], function(err, results) {
+            if (err) {
+              throw err;
+            }
+            next();
+          });
+
       }
       else {
         next(null);
