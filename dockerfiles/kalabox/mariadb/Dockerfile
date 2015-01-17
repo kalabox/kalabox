@@ -2,14 +2,16 @@
 
 FROM kalabox/debian
 
+ENV DEBIAN_FRONTEND noninteractive
+
 # Install MariaDB.
 RUN \
   apt-get update -y && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties && \
+  apt-get install -y python-software-properties && \
   apt-key adv --recv-keys --keyserver keyserver.ubuntu.com --recv 0xcbcb082a1bb943db && \
   add-apt-repository 'deb http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.0/debian wheezy main' && \
   apt-get update -y && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server && apt-get clean
+  apt-get install -y mariadb-server && apt-get clean
 
 # The data container will manage these config files.
 RUN rm /etc/mysql/my.cnf

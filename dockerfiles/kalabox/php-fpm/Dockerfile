@@ -2,6 +2,8 @@
 
 FROM kalabox/debian
 
+ENV DEBIAN_FRONTEND noninteractive
+
 # Install PHP.
 RUN \
   apt-get update && \
