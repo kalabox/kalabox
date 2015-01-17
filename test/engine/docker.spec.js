@@ -26,12 +26,15 @@ describe('docker module', function() {
 
   describe('#get()', function() {
     it('should call docker.getContainer with the correct cid', function(done) {
-      var fakeDocker = {
-        getContainer: function() {}
-      };
       var container = {
         Id: '7',
         Names: [' kb_some_container']
+      };
+      var fakeDocker = {
+        getContainer: function() {},
+        listContainers: function(filter, cb) {
+          cb(null, [container]);
+        }
       };
       var spy = sinon.stub(fakeDocker, 'getContainer', function(cid) {
         if (cid === '7') {
@@ -41,10 +44,11 @@ describe('docker module', function() {
         }
       });
       docker.__with__({docker: fakeDocker})(function() {
-        var result = docker.get('7');
-        expect(result).to.deep.equal(container);
-        sinon.assert.calledWithExactly(spy, '7');
-        done();
+        docker.get('7', function(err, container) {
+          expect(err).to.equal(null);
+          sinon.assert.calledWithExactly(spy, '7');
+          done();
+        });
       });
     });
   });
@@ -269,7 +273,6 @@ describe('docker module', function() {
 
     it('should remove a container, but call stop first if it is running.', function(done) {
       __with(function() {
-        var container = docker.get('2');
         docker.remove('2', {kill: true}, function(err) {
           expect(err).to.equal(null);
           sinon.assert.callCount(spyRemove2, 1);
