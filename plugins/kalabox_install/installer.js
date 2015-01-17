@@ -22,12 +22,13 @@ var vb = kbox.install.vb;
 
 // constants
 var INSTALL_MB = 30 * 1000;
-var PROVIDER_URL_V1_3_3 = 'https://github.com/boot2docker/osx-installer/releases/download/v1.3.3/Boot2Docker-1.3.3.pkg';
+var PROVIDER_URL_V1_4_1 = 'https://github.com/boot2docker/osx-installer/releases/download/v1.4.1/Boot2Docker-1.4.1.pkg';
 var PROVIDER_URL_PROFILE = 'https://raw.githubusercontent.com/kalabox/kalabox-boot2docker/master/profile';
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
 // @todo: this will eventually come from the factory
 var KALABOX_DNS_FILE = '/etc/resolver/kbox';
+var KALABOX_EXPORTS_FILE = '/etc/exports';
 
 // variables
 var adminCmds = [];
@@ -176,7 +177,7 @@ module.exports.run = function(done) {
     function(next) {
       var urls = [];
       if (!providerIsInstalled) {
-        urls.unshift(PROVIDER_URL_V1_3_3);
+        urls.unshift(PROVIDER_URL_V1_4_1);
       }
       if (!profileIsSet) {
         urls.unshift(PROVIDER_URL_PROFILE);
@@ -248,7 +249,7 @@ module.exports.run = function(done) {
                   throw err;
                 }
                 var tempDir = disk.getTempDir();
-                var pkg = path.join(tempDir, path.basename(PROVIDER_URL_V1_3_3));
+                var pkg = path.join(tempDir, path.basename(PROVIDER_URL_V1_4_1));
                 log.info('Installing: ' + pkg);
                 adminCmds.unshift(cmd.buildInstallCmd(pkg, volume));
                 next(null);
@@ -264,7 +265,7 @@ module.exports.run = function(done) {
               log.info('Setting up DNS for Kalabox.');
               var provider = deps.lookup('providerModule');
               if (provider.name === 'boot2docker') {
-                provider.getDnsServers(function(ips) {
+                provider.getServerIps(function(ips) {
                   var ipCmds = cmd.buildDnsCmd(ips, KALABOX_DNS_FILE);
                   adminCmds = adminCmds.concat(ipCmds);
                   next(null);
