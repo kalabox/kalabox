@@ -22,18 +22,20 @@ var vb = kbox.install.vb;
 
 // constants
 var INSTALL_MB = 30 * 1000;
-var PROVIDER_URL_V1_3_3 = 'https://github.com/boot2docker/osx-installer/releases/download/v1.3.3/Boot2Docker-1.3.3.pkg';
+var PROVIDER_URL_V1_4_1 = 'https://github.com/boot2docker/osx-installer/releases/download/v1.4.1/Boot2Docker-1.4.1.pkg';
 var PROVIDER_URL_PROFILE = 'https://raw.githubusercontent.com/kalabox/kalabox-boot2docker/master/profile';
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
 // @todo: this will eventually come from the factory
 var KALABOX_DNS_FILE = '/etc/resolver/kbox';
+var KALABOX_EXPORTS_FILE = '/etc/exports';
 
 // variables
 var adminCmds = [];
 var providerIsInstalled;
 var dnsIsSet;
 var profileIsSet;
+var exportsIsSet;
 var firewallIsOkay;
 var stepCounter = 1;
 
@@ -100,6 +102,29 @@ module.exports.run = function(done) {
       log.info('Boot2Docker profile ' + msg);
       log.newline();
       next(null);
+    },
+
+    // Check if exports are alredy set
+    function(next) {
+      log.header('Checking for KBOX Boot2Docker exports file entry.');
+      // this is a weak check for now since b2d is not set up yet
+      var provider = deps.lookup('providerModule');
+      exportsIsSet = fs.existsSync(KALABOX_EXPORTS_FILE);
+      if (provider.name === 'boot2docker' && exportsIsSet) {
+        provider.checkExports(KALABOX_EXPORTS_FILE, deps.lookup('config').codeRoot, function(hasLine) {
+          exportsIsSet = hasLine;
+          var msg = exportsIsSet ? 'set.' : 'NOT set.';
+          log.info('Boot2Docker exports are ' + msg);
+          log.newline();
+          next(null);
+        });
+      }
+      else {
+        var msg = exportsIsSet ? 'set.' : 'NOT set.';
+        log.info('Boot2Docker exports are ' + msg);
+        log.newline();
+        next(null);
+      }
     },
 
     // Check if VirtualBox.app is running.
@@ -176,7 +201,7 @@ module.exports.run = function(done) {
     function(next) {
       var urls = [];
       if (!providerIsInstalled) {
-        urls.unshift(PROVIDER_URL_V1_3_3);
+        urls.unshift(PROVIDER_URL_V1_4_1);
       }
       if (!profileIsSet) {
         urls.unshift(PROVIDER_URL_PROFILE);
@@ -235,7 +260,7 @@ module.exports.run = function(done) {
 
     // Install packages.
     function(next) {
-      if (!providerIsInstalled || !dnsIsSet) {
+      if (!providerIsInstalled || !dnsIsSet || !exportsIsSet) {
         log.header('Setting things up.');
         log.alert('ADMINISTRATIVE PASSWORD WILL BE REQUIRED!');
 
@@ -248,7 +273,7 @@ module.exports.run = function(done) {
                   throw err;
                 }
                 var tempDir = disk.getTempDir();
-                var pkg = path.join(tempDir, path.basename(PROVIDER_URL_V1_3_3));
+                var pkg = path.join(tempDir, path.basename(PROVIDER_URL_V1_4_1));
                 log.info('Installing: ' + pkg);
                 adminCmds.unshift(cmd.buildInstallCmd(pkg, volume));
                 next(null);
@@ -264,7 +289,7 @@ module.exports.run = function(done) {
               log.info('Setting up DNS for Kalabox.');
               var provider = deps.lookup('providerModule');
               if (provider.name === 'boot2docker') {
-                provider.getDnsServers(function(ips) {
+                provider.getServerIps(function(ips) {
                   var ipCmds = cmd.buildDnsCmd(ips, KALABOX_DNS_FILE);
                   adminCmds = adminCmds.concat(ipCmds);
                   next(null);
@@ -281,7 +306,26 @@ module.exports.run = function(done) {
           },
 
           function(next) {
-            if (adminCmds) {
+            if (!exportsIsSet) {
+              log.info('Setting up shares for Kalabox.');
+              var provider = deps.lookup('providerModule');
+              if (provider.name === 'boot2docker') {
+                provider.getServerIps(function(ips) {
+                  var share = deps.lookup('config').codeRoot;
+                  var line = cmd.buildExportsLine(share, ips);
+                  var exportCmd = cmd.buildExportsCmd(line, KALABOX_EXPORTS_FILE);
+                  adminCmds.push(exportCmd);
+                  next(null);
+                });
+              }
+            }
+            else {
+              next(null);
+            }
+          },
+
+          function(next) {
+            if (!_.isEmpty(adminCmds)) {
               var child = cmd.runCmdsAsync(adminCmds);
               child.stdout.on('data', function(data) {
                 log.info(data);
@@ -294,6 +338,9 @@ module.exports.run = function(done) {
               child.stderr.on('data', function(data) {
                 log.warn(data);
               });
+            }
+            else {
+              next(null);
             }
           }
 
