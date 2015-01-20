@@ -109,8 +109,12 @@ describe.skip('#b2d module', function() {
         deps.override({shell:fakeShell, config:fakeConfig}, function() {
           b2d[action](3, function() {
             sinon.assert.callCount(stub, 2);
-            sinon.assert.calledWithExactly(stub, 'which boot2docker', sinon.match.func);
-            sinon.assert.calledWithExactly(stub, 'boot2docker ' + action, sinon.match.func);
+            sinon.assert.calledWithExactly(
+              stub, 'which boot2docker', sinon.match.func
+            );
+            sinon.assert.calledWithExactly(
+              stub, 'boot2docker ' + action, sinon.match.func
+            );
             mockFs.restore();
             done();
           });
@@ -133,8 +137,12 @@ describe.skip('#b2d module', function() {
       deps.override({shell:fakeShell, config:fakeConfig}, function() {
         b2d.init(3, function() {
           sinon.assert.callCount(stub, 2);
-          sinon.assert.calledWithExactly(stub, 'which boot2docker', sinon.match.func);
-          sinon.assert.calledWithExactly(stub, 'boot2docker init', sinon.match.func);
+          sinon.assert.calledWithExactly(
+            stub, 'which boot2docker', sinon.match.func
+          );
+          sinon.assert.calledWithExactly(
+            stub, 'boot2docker init', sinon.match.func
+          );
           mockFs.restore();
           done();
         });

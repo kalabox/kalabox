@@ -27,13 +27,24 @@ module.exports = function(grunt) {
 
     shell: {
       // @todo: Maybe remove the .istanbul.yml file and put config here
-      testUnit: {command: 'node_modules/istanbul/lib/cli.js  test node_modules/mocha/bin/mocha ./test/'},
-      testLarge: {command: 'node_modules/mocha/bin/_mocha --bail test/large'},
-      testCoverage: {command: 'node_modules/istanbul/lib/cli.js  cover node_modules/mocha/bin/mocha ./test/'},
+      testUnit: {
+        command:
+            'node_modules/istanbul/lib/cli.js ' +
+            'test ' +
+            'node_modules/mocha/bin/mocha ' +
+            './test/'
+        },
+      testLarge: {
+        command: 'node_modules/mocha/bin/_mocha --bail test/large'},
+      testCoverage: {
+        command:
+        'node_modules/istanbul/lib/cli.js ' +
+        'cover node_modules/mocha/bin/mocha ./test/'},
       testCheckCoverage: {
         command:
-          'node_modules/istanbul/lib/cli.js check-coverage coverage/coverage.json' +
-          ' --statements ' + 0 +
+          'node_modules/istanbul/lib/cli.js ' +
+          'check-coverage coverage/coverage.json ' +
+          '--statements ' + 0 +
           ' --branches ' + 0 +
           ' --functions ' + 0 +
           ' --lines ' + 0
@@ -70,12 +81,28 @@ module.exports = function(grunt) {
       }
     },
     jsdoc: {
-      target: {
+      safe: {
+        src: [
+          'lib/app.js',
+          'lib/core/*.js',
+          'lib/engine.js',
+          'lib/engine/provider.js',
+          'lib/services.js',
+          'lib/services/*.js'
+        ],
+        options: {
+          destination: 'doc',
+          template: 'node_modules/jsdoc-oblivion/template',
+          configure : '.jsdoc.conf.json'
+        }
+      },
+      secret: {
         src: ['lib/**/*.js'],
         options: {
           'private': false,
-          destination: 'doc',
-          template : 'node_modules/grunt-jsdoc/node_modules/ink-docstrap/template',
+          destination: 'doc-private',
+          template :
+            'node_modules/grunt-jsdoc/node_modules/ink-docstrap/template',
           configure : '.jsdoc.conf.json'
         }
       }

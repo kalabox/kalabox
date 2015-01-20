@@ -22,16 +22,21 @@ describe('#deps module', function() {
       expect(result).to.equal(expected);
     });
 
-    it('should throw an error when registering a dep that is already registered.', function() {
-      var key = 'donut';
-      var value = 'jelly';
-      deps.register(key, value);
-      var fn = function() {
+    it(
+      'should throw an error when registering a dep that is already ' +
+      'registered.',
+      function() {
+        var key = 'donut';
+        var value = 'jelly';
         deps.register(key, value);
-      };
-      var expectedMsg = 'Tried to register a dependency "donut" that was already registered.';
-      expect(fn).to.throw(Error, expectedMsg);
-    });
+        var fn = function() {
+          deps.register(key, value);
+        };
+        var expectedMsg =
+          'Tried to register a dependency "donut" that was already registered.';
+        expect(fn).to.throw(Error, expectedMsg);
+      }
+    );
 
   });
 
@@ -46,13 +51,17 @@ describe('#deps module', function() {
       expect(fn).to.throw(Error, 'The dependency "' + key + '" was NOT found!');
     });
 
-    it('should NOT throw an error when a dependency is NOT found, but is optional.', function() {
-      var key = 'somekey';
-      var expected = null;
-      var opts = {optional:true};
-      var result = deps.lookup(key, opts);
-      expect(result).to.equal(expected);
-    });
+    it(
+      'should NOT throw an error when a dependency is NOT found, but is ' +
+      'optional.',
+      function() {
+        var key = 'somekey';
+        var expected = null;
+        var opts = {optional:true};
+        var result = deps.lookup(key, opts);
+        expect(result).to.equal(expected);
+      }
+    );
 
   });
 
@@ -96,50 +105,57 @@ describe('#deps module', function() {
 
   describe('#inspect()', function() {
 
-    it('should return an array of dependencies required by a function.', function() {
-      var fn = function(alpha, bravo, charlie, delta) {
-
-      };
-      var result = deps.inspect(fn);
-      var expected = ['alpha', 'bravo', 'charlie', 'delta'];
-      expect(result).to.deep.equal(expected);
-    });
+    it(
+      'should return an array of dependencies required by a function.',
+      function() {
+        var fn = function(alpha, bravo, charlie, delta) {};
+        var result = deps.inspect(fn);
+        var expected = ['alpha', 'bravo', 'charlie', 'delta'];
+        expect(result).to.deep.equal(expected);
+      }
+    );
 
   });
 
   describe('#override()', function() {
 
-    it('should override a dependency for the life of the callback.', function(done) {
-      var key = 'mode';
-      var modeDev = 'dev';
-      var modeProd = 'prod';
-      deps.register(key, modeDev);
-      expect(deps.lookup(key)).to.equal(modeDev);
-      deps.override({mode:modeProd}, function(next) {
-        expect(deps.lookup(key)).to.equal(modeProd);
-        next();
-        done();
-      });
-      expect(deps.lookup(key)).to.equal(modeDev);
-    });
-
-    it('should work properly within nested called to override.', function(done1) {
-      var key = 'foo';
-      var getValue = function() { return deps.lookup(key); };
-      deps.register(key, 'A');
-      expect(getValue()).to.equal('A');
-      deps.override({foo:'B'}, function(done2) {
-        expect(getValue()).to.equal('B');
-        deps.override({foo:'C'}, function(done3) {
-          expect(getValue()).to.equal('C');
-          done3();
-          expect(getValue()).to.equal('B');
-          done2();
-          expect(getValue()).to.equal('A');
-          done1();
+    it(
+      'should override a dependency for the life of the callback.',
+      function(done) {
+        var key = 'mode';
+        var modeDev = 'dev';
+        var modeProd = 'prod';
+        deps.register(key, modeDev);
+        expect(deps.lookup(key)).to.equal(modeDev);
+        deps.override({mode:modeProd}, function(next) {
+          expect(deps.lookup(key)).to.equal(modeProd);
+          next();
+          done();
         });
-      });
-    });
+        expect(deps.lookup(key)).to.equal(modeDev);
+      }
+    );
+
+    it(
+      'should work properly within nested called to override.',
+      function(done1) {
+        var key = 'foo';
+        var getValue = function() { return deps.lookup(key); };
+        deps.register(key, 'A');
+        expect(getValue()).to.equal('A');
+        deps.override({foo:'B'}, function(done2) {
+          expect(getValue()).to.equal('B');
+          deps.override({foo:'C'}, function(done3) {
+            expect(getValue()).to.equal('C');
+            done3();
+            expect(getValue()).to.equal('B');
+            done2();
+            expect(getValue()).to.equal('A');
+            done1();
+          });
+        });
+      }
+    );
   });
 
   describe('#call()', function() {
@@ -164,11 +180,14 @@ describe('#deps module', function() {
       expect(result).to.equal('foo');
     });
 
-    it('should work if a callback with zero arguments is used.', function(done) {
-      deps.call(function() {
-        done();
-      });
-    });
+    it(
+      'should work if a callback with zero arguments is used.',
+      function(done) {
+        deps.call(function() {
+          done();
+        });
+      }
+    );
 
     it('should throw an error when a dependency is NOT found.', function() {
       var fn = function() {

@@ -30,11 +30,10 @@ describe('task module', function() {
 
     it('should throw an error when the command is not a function.', function() {
       var cmd = 'this is not a function';
-      var expectedMsg = 'While running task [gonna fail]' +
-        ' Error: Command passed to task [this is not a function] is not a function.';
-      var fn = function() {
-        var task = new Task('gonna fail', cmd);
-      };
+      var expectedMsg =
+        'While running task [gonna fail] Error: Command passed to task ' +
+        '[this is not a function] is not a function.';
+      var fn = function() {var task = new Task('gonna fail', cmd);};
       expect(fn).to.throw(Error, expectedMsg);
     });
 
@@ -62,7 +61,9 @@ describe('task module', function() {
         var err = new Error('Something bad happened.');
         next(err);
       };
-      var expectedMsg = 'While running task [this is my function] Error: Something bad happened.';
+      var expectedMsg =
+        'While running task [this is my function] Error: Something bad ' +
+        'happened.';
       var task = new Task(context, fn);
       task.run(function(err) {
         expect(err).to.not.equal(null);
@@ -71,20 +72,24 @@ describe('task module', function() {
       });
     });
 
-    it.skip('should return a timeout error when a timeout is reached.', function(done) {
-      var desc = 'some task';
-      var cmd = function(next) {
-        // Next is never called, so task never ends.
-      };
-      var timeout = 75; // 75ms
-      var expectedMsg = 'While running task [some task] Error: Task timed out after 75ms.';
-      var task = new Task(desc, timeout, cmd);
-      task.run(function(err) {
-        expect(err).to.not.equal(null);
-        expect(err.message).to.equal(expectedMsg);
-        done();
-      });
-    });
+    it.skip(
+      'should return a timeout error when a timeout is reached.',
+      function(done) {
+        var desc = 'some task';
+        var cmd = function(next) {
+          // Next is never called, so task never ends.
+        };
+        var timeout = 75; // 75ms
+        var expectedMsg =
+          'While running task [some task] Error: Task timed out after 75ms.';
+        var task = new Task(desc, timeout, cmd);
+        task.run(function(err) {
+          expect(err).to.not.equal(null);
+          expect(err.message).to.equal(expectedMsg);
+          done();
+        });
+      }
+    );
 
   });
 
@@ -105,7 +110,8 @@ describe('task module', function() {
       var cmd = function(next) {
         next(new Error('Flux capacitor failure.'));
       };
-      var expectedMsg = 'While running task [BTtF] Error: Flux capacitor failure.';
+      var expectedMsg =
+        'While running task [BTtF] Error: Flux capacitor failure.';
       var task = new Task('BTtF', cmd);
       task.on('error', function(err) {
         expect(err).to.not.equal(null);
@@ -127,17 +133,20 @@ describe('task module', function() {
       task.run();
     });
 
-    it('should throw an error when an invalid event is subscribed to.', function(done) {
-      var cmd = function(next) {
-        next(null);
-      };
-      var task = new Task('my task', cmd);
-      var fn = function() {
-        task.on('fakeEventName', function() {});
-      };
-      expect(fn).to.throw(Error, 'Invalid event name "fakeEventName"');
-      done();
-    });
+    it(
+      'should throw an error when an invalid event is subscribed to.',
+      function(done) {
+        var cmd = function(next) {
+          next(null);
+        };
+        var task = new Task('my task', cmd);
+        var fn = function() {
+          task.on('fakeEventName', function() {});
+        };
+        expect(fn).to.throw(Error, 'Invalid event name "fakeEventName"');
+        done();
+      }
+    );
 
   });
 

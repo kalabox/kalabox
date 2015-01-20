@@ -1,23 +1,25 @@
 {
-  "tags"      : {
-    "allowUnknownTags" : true
+  "tags": {
+    "allowUnknownTags": true
   },
-
-  "templates" : {
-    "cleverLinks"           : false,
-    "monospaceLinks"        : false,
-    "dateFormat"            : "ddd MMM Do YYYY",
-    "outputSourceFiles"     : true,
-    "outputSourcePath"      : true,
-    "systemName"            : "Kalabox API",
-    "footer"                : "",
-    "copyright"             : "Kalabox API Copyright © 2014 Kalamuna and friends",
-    "navType"               : "vertical",
-    "theme"                 : "cerulean",
-    "linenums"              : true,
-    "collapseSymbols"       : false,
-    "inverseNav"            : true,
-    "highlightTutorialCode" : true,
-    "protocol": "fred://"
+  "source": {
+    "includePattern": ".+\\.js(doc)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "plugins": [],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "default": {
+      "outputSourceFiles": true
+    },
+    "systemName"      : "Oblivion",
+    "footer"          : "",
+    "copyright"       : "Copyright © 2014",
+    "navType"         : "vertical",
+    "theme"           : "oblivion",
+    "linenums"        : true,
+    "collapseSymbols" : false,
+    "inverseNav"      : true
   }
 }

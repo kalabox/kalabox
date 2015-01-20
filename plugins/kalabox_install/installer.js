@@ -22,14 +22,17 @@ var vb = kbox.install.vb;
 
 // constants
 var INSTALL_MB = 30 * 1000;
-var PROVIDER_URL_V1_4_1 = 'https://github.com/boot2docker/osx-installer/releases/download/v1.4.1/Boot2Docker-1.4.1.pkg';
-var PROVIDER_URL_PROFILE = 'https://raw.githubusercontent.com/kalabox/kalabox-boot2docker/master/profile';
+// @todo: these will eventually come from the factory
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
-// @todo: this will eventually come from the factory
 var KALABOX_DNS_FILE = '/etc/resolver/kbox';
 var KALABOX_EXPORTS_FILE = '/etc/exports';
-
+var PROVIDER_URL_V1_4_1 =
+  'https://github.com/boot2docker/osx-installer/releases/download/v1.4.1/' +
+  'Boot2Docker-1.4.1.pkg';
+var PROVIDER_URL_PROFILE =
+  'https://raw.githubusercontent.com/' +
+  'kalabox/kalabox-boot2docker/master/profile';
 // variables
 var adminCmds = [];
 var providerIsInstalled;
@@ -97,7 +100,9 @@ module.exports.run = function(done) {
     // Check if profile is already set.
     function(next) {
       log.header('Checking for KBOX Boot2Docker profile.');
-      profileIsSet = fs.existsSync(path.join(deps.lookup('config').sysConfRoot, 'b2d.profile'));
+      profileIsSet = fs.existsSync(
+        path.join(deps.lookup('config').sysConfRoot, 'b2d.profile')
+      );
       var msg = profileIsSet ? 'exists.' : 'does NOT exist.';
       log.info('Boot2Docker profile ' + msg);
       log.newline();
@@ -111,13 +116,17 @@ module.exports.run = function(done) {
       var provider = deps.lookup('providerModule');
       exportsIsSet = fs.existsSync(KALABOX_EXPORTS_FILE);
       if (provider.name === 'boot2docker' && exportsIsSet) {
-        provider.checkExports(KALABOX_EXPORTS_FILE, deps.lookup('config').codeRoot, function(hasLine) {
-          exportsIsSet = hasLine;
-          var msg = exportsIsSet ? 'set.' : 'NOT set.';
-          log.info('Boot2Docker exports are ' + msg);
-          log.newline();
-          next(null);
-        });
+        provider.checkExports(
+          KALABOX_EXPORTS_FILE,
+          deps.lookup('config').codeRoot,
+          function(hasLine) {
+            exportsIsSet = hasLine;
+            var msg = exportsIsSet ? 'set.' : 'NOT set.';
+            log.info('Boot2Docker exports are ' + msg);
+            log.newline();
+            next(null);
+          }
+        );
       }
       else {
         var msg = exportsIsSet ? 'set.' : 'NOT set.';
@@ -237,7 +246,9 @@ module.exports.run = function(done) {
           function(next) {
             var tmp = disk.getTempDir();
             var src = path.join(tmp, path.basename(PROVIDER_URL_PROFILE));
-            var dest = path.join(deps.lookup('config').sysConfRoot, 'b2d.profile');
+            var dest = path.join(
+              deps.lookup('config').sysConfRoot, 'b2d.profile'
+            );
             log.info('Setting B2D profile.');
             fs.rename(src, dest, function() {
               log.ok('OK');
@@ -273,7 +284,9 @@ module.exports.run = function(done) {
                   throw err;
                 }
                 var tempDir = disk.getTempDir();
-                var pkg = path.join(tempDir, path.basename(PROVIDER_URL_V1_4_1));
+                var pkg = path.join(
+                  tempDir, path.basename(PROVIDER_URL_V1_4_1)
+                );
                 log.info('Installing: ' + pkg);
                 adminCmds.unshift(cmd.buildInstallCmd(pkg, volume));
                 next(null);
@@ -313,7 +326,9 @@ module.exports.run = function(done) {
                 provider.getServerIps(function(ips) {
                   var share = deps.lookup('config').codeRoot;
                   var line = cmd.buildExportsLine(share, ips);
-                  var exportCmd = cmd.buildExportsCmd(line, KALABOX_EXPORTS_FILE);
+                  var exportCmd = cmd.buildExportsCmd(
+                    line, KALABOX_EXPORTS_FILE
+                  );
                   adminCmds.push(exportCmd);
                   next(null);
                 });

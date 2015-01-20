@@ -88,23 +88,26 @@ describe('util', function() {
       };
       var regexFilter = /[a-z0-9\-]/;
 
-      it('Should NOT throw an error when valid characters are used.', function() {
+      it(
+        'Should NOT throw an error when valid characters are used.',
+        function() {
 
-        var fn = function(key) {
-          expect(function() {
-            util.name.create([key]);
-          }).to.not.throw(Error);
-        };
+          var fn = function(key) {
+            expect(function() {
+              util.name.create([key]);
+            }).to.not.throw(Error);
+          };
 
-        fn('abc');
-        fn('ab-c');
-        fn('abc7');
+          fn('abc');
+          fn('ab-c');
+          fn('abc7');
 
-        iterAsciiChars(function(str) {
-          return (str.search(regexFilter) >= 0);
-        }, fn);
+          iterAsciiChars(function(str) {
+            return (str.search(regexFilter) >= 0);
+          }, fn);
 
-      });
+        }
+      );
 
       it('Should throw an error when invalid characters are used.', function() {
 
