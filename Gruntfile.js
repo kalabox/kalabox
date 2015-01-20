@@ -81,7 +81,7 @@ module.exports = function(grunt) {
       }
     },
     jsdoc: {
-      public: {
+      safe: {
         src: [
           'lib/app.js',
           'lib/core/*.js',
@@ -98,7 +98,7 @@ module.exports = function(grunt) {
           configure : '.jsdoc.conf.json'
         }
       },
-      private: {
+      secret: {
         src: ['lib/**/*.js'],
         options: {
           'private': false,
