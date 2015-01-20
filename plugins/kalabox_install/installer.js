@@ -108,9 +108,9 @@ module.exports.run = function(done) {
     function(next) {
       log.header('Checking for KBOX Boot2Docker exports file entry.');
       // this is a weak check for now since b2d is not set up yet
-      // @we
       var provider = deps.lookup('providerModule');
-      if (provider.name === 'boot2docker') {
+      exportsIsSet = fs.existsSync(KALABOX_EXPORTS_FILE);
+      if (provider.name === 'boot2docker' && exportsIsSet) {
         provider.checkExports(KALABOX_EXPORTS_FILE, deps.lookup('config').codeRoot, function(hasLine) {
           exportsIsSet = hasLine;
           var msg = exportsIsSet ? 'set.' : 'NOT set.';
@@ -120,6 +120,9 @@ module.exports.run = function(done) {
         });
       }
       else {
+        var msg = exportsIsSet ? 'set.' : 'NOT set.';
+        log.info('Boot2Docker exports are ' + msg);
+        log.newline();
         next(null);
       }
     },
