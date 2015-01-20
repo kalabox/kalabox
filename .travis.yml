@@ -30,7 +30,6 @@ notifications:
     recipients:
     - mike@kalamuna.com
     - ben@kalamuna.com
-    - coder1@gmail.com
     on_success: always
 env:
   global:
