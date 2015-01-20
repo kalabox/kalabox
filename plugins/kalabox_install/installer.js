@@ -35,6 +35,7 @@ var adminCmds = [];
 var providerIsInstalled;
 var dnsIsSet;
 var profileIsSet;
+var exportsIsSet;
 var firewallIsOkay;
 var stepCounter = 1;
 
@@ -101,6 +102,26 @@ module.exports.run = function(done) {
       log.info('Boot2Docker profile ' + msg);
       log.newline();
       next(null);
+    },
+
+    // Check if exports are alredy set
+    function(next) {
+      log.header('Checking for KBOX Boot2Docker exports file entry.');
+      // this is a weak check for now since b2d is not set up yet
+      // @we
+      var provider = deps.lookup('providerModule');
+      if (provider.name === 'boot2docker') {
+        provider.checkExports(KALABOX_EXPORTS_FILE, deps.lookup('config').codeRoot, function(hasLine) {
+          exportsIsSet = hasLine;
+          var msg = exportsIsSet ? 'set.' : 'NOT set.';
+          log.info('Boot2Docker exports are ' + msg);
+          log.newline();
+          next(null);
+        });
+      }
+      else {
+        next(null);
+      }
     },
 
     // Check if VirtualBox.app is running.
@@ -236,7 +257,7 @@ module.exports.run = function(done) {
 
     // Install packages.
     function(next) {
-      if (!providerIsInstalled || !dnsIsSet) {
+      if (!providerIsInstalled || !dnsIsSet || !exportsIsSet) {
         log.header('Setting things up.');
         log.alert('ADMINISTRATIVE PASSWORD WILL BE REQUIRED!');
 
@@ -282,7 +303,26 @@ module.exports.run = function(done) {
           },
 
           function(next) {
-            if (adminCmds) {
+            if (!exportsIsSet) {
+              log.info('Setting up shares for Kalabox.');
+              var provider = deps.lookup('providerModule');
+              if (provider.name === 'boot2docker') {
+                provider.getServerIps(function(ips) {
+                  var share = deps.lookup('config').codeRoot;
+                  var line = cmd.buildExportsLine(share, ips);
+                  var exportCmd = cmd.buildExportsCmd(line, KALABOX_EXPORTS_FILE);
+                  adminCmds.push(exportCmd);
+                  next(null);
+                });
+              }
+            }
+            else {
+              next(null);
+            }
+          },
+
+          function(next) {
+            if (!_.isEmpty(adminCmds)) {
               var child = cmd.runCmdsAsync(adminCmds);
               child.stdout.on('data', function(data) {
                 log.info(data);
@@ -295,6 +335,9 @@ module.exports.run = function(done) {
               child.stderr.on('data', function(data) {
                 log.warn(data);
               });
+            }
+            else {
+              next(null);
             }
           }
 
