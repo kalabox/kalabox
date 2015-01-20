@@ -30,7 +30,9 @@ describe('mode module', function() {
     it('should throw an error if it has already been set.', function() {
       mode.clear();
       mode.set('cli');
-      expect(function() { mode.set('gui'); }).to.throw('Mode has already been set: cli');
+      expect(
+        function() { mode.set('gui'); }
+      ).to.throw('Mode has already been set: cli');
     });
 
   });

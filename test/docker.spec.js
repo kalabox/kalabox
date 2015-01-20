@@ -33,11 +33,15 @@ var stubGetContainer = sinon.stub(fakeDockerode, 'getContainer', function(cid) {
     return null;
   }
 });
-var stubList = sinon.stub(fakeDockerode, 'listContainers', function(opts, callback) {
-  var err = null;
-  var containers = fakeContainers;
-  callback(err, containers);
-});
+var stubList = sinon.stub(
+  fakeDockerode,
+  'listContainers',
+  function(opts, callback) {
+    var err = null;
+    var containers = fakeContainers;
+    callback(err, containers);
+  }
+);
 var stubStop = sinon.stub(fakeContainer, 'stop', function(callback) {
   var err = null;
   var data = 'some data';
@@ -60,27 +64,34 @@ describe.skip('docker module', function() {
   });
 
   describe('#applyOpt()', function() {
-    it('should call the objects correct method with the correct args.', function() {
-      var obj = {
-        doSomething: function() {}
-      };
-      var funcName = 'doSomething';
-      var args = ['foo', 'bar', 7];
-      var spy = sinon.spy(obj, funcName);
-      docker.applyOpt(obj, funcName, args);
-      sinon.assert.callCount(spy, 1);
-      sinon.assert.calledWithExactly(spy, args[0], args[1], args[2]);
-    });
+    it(
+      'should call the objects correct method with the correct args.',
+      function() {
+        var obj = {
+          doSomething: function() {}
+        };
+        var funcName = 'doSomething';
+        var args = ['foo', 'bar', 7];
+        var spy = sinon.spy(obj, funcName);
+        docker.applyOpt(obj, funcName, args);
+        sinon.assert.callCount(spy, 1);
+        sinon.assert.calledWithExactly(spy, args[0], args[1], args[2]);
+      }
+    );
   });
 
   describe('#get()', function() {
-    it('should call dockerode.getContainer with the correct args and return the container.', function() {
-      var cid = '7';
-      var container = docker.get(cid);
-      sinon.assert.callCount(stubGetContainer, 1);
-      sinon.assert.calledWithExactly(stubGetContainer, cid);
-      expect(container).to.have.deep.property('cid', '7');
-    });
+    it(
+      'should call dockerode.getContainer with the correct args and return ' +
+      'the container.',
+      function() {
+        var cid = '7';
+        var container = docker.get(cid);
+        sinon.assert.callCount(stubGetContainer, 1);
+        sinon.assert.calledWithExactly(stubGetContainer, cid);
+        expect(container).to.have.deep.property('cid', '7');
+      }
+    );
   });
 
   describe('#stop()', function() {
@@ -123,20 +134,23 @@ describe.skip('docker module', function() {
         done();
       });
     });
-    it('should return containers for a specific app if the app name is given', function(done) {
-      docker.list('myapp', function(err, containers) {
-        expect(containers.length).to.equal(3);
-        var names = containers.map(function(container) {
-          return container.name;
+    it(
+      'should return containers for a specific app if the app name is given',
+      function(done) {
+        docker.list('myapp', function(err, containers) {
+          expect(containers.length).to.equal(3);
+          var names = containers.map(function(container) {
+            return container.name;
+          });
+          expect(names).to.deep.equal([
+            'kb_myapp_db',
+            'kb_myapp_data',
+            'kb_myapp_web'
+          ]);
+          done();
         });
-        expect(names).to.deep.equal([
-          'kb_myapp_db',
-          'kb_myapp_data',
-          'kb_myapp_web'
-        ]);
-        done();
-      });
-    });
+      }
+    );
   });
 
 });

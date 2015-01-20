@@ -53,7 +53,7 @@ script() {
   if [[ $EXIT_STATUS != 0 ]] ; then
     exit $EXIT_STATUS
   fi
-  grunt jsdoc:public
+  grunt jsdoc:safe
 }
 
 # after-script
