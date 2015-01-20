@@ -29,29 +29,35 @@ if (process.platform === platformSpec.PLATFORM_OSX) {
         });
       });
 
-      it('should return an applications data, when an app arg is passed.', function(done) {
-        this.timeout(TIMEOUT);
-        var expected = 'SystemUIServer';
-        sp.getAppData('SystemUIServer', function(err, data) {
-          data = data.substring(0, 1024);
-          expect(err).to.equal(null);
-          expect(data).to.equal(expected);
-          done();
-        });
-      });
-
-      it('should return null when an uninstalled app arg is passed.', function(done) {
-        this.timeout(TIMEOUT);
-        var expected = null;
-        sp.getAppData('FakeNotInstalledApp', function(err, data) {
-          if (data) {
+      it(
+        'should return an applications data, when an app arg is passed.',
+        function(done) {
+          this.timeout(TIMEOUT);
+          var expected = 'SystemUIServer';
+          sp.getAppData('SystemUIServer', function(err, data) {
             data = data.substring(0, 1024);
-          }
-          expect(err).to.equal(null);
-          expect(data).to.equal(expected);
-          done();
-        });
-      });
+            expect(err).to.equal(null);
+            expect(data).to.equal(expected);
+            done();
+          });
+        }
+      );
+
+      it(
+        'should return null when an uninstalled app arg is passed.',
+        function(done) {
+          this.timeout(TIMEOUT);
+          var expected = null;
+          sp.getAppData('FakeNotInstalledApp', function(err, data) {
+            if (data) {
+              data = data.substring(0, 1024);
+            }
+            expect(err).to.equal(null);
+            expect(data).to.equal(expected);
+            done();
+          });
+        }
+      );
 
     });
 
@@ -68,15 +74,18 @@ if (process.platform === platformSpec.PLATFORM_OSX) {
         });
       };
 
-      test('should return TRUE when an app is installed.',
+      test(
+        'should return TRUE when an app is installed.',
         'SystemUIServer',
         true
       );
-      test('should return TRUE when an app is installed, and be case insenitive.',
+      test(
+        'should return TRUE when an app is installed, and be case insenitive.',
         'sYsteMuiseRver',
         true
       );
-      test('should return FALSE when an app is NOT installed.',
+      test(
+        'should return FALSE when an app is NOT installed.',
         'FakeNotInstalledApp',
         false
       );

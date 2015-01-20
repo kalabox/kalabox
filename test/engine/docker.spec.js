@@ -113,14 +113,17 @@ describe('docker module', function() {
       };
       expect(result).to.deep.equal(expected);
     });
-    it('should return null if given a non kalabox container object.', function() {
-      var fake = {
-        Id: 'someContainerId',
-        Names: [' testcontainer']
-      };
-      var result = fn(fake);
-      expect(result).to.equal(null);
-    });
+    it(
+      'should return null if given a non kalabox container object.',
+      function() {
+        var fake = {
+          Id: 'someContainerId',
+          Names: [' testcontainer']
+        };
+        var result = fn(fake);
+        expect(result).to.equal(null);
+      }
+    );
   });
 
   var createFakeDocker = function(containers) {
@@ -176,18 +179,21 @@ describe('docker module', function() {
 
     var spyCreate = sinon.spy(defaultFakeDocker, 'createContainer');
 
-    it('should call docker.createContainer with the correct args.', function(done) {
-      __with(function() {
-        var createOpts = {name: 'myContainer3'};
-        docker.create(createOpts, function(err, container) {
-          expect(err).to.equal(null);
-          sinon.assert.callCount(spyCreate, 1);
-          expect(container).to.have.property('cid', '3');
-          expect(container).to.have.property('name', createOpts.name);
-          done();
+    it(
+      'should call docker.createContainer with the correct args.',
+      function(done) {
+        __with(function() {
+          var createOpts = {name: 'myContainer3'};
+          docker.create(createOpts, function(err, container) {
+            expect(err).to.equal(null);
+            sinon.assert.callCount(spyCreate, 1);
+            expect(container).to.have.property('cid', '3');
+            expect(container).to.have.property('name', createOpts.name);
+            done();
+          });
         });
-      });
-    });
+      }
+    );
 
   });
 
@@ -196,15 +202,17 @@ describe('docker module', function() {
     var spyStart1 = sinon.spy(defaultFakeDocker.getContainer('1'), 'start');
     var spyStart2 = sinon.spy(defaultFakeDocker.getContainer('2'), 'start');
 
-    it('should not start the container if its already running.', function(done) {
-      __with(function() {
-        docker.start('2', function(err) {
-          expect(err).to.equal(null);
-          sinon.assert.callCount(spyStart2, 0);
-          done();
+    it(
+      'should not start the container if its already running.',
+      function(done) {
+        __with(function() {
+          docker.start('2', function(err) {
+            expect(err).to.equal(null);
+            sinon.assert.callCount(spyStart2, 0);
+            done();
+          });
         });
       });
-    });
 
     it('should start the container.', function(done) {
       __with(function() {
@@ -264,22 +272,27 @@ describe('docker module', function() {
       __with(function() {
         docker.remove('2', function(err) {
           expect(err).to.not.equal(null);
-          expect(err.message).to.match(/The container "2" can NOT be removed, it is still running./);
+          expect(err.message).to.match(
+            /The container "2" can NOT be removed, it is still running./
+          );
           sinon.assert.callCount(spyRemove2, 0);
           done();
         });
       });
     });
 
-    it('should remove a container, but call stop first if it is running.', function(done) {
-      __with(function() {
-        docker.remove('2', {kill: true}, function(err) {
-          expect(err).to.equal(null);
-          sinon.assert.callCount(spyRemove2, 1);
-          done();
+    it(
+      'should remove a container, but call stop first if it is running.',
+      function(done) {
+        __with(function() {
+          docker.remove('2', {kill: true}, function(err) {
+            expect(err).to.equal(null);
+            sinon.assert.callCount(spyRemove2, 1);
+            done();
+          });
         });
-      });
-    });
+      }
+    );
 
   });
 

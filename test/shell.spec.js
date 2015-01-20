@@ -23,7 +23,8 @@ describe('#shell module', function() {
 
     it('should return an error when the cmd fails.', function(done) {
       var cmd = 'not_a_real_program';
-      var regex = /code: 127, msg: \/bin\/sh: [1: ]*not_a_real_program: [a-z ]*not found\n/;
+      var regex =
+      /code: 127, msg: \/bin\/sh: [1: ]*not_a_real_program: [a-z ]*not found\n/;
       shell.exec(cmd, function(err, output) {
         expect(err).to.not.equal(null);
         expect(err.message).to.match(regex);
@@ -42,7 +43,8 @@ describe('#shell module', function() {
 
     it('should return an error for a failed command.', function(done) {
       var cmd = 'which -fu this_is_not_a_real_executable';
-      var expectedData = 'which: illegal option -- f\nusage: which [-as] program ...\n';
+      var expectedData =
+        'which: illegal option -- f\nusage: which [-as] program ...\n';
       var expectedError = new Error({
         code: 1,
         data: expectedData
