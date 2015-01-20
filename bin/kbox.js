@@ -24,6 +24,8 @@ var tasks = kbox.core.tasks;
 var _util = kbox.util;
 
 var init = function() {
+  // mode
+  deps.register('mode', kbox.core.mode.set('cli'));
   // kbox
   deps.register('kbox', kbox);
   // events
