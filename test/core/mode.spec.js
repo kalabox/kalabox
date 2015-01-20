@@ -8,7 +8,7 @@ var mode = rewire('../../lib/core/mode.js');
 describe('mode module', function() {
 
   describe('#set()', function() {
-    
+
     it('should correctly set the mode.', function() {
       expect(mode.set('cli')).to.equal('cli');
       expect(mode.get()).to.equal('cli');
