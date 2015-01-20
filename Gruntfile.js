@@ -70,11 +70,27 @@ module.exports = function(grunt) {
       }
     },
     jsdoc: {
-      target: {
-        src: ['lib/**/*.js'],
+      public: {
+        src: [
+          'lib/app.js',
+          'lib/core/*.js',
+          'lib/engine.js',
+          'lib/engine/provider.js',
+          'lib/services.js',
+          'lib/services/*.js'
+        ],
         options: {
           'private': false,
           destination: 'doc',
+          template : 'node_modules/grunt-jsdoc/node_modules/ink-docstrap/template',
+          configure : '.jsdoc.conf.json'
+        }
+      },
+      private: {
+        src: ['lib/**/*.js'],
+        options: {
+          'private': false,
+          destination: 'doc-private',
           template : 'node_modules/grunt-jsdoc/node_modules/ink-docstrap/template',
           configure : '.jsdoc.conf.json'
         }
