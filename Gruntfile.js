@@ -87,8 +87,7 @@ module.exports = function(grunt) {
           'lib/core/*.js',
           'lib/engine.js',
           'lib/engine/provider.js',
-          'lib/services.js',
-          'lib/services/*.js'
+          'lib/services.js'
         ],
         options: {
           destination: 'doc',
