@@ -22,10 +22,13 @@ var deps = kbox.core.deps;
 var env = kbox.core.env;
 var tasks = kbox.core.tasks;
 var _util = kbox.util;
+var shell = kbox.util.shell;
 
 var init = function() {
   // mode
   deps.register('mode', kbox.core.mode.set('cli'));
+  // shell
+  deps.register('shell', shell);
   // kbox
   deps.register('kbox', kbox);
   // events
