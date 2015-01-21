@@ -83,6 +83,7 @@ module.exports = function(grunt) {
     jsdoc: {
       safe: {
         src: [
+          'lib/app.js',
           'lib/core/*.js',
           'lib/engine.js',
           'lib/engine/provider.js',
