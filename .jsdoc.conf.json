@@ -13,9 +13,9 @@
     "default": {
       "outputSourceFiles": true
     },
-    "systemName"      : "Oblivion",
+    "systemName"      : "Kalabox API",
     "footer"          : "",
-    "copyright"       : "Copyright © 2014",
+    "copyright"       : "Copyright © 2014 Kalamuna and friends",
     "navType"         : "vertical",
     "theme"           : "oblivion",
     "linenums"        : true,

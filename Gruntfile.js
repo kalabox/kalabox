@@ -87,8 +87,7 @@ module.exports = function(grunt) {
           'lib/core/*.js',
           'lib/engine.js',
           'lib/engine/provider.js',
-          'lib/services.js',
-          'lib/services/*.js'
+          'lib/services.js'
         ],
         options: {
           destination: 'doc',
@@ -99,10 +98,8 @@ module.exports = function(grunt) {
       secret: {
         src: ['lib/**/*.js'],
         options: {
-          'private': false,
-          destination: 'doc-private',
-          template :
-            'node_modules/grunt-jsdoc/node_modules/ink-docstrap/template',
+          destination: 'doc',
+          template: 'node_modules/jsdoc-oblivion/template',
           configure : '.jsdoc.conf.json'
         }
       }
