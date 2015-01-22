@@ -1,6 +1,6 @@
 # docker build -t kalabox/nginx .
 
-FROM kalabox/debian
+FROM kalabox/debian:master
 
 # Install Nginx.
 RUN \
