@@ -1,6 +1,6 @@
 # docker build -t kalabox/mariadb .
 
-FROM kalabox/debian:master
+FROM kalabox/debian
 
 # Install MariaDB.
 RUN \
