@@ -1,6 +1,6 @@
 # docker build -t kalabox/php-fpm .
 
-FROM kalabox/debian
+FROM kalabox/debian:stable
 
 # Install PHP.
 RUN \

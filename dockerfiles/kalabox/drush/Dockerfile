@@ -1,6 +1,6 @@
 # docker build -t kalabox/drush .
 
-FROM kalabox/debian
+FROM kalabox/debian:stable
 
 # Install Drush & dependencies
 RUN \

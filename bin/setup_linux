@@ -23,7 +23,7 @@ docker rm -f kalabox_data
 
 
 # Pull/Build Core Images
-docker pull kalabox/debian
+docker pull kalabox/debian:stable
 docker pull kalabox/dnsmasq
 docker pull kalabox/data
 docker pull kalabox/hipache

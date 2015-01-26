@@ -101,7 +101,7 @@ User's can override some global configuration by putting a file called `kalabox.
   "startupServicePrefix": "kalabox_",
   "startupServices": {
     "kalaboxDebian": {
-      "name": "kalabox/debian",
+      "name": "kalabox/debian:stable",
       "containers" : {
         "kalaboxSkydns": {
           "name": "kalabox/skydns",
