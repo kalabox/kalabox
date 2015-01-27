@@ -31,7 +31,7 @@ module.exports = function(grunt) {
         command:
             'node_modules/istanbul/lib/cli.js ' +
             'test ' +
-            'node_modules/mocha/bin/mocha ' +
+            'node_modules/mocha/bin/_mocha ' +
             './test/'
         },
       testLarge: {
@@ -39,7 +39,7 @@ module.exports = function(grunt) {
       testCoverage: {
         command:
         'node_modules/istanbul/lib/cli.js ' +
-        'cover node_modules/mocha/bin/mocha ./test/'},
+        'cover node_modules/mocha/bin/_mocha ./test/'},
       testCheckCoverage: {
         command:
           'node_modules/istanbul/lib/cli.js ' +
