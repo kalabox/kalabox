@@ -1,0 +1,36 @@
+<configuration version="7">
+    <folder id="code" path="/sync/code/" ro="false" rescanIntervalS="5" ignorePerms="false">
+        <versioning></versioning>
+        <lenientMtimes>false</lenientMtimes>
+        <copiers>1</copiers>
+        <pullers>16</pullers>
+        <hashers>0</hashers>
+    </folder>
+    <gui enabled="true" tls="false">
+        <address>0.0.0.0:8080</address>
+        <apikey>1B-YGWshy-KP55mN06eLzaA9EXsxeU5t</apikey>
+    </gui>
+    <options>
+        <listenAddress>0.0.0.0:22000</listenAddress>
+        <globalAnnounceServer>udp4://announce.syncthing.net:22026</globalAnnounceServer>
+        <globalAnnounceEnabled>true</globalAnnounceEnabled>
+        <localAnnounceEnabled>true</localAnnounceEnabled>
+        <localAnnouncePort>21025</localAnnouncePort>
+        <localAnnounceMCAddr>[ff32::5222]:21026</localAnnounceMCAddr>
+        <maxSendKbps>0</maxSendKbps>
+        <maxRecvKbps>0</maxRecvKbps>
+        <reconnectionIntervalS>20</reconnectionIntervalS>
+        <startBrowser>false</startBrowser>
+        <upnpEnabled>true</upnpEnabled>
+        <upnpLeaseMinutes>0</upnpLeaseMinutes>
+        <upnpRenewalMinutes>30</upnpRenewalMinutes>
+        <urAccepted>-1</urAccepted>
+        <urUniqueID></urUniqueID>
+        <restartOnWakeup>true</restartOnWakeup>
+        <autoUpgradeIntervalH>12</autoUpgradeIntervalH>
+        <keepTemporariesH>24</keepTemporariesH>
+        <cacheIgnoredFiles>true</cacheIgnoredFiles>
+        <progressUpdateIntervalS>5</progressUpdateIntervalS>
+        <symlinksEnabled>true</symlinksEnabled>
+    </options>
+</configuration>
