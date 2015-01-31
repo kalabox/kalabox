@@ -271,18 +271,11 @@ module.exports.run = function(done) {
           function(next) {
             if (!dnsIsSet) {
               log.info('Setting up DNS for Kalabox.');
-              var provider = deps.lookup('providerModule');
-              if (provider.name === 'boot2docker') {
-                provider.getServerIps(function(ips) {
-                  var ipCmds = cmd.buildDnsCmd(ips, KALABOX_DNS_FILE);
-                  adminCmds = adminCmds.concat(ipCmds);
-                  next(null);
-                });
-              }
-              else {
-                adminCmds.concat(cmd.buildDnsCmd(null, KALABOX_DNS_FILE));
+              provider.getServerIps(function(ips) {
+                var ipCmds = cmd.buildDnsCmd(ips, KALABOX_DNS_FILE);
+                adminCmds = adminCmds.concat(ipCmds);
                 next(null);
-              }
+              });
             }
             else {
               next(null);
@@ -328,9 +321,14 @@ module.exports.run = function(done) {
       async.series([
 
         function(next) {
-          provider.up(function(err, output) {
-            log.info(output);
-            next(null);
+          // @todo: stop gap for #190 for now. eventually we will have a more
+          // robust installer API for providers to add checks and prepares to
+          // the installer.
+          provider.prepareInstall(function() {
+            provider.up(function(err, output) {
+              log.info(output);
+              next(null);
+            });
           });
         }
 
