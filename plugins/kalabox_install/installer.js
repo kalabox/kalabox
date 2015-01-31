@@ -26,7 +26,6 @@ var INSTALL_MB = 30 * 1000;
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
 var KALABOX_DNS_FILE = '/etc/resolver/kbox';
-var KALABOX_EXPORTS_FILE = '/etc/exports';
 var PROVIDER_URL_V1_4_1 =
   'https://github.com/boot2docker/osx-installer/releases/download/v1.4.1/' +
   'Boot2Docker-1.4.1.pkg';
@@ -38,7 +37,6 @@ var adminCmds = [];
 var providerIsInstalled;
 var dnsIsSet;
 var profileIsSet;
-var exportsIsSet;
 var firewallIsOkay;
 var stepCounter = 1;
 
@@ -107,33 +105,6 @@ module.exports.run = function(done) {
       log.info('Boot2Docker profile ' + msg);
       log.newline();
       next(null);
-    },
-
-    // Check if exports are alredy set
-    function(next) {
-      log.header('Checking for KBOX Boot2Docker exports file entry.');
-      // this is a weak check for now since b2d is not set up yet
-      var provider = deps.lookup('providerModule');
-      exportsIsSet = fs.existsSync(KALABOX_EXPORTS_FILE);
-      if (provider.name === 'boot2docker' && exportsIsSet) {
-        provider.checkExports(
-          KALABOX_EXPORTS_FILE,
-          deps.lookup('config').codeRoot,
-          function(hasLine) {
-            exportsIsSet = hasLine;
-            var msg = exportsIsSet ? 'set.' : 'NOT set.';
-            log.info('Boot2Docker exports are ' + msg);
-            log.newline();
-            next(null);
-          }
-        );
-      }
-      else {
-        var msg = exportsIsSet ? 'set.' : 'NOT set.';
-        log.info('Boot2Docker exports are ' + msg);
-        log.newline();
-        next(null);
-      }
     },
 
     // Check if VirtualBox.app is running.
@@ -271,7 +242,7 @@ module.exports.run = function(done) {
 
     // Install packages.
     function(next) {
-      if (!providerIsInstalled || !dnsIsSet || !exportsIsSet) {
+      if (!providerIsInstalled || !dnsIsSet) {
         log.header('Setting things up.');
         log.alert('ADMINISTRATIVE PASSWORD WILL BE REQUIRED!');
 
@@ -311,27 +282,6 @@ module.exports.run = function(done) {
               else {
                 adminCmds.concat(cmd.buildDnsCmd(null, KALABOX_DNS_FILE));
                 next(null);
-              }
-            }
-            else {
-              next(null);
-            }
-          },
-
-          function(next) {
-            if (!exportsIsSet) {
-              log.info('Setting up shares for Kalabox.');
-              var provider = deps.lookup('providerModule');
-              if (provider.name === 'boot2docker') {
-                provider.getServerIps(function(ips) {
-                  var share = deps.lookup('config').codeRoot;
-                  var line = cmd.buildExportsLine(share, ips);
-                  var exportCmd = cmd.buildExportsCmd(
-                    line, KALABOX_EXPORTS_FILE
-                  );
-                  adminCmds.push(exportCmd);
-                  next(null);
-                });
               }
             }
             else {
