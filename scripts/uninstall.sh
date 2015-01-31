@@ -86,8 +86,9 @@ if [ "$my_answer" == "1" ]; then
         sleep 10s
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f $B2D
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.boot2docker
-        #/usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /tmp/kalabox2.iso
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /tmp/kalabox2.iso
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /usr/local/share/boot2docker
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f $HOME/.kalabox/b2d.profile
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f $BOOT2DOCKER_PROFILE
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f /etc/resolver/kbox
     fi
