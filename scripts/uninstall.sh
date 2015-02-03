@@ -59,16 +59,23 @@ if [ "$my_answer" == "1" ]; then
     # Just start the sudo party
     /usr/bin/sudo -p "Please enter %u's password:" echo "Let's get it started"
 
+    :
+
     # Gather some data on the things
     B2D=$(which boot2docker)
     DOCKER=$(which docker)
     VBOX=$(which VBoxManage)
+    BOOT2DOCKER_PROFILE=$HOME/.kalabox/b2d.profile
     kala_files=()
     append kala_files "/Applications/boot2docker.app"
     append kala_files "$HOME/.boot2docker"
     append kala_files "$B2D"
     append kala_files "$DOCKER"
-    append kala_files "/usr/local/share/boot2docker"
+    append kala_files "$BOOT2DOCKER_PROFILE"
+    append kala_files "/tmp/kalabox2.iso"
+    append kala_files "/etc/resolver/kbox"
+    append kala_files "$HOME/.kalabox/syncthing"
+    append kala_files "$HOME/.kalabox/bin/syncthing"
 
     # Print the files and directories that are to be removed and verify
     # with the user that that is what he/she really wants to do.
@@ -84,13 +91,13 @@ if [ "$my_answer" == "1" ]; then
             $B2D destroy
         fi
         sleep 10s
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f $B2D
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.boot2docker
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $B2D
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $BOOT2DOCKER_PROFILE
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /tmp/kalabox2.iso
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /usr/local/share/boot2docker
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f $HOME/.kalabox/b2d.profile
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f $BOOT2DOCKER_PROFILE
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f /etc/resolver/kbox
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/resolver/kbox
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin/syncthing
     fi
 
     if [ "$DOCKER" ]; then

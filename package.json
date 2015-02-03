@@ -33,6 +33,7 @@
     "bluebird": "^2.9.3",
     "bunyan": "~1.0.1",
     "chalk": "~0.5.1",
+    "decompress": "^2.1.1",
     "diskspace": "^0.1.7",
     "dockerode": "~2.0.3",
     "download": "^3.3.0",
