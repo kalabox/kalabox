@@ -267,8 +267,7 @@ module.exports = function(events) {
 
 ## Sharing
 
-Right now Kalabox uses syncthing for sharing. Syncthing is a nifty p2p client written in Go that works kind of like a bi-directional auto rsync. What this means
-
+Right now Kalabox uses syncthing for sharing. Syncthing is a nifty p2p client written in Go that works kind of like a bi-directional auto rsync. Currently this is in a "stubbed out" state. When you start an app you will get a folder in `~/kalabox/code/<APPNAME>` which is where you should put your code. If you override the `codeRoot` in the global config then you will want to check that directory instead.
 
 ## Apps
 
@@ -276,6 +275,17 @@ Kalabox provides some common things to help you build apps. The core of an app i
 
 You can check out some basic examples at [kalabox-app-examples](https://github.com/kalabox/kalabox-app-examples). Here is a brief setup guide:
 
-
 ## Other Resources
+
+* [API docs](http://api.kalabox.me/)
+* [Test coverage reports](http://coverage.kalabox.me/)
+* [Kalabox CI dash](http://ci.kalabox.me/)
+* [Mountain climbing advice](https://www.youtube.com/watch?v=tkBVDh7my9Q)
+* [Boot2Docker](https://github.com/boot2docker/boot2docker)
+* [Syncthing](https://github.com/syncthing/syncthing)
+* [Docker](https://github.com/docker/docker)
+
+-------------------------------------------------------------------------------------
+(C) 2015 Kalamuna and friends
+
 
