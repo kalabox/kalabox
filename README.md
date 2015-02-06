@@ -126,12 +126,13 @@ User's can override some global configuration by putting a file called `kalabox.
   "srcRoot": "/Users/tturner/Desktop/kalabox",
   "sysConfRoot": "/Users/tturner/.kalabox"
 }
-
 ```
 
 ## Plugins
 
-Kalabox also comes with a plugin system which allows for users to grab additional contrib functionality from npm or to write their own global or app specific plugins. Kalabox drinks its own plugin system to implement the CLI so you can check out the plugin folder for some examples. Here is a basic example of "hello world" plugin that prints "a british tar" before every db container is started. Each plugin can register tasks, can grab some dependencies to use and can tap into various events. These are detailed below.
+Kalabox also comes with a plugin system which allows for users to grab additional contrib functionality from npm or to write their own global or app specific plugins. Kalabox drinks its own plugin system to implement the CLI so you can check out the plugin folder for some examples.
+
+Here are some of the fun things you can use in your plugins and some basic examples. Each plugin can register tasks, can grab some dependencies to use and can tap into various events. These are detailed below.
 
 ### Dependencies
 
@@ -172,77 +173,97 @@ deps.register('services', kbox.services);
 deps.register('providerModule', engine.getProviderModule());
 
 // Host and port config for the engine
-deps.register('engineConfig', config);
-
+deps.register('engineConfig', config)
 ```
 
 Example of a simple plugin using some dependencies.
 
 ```js
-'use strict';
-
-/**
- * This exposes some commands if you need to turn the engine on.
- */
-
-var chalk = require('chalk');
-
+// Dependencies get put into the function signature
 module.exports = function(engine, events, tasks, services) {
 
-  if (engine.provider.hasTasks) {
-    // Tasks
-    // Start the kalabox engine
-    tasks.registerTask('up', function(done) {
-      engine.up(done);
-    });
-
-    // Stop the kalabox engine
-    tasks.registerTask('down', function(done) {
-      engine.down(done);
-    });
-
-    // Events
-    events.on('post-up', function(done) {
-      console.log(chalk.green('Kalabox engine has been activated.'));
-      done();
-    });
-
-    events.on('post-down', function(done) {
-      console.log(chalk.red('Kalabox engine has been deactivated.'));
-      done();
-    });
-  }
+  // Super awesome plugin code
 
 };
-
 ```
-
-
 
 ### Tasks
 
-### Events
-
-Here are a list of the events Kalabox currently implements and an example.
+You can also register specific tasks that do specific things. Registering tasks is fairly straightforward. Here is how we define a task to provision Kalabox.
 
 ```js
 'use strict';
 
-module.exports = function(app) {
+var installer = require('./installer.js');
 
-  /**
-   * Listens for post-start-component
-   * - Does some gilbert and sullivan things
-   */
-  app.on('post-start-component', function(component) {
+module.exports = function(tasks) {
+
+  tasks.registerTask('provision', function(done) {
+    installer.run(done);
+  });
+
+};
+```
+
+### Events
+
+One of the more powerful parts of plugins is the ability to hook into various events that are emitted during the Kalabox runtime. Here is a list of current events that you can hook into. We likely will add more in the future.
+
+```js
+// App events
+// These events all get the app object
+
+// Runs before an app is installed
+events.emit('pre-install', app, callback);
+// Runs after an app is installed
+events.emit('post-install', app, callback);
+// Runs before an app is started
+events.emit('pre-start', app, callback);
+// Runs after an app is started
+events.emit('post-start', app, callback);
+// Runs before an app is stopped
+events.emit('pre-stop', app, callback);
+// Runs after an app is stopped
+events.emit('post-stop', app, callback);
+// Runs before an app is uninstalled
+events.emit('pre-stop', app, callback);
+// Runs after an app is uninstalled
+events.emit('post-stop', app, callback);
+
+// Component events
+// These events all get the component object
+events.emit('pre-install-component', component, callback);
+// Runs after an component is installed
+events.emit('post-install-component', component, callback);
+// Runs before an component is started
+events.emit('pre-start-component', component, callback);
+// Runs after an component is started
+events.emit('post-start-component', component, callback);
+// Runs before an component is stopped
+events.emit('pre-stop-component', component, callback);
+// Runs after an component is stopped
+events.emit('post-stop-component', component, callback);
+// Runs before an component is uninstalled
+events.emit('pre-stop-component', component, callback);
+// Runs after an component is uninstalled
+events.emit('post-stop-component', component, callback);
+```
+
+And a great events example that prints a Gilbert and Sullivan lyric to console after every database container is started.
+
+```js
+'use strict';
+
+module.exports = function(events) {
+
+  events.on('post-start-component', function(component) {
     if (component.key === 'db') {
       console.log('A BRITISH TAR IS A SOARING SOUL!')
     }
   });
 
+}
 ```
-
-### Tasks
 
 ## Sharing
 
