@@ -130,7 +130,7 @@ User's can override some global configuration by putting a file called `kalabox.
 ```
 
 ## Plugins
-```
+
 Kalabox also comes with a plugin system which allows for users to grab additional contrib functionality from npm or to write their own global or app specific plugins. Kalabox drinks its own plugin system to implement the CLI so you can check out the plugin folder for some examples. Here is a basic example of "hello world" plugin that prints "a british tar" before every db container is started. Each plugin can register tasks, can grab some dependencies to use and can tap into various events. These are detailed below.
 
 ### Dependencies
