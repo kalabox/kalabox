@@ -1,6 +1,6 @@
 # Kalabox
 
-This project is currently under heavy development. The documentation here is currently directed towards developers working on the project. It was last updated to reflect changes in v0.3.0. For other changes please check the [changelog](https://github.com/kalabox/kalabox/blob/master/CHANGELOG.md)
+This project is currently under heavy development. The documentation here is currently directed towards developers working on the project. It was last updated to reflect changes in `v0.3.0`. For other changes please check the [changelog](https://github.com/kalabox/kalabox/blob/master/CHANGELOG.md)
 
 Please make sure that you have installed [nodejs](http://nodejs.org/) first!
 
@@ -79,7 +79,7 @@ up
 
 ### Engines, providers and services! OH MY!
 
-Kalabox loosesly defines a "provider" as the underlying tech that is needed to run your "engine" where engine is loosely defined as something that handles container orhcestration. "Services" are defined as the set of additional containers that are needed to run apps. More on this later.
+Kalabox loosesly defines a `provider` as the underlying tech that is needed to run your `engine` where engine is loosely defined as something that handles container orhcestration. `Services` are defined as the set of additional containers that are needed to run apps. More on this later.
 
 Generally `kbox up` and `kbox down` are used to activate the provider and get the engine into a position where it can begin to "do app things" ie install, start, stop and uninstall apps.
 
@@ -89,11 +89,17 @@ Kalabox has an interface to support various engines. More details on that [here]
 
 ### Provider
 
-Similarly to engines, Kalabox has an interface that engines can use for various providers. Providers can be thought of as installation magic needed to support a given engine. So to run on the `docker` engine on MacOSX and Windows Kalabox currently uses the `Boot2Docker` provider. You can read more about the interface [here](http://api.kalabox.me/provider.html). Engine will usually select the correct provider based on the users environment. On Mac/Windows this will be Boot2Docker... if you were hypothetically running a future version of Kalabox on Linode this might be possible with the not currently extant `debian` provider.
+Similarly to engines, Kalabox has an interface that engines can use for various providers. Providers can be thought of as the installation magic needed to support a given engine. So to run on the `docker` engine on MacOSX and Windows Kalabox currently uses the `Boot2Docker` provider. You can read more about the interface [here](http://api.kalabox.me/provider.html).
+
+Engine will usually select the correct provider based on the users environment. On Mac/Windows this will be Boot2Docker. If you were hypothetically running a future version of Kalabox on Linode this might be possible with the not currently extant `debian` provider.
 
 ### Services
 
-To check the current status of the VM you can run `boot2docker --vm="Kalabox2" status`.
+Services are any additional containers that are needed to support apps. This could be something like an `nginx` reverse proxy or `dnsmasq` or both. Different services backends can be swapped out in the global config using the `services` key.
+
+Currently Kalabox implements a set of services called "Kalabox" that are used to support our `docker` based apps. Specifically we are using `hipache` as a reverse proxy, `dnsmasq` to handle requests to `.kbox` domains, `skydock` to troll the `docker` events stream for starts and stops and `skydns` to handle intra-docker dns resolution.
+
+For more info on the services interface check out [this](http://api.kalabox.me/services.html).
 
 ### Global configuration
 
