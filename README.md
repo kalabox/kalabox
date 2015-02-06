@@ -1,16 +1,16 @@
 # Kalabox
 
-This project is currently under heavy development. The documentation here is currently directed towards developers working on the project. It was last updated to reflect changes in v0.2.0. For other changes please check the [changelog](https://github.com/kalabox/kalabox/blob/master/CHANGELOG.md)
+This project is currently under heavy development. The documentation here is currently directed towards developers working on the project. It was last updated to reflect changes in v0.3.0. For other changes please check the [changelog](https://github.com/kalabox/kalabox/blob/master/CHANGELOG.md)
 
 Please make sure that you have installed [nodejs](http://nodejs.org/) first!
 
 ## Normal Install
 
-At this point most people able to use the project are probably going to want to do the Developer Install.
-
 ```bash
 npm install kalabox -g
 ```
+
+* At this point most people able to use the project are probably going to want to do the Developer Install.
 
 ## Developer Install
 
@@ -26,11 +26,10 @@ npm install
 ln -s bin/kbox.js /usr/local/bin/kbox
 
 # OSX
-kbox install
+kbox provision
 
 # Ubuntu
-# Install Docker First
-bin/setup_linux
+# COMING SOON
 
 # Windows
 # COMING SOON
@@ -38,37 +37,63 @@ bin/setup_linux
 
 ## Some commands
 
-You can run `kbox` at any point to see the list of commands and apps available. Note that some commands are accessible but won't work unless you've run `kbox up`.
+You can run `kbox` at any point to see the list of commands and apps available. Note that some commands may appear but won't work unless you've run `kbox up`.
 
 Here is an example
 
 ```
 apps
 config
+containers
 down
-hotsauce # this is an app that i had installed
-    build
+drupal7
     config
-    init
-    kill
-    pull
-    remove
+    containers
+    inspect
+    install
     restart
     start
     stop
-install
-ip
-list
-pc
-status
+    uninstall
+drupal7-kalastack-docker
+    config
+    containers
+    inspect
+    install
+    restart
+    start
+    stop
+    uninstall
+hotsauce-legacy
+    config
+    containers
+    inspect
+    install
+    restart
+    start
+    stop
+    uninstall
+provision
 up
 ```
 
-### kbox up
+### Engines, providers and services! OH MY!
 
-On Windows and OSX you will need to make sure the Kalabox VM is turned on and runnning before you do kalabox things. It will be turned on for you automatically during installation but you may have to run `kbox up` or `kbox down` to start and stop it.
+Kalabox loosesly defines a "provider" as the underlying tech that is needed to run your "engine" where engine is loosely defined as something that handles container orhcestration. "Services" are defined as the set of additional containers that are needed to run apps. More on this later.
 
-To check the current status of the VM you can run `kbox status`.
+Generally `kbox up` and `kbox down` are used to activate the provider and get the engine into a position where it can begin to "do app things" ie install, start, stop and uninstall apps.
+
+### Engines
+
+Kalabox has an interface to support various engines. More details on that [here](http://api.kalabox.me/engine.html). Currently, Kalabox ships with a `docker` based implementation but you can write your own implementation and swap it out using the `engine` key in the global config file. See below.
+
+### Provider
+
+Similarly to engines, Kalabox has an interface that engines can use for various providers. Providers can be thought of as installation magic needed to support a given engine. So to run on the `docker` engine on MacOSX and Windows Kalabox currently uses the `Boot2Docker` provider. You can read more about the interface [here](http://api.kalabox.me/provider.html). Engine will usually select the correct provider based on the users environment. On Mac/Windows this will be Boot2Docker... if you were hypothetically running a future version of Kalabox on Linode this might be possible with the not currently extant `debian` provider.
+
+### Services
+
+To check the current status of the VM you can run `boot2docker --vm="Kalabox2" status`.
 
 ### Global configuration
 
@@ -76,97 +101,123 @@ User's can override some global configuration by putting a file called `kalabox.
 
 ```json
 {
+  "appsRoot": "/Users/tturner/Desktop/kalabox-app-examples",
+  "codeRoot": "/Users/tturner/kalabox/code",
   "domain": "kbox",
-  "kboxRoot": ":home:/kalabox",
-  "kalaboxRoot": ":kboxRoot:",
-  // soon this will be an array of paths with some auto-handling
-  "appsRoot": ":kboxRoot:/apps",
-  "sysConfRoot": ":home:/.kalabox",
-  "globalPluginRoot" : ":kboxRoot:/plugins",
+  "engine": "docker",
+  "globalPluginRoot": "/Users/tturner/kalabox/plugins",
   "globalPlugins": [
     "hipache",
-    "kalabox",
+    "kalabox_core",
+    "kalabox_install",
     "kalabox_app",
-    "kalabox_b2d"
+    "kalabox_provider"
   ],
-  "redis" : {
-    // this will soon be deprecated
-    "host": "1.3.3.7",
-    "port": 6379
-  },
-  // this will soon be set someplace else
-  "dockerHost": "1.3.3.7",
-  // this will soon be deprecated in favor of a function that can build the
-  // start services. users will still be able to override.
-  "startupServicePrefix": "kalabox_",
-  "startupServices": {
-    "kalaboxDebian": {
-      "name": "kalabox/debian:stable",
-      "containers" : {
-        "kalaboxSkydns": {
-          "name": "kalabox/skydns",
-          "createOpts" : {
-            "name": "skydns",
-            "HostConfig" : {
-              "NetworkMode": "bridge",
-              "PortBindings": {
-                "53/udp" : [{"HostIp" : "172.17.42.1", "HostPort" : "53"}]
-              }
-            }
-          },
-          "startOpts" : {}
-        },
-        "kalaboxSkydock": {
-          "name": "kalabox/skydock",
-          "createOpts" : {
-            "name": "skydock",
-            "HostConfig" : {
-              "NetworkMode": "bridge",
-              "Binds" : ["/var/run/docker.sock:/docker.sock", "/skydock.js:/skydock.js"]
-            }
-          },
-          "startOpts" : {}
-        },
-        "kalaboxHipache": {
-          "name": "kalabox/hipache",
-          "createOpts" : {
-            "name": "hipache",
-            "HostConfig" : {
-              "NetworkMode": "bridge",
-              "PortBindings": {
-                "80/tcp" : [{"HostIp" : "", "HostPort" : "80"}],
-                "6379/tcp" : [{"HostIp" : "", "HostPort" : "6379"}]
-              }
-            }
-          },
-          "startOpts" : {}
-        },
-        "kalaboxDnsmasq": {
-          "name": "kalabox/dnsmasq",
-          "createOpts" : {
-            "name": "dnsmasq",
-            "Env": ["KALABOX_IP=1.3.3.7"],
-            "ExposedPorts": {
-              "53/tcp": {},
-              "53/udp": {}
-            },
-            "HostConfig" : {
-              "NetworkMode": "bridge",
-              "PortBindings": {
-                "53/udp" : [{"HostIp" : "1.3.3.7", "HostPort" : "53"}]
-              }
-            }
-          },
-          "startOpts" : {}
-        }
-      }
-    }
-  }
+  "home": "/Users/tturner",
+  "kalaboxRoot": "/Users/tturner/kalabox",
+  "kboxRoot": "/Users/tturner/kalabox",
+  "services": "kalabox",
+  "srcRoot": "/Users/tturner/Desktop/kalabox",
+  "sysConfRoot": "/Users/tturner/.kalabox"
+}
+
 ```
 
 ## Plugins
 ```
-Kalabox also comes with a plugin system which allows for users to grab additional contrib functionality from npm or to write their own global or app specific plugins. Kalabox drinks its own plugin system to implement the CLI so you can check out the plugin folder for some examples. Here is a basic example of "hello world" plugin that prints "a british tar" before every db container is started.
+Kalabox also comes with a plugin system which allows for users to grab additional contrib functionality from npm or to write their own global or app specific plugins. Kalabox drinks its own plugin system to implement the CLI so you can check out the plugin folder for some examples. Here is a basic example of "hello world" plugin that prints "a british tar" before every db container is started. Each plugin can register tasks, can grab some dependencies to use and can tap into various events. These are detailed below.
+
+### Dependencies
+
+Each plugin can tap into various registered dependencies for usage within the plugin. Here is a brief description of some of the currently available dependencies.
+
+```js
+// Usually either 'cli' or 'gui'
+deps.register('mode', kbox.core.mode.set('cli'));
+
+// A shell module to exec some commands
+deps.register('shell', shell);
+
+// Events to hook into
+deps.register('events', kbox.core.events);
+
+// Arguments and options specified on the CLI
+deps.register('argv', argv);
+
+// To add/remove/inspect tasks
+deps.register('tasks', tasks);
+
+// The global Kalabox config
+var globalConfig = config.getGlobalConfig();
+deps.register('globalConfig', globalConfig);
+
+// An alias for the global Kalabox config
+deps.register('config', globalConfig);
+
+// All the methods on the engine
+kbox.engine.init(globalConfig);
+deps.register('engine', kbox.engine);
+
+// All the methods on the services
+kbox.services.init(globalConfig);
+deps.register('services', kbox.services);
+
+// The provider module being used
+deps.register('providerModule', engine.getProviderModule());
+
+// Host and port config for the engine
+deps.register('engineConfig', config);
+
+```
+
+Example of a simple plugin using some dependencies.
+
+```js
+'use strict';
+
+/**
+ * This exposes some commands if you need to turn the engine on.
+ */
+
+var chalk = require('chalk');
+
+module.exports = function(engine, events, tasks, services) {
+
+  if (engine.provider.hasTasks) {
+    // Tasks
+    // Start the kalabox engine
+    tasks.registerTask('up', function(done) {
+      engine.up(done);
+    });
+
+    // Stop the kalabox engine
+    tasks.registerTask('down', function(done) {
+      engine.down(done);
+    });
+
+    // Events
+    events.on('post-up', function(done) {
+      console.log(chalk.green('Kalabox engine has been activated.'));
+      done();
+    });
+
+    events.on('post-down', function(done) {
+      console.log(chalk.red('Kalabox engine has been deactivated.'));
+      done();
+    });
+  }
+
+};
+
+```
+
+
+
+### Tasks
+
+### Events
+
+Here are a list of the events Kalabox currently implements and an example.
 
 ```js
 'use strict';
@@ -185,118 +236,19 @@ module.exports = function(app) {
 
 ```
 
+### Tasks
+
+## Sharing
+
+Right now Kalabox uses syncthing for sharing. Syncthing is a nifty p2p client written in Go that works kind of like a bi-directional auto rsync. What this means
+
+
 ## Apps
 
 Kalabox provides some common things to help you build apps. The core of an app is the kalabox.json which specifies the name of the app, plugins to load and the infrastructure to run the app. Currently apps must be stored in ~/kalabox/apps (or whatever `kbox config | grep appsRoot` displays). Soon you will be able to run apps from anywhere.
 
 You can check out some basic examples at [kalabox-app-examples](https://github.com/kalabox/kalabox-app-examples). Here is a brief setup guide:
 
-Create `~/kalabox/kalabox.json` and add the following to it
 
-```json
-  {
-    "home": "/Users/(YOURUSERNAME)",
-    "appsRoot": "/Users/(YOURUSERNAME)/Desktop/kalabox-app-examples",
-    "sysConfRoot": "/Users/(YOURUSERNAME)/.kalabox"
-  }
-```
-then
-
-```
-  cd ~/Desktop
-  git clone https://github.com/kalabox/kalabox-app-examples.git
-  kbox # you should see "hotsauce" list as an app now
-  kbox hotsauce pull
-  kbox hotsauce build
-  kbox hotsauce init
-  kbox hotsauce start
-```
-
-Now visit `http://hotsauce.kbox` in your browser. It will likely tell you "no input file specified".
-
-```
-  # May need to set export DOCKER_HOST=tcp://1.3.3.7:2375 first
-  docker exec -it kb_hotsauce_web /bin/bash
-  # Now should be inside the docker container
-  echo "<?php phpinfo(); ?>" > /data/code/index.php
-  exit
-```
-
-Refresh your browser for the phpinfo page. Try downloading and installing drupal. The DB creds are currently
-
-```
-db: kalabox
-u: kalabox
-p:
-host: hotsauce.kbox
-```
-
-Eventually all config will be stored in the environment.
-
-### App Config
-
-You will also see a `config` folder in the root of the hotsauce app. This allows you to easily change the settings of your services. For example, go into `config/php/php.ini` and change the `memory_limit` to something else. Then a simple `kbox hotsauce stop` and `kbox hotsauce start` and your new settings are there!
-
-### App Kalabox.json
-
-Currently the kalabox.json lets you specify which plugins and containers you want to use. Plugins and dockerfiles are looked for locally first, then in the kalabox source and finally on npm/dockerhub. Only 4 types of containers are currently supported. Additionally your `web` container is going to want set the proxy key.
-
-```json
-{
-  "appName": "hotsauce-app",
-  "appPlugins": [
-    "hotsauce-plugin-drush",
-    "hotsauce-plugin-hotsauce",
-    "hotsauce-plugin-share"
-  ],
-  "appComponents": {
-    "data": {
-      "image": {
-        "name": "hotsauce/data",
-        "build": true,
-        "src": "dockerfiles/hotsauce/data"
-      }
-    },
-    "db": {
-      "image": {
-        "name": "kalabox/mariadb",
-        "build": true,
-        "src": "dockerfiles/kalabox/mariadb"
-      }
-    },
-    "php": {
-      "image": {
-        "name": "hotsauce/php-fpm",
-        "build": true,
-        "src": "dockerfiles/hotsauce/php-fpm"
-      }
-    },
-    "web": {
-      "image": {
-        "name": "hotsauce/nginx",
-        "build": true,
-        "src": "dockerfiles/hotsauce/nginx"
-      },
-      "proxy": [
-        {
-          "port": "80/tcp",
-          "default": true
-        }
-      ]
-    }
-  }
-}
-```
-
-
-## Other useful commands
-```
-# List apps & the status of apps kalabox knows about
-kbox list
-
-# purge non kalabox containers. i.e. remove all containers that do not start with kb_ or kala
-kbox pc
-
-```
-
+## Other Resources
 
