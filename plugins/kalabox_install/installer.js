@@ -6,6 +6,8 @@ var async = require('async');
 var chalk = require('chalk');
 var fs = require('fs');
 var path = require('path');
+var Decompress = require('decompress');
+var mkdirp = require('mkdirp');
 
 var kbox = require('../../lib/kbox.js');
 var deps = kbox.core.deps;
@@ -25,20 +27,27 @@ var INSTALL_MB = 30 * 1000;
 // @todo: these will eventually come from the factory
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
-var KALABOX_DNS_FILE = '/etc/resolver/kbox';
-var KALABOX_EXPORTS_FILE = '/etc/exports';
+var KALABOX_DNS_PATH = '/etc/resolver';
+var KALABOX_DNS_FILE = 'kbox';
 var PROVIDER_URL_V1_4_1 =
   'https://github.com/boot2docker/osx-installer/releases/download/v1.4.1/' +
   'Boot2Docker-1.4.1.pkg';
 var PROVIDER_URL_PROFILE =
   'https://raw.githubusercontent.com/' +
   'kalabox/kalabox-boot2docker/master/profile';
+var SYNCTHING_DOWNLOAD =
+  'https://github.com/syncthing/syncthing/releases/' +
+  'download/v0.10.21/syncthing-macosx-amd64-v0.10.21.tar.gz';
+var SYNCTHING_CONFIG =
+  'https://raw.githubusercontent.com/' +
+  'kalabox/kalabox-dockerfiles/master/syncthing/config.xml';
 // variables
 var adminCmds = [];
 var providerIsInstalled;
 var dnsIsSet;
 var profileIsSet;
-var exportsIsSet;
+var syncThingIsInstalled;
+var syncThingIsConfigged;
 var firewallIsOkay;
 var stepCounter = 1;
 
@@ -83,6 +92,8 @@ module.exports.run = function(done) {
 
     // Check if boot2docker is already installed.
     // @todo: we should remove this in favor of provider.isInstalled()
+    // @todo: these checks should be more precise so we can opt to upgrade
+    // specific components if their source is different than what is installed
     function(next) {
       log.header('Checking if Boot2Docker is installed.');
       sysProfiler.isAppInstalled('Boot2Docker', function(err, isInstalled) {
@@ -109,31 +120,28 @@ module.exports.run = function(done) {
       next(null);
     },
 
-    // Check if exports are alredy set
+    // Check if syncthing is already installed.
     function(next) {
-      log.header('Checking for KBOX Boot2Docker exports file entry.');
-      // this is a weak check for now since b2d is not set up yet
-      var provider = deps.lookup('providerModule');
-      exportsIsSet = fs.existsSync(KALABOX_EXPORTS_FILE);
-      if (provider.name === 'boot2docker' && exportsIsSet) {
-        provider.checkExports(
-          KALABOX_EXPORTS_FILE,
-          deps.lookup('config').codeRoot,
-          function(hasLine) {
-            exportsIsSet = hasLine;
-            var msg = exportsIsSet ? 'set.' : 'NOT set.';
-            log.info('Boot2Docker exports are ' + msg);
-            log.newline();
-            next(null);
-          }
-        );
-      }
-      else {
-        var msg = exportsIsSet ? 'set.' : 'NOT set.';
-        log.info('Boot2Docker exports are ' + msg);
-        log.newline();
-        next(null);
-      }
+      log.header('Checking for syncthing binary.');
+      syncThingIsInstalled = fs.existsSync(
+        path.join(deps.lookup('config').sysConfRoot, 'bin', 'syncthing')
+      );
+      var msg = syncThingIsInstalled ? 'exists.' : 'does NOT exist.';
+      log.info('Syncthing binary ' + msg);
+      log.newline();
+      next(null);
+    },
+
+    // Check if syncthing config already exists.
+    function(next) {
+      log.header('Checking for syncthing config.');
+      syncThingIsConfigged = fs.existsSync(
+        path.join(deps.lookup('config').sysConfRoot, 'syncthing', 'config.xml')
+      );
+      var msg = syncThingIsConfigged ? 'exists.' : 'does NOT exist.';
+      log.info('Syncthing config ' + msg);
+      log.newline();
+      next(null);
     },
 
     // Check if VirtualBox.app is running.
@@ -209,6 +217,12 @@ module.exports.run = function(done) {
     // Download dependencies to temp dir.
     function(next) {
       var urls = [];
+      if (!syncThingIsInstalled) {
+        urls.unshift(SYNCTHING_DOWNLOAD);
+      }
+      if (!syncThingIsConfigged) {
+        urls.unshift(SYNCTHING_CONFIG);
+      }
       if (!providerIsInstalled) {
         urls.unshift(PROVIDER_URL_V1_4_1);
       }
@@ -269,9 +283,60 @@ module.exports.run = function(done) {
       }
     },
 
+    // Extract syncthing and move config and files
+    function(next) {
+      if (!syncThingIsInstalled || !syncThingIsConfigged) {
+        log.header('Setting up syncthing goodness.');
+        var tmp = disk.getTempDir();
+        if (!syncThingIsConfigged) {
+          log.info('Creating syncthing config dir and setting config');
+          var stConfig = path.join(tmp, path.basename(SYNCTHING_CONFIG));
+          mkdirp.sync(
+            path.join(deps.lookup('config').sysConfRoot, 'syncthing')
+          );
+          fs.renameSync(
+            stConfig, path.join(
+              deps.lookup('config').sysConfRoot, 'syncthing', 'config.xml'
+            )
+          );
+          log.ok('OK');
+          log.newline();
+        }
+        if (!syncThingIsInstalled) {
+          log.info('Setting up syncthing binary');
+          var stBinary = path.join(tmp, path.basename(SYNCTHING_DOWNLOAD));
+          var decompress = new Decompress({mode: '755'})
+            .src(stBinary)
+            .dest(tmp)
+            .use(Decompress.targz());
+
+          decompress.run(function(err, files, stream) {
+            if (err) {
+              log.fail('Could not extract sycnthing correctly');
+            }
+            var binPath = path.join(deps.lookup('config').sysConfRoot, 'bin');
+            mkdirp.sync(binPath);
+            fs.renameSync(
+              path.join(tmp, path.basename(stBinary, '.tar.gz'), 'syncthing'),
+              path.join(binPath, 'syncthing')
+            );
+            log.ok('OK');
+            log.newline();
+            next(null);
+          });
+        }
+        else {
+          next(null);
+        }
+      }
+      else {
+        next(null);
+      }
+    },
+
     // Install packages.
     function(next) {
-      if (!providerIsInstalled || !dnsIsSet || !exportsIsSet) {
+      if (!providerIsInstalled || !dnsIsSet) {
         log.header('Setting things up.');
         log.alert('ADMINISTRATIVE PASSWORD WILL BE REQUIRED!');
 
@@ -300,39 +365,13 @@ module.exports.run = function(done) {
           function(next) {
             if (!dnsIsSet) {
               log.info('Setting up DNS for Kalabox.');
-              var provider = deps.lookup('providerModule');
-              if (provider.name === 'boot2docker') {
-                provider.getServerIps(function(ips) {
-                  var ipCmds = cmd.buildDnsCmd(ips, KALABOX_DNS_FILE);
-                  adminCmds = adminCmds.concat(ipCmds);
-                  next(null);
-                });
-              }
-              else {
-                adminCmds.concat(cmd.buildDnsCmd(null, KALABOX_DNS_FILE));
+              provider.getServerIps(function(ips) {
+                var ipCmds = cmd.buildDnsCmd(
+                  ips, KALABOX_DNS_PATH, KALABOX_DNS_FILE
+                );
+                adminCmds = adminCmds.concat(ipCmds);
                 next(null);
-              }
-            }
-            else {
-              next(null);
-            }
-          },
-
-          function(next) {
-            if (!exportsIsSet) {
-              log.info('Setting up shares for Kalabox.');
-              var provider = deps.lookup('providerModule');
-              if (provider.name === 'boot2docker') {
-                provider.getServerIps(function(ips) {
-                  var share = deps.lookup('config').codeRoot;
-                  var line = cmd.buildExportsLine(share, ips);
-                  var exportCmd = cmd.buildExportsCmd(
-                    line, KALABOX_EXPORTS_FILE
-                  );
-                  adminCmds.push(exportCmd);
-                  next(null);
-                });
-              }
+              });
             }
             else {
               next(null);
@@ -378,9 +417,14 @@ module.exports.run = function(done) {
       async.series([
 
         function(next) {
-          provider.up(function(err, output) {
-            log.info(output);
-            next(null);
+          // @todo: stop gap for #190 for now. eventually we will have a more
+          // robust installer API for providers to add checks and prepares to
+          // the installer.
+          provider.prepareInstall(function() {
+            provider.up(function(err, output) {
+              log.info(output);
+              next(null);
+            });
           });
         }
 
