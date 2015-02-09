@@ -35,56 +35,56 @@ describe('events module', function() {
     );
 
     it('should pass the context correctly.', function(done) {
-        var alpha = false;
-        var bravo = false;
-        var someObject = {name: 'elvis'};
-        events.on('test2', function(context, next) {
-          expect(context).to.deep.equal({name: 'elvis'});
-          setTimeout(function() {
-            alpha = true;
-            next();
-          }, 50);
-        });
-        events.on('test2', function(context, next) {
-          expect(context).to.deep.equal({name: 'elvis'});
-          setTimeout(function() {
-            bravo = true;
-            next();
-          }, 50);
-        });
-        events.emit('test2', someObject, function(err) {
-          expect(err).to.equal(null);
-          expect(alpha).to.equal(true);
-          expect(bravo).to.equal(true);
-          done();
-        });
+      var alpha = false;
+      var bravo = false;
+      var someObject = {name: 'elvis'};
+      events.on('test2', function(context, next) {
+        expect(context).to.deep.equal({name: 'elvis'});
+        setTimeout(function() {
+          alpha = true;
+          next();
+        }, 50);
+      });
+      events.on('test2', function(context, next) {
+        expect(context).to.deep.equal({name: 'elvis'});
+        setTimeout(function() {
+          bravo = true;
+          next();
+        }, 50);
+      });
+      events.emit('test2', someObject, function(err) {
+        expect(err).to.equal(null);
+        expect(alpha).to.equal(true);
+        expect(bravo).to.equal(true);
+        done();
+      });
     });
 
     it('should handle errors correctly.', function(done) {
-        var alpha = false;
-        var bravo = false;
-        events.on('test3', function(next) {
-          setTimeout(function() {
-            alpha = true;
-            next();
-          }, 50);
-        });
-        events.on('test3', function(next) {
-          next(new Error('foo'));
-        });
-        events.on('test3', function(next) {
-          setTimeout(function() {
-            bravo = true;
-            next();
-          }, 50);
-        });
-        events.emit('test3', function(err) {
-          expect(err).to.not.equal(null);
-          expect(alpha).to.equal(true);
-          expect(bravo).to.equal(false);
-          done();
-        });
-      
+      var alpha = false;
+      var bravo = false;
+      events.on('test3', function(next) {
+        setTimeout(function() {
+          alpha = true;
+          next();
+        }, 50);
+      });
+      events.on('test3', function(next) {
+        next(new Error('foo'));
+      });
+      events.on('test3', function(next) {
+        setTimeout(function() {
+          bravo = true;
+          next();
+        }, 50);
+      });
+      events.emit('test3', function(err) {
+        expect(err).to.not.equal(null);
+        expect(alpha).to.equal(true);
+        expect(bravo).to.equal(false);
+        done();
+      });
+
     });
 
   });
