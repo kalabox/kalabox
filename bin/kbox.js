@@ -24,6 +24,10 @@ var tasks = kbox.core.tasks;
 var _util = kbox.util;
 var shell = kbox.util.shell;
 
+var packages = {
+  share : require('../lib/share/sharePackage.js')
+};
+
 var init = function() {
   // mode
   deps.register('mode', kbox.core.mode.set('cli'));
@@ -50,6 +54,10 @@ var init = function() {
   deps.register('services', kbox.services);
   // plugins
   kbox.core.plugin.init(globalConfig);
+  // Packages
+  for (var pkg in packages) {
+    packages[pkg].init();
+  }
 };
 
 var initWithApp = function(app) {
