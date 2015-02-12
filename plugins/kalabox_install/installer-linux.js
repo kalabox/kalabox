@@ -29,15 +29,15 @@ var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
 //var KALABOX_DNS_PATH = '/etc/resolver';
 var KALABOX_DNS_FILE = 'kbox';
-var PROVIDER_URL_V1_4_1 =
-  'https://github.com/boot2docker/windows-installer/releases/download/v1.4.1/' +
-  'docker-install.exe';
+var BOOT2DOCKER_CLI_BIN =
+  'https://github.com/boot2docker/boot2docker-cli/releases/download/v1.4.1/' +
+  'boot2docker-v1.4.1-linux-amd64';
 var PROVIDER_URL_PROFILE =
   'https://raw.githubusercontent.com/' +
   'kalabox/kalabox-boot2docker/master/profile';
 var SYNCTHING_DOWNLOAD =
-  'https://github.com/syncthing/syncthing/releases/download/v0.10.21' +
-  '/syncthing-windows-amd64-v0.10.21.zip';
+  'https://github.com/syncthing/syncthing/releases/download/v0.10.21/' +
+  'syncthing-linux-amd64-v0.10.21.tar.gz';
 var SYNCTHING_CONFIG =
   'https://raw.githubusercontent.com/' +
   'kalabox/kalabox-dockerfiles/master/syncthing/config.xml';
@@ -96,7 +96,7 @@ module.exports.run = function(done) {
     // @todo: need a windows/linux version of this
     // specific components if their source is different than what is installed
     function(next) {
-      log.header('Checking if Boot2Docker is installed.');
+      log.header('Checking if Boot2Docker is installed YO.');
       provider.isInstalled(function(err, isInstalled) {
         if (err) {
           throw err;
@@ -237,7 +237,7 @@ module.exports.run = function(done) {
         urls.unshift(SYNCTHING_CONFIG);
       }
       if (!providerIsInstalled) {
-        urls.unshift(PROVIDER_URL_V1_4_1);
+        urls.unshift(BOOT2DOCKER_CLI_BIN);
       }
       if (!profileIsSet) {
         urls.unshift(PROVIDER_URL_PROFILE);
@@ -321,7 +321,7 @@ module.exports.run = function(done) {
           var decompress = new Decompress({mode: '755'})
             .src(stBinary)
             .dest(tmp)
-            .use(Decompress.zip());
+            .use(Decompress.targz());
 
           decompress.run(function(err, files, stream) {
             if (err) {
@@ -330,8 +330,8 @@ module.exports.run = function(done) {
             var binPath = path.join(deps.lookup('config').sysConfRoot, 'bin');
             mkdirp.sync(binPath);
             fs.renameSync(
-              path.join(tmp, path.basename(stBinary, '.zip'), 'syncthing.exe'),
-              path.join(binPath, 'syncthing.exe')
+              path.join(tmp, path.basename(stBinary, '.tar.gz'), 'syncthing'),
+              path.join(binPath, 'syncthing')
             );
             log.ok('OK');
             log.newline();
@@ -341,6 +341,28 @@ module.exports.run = function(done) {
         else {
           next(null);
         }
+      }
+      else {
+        next(null);
+      }
+    },
+
+    // Set up b2d binary
+    function(next) {
+      if (!providerIsInstalled) {
+        log.header('Setting up B2D CLI goodness.');
+        var tmp = disk.getTempDir();
+        var b2dBin = path.join(tmp, path.basename(BOOT2DOCKER_CLI_BIN));
+        mkdirp.sync(
+          path.join('usr', 'local', 'bin')
+        );
+        fs.renameSync(
+          b2dBin, path.join('usr', 'local', 'bin', 'boot2docker')
+        );
+        fs.chmodSync(path.join('usr', 'local', 'bin', 'boot2docker'), '0755');
+        log.ok('OK');
+        log.newline();
+        next(null);
       }
       else {
         next(null);

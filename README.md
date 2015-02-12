@@ -30,9 +30,11 @@ ln -s bin/kbox.js /usr/local/bin/kbox
 kbox provision
 ```
 
-### Debian
+### Linux
 
-COMING SOON!
+**This is still pretty experimental**
+
+https://github.com/kalabox/kalabox/wiki/Linux-Installation
 
 ### Windows
 
