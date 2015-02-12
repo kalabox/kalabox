@@ -14,7 +14,8 @@ npm install kalabox -g
 
 ## Developer Install
 
-OSX:
+### OSX
+
 ```bash
 cd ~
 git clone git@github.com:kalabox/kalabox.git
@@ -29,11 +30,14 @@ ln -s bin/kbox.js /usr/local/bin/kbox
 kbox provision
 ```
 
-Debian
+### Debian
+
 COMING SOON!
 
-Windows
+### Windows
+
 **This is still pretty experimental**
+
 https://github.com/kalabox/kalabox/wiki/Windows-Installation
 
 ## Some commands
