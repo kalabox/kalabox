@@ -28,11 +28,12 @@ ln -s bin/kbox.js /usr/local/bin/kbox
 # OSX
 kbox provision
 
-# Ubuntu
+# Debian
 # COMING SOON
 
 # Windows
-# COMING SOON
+# This is still pretty experimental
+https://github.com/kalabox/kalabox/wiki/Windows-Installation
 ```
 
 ## Some commands
@@ -268,6 +269,13 @@ module.exports = function(events) {
 ## Sharing
 
 Right now Kalabox uses syncthing for sharing. Syncthing is a nifty p2p client written in Go that works kind of like a bi-directional auto rsync. Currently this is in a "stubbed out" state. When you start an app you will get a folder in `~/kalabox/code/<APPNAME>` which is where you should put your code. If you override the `codeRoot` in the global config then you will want to check that directory instead.
+
+If you are importing a massive payload of files it may take a bit for everything to sync up. You can mitigate this by putting your code into the container first. If you arent seeing the code you think you should be seeing you can check out the syncthing UI on both your local machine or kalabox by going to the following places in your browser.
+
+```
+10.13.37.42:8080 # Kalabox Syncthing
+127.0.0.1:8080 # Local Syncthing
+```
 
 ## Apps
 
