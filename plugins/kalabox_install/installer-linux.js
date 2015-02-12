@@ -362,6 +362,7 @@ module.exports.run = function(done) {
         fs.chmodSync(path.join('usr', 'local', 'bin', 'boot2docker'), '0755');
         log.ok('OK');
         log.newline();
+        next(null);
       }
       else {
         next(null);
