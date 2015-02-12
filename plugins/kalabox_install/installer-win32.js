@@ -125,7 +125,7 @@ module.exports.run = function(done) {
     function(next) {
       log.header('Checking for syncthing binary.');
       syncThingIsInstalled = fs.existsSync(
-        path.join(deps.lookup('config').sysConfRoot, 'bin', 'syncthing')
+        path.join(deps.lookup('config').sysConfRoot, 'bin', 'syncthing.exe')
       );
       var msg = syncThingIsInstalled ? 'exists.' : 'does NOT exist.';
       log.info('Syncthing binary ' + msg);
