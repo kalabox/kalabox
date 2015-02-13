@@ -112,7 +112,7 @@ module.exports.run = function(done) {
     function(next) {
       log.header('Checking for KBOX Boot2Docker profile.');
       profileIsSet = fs.existsSync(
-        path.join(deps.lookup('config').sysConfRoot, 'b2d.profile')
+        path.join(deps.lookup('config').sysProviderRoot, 'profile')
       );
       var msg = profileIsSet ? 'exists.' : 'does NOT exist.';
       log.info('Boot2Docker profile ' + msg);
@@ -251,17 +251,18 @@ module.exports.run = function(done) {
 
           function(next) {
             log.info('Creating config dir');
-            fs.mkdir(deps.lookup('config').sysConfRoot, '0777', function() {
-              log.ok('OK');
-              next(null);
-            });
+            mkdirp.sync(
+              path.join(deps.lookup('config').sysProviderRoot)
+            );
+            log.ok('OK');
+            next(null);
           },
 
           function(next) {
             var tmp = disk.getTempDir();
             var src = path.join(tmp, path.basename(PROVIDER_URL_PROFILE));
             var dest = path.join(
-              deps.lookup('config').sysConfRoot, 'b2d.profile'
+              deps.lookup('config').sysProviderRoot, 'profile'
             );
             log.info('Setting B2D profile.');
             fs.rename(src, dest, function() {
@@ -420,11 +421,15 @@ module.exports.run = function(done) {
           // @todo: stop gap for #190 for now. eventually we will have a more
           // robust installer API for providers to add checks and prepares to
           // the installer.
-          provider.prepareInstall(function() {
-            provider.up(function(err, output) {
-              log.info(output);
-              next(null);
-            });
+          var iso =
+            path.join(deps.lookup('config').sysProviderRoot, 'boot2docker.iso');
+          var isoThere = fs.existsSync(iso);
+          if (isoThere) {
+            fs.unlinkSync(iso);
+          }
+          provider.up(function(err, output) {
+            log.info(output);
+            next(null);
           });
         }
 

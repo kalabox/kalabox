@@ -113,7 +113,7 @@ module.exports.run = function(done) {
     function(next) {
       log.header('Checking for KBOX Boot2Docker profile.');
       profileIsSet = fs.existsSync(
-        path.join(deps.lookup('config').sysConfRoot, 'b2d.profile')
+        path.join(deps.lookup('config').sysProviderRoot, 'profile')
       );
       var msg = profileIsSet ? 'exists.' : 'does NOT exist.';
       log.info('Boot2Docker profile ' + msg);
@@ -264,17 +264,18 @@ module.exports.run = function(done) {
 
           function(next) {
             log.info('Creating config dir');
-            fs.mkdir(deps.lookup('config').sysConfRoot, '0777', function() {
-              log.ok('OK');
-              next(null);
-            });
+            mkdirp.sync(
+              path.join(deps.lookup('config').sysProviderRoot)
+            );
+            log.ok('OK');
+            next(null);
           },
 
           function(next) {
             var tmp = disk.getTempDir();
             var src = path.join(tmp, path.basename(PROVIDER_URL_PROFILE));
             var dest = path.join(
-              deps.lookup('config').sysConfRoot, 'b2d.profile'
+              deps.lookup('config').sysProviderRoot, 'profile'
             );
             log.info('Setting B2D profile.');
             fs.rename(src, dest, function() {

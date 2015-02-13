@@ -65,10 +65,10 @@ if [ "$my_answer" == "1" ]; then
     B2D=$(which boot2docker)
     DOCKER=$(which docker)
     VBOX=$(which VBoxManage)
-    BOOT2DOCKER_PROFILE=$HOME/.kalabox/b2d.profile
+    BOOT2DOCKER_PROFILE=$HOME/.kalabox/.provider/profile
     kala_files=()
     append kala_files "/Applications/boot2docker.app"
-    append kala_files "$HOME/.boot2docker"
+    append kala_files "$HOME/.kalabox/.provider"
     append kala_files "$B2D"
     append kala_files "$DOCKER"
     append kala_files "$BOOT2DOCKER_PROFILE"
@@ -86,12 +86,12 @@ if [ "$my_answer" == "1" ]; then
 
     if [ "$B2D" ]; then
         if [ "$VBOX" ]; then
-            export BOOT2DOCKER_PROFILE=$HOME/.kalabox/b2d.profile
+            export BOOT2DOCKER_PROFILE=$HOME/.kalabox/.provider/profile
             $B2D poweroff
             $B2D destroy
         fi
         sleep 10s
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.boot2docker
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/.provider
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $B2D
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $BOOT2DOCKER_PROFILE
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /tmp/kalabox2.iso
