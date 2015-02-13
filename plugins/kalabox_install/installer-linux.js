@@ -30,8 +30,8 @@ var PROVIDER_UP_ATTEMPTS = 3;
 //var KALABOX_DNS_PATH = '/etc/resolver';
 var KALABOX_DNS_FILE = 'kbox';
 var BOOT2DOCKER_CLI_BIN =
-  'https://github.com/boot2docker/boot2docker-cli/releases/download/v1.4.1/' +
-  'boot2docker-v1.4.1-linux-amd64';
+  'https://github.com/boot2docker/boot2docker-cli/releases/download/v1.5.0/' +
+  'boot2docker-v1.5.0-linux-amd64';
 var PROVIDER_URL_PROFILE =
   'https://raw.githubusercontent.com/' +
   'kalabox/kalabox-boot2docker/master/profile';

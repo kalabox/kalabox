@@ -29,9 +29,9 @@ var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
 var KALABOX_DNS_PATH = '/etc/resolver';
 var KALABOX_DNS_FILE = 'kbox';
-var PROVIDER_URL_V1_4_1 =
-  'https://github.com/boot2docker/osx-installer/releases/download/v1.4.1/' +
-  'Boot2Docker-1.4.1.pkg';
+var PROVIDER_DOWNLOAD_URL =
+  'https://github.com/boot2docker/osx-installer/releases/download/v1.5.0/' +
+  'Boot2Docker-1.5.0.pkg';
 var PROVIDER_URL_PROFILE =
   'https://raw.githubusercontent.com/' +
   'kalabox/kalabox-boot2docker/master/profile';
@@ -224,7 +224,7 @@ module.exports.run = function(done) {
         urls.unshift(SYNCTHING_CONFIG);
       }
       if (!providerIsInstalled) {
-        urls.unshift(PROVIDER_URL_V1_4_1);
+        urls.unshift(PROVIDER_DOWNLOAD_URL);
       }
       if (!profileIsSet) {
         urls.unshift(PROVIDER_URL_PROFILE);
@@ -350,7 +350,7 @@ module.exports.run = function(done) {
                 }
                 var tempDir = disk.getTempDir();
                 var pkg = path.join(
-                  tempDir, path.basename(PROVIDER_URL_V1_4_1)
+                  tempDir, path.basename(PROVIDER_DOWNLOAD_URL)
                 );
                 log.info('Installing: ' + pkg);
                 adminCmds.unshift(cmd.buildInstallCmd(pkg, volume));
