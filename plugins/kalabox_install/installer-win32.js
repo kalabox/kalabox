@@ -31,7 +31,7 @@ var PROVIDER_UP_ATTEMPTS = 3;
 var KALABOX_DNS_FILE = 'kbox';
 var PROVIDER_URL_V1_4_1 =
   'https://github.com/boot2docker/windows-installer/releases/download/v1.5.0/' +
-  'docker-install.exe;
+  'docker-install.exe';
 var PROVIDER_URL_PROFILE =
   'https://raw.githubusercontent.com/' +
   'kalabox/kalabox-boot2docker/master/profile';
