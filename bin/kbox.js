@@ -66,6 +66,7 @@ var initWithApp = function(app) {
   deps.register('appConfig', appConfig);
   // app
   deps.register('app', app);
+  kbox.app.loadPlugins(app);
 };
 
 // set env var for ORIGINAL cwd before anything touches it
