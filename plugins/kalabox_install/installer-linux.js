@@ -352,15 +352,14 @@ module.exports.run = function(done) {
     function(next) {
       if (!providerIsInstalled) {
         log.header('Setting up B2D CLI goodness.');
+        var binDir = '/usr/local/bin';
         var tmp = disk.getTempDir();
         var b2dBin = path.join(tmp, path.basename(BOOT2DOCKER_CLI_BIN));
-        mkdirp.sync(
-          path.join('usr', 'local', 'bin')
-        );
+        mkdirp.sync(binDir);
         fs.renameSync(
-          b2dBin, path.join('usr', 'local', 'bin', 'boot2docker')
+          b2dBin, path.join(binDir, 'boot2docker')
         );
-        fs.chmodSync(path.join('usr', 'local', 'bin', 'boot2docker'), '0755');
+        fs.chmodSync(path.join(binDir, 'boot2docker'), '0755');
         log.ok('OK');
         log.newline();
         next(null);
