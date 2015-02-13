@@ -4,7 +4,7 @@
  * This contains all the core commands that kalabox can run on every machine
  */
 
-var installer = require('./installer.js');
+var installer = require('./installer-' + process.platform + '.js');
 
 module.exports = function(tasks) {
   // @todo: infinite timeout?

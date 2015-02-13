@@ -23,21 +23,21 @@ var sysProfiler = kbox.install.sysProfiler;
 var vb = kbox.install.vb;
 
 // constants
-var INSTALL_MB = 30 * 1000;
+//var INSTALL_MB = 30 * 1000;
 // @todo: these will eventually come from the factory
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
-var KALABOX_DNS_PATH = '/etc/resolver';
+//var KALABOX_DNS_PATH = '/etc/resolver';
 var KALABOX_DNS_FILE = 'kbox';
 var PROVIDER_URL_V1_4_1 =
-  'https://github.com/boot2docker/osx-installer/releases/download/v1.4.1/' +
-  'Boot2Docker-1.4.1.pkg';
+  'https://github.com/boot2docker/windows-installer/releases/download/v1.4.1/' +
+  'docker-install.exe';
 var PROVIDER_URL_PROFILE =
   'https://raw.githubusercontent.com/' +
   'kalabox/kalabox-boot2docker/master/profile';
 var SYNCTHING_DOWNLOAD =
-  'https://github.com/syncthing/syncthing/releases/' +
-  'download/v0.10.21/syncthing-macosx-amd64-v0.10.21.tar.gz';
+  'https://github.com/syncthing/syncthing/releases/download/v0.10.21' +
+  '/syncthing-windows-amd64-v0.10.21.zip';
 var SYNCTHING_CONFIG =
   'https://raw.githubusercontent.com/' +
   'kalabox/kalabox-dockerfiles/master/syncthing/config.xml';
@@ -93,10 +93,11 @@ module.exports.run = function(done) {
     // Check if boot2docker is already installed.
     // @todo: we should remove this in favor of provider.isInstalled()
     // @todo: these checks should be more precise so we can opt to upgrade
+    // @todo: need a windows/linux version of this
     // specific components if their source is different than what is installed
     function(next) {
       log.header('Checking if Boot2Docker is installed.');
-      sysProfiler.isAppInstalled('Boot2Docker', function(err, isInstalled) {
+      provider.isInstalled(function(err, isInstalled) {
         if (err) {
           throw err;
         }
@@ -112,7 +113,7 @@ module.exports.run = function(done) {
     function(next) {
       log.header('Checking for KBOX Boot2Docker profile.');
       profileIsSet = fs.existsSync(
-        path.join(deps.lookup('config').sysConfRoot, 'b2d.profile')
+        path.join(deps.lookup('config').sysProviderRoot, 'profile')
       );
       var msg = profileIsSet ? 'exists.' : 'does NOT exist.';
       log.info('Boot2Docker profile ' + msg);
@@ -124,7 +125,7 @@ module.exports.run = function(done) {
     function(next) {
       log.header('Checking for syncthing binary.');
       syncThingIsInstalled = fs.existsSync(
-        path.join(deps.lookup('config').sysConfRoot, 'bin', 'syncthing')
+        path.join(deps.lookup('config').sysConfRoot, 'bin', 'syncthing.exe')
       );
       var msg = syncThingIsInstalled ? 'exists.' : 'does NOT exist.';
       log.info('Syncthing binary ' + msg);
@@ -145,6 +146,8 @@ module.exports.run = function(done) {
     },
 
     // Check if VirtualBox.app is running.
+    // @todo: need to add this to windows path?
+    /*
     function(next) {
       log.header('Checking if VirtualBox is running.');
       vb.isRunning(function(err, isRunning) {
@@ -160,8 +163,11 @@ module.exports.run = function(done) {
         next();
       });
     },
+    */
 
     // Check the firewall settings.
+    // @todo: need a windows/linux version of this
+    /*
     function(next) {
       log.header('Checking firewall settings.');
       firewall.isOkay(function(isOkay) {
@@ -173,6 +179,7 @@ module.exports.run = function(done) {
         next(null);
       });
     },
+    */
 
     // Check for access to the internets.
     function(next) {
@@ -189,7 +196,9 @@ module.exports.run = function(done) {
       });
     },
 
-    // Check available disk space for install.
+    // Check available disk space for install.\
+    // @todo: need a windows/linux version of this
+    /*
     function(next) {
       log.header('Checking disk free space.');
       disk.getFreeSpace(function(err, freeMbs) {
@@ -203,8 +212,11 @@ module.exports.run = function(done) {
         next(null);
       });
     },
+    */
 
     // Check if DNS file is already set.
+    // @todo: need a windows/linux version of this
+    /*
     function(next) {
       log.header('Checking if DNS is set.');
       dnsIsSet = fs.existsSync(KALABOX_DNS_FILE);
@@ -213,6 +225,7 @@ module.exports.run = function(done) {
       log.newline();
       next(null);
     },
+    */
 
     // Download dependencies to temp dir.
     function(next) {
@@ -251,17 +264,18 @@ module.exports.run = function(done) {
 
           function(next) {
             log.info('Creating config dir');
-            fs.mkdir(deps.lookup('config').sysConfRoot, '0777', function() {
-              log.ok('OK');
-              next(null);
-            });
+            mkdirp.sync(
+              path.join(deps.lookup('config').sysProviderRoot)
+            );
+            log.ok('OK');
+            next(null);
           },
 
           function(next) {
             var tmp = disk.getTempDir();
             var src = path.join(tmp, path.basename(PROVIDER_URL_PROFILE));
             var dest = path.join(
-              deps.lookup('config').sysConfRoot, 'b2d.profile'
+              deps.lookup('config').sysProviderRoot, 'profile'
             );
             log.info('Setting B2D profile.');
             fs.rename(src, dest, function() {
@@ -308,7 +322,7 @@ module.exports.run = function(done) {
           var decompress = new Decompress({mode: '755'})
             .src(stBinary)
             .dest(tmp)
-            .use(Decompress.targz());
+            .use(Decompress.zip());
 
           decompress.run(function(err, files, stream) {
             if (err) {
@@ -317,8 +331,8 @@ module.exports.run = function(done) {
             var binPath = path.join(deps.lookup('config').sysConfRoot, 'bin');
             mkdirp.sync(binPath);
             fs.renameSync(
-              path.join(tmp, path.basename(stBinary, '.tar.gz'), 'syncthing'),
-              path.join(binPath, 'syncthing')
+              path.join(tmp, path.basename(stBinary, '.zip'), 'syncthing.exe'),
+              path.join(binPath, 'syncthing.exe')
             );
             log.ok('OK');
             log.newline();
@@ -335,6 +349,7 @@ module.exports.run = function(done) {
     },
 
     // Install packages.
+    /*
     function(next) {
       if (!providerIsInstalled || !dnsIsSet) {
         log.header('Setting things up.');
@@ -362,6 +377,8 @@ module.exports.run = function(done) {
             }
           },
 
+          // @todo: need a windows/linux version of this
+          /*
           function(next) {
             if (!dnsIsSet) {
               log.info('Setting up DNS for Kalabox.');
@@ -410,6 +427,7 @@ module.exports.run = function(done) {
         next(null);
       }
     },
+    */
 
     // Init and start boot2docker
     function(next) {
@@ -420,11 +438,9 @@ module.exports.run = function(done) {
           // @todo: stop gap for #190 for now. eventually we will have a more
           // robust installer API for providers to add checks and prepares to
           // the installer.
-          provider.prepareInstall(function() {
-            provider.up(function(err, output) {
-              log.info(output);
-              next(null);
-            });
+          provider.up(function(err, output) {
+            log.info(output);
+            next(null);
           });
         }
 
