@@ -23,7 +23,7 @@ var sysProfiler = kbox.install.sysProfiler;
 var vb = kbox.install.vb;
 
 // constants
-var INSTALL_MB = 30 * 1000;
+var INSTALL_MB = 1 * 1000;
 // @todo: these will eventually come from the factory
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
