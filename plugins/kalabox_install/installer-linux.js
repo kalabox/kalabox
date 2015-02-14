@@ -532,6 +532,15 @@ module.exports.run = function(done) {
       });
     },
 
+    function(next) {
+      // @todo: This needs to better eventually.
+      log.header('Installing core sharing');
+      engine.build({name: 'kalabox/syncthing:stable'}, function() {
+        log.info('Core sharing installed.');
+        next(null);
+      });
+    },
+
     // Init and start boot2docker
     function(next) {
       log.header('Finishing up.');

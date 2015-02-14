@@ -23,7 +23,7 @@ var sysProfiler = kbox.install.sysProfiler;
 var vb = kbox.install.vb;
 
 // constants
-var INSTALL_MB = 30 * 1000;
+var INSTALL_MB = 1 * 1000;
 // @todo: these will eventually come from the factory
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
@@ -445,6 +445,15 @@ module.exports.run = function(done) {
       log.header('Installing core services.');
       services.install(function() {
         log.info('Core services installed.');
+        next(null);
+      });
+    },
+
+    function(next) {
+      // @todo: This needs to better eventually.
+      log.header('Installing core sharing');
+      engine.build({name: 'kalabox/syncthing:stable'}, function() {
+        log.info('Core sharing installed.');
         next(null);
       });
     },
