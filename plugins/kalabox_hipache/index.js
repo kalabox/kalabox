@@ -1,6 +1,7 @@
 'use strict';
 
 var redis = require('redis');
+var async = require('async');
 
 module.exports = function(kbox, app) {
   var engine = kbox.engine;
@@ -17,8 +18,7 @@ module.exports = function(kbox, app) {
     if (component.proxy) {
       engine.inspect(component.containerId, function(err, data) {
         var redisHost = kbox.core.deps.lookup('engineConfig').host;
-        for (var x in component.proxy) {
-          var proxy = component.proxy[x];
+        async.map(component.proxy, function(proxy, next) {
           var client = redis.createClient(redisPort, redisHost);
           var hostname = proxy.default ? app.domain : component.hostname;
           var rkey = 'frontend:' + hostname;
@@ -30,17 +30,21 @@ module.exports = function(kbox, app) {
               .rpush(rkey, component.containerName)
               .rpush(rkey, dst)
               .exec(function(err, replies) {
-                if (err) { throw err; }
-                client.quit();
-                done();
+                if (err) {
+                  next(err);
+                } else {
+                  client.quit();
+                  next(null);
+                }
               });
           } else {
-            done();
+            next(null);
           }
-        }
+        }, done);
       });
+    } else {
+      done();
     }
-    done();
   });
 
   /**
