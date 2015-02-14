@@ -8,6 +8,8 @@ var fs = require('fs');
 var path = require('path');
 var Decompress = require('decompress');
 var mkdirp = require('mkdirp');
+var fileinput = require('fileinput');
+var S = require('string');
 
 var kbox = require('../../lib/kbox.js');
 var deps = kbox.core.deps;
@@ -15,6 +17,7 @@ var disk = kbox.util.disk;
 var engine = kbox.engine;
 var provider = kbox.engine.provider;
 var services = kbox.services;
+var shell = kbox.util.shell;
 var download = kbox.util.download;
 var firewall = kbox.util.firewall;
 var internet = kbox.util.internet;
@@ -32,6 +35,7 @@ var KALABOX_DNS_FILE = 'kbox';
 var BOOT2DOCKER_CLI_BIN =
   'https://github.com/boot2docker/boot2docker-cli/releases/download/v1.4.1/' +
   'boot2docker-v1.4.1-linux-amd64';
+var PROVIDER_DOWNLOAD_URL;
 var PROVIDER_URL_PROFILE =
   'https://raw.githubusercontent.com/' +
   'kalabox/kalabox-boot2docker/master/profile';
@@ -44,6 +48,7 @@ var SYNCTHING_CONFIG =
 // variables
 var adminCmds = [];
 var providerIsInstalled;
+var b2dIsInstalled;
 var dnsIsSet;
 var profileIsSet;
 var syncThingIsInstalled;
@@ -88,15 +93,95 @@ module.exports.run = function(done) {
     process.exit(1);
   }
 
+  // Very similar to profile scan.
+  // @todo: generic "scanInfoFile()"?
+  var osInfo = {};
+  function getOSInfo(callback) {
+    if (!_.isEmpty(osInfo)) {
+      callback(osInfo);
+    }
+    var osInfoFile = new fileinput.FileInput(['/etc/os-release']);
+    osInfoFile
+      .on('line', function(line) {
+        var current = S(line.toString('utf8')).trim().s;
+        if (!S(current).startsWith('#') && !S(current).isEmpty()) {
+          if (S(current).include('=')) {
+            var pieces = current.split('=');
+            osInfo[S(pieces[0]).trim().s] = S(pieces[1].replace(/"/g, '')).trim().s;
+          }
+        }
+      })
+      .on('end', function() {
+        callback(osInfo);
+      });
+  }
+
+  // Get correct
+  function getProviderDL(info) {
+    // Should support others but this is a start
+    var objectOfDoom = {
+      ubuntu: {
+        '10.04': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'virtualbox-4.3_4.3.22-98236~Ubuntu~lucid_amd64.deb',
+        '12.04': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'virtualbox-4.3_4.3.22-98236~Ubuntu~precise_amd64.deb',
+        '12.10': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'virtualbox-4.3_4.3.22-98236~Ubuntu~quantal_amd64.deb',
+        '13.04': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'virtualbox-4.3_4.3.22-98236~Ubuntu~raring_amd64.deb',
+        '13.10': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'virtualbox-4.3_4.3.22-98236~Ubuntu~raring_amd64.deb',
+        '14.04': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'virtualbox-4.3_4.3.22-98236~Ubuntu~raring_amd64.deb',
+        '14.10': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'virtualbox-4.3_4.3.22-98236~Ubuntu~raring_amd64.deb'
+      },
+      debian: {
+        '6.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'virtualbox-4.3_4.3.22-98236~Debian~squeeze_amd64.deb',
+        '7.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'virtualbox-4.3_4.3.22-98236~Debian~wheezy_amd64.deb'
+      },
+      fedora: {
+        '17.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'VirtualBox-4.3-4.3.22_98236_fedora17-1.x86_64.rpm',
+        '18.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm',
+        '19.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm',
+        '20.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm',
+        '21.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+          'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm'
+      }
+    };
+    return objectOfDoom[info.ID][info.VERSION_ID];
+  }
+
   async.series([
 
-    // Check if boot2docker is already installed.
-    // @todo: we should remove this in favor of provider.isInstalled()
-    // @todo: these checks should be more precise so we can opt to upgrade
-    // @todo: need a windows/linux version of this
-    // specific components if their source is different than what is installed
+    // Figure out things about linux
     function(next) {
-      log.header('Checking if Boot2Docker is installed YO.');
+      log.header('Getting info about your linuxes');
+      getOSInfo(function(info) {
+        PROVIDER_DOWNLOAD_URL = getProviderDL(info);
+        var OS_STRING =
+          info.ID + ' ' + info.VERSION_ID + ' which is like ' + info.ID_LIKE;
+        log.info('Running: ' + OS_STRING);
+        if (PROVIDER_DOWNLOAD_URL) {
+          log.info(PROVIDER_DOWNLOAD_URL + ' slated for Downloads');
+        }
+        else {
+          log.fail(OS_STRING + ' is not yet supported. Contact maintainer.');
+        }
+        log.newline();
+        next(null);
+      });
+    },
+
+    // Check if boot2docker is already installed.
+    function(next) {
+      log.header('Checking if Boot2Docker is installed.');
       provider.isInstalled(function(err, isInstalled) {
         if (err) {
           throw err;
@@ -104,7 +189,20 @@ module.exports.run = function(done) {
         var msg = isInstalled ? 'is' : 'is NOT';
         log.info('Boot2Docker ' + msg + ' installed.');
         log.newline();
-        providerIsInstalled = isInstalled;
+        b2dIsInstalled = isInstalled;
+        next(null);
+      });
+    },
+
+    // Check if vbox is already installed.
+    function(next) {
+      log.header('Checking if VirtualBox is installed.');
+      var cmd = 'which VBoxManage';
+      shell.exec(cmd, function(err, data) {
+        providerIsInstalled = (err) ? false : true;
+        var msg = providerIsInstalled ? 'is' : 'is NOT';
+        log.info('VBoxManage ' + msg + ' installed.');
+        log.newline();
         next(null);
       });
     },
@@ -145,42 +243,6 @@ module.exports.run = function(done) {
       next(null);
     },
 
-    // Check if VirtualBox.app is running.
-    // @todo: need to add this to windows path?
-    /*
-    function(next) {
-      log.header('Checking if VirtualBox is running.');
-      vb.isRunning(function(err, isRunning) {
-        if (err) {
-          throw err;
-        }
-        if (isRunning) {
-          log.info('VirtualBox: is currently running.');
-        } else {
-          log.info('VirtualBox: is NOT currently running.');
-        }
-        log.newline();
-        next();
-      });
-    },
-    */
-
-    // Check the firewall settings.
-    // @todo: need a windows/linux version of this
-    /*
-    function(next) {
-      log.header('Checking firewall settings.');
-      firewall.isOkay(function(isOkay) {
-        var msg = isOkay ? 'OK' : 'NOT OK';
-        var fnLog = isOkay ? log.info : log.fail;
-        fnLog('Firewall settings: ' + msg);
-        log.newline();
-        firewallIsOkay = isOkay;
-        next(null);
-      });
-    },
-    */
-
     // Check for access to the internets.
     function(next) {
       log.header('Checking internet access.');
@@ -195,24 +257,6 @@ module.exports.run = function(done) {
         next(null);
       });
     },
-
-    // Check available disk space for install.\
-    // @todo: need a windows/linux version of this
-    /*
-    function(next) {
-      log.header('Checking disk free space.');
-      disk.getFreeSpace(function(err, freeMbs) {
-        freeMbs = Math.round(freeMbs);
-        var enoughFreeSpace = freeMbs > INSTALL_MB;
-        log.info(freeMbs + ' MB free of the required ' + INSTALL_MB + ' MB');
-        if (!enoughFreeSpace) {
-          log.fail('Not enough disk space for install!');
-        }
-        newline();
-        next(null);
-      });
-    },
-    */
 
     // Check if DNS file is already set.
     // @todo: need a windows/linux version of this
@@ -236,8 +280,11 @@ module.exports.run = function(done) {
       if (!syncThingIsConfigged) {
         urls.unshift(SYNCTHING_CONFIG);
       }
-      if (!providerIsInstalled) {
+      if (!b2dIsInstalled) {
         urls.unshift(BOOT2DOCKER_CLI_BIN);
+      }
+      if (!providerIsInstalled) {
+        urls.unshift(PROVIDER_DOWNLOAD_URL);
       }
       if (!profileIsSet) {
         urls.unshift(PROVIDER_URL_PROFILE);
@@ -348,29 +395,7 @@ module.exports.run = function(done) {
       }
     },
 
-    // Set up b2d binary
-    function(next) {
-      if (!providerIsInstalled) {
-        log.header('Setting up B2D CLI goodness.');
-        var binDir = '/usr/local/bin';
-        var tmp = disk.getTempDir();
-        var b2dBin = path.join(tmp, path.basename(BOOT2DOCKER_CLI_BIN));
-        mkdirp.sync(binDir);
-        fs.renameSync(
-          b2dBin, path.join(binDir, 'boot2docker')
-        );
-        fs.chmodSync(path.join(binDir, 'boot2docker'), '0755');
-        log.ok('OK');
-        log.newline();
-        next(null);
-      }
-      else {
-        next(null);
-      }
-    },
-
-    // Install packages.
-    /*
+    // Run install commands
     function(next) {
       if (!providerIsInstalled || !dnsIsSet) {
         log.header('Setting things up.');
@@ -378,24 +403,31 @@ module.exports.run = function(done) {
 
         async.series([
 
+          // install pkgs
           function(next) {
             if (!providerIsInstalled) {
-              disk.getMacVolume(function(err, volume) {
-                if (err) {
-                  throw err;
-                }
-                var tempDir = disk.getTempDir();
-                var pkg = path.join(
-                  tempDir, path.basename(PROVIDER_URL_V1_4_1)
-                );
-                log.info('Installing: ' + pkg);
-                adminCmds.unshift(cmd.buildInstallCmd(pkg, volume));
-                next(null);
-              });
+              var tempDir = disk.getTempDir();
+              var pkg = path.join(
+                tempDir, path.basename(PROVIDER_DOWNLOAD_URL)
+              );
+              log.info('Installing: ' + pkg);
+              adminCmds.unshift(cmd.buildInstallCmd(pkg, osInfo));
+              next(null);
             }
             else {
               next(null);
             }
+          },
+
+          // prepare /usr/local/bin
+          function(next) {
+            var owner = [process.env.USER, process.env.USER].join(':');
+            console.log(owner);
+            adminCmds.unshift('chown ' + owner + ' /usr/local/bin');
+            if (!fs.existsSync('/usr/local/bin')) {
+              adminCmds.unshift('mkdir -p /usr/local/bin');
+            }
+            next(null);
           },
 
           // @todo: need a windows/linux version of this
@@ -415,6 +447,7 @@ module.exports.run = function(done) {
               next(null);
             }
           },
+          */
 
           function(next) {
             if (!_.isEmpty(adminCmds)) {
@@ -448,7 +481,25 @@ module.exports.run = function(done) {
         next(null);
       }
     },
-    */
+
+    // Set up b2d binary
+    function(next) {
+      if (!b2dIsInstalled) {
+        log.header('Setting up B2D CLI goodness.');
+        var tmp = disk.getTempDir();
+        var b2dBin = path.join(tmp, path.basename(BOOT2DOCKER_CLI_BIN));
+        fs.renameSync(
+          b2dBin, path.join('/usr/local/bin', 'boot2docker')
+        );
+        fs.chmodSync(path.join('/usr/local/bin', 'boot2docker'), '0755');
+        log.ok('OK');
+        log.newline();
+        next(null);
+      }
+      else {
+        next(null);
+      }
+    },
 
     // Init and start boot2docker
     function(next) {

@@ -2,7 +2,7 @@
 #
 # Kalabox Uninstaller Script.
 #
-# Copyright (C) 2014 Kalamuna LLC
+# Copyright (C) 2015 Kalamuna LLC
 #
 # This file also contains a modified VirtualBox uninstallers.
 #
@@ -72,7 +72,6 @@ if [ "$my_answer" == "1" ]; then
     append kala_files "$B2D"
     append kala_files "$DOCKER"
     append kala_files "$BOOT2DOCKER_PROFILE"
-    append kala_files "/tmp/kalabox2.iso"
     append kala_files "/etc/resolver/kbox"
     append kala_files "$HOME/.kalabox/syncthing"
     append kala_files "$HOME/.kalabox/bin/syncthing"
@@ -94,7 +93,6 @@ if [ "$my_answer" == "1" ]; then
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/.provider
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $B2D
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $BOOT2DOCKER_PROFILE
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /tmp/kalabox2.iso
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/resolver/kbox
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin/syncthing
