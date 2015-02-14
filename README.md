@@ -32,9 +32,22 @@ kbox provision
 
 ### Linux
 
-**This is still pretty experimental**
+```
+cd ~
+git clone git@github.com:kalabox/kalabox.git
+cd kalabox
+npm install
 
-https://github.com/kalabox/kalabox/wiki/Linux-Installation
+# link kbox executable
+# USE FULL PATH TO bin
+ln -s /home/pirog/Desktop/kalabox/bin/kbox.js /usr/local/bin/kbox
+
+kbox provision
+```
+
+**DNS IS NOT HANDLED YET SO YOU WILL NEED TO ADD 10.13.37.42 AS A DNS SERVER**
+
+See linux [Linux notes](https://github.com/kalabox/kalabox/wiki/Windows-Installation)
 
 ### Windows
 
