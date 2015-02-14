@@ -329,10 +329,16 @@ module.exports.run = function(done) {
             if (!_.isEmpty(adminCmds)) {
               var child = cmd.runCmdsAsync(adminCmds);
               child.stderr.on('data', function(data) {
-                log.fail('Something bad happened');
+                console.log(data);
+                log.fail('Something bad happened!');
               });
-              child.on('exit', function() {
-                console.log('Thing installed!');
+              child.stdout.on('data', function(data) {
+                console.log(data);
+              });
+              child.on('exit', function(code) {
+                log.info('Install completed with code ' + code);
+                log.ok('OK');
+                log.newline();
                 next(null);
               });
             }
