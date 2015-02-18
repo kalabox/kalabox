@@ -62,8 +62,7 @@ var init = function() {
 
 var initWithApp = function(app) {
   // appConfig
-  var appConfig = config.getAppConfig(app);
-  deps.register('appConfig', appConfig);
+  deps.register('appConfig', app.config);
   // app
   deps.register('app', app);
   kbox.app.loadPlugins(app);
@@ -170,11 +169,22 @@ function getAppContext(apps) {
   if (appFromArgv !== undefined) {
     return appFromArgv;
   } else {
+    var cwd = process.cwd();
     var appFromCwd = _.find(apps, function(app) {
-      var cwd = process.cwd();
       return S(cwd).startsWith(app.config.appRoot);
     });
-    return appFromCwd;
+
+    if (appFromCwd !== undefined) {
+      return appFromCwd;
+    } else {
+      // @todo: kalabox.json -> needs to go in a central location.
+      var configFilepath = path.join(cwd, 'kalabox.json');
+      if (fs.existsSync(configFilepath)) {
+        var config = kbox.core.config.getAppConfig(null, cwd);
+        var appFromCwdConfig = kbox.app.create(config.appName, config);
+        return appFromCwdConfig;
+      }
+    }
   }
 }
 
