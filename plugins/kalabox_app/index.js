@@ -7,9 +7,7 @@ var _ = require('lodash');
 var async = require('async');
 var rimraf = require('rimraf');
 
-module.exports = function(argv, app, appConfig, kbox) {
-
-  var tasks = kbox.core.tasks;
+module.exports = function(argv, app, appConfig, events, kbox, tasks) {
 
   tasks.registerTask([app.name, 'config'], function(done) {
     var query = argv._[0];
@@ -76,6 +74,13 @@ module.exports = function(argv, app, appConfig, kbox) {
 
   tasks.registerTask([app.name, 'restart'], function(done) {
     kbox.app.restart(app, done);
+  });
+
+  // Events
+  events.on('pre-install', function(app, done) {
+    if (fs.existsSync(app.config.appRoot)) {
+      kbox.app.installPackages(app.config.appRoot, done);
+    }
   });
 
 };

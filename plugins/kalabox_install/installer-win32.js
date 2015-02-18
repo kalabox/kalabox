@@ -29,9 +29,11 @@ var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
 //var KALABOX_DNS_PATH = '/etc/resolver';
 var KALABOX_DNS_FILE = 'kbox';
-var PROVIDER_URL_V1_4_1 =
+var PROVIDER_URL_DOWNLOAD =
   'https://github.com/boot2docker/windows-installer/releases/download/v1.4.1/' +
   'docker-install.exe';
+var PROVIDER_URL_INF = 'https://raw.githubusercontent.com/kalabox/' +
+  'kalabox-boot2docker/master/b2d.inf';
 var PROVIDER_URL_PROFILE =
   'https://raw.githubusercontent.com/' +
   'kalabox/kalabox-boot2docker/master/profile';
@@ -44,7 +46,7 @@ var SYNCTHING_CONFIG =
 // variables
 var adminCmds = [];
 var providerIsInstalled;
-var dnsIsSet;
+var dnsIsSet = true;
 var profileIsSet;
 var syncThingIsInstalled;
 var syncThingIsConfigged;
@@ -91,22 +93,16 @@ module.exports.run = function(done) {
   async.series([
 
     // Check if boot2docker is already installed.
-    // @todo: we should remove this in favor of provider.isInstalled()
-    // @todo: these checks should be more precise so we can opt to upgrade
-    // @todo: need a windows/linux version of this
     // specific components if their source is different than what is installed
     function(next) {
       log.header('Checking if Boot2Docker is installed.');
-      provider.isInstalled(function(err, isInstalled) {
-        if (err) {
-          throw err;
-        }
-        var msg = isInstalled ? 'is' : 'is NOT';
-        log.info('Boot2Docker ' + msg + ' installed.');
-        log.newline();
-        providerIsInstalled = isInstalled;
-        next(null);
-      });
+      providerIsInstalled = fs.existsSync(
+        'C:\\Program Files\\Boot2Docker for Windows\\boot2docker.exe'
+      );
+      var msg = providerIsInstalled ? 'is' : 'is NOT';
+      log.info('Boot2Docker ' + msg + ' installed.');
+      log.newline();
+      next(null);
     },
 
     // Check if profile is already set.
@@ -145,42 +141,6 @@ module.exports.run = function(done) {
       next(null);
     },
 
-    // Check if VirtualBox.app is running.
-    // @todo: need to add this to windows path?
-    /*
-    function(next) {
-      log.header('Checking if VirtualBox is running.');
-      vb.isRunning(function(err, isRunning) {
-        if (err) {
-          throw err;
-        }
-        if (isRunning) {
-          log.info('VirtualBox: is currently running.');
-        } else {
-          log.info('VirtualBox: is NOT currently running.');
-        }
-        log.newline();
-        next();
-      });
-    },
-    */
-
-    // Check the firewall settings.
-    // @todo: need a windows/linux version of this
-    /*
-    function(next) {
-      log.header('Checking firewall settings.');
-      firewall.isOkay(function(isOkay) {
-        var msg = isOkay ? 'OK' : 'NOT OK';
-        var fnLog = isOkay ? log.info : log.fail;
-        fnLog('Firewall settings: ' + msg);
-        log.newline();
-        firewallIsOkay = isOkay;
-        next(null);
-      });
-    },
-    */
-
     // Check for access to the internets.
     function(next) {
       log.header('Checking internet access.');
@@ -196,37 +156,6 @@ module.exports.run = function(done) {
       });
     },
 
-    // Check available disk space for install.\
-    // @todo: need a windows/linux version of this
-    /*
-    function(next) {
-      log.header('Checking disk free space.');
-      disk.getFreeSpace(function(err, freeMbs) {
-        freeMbs = Math.round(freeMbs);
-        var enoughFreeSpace = freeMbs > INSTALL_MB;
-        log.info(freeMbs + ' MB free of the required ' + INSTALL_MB + ' MB');
-        if (!enoughFreeSpace) {
-          log.fail('Not enough disk space for install!');
-        }
-        newline();
-        next(null);
-      });
-    },
-    */
-
-    // Check if DNS file is already set.
-    // @todo: need a windows/linux version of this
-    /*
-    function(next) {
-      log.header('Checking if DNS is set.');
-      dnsIsSet = fs.existsSync(KALABOX_DNS_FILE);
-      var msg = dnsIsSet ? 'is set.' : 'is not set.';
-      log.info('DNS ' + msg);
-      log.newline();
-      next(null);
-    },
-    */
-
     // Download dependencies to temp dir.
     function(next) {
       var urls = [];
@@ -237,7 +166,8 @@ module.exports.run = function(done) {
         urls.unshift(SYNCTHING_CONFIG);
       }
       if (!providerIsInstalled) {
-        urls.unshift(PROVIDER_URL_V1_4_1);
+        urls.unshift(PROVIDER_URL_DOWNLOAD);
+        urls.unshift(PROVIDER_URL_INF);
       }
       if (!profileIsSet) {
         urls.unshift(PROVIDER_URL_PROFILE);
@@ -349,28 +279,27 @@ module.exports.run = function(done) {
     },
 
     // Install packages.
-    /*
     function(next) {
       if (!providerIsInstalled || !dnsIsSet) {
         log.header('Setting things up.');
-        log.alert('ADMINISTRATIVE PASSWORD WILL BE REQUIRED!');
+        log.alert('ADMINISTRATIVE PASSWORD MAY BE REQUIRED!');
 
         async.series([
 
           function(next) {
             if (!providerIsInstalled) {
-              disk.getMacVolume(function(err, volume) {
-                if (err) {
-                  throw err;
-                }
-                var tempDir = disk.getTempDir();
-                var pkg = path.join(
-                  tempDir, path.basename(PROVIDER_URL_V1_4_1)
-                );
-                log.info('Installing: ' + pkg);
-                adminCmds.unshift(cmd.buildInstallCmd(pkg, volume));
-                next(null);
-              });
+              var tempDir = disk.getTempDir();
+              var pkg = path.join(
+                tempDir, path.basename(PROVIDER_URL_DOWNLOAD)
+              );
+              log.info('Installing: ' + pkg);
+              adminCmds.unshift(
+                cmd.buildInstallCmd(
+                  pkg,
+                  path.join(tempDir, path.basename(PROVIDER_URL_INF))
+                )
+              );
+              next(null);
             }
             else {
               next(null);
@@ -394,20 +323,23 @@ module.exports.run = function(done) {
               next(null);
             }
           },
+          */
 
           function(next) {
             if (!_.isEmpty(adminCmds)) {
               var child = cmd.runCmdsAsync(adminCmds);
-              child.stdout.on('data', function(data) {
-                log.info(data);
-              });
-              child.stdout.on('end', function() {
-                log.info('Finished installing');
-                log.newline();
-                next();
-              });
               child.stderr.on('data', function(data) {
-                log.warn(data);
+                console.log(data);
+                log.fail('Something bad happened!');
+              });
+              child.stdout.on('data', function(data) {
+                console.log(data);
+              });
+              child.on('exit', function(code) {
+                log.info('Install completed with code ' + code);
+                log.ok('OK');
+                log.newline();
+                next(null);
               });
             }
             else {
@@ -427,7 +359,6 @@ module.exports.run = function(done) {
         next(null);
       }
     },
-    */
 
     // Init and start boot2docker
     function(next) {
