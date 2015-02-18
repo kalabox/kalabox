@@ -24,9 +24,37 @@ module.exports = function(argv, app, appConfig, events, kbox, tasks) {
       if (err) {
         done(err);
       } else {
-        _.forEach(containers, function(container) {
-        console.log(container);
-      });
+        async.each(containers,
+        function(container, next) {
+          kbox.engine.inspect(container.id, function(err, data) {
+            if (err) {
+              next(err);
+            } else {
+              // MixIn ports.
+              var ports = data.NetworkSettings.Ports;
+              if (ports) {
+                container.ports = [];
+                _.each(ports, function(port, key) {
+                  var val = port[0].HostPort;
+                  if (val) {
+                    container.ports.push([key, val].join('=>'));
+                  }
+                });
+              }
+              // MixIn running state.
+              var running = data.State.Running;
+              if (running !== undefined) {
+                container.running = running;
+              }
+              // Format and display results.
+              console.log(JSON.stringify(container, null, '  '));
+              next();
+            }
+          });
+        },
+        function(err) {
+          done(err);
+        });
       }
     });
   });
