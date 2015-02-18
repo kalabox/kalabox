@@ -37,7 +37,7 @@ module.exports = function(argv, app, appConfig, events, kbox, tasks) {
                 _.each(ports, function(port, key) {
                   var val = port[0].HostPort;
                   if (val) {
-                    container.ports.push([key,val].join('=>'));
+                    container.ports.push([key, val].join('=>'));
                   }
                 });
               }
