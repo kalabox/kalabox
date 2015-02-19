@@ -160,31 +160,71 @@ function processTask(env) {
   });
 }
 
-function getAppContext(apps) {
-  var appFromArgv = _.find(apps, function(app) {
-    var appArg = argv._[0];
-    return app.name === appArg;
+function getAppContextFromArgv(apps) {
+  return _.find(apps, function(app) {
+    return app.name === argv._[0];
   });
+}
 
-  if (appFromArgv !== undefined) {
-    return appFromArgv;
+function getAppContextFromCwd(apps) {
+  var cwd = process.cwd();
+  return _.find(apps, function(app) {
+    return S(cwd).startsWith(app.config.appRoot);
+  });
+}
+
+function getAppContextFromCwdConfig(apps) {
+  var cwd = process.cwd();
+  var configFilepath = path.join(cwd, 'kalabox.json');
+  if (fs.existsSync(configFilepath)) {
+    var config = kbox.core.config.getAppConfig(null, cwd);
+    return kbox.app.create(config.appName, config);
   } else {
-    var cwd = process.cwd();
-    var appFromCwd = _.find(apps, function(app) {
-      return S(cwd).startsWith(app.config.appRoot);
-    });
+    return null;
+  }
+}
 
-    if (appFromCwd !== undefined) {
-      return appFromCwd;
+function ensureAppNodeModulesInstalled(app, callback) {
+  var appRoot = app.config.appRoot;
+  var packageFilepath = path.join(appRoot, 'package.json');
+  fs.exists(packageFilepath, function(packageFileExists) {
+    if (packageFileExists) {
+      var nodeModulesDir = path.join(appRoot, 'node_modules');
+      fs.exists(nodeModulesDir, function(nodeModulesDirExists) {
+        if (!nodeModulesDirExists) {
+          kbox.app.installPackages(appRoot, callback);
+        } else {
+          callback();
+        }
+      });
     } else {
-      // @todo: kalabox.json -> needs to go in a central location.
-      var configFilepath = path.join(cwd, 'kalabox.json');
-      if (fs.existsSync(configFilepath)) {
-        var config = kbox.core.config.getAppConfig(null, cwd);
-        var appFromCwdConfig = kbox.app.create(config.appName, config);
-        return appFromCwdConfig;
-      }
+      callback();
     }
+  });
+}
+
+function getAppContext(apps, callback) {
+  // Find the app context.
+  var funcs = [
+    getAppContextFromArgv,
+    getAppContextFromCwd,
+    getAppContextFromCwdConfig
+  ];
+  var appContext = _.reduce(funcs, function(answer, func) {
+    if (answer) {
+      return answer;
+    } else {
+      return func(apps);
+    }
+  }, null);
+
+  // If there is an app context, make sure it's node modules are installed.
+  if (appContext) {
+    ensureAppNodeModulesInstalled(appContext, function(err) {
+      callback(err, appContext);
+    });
+  } else {
+    callback();
   }
 }
 
@@ -200,20 +240,24 @@ function handleArguments(env) {
       throw err;
     }
 
-    var appContext = getAppContext(apps);
-    if (appContext !== undefined) {
-      env.app = appContext;
-      initWithApp(appContext);
-    }
+    getAppContext(apps, function(err, appContext) {
+      if (err) {
+        throw err;
+      }
 
-    try {
-      // Run the task.
-      processTask(env);
-    } catch (err) {
-      // Log error.
-      logError(err);
-    }
+      if (appContext) {
+        env.app = appContext;
+        initWithApp(appContext);
+      }
 
+      try {
+        // Run the task.
+        processTask(env);
+      } catch (err) {
+        // Log error.
+        logError(err);
+      }
+    });
   });
 }
 

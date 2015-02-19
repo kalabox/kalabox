@@ -90,10 +90,10 @@ module.exports = function(argv, app, appConfig, events, kbox, tasks) {
   });
 
   // Events
-  events.on('pre-install', function(app, done) {
+  /*events.on('pre-install', function(app, done) {
     if (fs.existsSync(app.config.appRoot)) {
       kbox.app.installPackages(app.config.appRoot, done);
     }
-  });
+  });*/
 
 };
