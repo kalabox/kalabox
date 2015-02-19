@@ -55,6 +55,19 @@ module.exports = function(argv, plugin, kbox) {
     done();
   });
 
+  // Display status of provider.
+  tasks.registerTask('status', function(done) {
+    kbox.engine.provider.isUp(function(err, isUp) {
+      if (err) {
+        done(err);
+      } else if (isUp) {
+        console.log('up');
+      } else {
+        console.log('down');
+      }
+    });
+  });
+
   /*tasks.registerTask('list', function(done) {
     // --containers will show all built containers
     if (argv.containers) {
