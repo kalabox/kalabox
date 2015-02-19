@@ -189,14 +189,6 @@ function getAppContext(apps) {
 }
 
 function handleArguments(env) {
-  if (argv.verbose) {
-    console.log(chalk.yellow('CLI OPTIONS:'), argv);
-    console.log(chalk.yellow('CWD:'), env.cwd);
-    console.log(chalk.red('APP CONFIG LOCATION:'),  env.configPath);
-    console.log(chalk.red('APP CONFIG BASE DIR:'), env.configBase);
-    console.log(chalk.cyan('KALABOX PACKAGE.JSON'), require('../package'));
-  }
-
   var workingDir = env.cwd;
   var configPath = path.join(env.cwd, '.kalabox', 'profile.json');
 
@@ -223,11 +215,6 @@ function handleArguments(env) {
     }
 
   });
-
-  if (argv.verbose) {
-    console.log(chalk.red('APP CONFIG:'), env.config);
-    console.log('Using config file', chalk.magenta(tildify(env.configPath)));
-  }
 }
 
 function logError(err) {
