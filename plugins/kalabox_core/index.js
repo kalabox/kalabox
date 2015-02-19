@@ -6,6 +6,7 @@
 
 var _ = require('lodash');
 var chalk = require('chalk');
+var async = require('async');
 
 var B2D_UP_ATTEMPTS = 3;
 var B2D_DOWN_ATTEMPTS = 3;
@@ -37,9 +38,22 @@ module.exports = function(argv, plugin, kbox) {
       if (err) {
         done(err);
       } else {
-        _.forEach(containers, function(container) {
-        console.log(container);
-      });
+        async.each(containers,
+        function(container, next) {
+          kbox.engine.info(container.id, function(err, info) {
+            if (err) {
+              next(err);
+            } else {
+              if (info) {
+                console.log(JSON.stringify(info, null, '  '));
+              }
+              next();
+            }
+          });
+        },
+        function(err) {
+          done(err);
+        });
       }
     });
   });
