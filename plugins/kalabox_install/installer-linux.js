@@ -422,7 +422,6 @@ module.exports.run = function(done) {
           // prepare /usr/local/bin
           function(next) {
             var owner = [process.env.USER, process.env.USER].join(':');
-            console.log(owner);
             adminCmds.unshift('chown ' + owner + ' /usr/local/bin');
             if (!fs.existsSync('/usr/local/bin')) {
               adminCmds.unshift('mkdir -p /usr/local/bin');
