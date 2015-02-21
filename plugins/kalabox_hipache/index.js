@@ -9,6 +9,7 @@ module.exports = function(kbox, app) {
   var globalConfig = kbox.core.config.getGlobalConfig();
   // Redis information.
   var redisPort = 8160;
+  var logDebug = kbox.core.log.debug;
 
   /**
    * Listens for post-start-component
@@ -25,6 +26,15 @@ module.exports = function(kbox, app) {
           if (data && data.NetworkSettings.Ports[proxy.port]) {
             var port = data.NetworkSettings.Ports[proxy.port][0].HostPort;
             var dst = ['http://', redisHost, ':', port].join('');
+            var debugState = {
+              redisHost: redisHost,
+              client: client,
+              hostname: hostname,
+              rkey: rkey,
+              port: port,
+              dst: dst
+            };
+            logDebug('HIPACHE => Start component.', debugState);
             client.multi()
               .del(rkey)
               .rpush(rkey, component.containerName)
@@ -62,6 +72,14 @@ module.exports = function(kbox, app) {
           var hostname = proxy.default ? app.domain : component.hostname;
           var rkey = 'frontend:' + hostname;
 
+          var debugState = {
+            redisHost: redisHost,
+            proxy: proxy,
+            client: client,
+            hostname: hostname,
+            rkey: rkey
+          };
+          logDebug('HIPACHE => Stop component.', debugState);
           client.del(rkey, function(err, replies) {
             if (err) { throw err; }
             client.quit();
