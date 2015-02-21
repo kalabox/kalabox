@@ -56,7 +56,7 @@ Extract the latest Kalabox code in `C:\Users\bspears\Desktop\kalabox` and then o
 ```
 cd C:\Users\bspears\Desktop\kalabox
 npm install
-node bin\kalabox.js provision
+node bin\kbox.js provision
 ```
 
 **DNS IS NOT HANDLED YET SO YOU WILL NEED TO ADD 10.13.37.42 AS A DNS SERVER**
