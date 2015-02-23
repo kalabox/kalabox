@@ -46,7 +46,7 @@ var SYNCTHING_CONFIG =
 // variables
 var adminCmds = [];
 var providerIsInstalled;
-var dnsIsSet = true;
+var dnsIsSet;
 var profileIsSet;
 var syncThingIsInstalled;
 var syncThingIsConfigged;
