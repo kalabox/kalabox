@@ -189,12 +189,30 @@ function ensureAppNodeModulesInstalled(app, callback) {
   var packageFilepath = path.join(appRoot, 'package.json');
   fs.exists(packageFilepath, function(packageFileExists) {
     if (packageFileExists) {
-      var nodeModulesDir = path.join(appRoot, 'node_modules');
-      fs.exists(nodeModulesDir, function(nodeModulesDirExists) {
-        if (!nodeModulesDirExists) {
-          kbox.app.installPackages(appRoot, callback);
+      fs.readFile(packageFilepath, function(err, data) {
+        if (err) {
+          callback(err);
         } else {
-          callback();
+          var json = JSON.parse(data);
+          if (json.dependencies) {
+            var dependencyCount = _.reduce(json.dependencies, function(count, x) {
+              return count += 1;
+            }, 0);
+            if (dependencyCount > 0) {
+              var nodeModulesDir = path.join(appRoot, 'node_modules');
+              fs.exists(nodeModulesDir, function(nodeModulesDirExists) {
+                if (!nodeModulesDirExists) {
+                  kbox.app.installPackages(appRoot, callback);
+                } else {
+                  callback();
+                }
+              });
+            } else {
+              callback();
+            }
+          } else {
+            callback();
+          }
         }
       });
     } else {
