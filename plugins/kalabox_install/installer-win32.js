@@ -367,14 +367,21 @@ module.exports.run = function(done) {
       if (!dnsIsSet) {
         log.info('Setting up DNS for Kalabox.');
         deps.call(function(shell) {
-          var nic = '"C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe" showvminfo "Kalabox2" | findstr "Host-only"';
+          var nic =
+            '"C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe" ' +
+            'showvminfo "Kalabox2" | findstr "Host-only"';
           shell.exec(nic, function(err, output) {
             if (err) {
             }
             else {
               var start = output.indexOf('\'');
               var last = output.lastIndexOf('\'');
-              var adapter = [output.slice(start + 1, last).replace('Ethernet Adapter', 'Network')];
+              var adapter = [
+                output.slice(start + 1, last).replace(
+                  'Ethernet Adapter',
+                  'Network'
+                )
+              ];
               console.log(adapter);
               provider.getServerIps(function(ips) {
                 var ipCmds = cmd.buildDnsCmd(
@@ -426,7 +433,8 @@ module.exports.run = function(done) {
     function(next) {
       async.series([
         function(next) {
-          var winB2d = '"C:\\Program Files\\Boot2Docker for Windows\\boot2docker.exe"';
+          var winB2d =
+            '"C:\\Program Files\\Boot2Docker for Windows\\boot2docker.exe"';
           var turnUpForWhat = [winB2d + ' --vm="Kalabox2" down'];
           var child = cmd.runCmdsAsync(turnUpForWhat);
           child.stdout.on('data', function(data) {
