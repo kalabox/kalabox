@@ -469,7 +469,7 @@ module.exports.run = function(done) {
             if (!dnsIsSet) {
               log.info('Setting up DNS for Kalabox.');
               var ipCmds = cmd.buildDnsCmd(
-                KALABOX_DNS_SERVERS, KALABOX_DNS_PATH, KALABOX_DNS_FILE
+                KALABOX_DNS_SERVERS, [KALABOX_DNS_PATH, KALABOX_DNS_FILE]
               );
               adminCmds = adminCmds.concat(ipCmds);
               adminCmds = adminCmds.concat('resolvconf -u');

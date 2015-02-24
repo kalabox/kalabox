@@ -368,7 +368,7 @@ module.exports.run = function(done) {
               log.info('Setting up DNS for Kalabox.');
               provider.getServerIps(function(ips) {
                 var ipCmds = cmd.buildDnsCmd(
-                  ips, KALABOX_DNS_PATH, KALABOX_DNS_FILE
+                  ips, [KALABOX_DNS_PATH, KALABOX_DNS_FILE]
                 );
                 adminCmds = adminCmds.concat(ipCmds);
                 next(null);
