@@ -94,7 +94,7 @@ var versionFlag = argv.v || argv.version;
 var tasksFlag = argv.T || argv.tasks;
 
 function logError(err) {
-  console.log(chalk.red(err.message));
+  kbox.core.log.error(err);
 }
 
 function processTask(env) {
@@ -189,12 +189,30 @@ function ensureAppNodeModulesInstalled(app, callback) {
   var packageFilepath = path.join(appRoot, 'package.json');
   fs.exists(packageFilepath, function(packageFileExists) {
     if (packageFileExists) {
-      var nodeModulesDir = path.join(appRoot, 'node_modules');
-      fs.exists(nodeModulesDir, function(nodeModulesDirExists) {
-        if (!nodeModulesDirExists) {
-          kbox.app.installPackages(appRoot, callback);
+      fs.readFile(packageFilepath, function(err, data) {
+        if (err) {
+          callback(err);
         } else {
-          callback();
+          var json = JSON.parse(data);
+          if (json.dependencies) {
+            var depCount = _.reduce(json.dependencies, function(count, x) {
+              return count += 1;
+            }, 0);
+            if (depCount > 0) {
+              var nodeModulesDir = path.join(appRoot, 'node_modules');
+              fs.exists(nodeModulesDir, function(nodeModulesDirExists) {
+                if (!nodeModulesDirExists) {
+                  kbox.app.installPackages(appRoot, callback);
+                } else {
+                  callback();
+                }
+              });
+            } else {
+              callback();
+            }
+          } else {
+            callback();
+          }
         }
       });
     } else {
