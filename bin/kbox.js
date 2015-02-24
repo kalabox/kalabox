@@ -195,10 +195,10 @@ function ensureAppNodeModulesInstalled(app, callback) {
         } else {
           var json = JSON.parse(data);
           if (json.dependencies) {
-            var dependencyCount = _.reduce(json.dependencies, function(count, x) {
+            var depCount = _.reduce(json.dependencies, function(count, x) {
               return count += 1;
             }, 0);
-            if (dependencyCount > 0) {
+            if (depCount > 0) {
               var nodeModulesDir = path.join(appRoot, 'node_modules');
               fs.exists(nodeModulesDir, function(nodeModulesDirExists) {
                 if (!nodeModulesDirExists) {
