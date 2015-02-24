@@ -27,8 +27,6 @@ var vb = kbox.install.vb;
 // @todo: these will eventually come from the factory
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
-//var KALABOX_DNS_PATH = '/etc/resolver';
-var KALABOX_DNS_FILE = 'kbox';
 var PROVIDER_URL_DOWNLOAD =
   'https://github.com/boot2docker/windows-installer/releases/download/v1.4.1/' +
   'docker-install.exe';
@@ -46,7 +44,7 @@ var SYNCTHING_CONFIG =
 // variables
 var adminCmds = [];
 var providerIsInstalled;
-var dnsIsSet;
+var dnsIsSet = false;
 var profileIsSet;
 var syncThingIsInstalled;
 var syncThingIsConfigged;
@@ -306,25 +304,6 @@ module.exports.run = function(done) {
             }
           },
 
-          // @todo: need a windows/linux version of this
-          /*
-          function(next) {
-            if (!dnsIsSet) {
-              log.info('Setting up DNS for Kalabox.');
-              provider.getServerIps(function(ips) {
-                var ipCmds = cmd.buildDnsCmd(
-                  ips, KALABOX_DNS_PATH, KALABOX_DNS_FILE
-                );
-                adminCmds = adminCmds.concat(ipCmds);
-                next(null);
-              });
-            }
-            else {
-              next(null);
-            }
-          },
-          */
-
           function(next) {
             if (!_.isEmpty(adminCmds)) {
               var child = cmd.runCmdsAsync(adminCmds);
@@ -383,6 +362,49 @@ module.exports.run = function(done) {
       });
     },
 
+    // DNS THINGS
+    function(next) {
+      if (!dnsIsSet) {
+        log.info('Setting up DNS for Kalabox.');
+        deps.call(function(shell) {
+          var nic = '"C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe" showvminfo "Kalabox2" | findstr "Host-only"';
+          shell.exec(nic, function(err, output) {
+            if (err) {
+            }
+            else {
+              var start = output.indexOf('\'');
+              var last = output.lastIndexOf('\'');
+              var adapter = [output.slice(start + 1, last).replace('Ethernet Adapter', 'Network')];
+              console.log(adapter);
+              provider.getServerIps(function(ips) {
+                var ipCmds = cmd.buildDnsCmd(
+                  ips, adapter
+                );
+                adminCmds = ipCmds;
+                var child = cmd.runCmdsAsync(adminCmds);
+                child.stderr.on('data', function(data) {
+                  console.log(data);
+                  log.fail('Something bad happened!');
+                });
+                child.stdout.on('data', function(data) {
+                  console.log(data);
+                });
+                child.on('exit', function(code) {
+                  log.info('Install completed with code ' + code);
+                  log.ok('OK');
+                  log.newline();
+                  next(null);
+                });
+              });
+            }
+          });
+        });
+      }
+      else {
+        next(null);
+      }
+    },
+
     function(next) {
       log.header('Installing core services.');
       services.install(function() {
@@ -397,6 +419,32 @@ module.exports.run = function(done) {
       engine.build({name: 'kalabox/syncthing:stable'}, function() {
         log.info('Core sharing installed.');
         next(null);
+      });
+    },
+
+    // Spin up with correct windoze user
+    function(next) {
+      async.series([
+        function(next) {
+          var winB2d = '"C:\\Program Files\\Boot2Docker for Windows\\boot2docker.exe"';
+          var turnUpForWhat = [winB2d + ' --vm="Kalabox2" down'];
+          var child = cmd.runCmdsAsync(turnUpForWhat);
+          child.stdout.on('data', function(data) {
+            console.log(data);
+          });
+          child.on('exit', function(code) {
+            log.info('Install completed with code ' + code);
+            log.ok('OK');
+            log.newline();
+            next(null);
+          });
+        }
+
+      ], function(err) {
+        if (err) {
+          throw err;
+        }
+        next();
       });
     },
 
