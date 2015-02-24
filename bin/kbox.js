@@ -94,7 +94,7 @@ var versionFlag = argv.v || argv.version;
 var tasksFlag = argv.T || argv.tasks;
 
 function logError(err) {
-  console.log(chalk.red(err.message));
+  kbox.core.log.error(err);
 }
 
 function processTask(env) {
