@@ -30,8 +30,10 @@ var vb = kbox.install.vb;
 // @todo: these will eventually come from the factory
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
-//var KALABOX_DNS_PATH = '/etc/resolver';
-var KALABOX_DNS_FILE = 'kbox';
+// @todo: no idea what these looks like on fedora
+var KALABOX_DNS_PATH = '/etc/resolvconf/resolv.conf.d';
+var KALABOX_DNS_FILE = 'head';
+var KALABOX_DNS_SERVERS = [];
 var BOOT2DOCKER_CLI_BIN =
   'https://github.com/boot2docker/boot2docker-cli/releases/download/v1.4.1/' +
   'boot2docker-v1.4.1-linux-amd64';
@@ -113,6 +115,32 @@ module.exports.run = function(done) {
       })
       .on('end', function() {
         callback(osInfo);
+      });
+  }
+
+    // Very similar to profile scan.
+  // @todo: generic "scanInfoFile()"?
+  var dnsInfo = [];
+  function getCurrentNamservers(callback) {
+    if (!_.isEmpty(dnsInfo)) {
+      callback(dnsInfo);
+    }
+    var dnsFile = path.join(KALABOX_DNS_PATH, KALABOX_DNS_FILE);
+    var dnsFileInfo = new fileinput.FileInput([dnsFile]);
+    dnsFileInfo
+      .on('line', function(line) {
+        var current = S(line.toString('utf8')).trim().s;
+        if (!S(current).startsWith('#') && !S(current).isEmpty()) {
+          if (S(current).include(' ')) {
+            var pieces = current.split(' ');
+            if (S(pieces[0]).trim().s === 'nameserver') {
+              dnsInfo.push(S(pieces[1].replace(/"/g, '')).trim().s);
+            }
+          }
+        }
+      })
+      .on('end', function() {
+        callback(dnsInfo);
       });
   }
 
@@ -258,19 +286,6 @@ module.exports.run = function(done) {
       });
     },
 
-    // Check if DNS file is already set.
-    // @todo: need a windows/linux version of this
-    /*
-    function(next) {
-      log.header('Checking if DNS is set.');
-      dnsIsSet = fs.existsSync(KALABOX_DNS_FILE);
-      var msg = dnsIsSet ? 'is set.' : 'is not set.';
-      log.info('DNS ' + msg);
-      log.newline();
-      next(null);
-    },
-    */
-
     // Download dependencies to temp dir.
     function(next) {
       var urls = [];
@@ -342,6 +357,26 @@ module.exports.run = function(done) {
       else {
         next(null);
       }
+    },
+
+    // Check if DNS file is already set.
+    // @todo: need a windows/linux version of this
+    function(next) {
+      log.header('Checking if DNS is set.');
+      provider.getServerIps(function(ips) {
+        getCurrentNamservers(function(nameservers) {
+          _.forEach(ips, function(ip) {
+            if (!_.contains(nameservers, ip)) {
+              KALABOX_DNS_SERVERS.push(ip);
+            }
+          });
+          dnsIsSet = (_.isEmpty(KALABOX_DNS_SERVERS)) ? true : false;
+          var msg = dnsIsSet ? 'is set.' : 'is not set.';
+          log.info('DNS ' + msg);
+          log.newline();
+          next(null);
+        });
+      });
     },
 
     // Extract syncthing and move config and files
@@ -429,24 +464,21 @@ module.exports.run = function(done) {
             next(null);
           },
 
-          // @todo: need a windows/linux version of this
-          /*
+          // Set DNS
           function(next) {
             if (!dnsIsSet) {
               log.info('Setting up DNS for Kalabox.');
-              provider.getServerIps(function(ips) {
-                var ipCmds = cmd.buildDnsCmd(
-                  ips, KALABOX_DNS_PATH, KALABOX_DNS_FILE
-                );
-                adminCmds = adminCmds.concat(ipCmds);
-                next(null);
-              });
+              var ipCmds = cmd.buildDnsCmd(
+                KALABOX_DNS_SERVERS, [KALABOX_DNS_PATH, KALABOX_DNS_FILE]
+              );
+              adminCmds = adminCmds.concat(ipCmds);
+              adminCmds = adminCmds.concat('resolvconf -u');
+              next(null);
             }
             else {
               next(null);
             }
           },
-          */
 
           function(next) {
             if (!_.isEmpty(adminCmds)) {
