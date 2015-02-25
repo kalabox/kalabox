@@ -395,6 +395,9 @@ module.exports.run = function(done) {
             }
           });
           dnsIsSet = (_.isEmpty(KALABOX_DNS_OPTIONS)) ? true : false;
+          // @todo: this will assume that dns is set for now
+          // until we resolve the slow dns issue
+          dnsIsSet = true;
           var msg = dnsIsSet ? 'is set.' : 'is not set.';
           log.info('DNS ' + msg);
           log.newline();
