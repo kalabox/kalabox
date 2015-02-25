@@ -17,6 +17,15 @@ module.exports = function(argv, plugin, kbox) {
 
   var tasks = kbox.core.tasks;
 
+  // Display list of dependencies.
+  tasks.registerTask('deps', function(done) {
+    var keys = kbox.core.deps.keys().sort();
+    _.each(keys, function(key) {
+      console.log(key);
+    });
+    done();
+  });
+
   // Display list of apps.
   tasks.registerTask('apps', function(done) {
     kbox.app.list(function(err, apps) {
