@@ -32,7 +32,7 @@ var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
 // @todo: no idea what these looks like on fedora
 var KALABOX_DNS_PATH = '/etc/resolvconf/resolv.conf.d';
-var KALABOX_DNS_FILE = 'head';
+var KALABOX_DNS_FILE = 'tail';
 var KALABOX_DNS_SERVERS = [];
 var BOOT2DOCKER_CLI_BIN =
   'https://github.com/boot2docker/boot2docker-cli/releases/download/v1.4.1/' +
