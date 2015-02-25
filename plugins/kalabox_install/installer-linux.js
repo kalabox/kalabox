@@ -171,15 +171,15 @@ module.exports.run = function(done) {
           'virtualbox-4.3_4.3.22-98236~Debian~wheezy_amd64.deb'
       },
       fedora: {
-        '17.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '17': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'VirtualBox-4.3-4.3.22_98236_fedora17-1.x86_64.rpm',
-        '18.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '18': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm',
-        '19.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '19': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm',
-        '20.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '20': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm',
-        '21.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '21': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm'
       }
     };
