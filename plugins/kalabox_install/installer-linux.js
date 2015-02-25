@@ -165,9 +165,9 @@ module.exports.run = function(done) {
           'virtualbox-4.3_4.3.22-98236~Ubuntu~raring_amd64.deb'
       },
       debian: {
-        '6.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '6': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'virtualbox-4.3_4.3.22-98236~Debian~squeeze_amd64.deb',
-        '7.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '7': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'virtualbox-4.3_4.3.22-98236~Debian~wheezy_amd64.deb'
       },
       fedora: {
