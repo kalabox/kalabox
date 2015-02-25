@@ -31,9 +31,9 @@ var vb = kbox.install.vb;
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
 // @todo: no idea what these looks like on fedora
-var KALABOX_DNS_PATH = '/etc/resolvconf/resolv.conf.d';
-var KALABOX_DNS_FILE = 'head';
-var KALABOX_DNS_SERVERS = [];
+var KALABOX_DNS_PATH;
+var KALABOX_DNS_FILE;
+var KALABOX_DNS_OPTIONS = [];
 var BOOT2DOCKER_CLI_BIN =
   'https://github.com/boot2docker/boot2docker-cli/releases/download/v1.4.1/' +
   'boot2docker-v1.4.1-linux-amd64';
@@ -121,27 +121,36 @@ module.exports.run = function(done) {
     // Very similar to profile scan.
   // @todo: generic "scanInfoFile()"?
   var dnsInfo = [];
-  function getCurrentNamservers(callback) {
+  function getCurrentDNSOptions(callback) {
     if (!_.isEmpty(dnsInfo)) {
       callback(dnsInfo);
     }
     var dnsFile = path.join(KALABOX_DNS_PATH, KALABOX_DNS_FILE);
-    var dnsFileInfo = new fileinput.FileInput([dnsFile]);
-    dnsFileInfo
-      .on('line', function(line) {
-        var current = S(line.toString('utf8')).trim().s;
-        if (!S(current).startsWith('#') && !S(current).isEmpty()) {
-          if (S(current).include(' ')) {
-            var pieces = current.split(' ');
-            if (S(pieces[0]).trim().s === 'nameserver') {
-              dnsInfo.push(S(pieces[1].replace(/"/g, '')).trim().s);
+    var dnsExists = fs.existsSync(dnsFile);
+    if (dnsExists) {
+      var dnsFileInfo = new fileinput.FileInput([dnsFile]);
+      dnsFileInfo
+        .on('line', function(line) {
+          var current = S(line.toString('utf8')).trim().s;
+          if (!S(current).startsWith('#') && !S(current).isEmpty()) {
+            if (S(current).include(' ')) {
+              var pieces = current.split(' ');
+              if (S(pieces[0]).trim().s === 'nameserver') {
+                dnsInfo.push(S(pieces[1].replace(/"/g, '')).trim().s);
+              }
+              if (S(pieces[0]).trim().s === 'options') {
+                dnsInfo.push(S(pieces[1].replace(/"/g, '')).trim().s);
+              }
             }
           }
-        }
-      })
-      .on('end', function() {
-        callback(dnsInfo);
-      });
+        })
+        .on('end', function() {
+          callback(dnsInfo);
+        });
+    }
+    else {
+      callback(dnsInfo);
+    }
   }
 
   // Get correct
@@ -165,21 +174,21 @@ module.exports.run = function(done) {
           'virtualbox-4.3_4.3.22-98236~Ubuntu~raring_amd64.deb'
       },
       debian: {
-        '6.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '6': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'virtualbox-4.3_4.3.22-98236~Debian~squeeze_amd64.deb',
-        '7.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '7': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'virtualbox-4.3_4.3.22-98236~Debian~wheezy_amd64.deb'
       },
       fedora: {
-        '17.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '17': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'VirtualBox-4.3-4.3.22_98236_fedora17-1.x86_64.rpm',
-        '18.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '18': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm',
-        '19.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '19': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm',
-        '20.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '20': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm',
-        '21.0': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
+        '21': 'http://download.virtualbox.org/virtualbox/4.3.22/' +
           'VirtualBox-4.3-4.3.22_98236_fedora18-1.x86_64.rpm'
       }
     };
@@ -201,6 +210,15 @@ module.exports.run = function(done) {
         }
         else {
           log.fail(OS_STRING + ' is not yet supported. Contact maintainer.');
+        }
+        // set dns FILES
+        if (info.ID === 'debian' || info.ID_LIKE === 'debian') {
+          KALABOX_DNS_PATH = '/etc/resolvconf/resolv.conf.d';
+          KALABOX_DNS_FILE = 'head';
+        }
+        else {
+          KALABOX_DNS_PATH = '/etc';
+          KALABOX_DNS_FILE = 'resolv.conf';
         }
         log.newline();
         next(null);
@@ -364,13 +382,22 @@ module.exports.run = function(done) {
     function(next) {
       log.header('Checking if DNS is set.');
       provider.getServerIps(function(ips) {
-        getCurrentNamservers(function(nameservers) {
+        getCurrentDNSOptions(function(options) {
+          if (!_.contains(options, 'attempts:1')) {
+            KALABOX_DNS_OPTIONS.push(['options', 'attempts:1'].join(' '));
+          }
+          if (!_.contains(options, 'timeout:1')) {
+            KALABOX_DNS_OPTIONS.push(['options', 'timeout:1'].join(' '));
+          }
           _.forEach(ips, function(ip) {
-            if (!_.contains(nameservers, ip)) {
-              KALABOX_DNS_SERVERS.push(ip);
+            if (!_.contains(options, ip)) {
+              KALABOX_DNS_OPTIONS.push('nameserver ' + ip);
             }
           });
-          dnsIsSet = (_.isEmpty(KALABOX_DNS_SERVERS)) ? true : false;
+          dnsIsSet = (_.isEmpty(KALABOX_DNS_OPTIONS)) ? true : false;
+          // @todo: this will assume that dns is set for now
+          // until we resolve the slow dns issue
+          dnsIsSet = true;
           var msg = dnsIsSet ? 'is set.' : 'is not set.';
           log.info('DNS ' + msg);
           log.newline();
@@ -447,6 +474,9 @@ module.exports.run = function(done) {
               );
               log.info('Installing: ' + pkg);
               adminCmds.unshift(cmd.buildInstallCmd(pkg, osInfo));
+              if (osInfo.ID === 'debian' || osInfo.ID_LIKE === 'debian') {
+                adminCmds.unshift('apt-get install resolvconf -y');
+              }
               next(null);
             }
             else {
@@ -469,7 +499,7 @@ module.exports.run = function(done) {
             if (!dnsIsSet) {
               log.info('Setting up DNS for Kalabox.');
               var ipCmds = cmd.buildDnsCmd(
-                KALABOX_DNS_SERVERS, [KALABOX_DNS_PATH, KALABOX_DNS_FILE]
+                KALABOX_DNS_OPTIONS, [KALABOX_DNS_PATH, KALABOX_DNS_FILE]
               );
               adminCmds = adminCmds.concat(ipCmds);
               adminCmds = adminCmds.concat('resolvconf -u');

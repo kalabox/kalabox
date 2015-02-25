@@ -93,8 +93,21 @@ var cliPackage = require('../package');
 var versionFlag = argv.v || argv.version;
 var tasksFlag = argv.T || argv.tasks;
 
-function logError(err) {
-  kbox.core.log.error(err);
+function handleError(err) {
+  var cancel = false;
+  // This is just in case logging module has an issue.
+  var timer = setTimeout(function() {
+    if (!cancel) {
+      throw err;
+    }
+  }, 5000);
+  // Log error.
+  kbox.core.log.error(err, function() {
+    // Cancel safety timer and throw err.
+    cancel = true;
+    clearTimeout(timer);
+    throw err;
+  });
 }
 
 function processTask(env) {
@@ -153,7 +166,7 @@ function processTask(env) {
       argv._ = result.args;
       result.task.task(function(err) {
         if (err) {
-          throw(err);
+          handleError(err);
         }
       });
     }
@@ -255,12 +268,12 @@ function handleArguments(env) {
 
   kbox.app.list(function(err, apps) {
     if (err) {
-      throw err;
+      handleError(err);
     }
 
     getAppContext(apps, function(err, appContext) {
       if (err) {
-        throw err;
+        handleError(err);
       }
 
       if (appContext) {
@@ -272,16 +285,10 @@ function handleArguments(env) {
         // Run the task.
         processTask(env);
       } catch (err) {
-        // Log error.
-        logError(err);
+        handleError(err);
       }
     });
   });
-}
-
-function logError(err) {
-  console.log(chalk.red(err.message));
-  throw err;
 }
 
 cli.on('require', function(name) {

@@ -1,9 +1,16 @@
 # Changelog
 
-## 0.3.0 (2015-2-14)
+## 0.3.0 (2015-2-25)
 
 First pass on interfaces, APIs and other various abstractions
 
+- Provided more flexible app discovery 
+- Added back support for external plugins
+- Fixed issues for user folder binding on Windows and Linux
+- Added more legit logging with Winston
+- Created uninstallers for Windows and Linux
+- Fixed a bug where the b2d.iso was stored in tmp and thus eventually deleted
+- Stubbed out installers for Linux and Windows
 - Reorganized and simplified libraries
 - Added interfaces for "engine", "provider" and "services"
 - Added docker engine, b2d provider and core kalabox services.
