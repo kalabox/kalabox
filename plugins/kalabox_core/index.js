@@ -17,6 +17,17 @@ module.exports = function(argv, plugin, kbox) {
 
   var tasks = kbox.core.tasks;
 
+  tasks.registerTask('ip', function(done) {
+    kbox.engine.provider.getIp(function(err, ip) {
+      if (err) {
+        done(err);
+      } else {
+        console.log(ip);
+        done();
+      }
+    });
+  });
+
   // Display list of dependencies.
   tasks.registerTask('deps', function(done) {
     var keys = kbox.core.deps.keys().sort();
