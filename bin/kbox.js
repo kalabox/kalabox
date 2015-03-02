@@ -180,9 +180,11 @@ function getAppContextFromArgv(apps) {
 }
 
 function getAppContextFromCwd(apps) {
-  var cwd = process.cwd();
+  var cwd = S(process.cwd());
   return _.find(apps, function(app) {
-    return S(cwd).startsWith(app.config.appRoot);
+    var appRoot = app.config.appRoot;
+    var codeRoot = path.join(app.config.codeRoot, app.config.appName);
+    return cwd.startsWith(appRoot) || cwd.startsWith(codeRoot);
   });
 }
 
