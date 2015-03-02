@@ -32,8 +32,13 @@ module.exports = function(argv, plugin, kbox) {
       if (err) {
         done(err);
       } else {
+        var appNames = [];
         _.forEach(apps, function(app) {
-          console.log(app.name);
+          appNames.push(app.name);
+        });
+        appNames.sort();
+        _.forEach(appNames, function(appName) {
+          console.log(appName);
         });
         done();
       }
