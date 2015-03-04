@@ -9,6 +9,12 @@ var testUtil = require('../lib/testUtil.js');
 
 describe('config module', function() {
 
+  before(function() {
+    var globalConfig = core.config.getGlobalConfig();
+    core.deps.register('globalConfig', globalConfig);
+    core.log.init({consoleOnly:true});
+  });
+
   describe('#normalizeValue()', function() {
     it('should normalize values correctly.', function() {
       var config = {
