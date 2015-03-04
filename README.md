@@ -173,8 +173,8 @@ When you start an app you will get a folder in `~/kalabox/code/<APPNAME>` which 
 If you are importing a massive payload of files it may take a bit for everything to sync up. You can mitigate this by putting your code into the container first. If you arent seeing the code you think you should be seeing you can check out the syncthing UI on both your local machine or kalabox by going to the following places in your browser.
 
 ```
-10.13.37.42:8080 # Kalabox Syncthing
-127.0.0.1:8080 # Local Syncthing
+10.13.37.42:60008 # Kalabox Syncthing
+127.0.0.1:60008 # Local Syncthing
 ```
 
 ## Other Resources
