@@ -22,6 +22,15 @@ With Kalabox you can
 
 Please make sure that you have installed [nodejs](http://nodejs.org/) first!
 
+If you have installed a pre-0.3.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional. 
+
+```
+cd path/to/kalabox/repo
+./scripts/uninstall-darwin.sh # on Windows this will be uninstall-win32.bat and on Linux it will be uninstall-linux.sh
+```
+
+And then the install magic
+
 ```bash
 npm install kalabox -g
 ```
@@ -32,11 +41,18 @@ npm install kalabox -g
 
 Please make sure that you have installed [nodejs](http://nodejs.org/) first!
 
+If you have installed a pre-0.3.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional. 
+
+```
+cd path/to/kalabox/repo
+./scripts/uninstall-darwin.sh # on Windows this will be uninstall-win32.bat and on Linux it will be uninstall-linux.sh
+```
+
 ### OSX / Linux
 
 ```bash
 cd ~
-git clone git@github.com:kalabox/kalabox.git
+git clone https://github.com/kalabox/kalabox.git
 cd kalabox
 npm install
 
