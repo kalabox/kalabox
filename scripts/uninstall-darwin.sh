@@ -37,6 +37,7 @@ echo "to save your current build for later please either vagrant package"
 echo "your existing build or export the relevant VirtualBox appliance."
 echo ""
 echo "MAKE SURE THAT YOU'VE EXITED THE KALABOX APP OR THIS WILL BLOW UP!!!"
+echo "ALSO MAKE SURE YOU VISIT 127.0.0.1:60008 AND SHUTDOWN SYNCTHING"
 echo ""
 echo "WHAT YOU WANT TO DO?"
 echo ""
@@ -75,6 +76,7 @@ if [ "$my_answer" == "1" ]; then
     append kala_files "/etc/resolver/kbox"
     append kala_files "$HOME/.kalabox/syncthing"
     append kala_files "$HOME/.kalabox/bin/syncthing"
+    append kala_files "$HOME/.kalabox/appRegistry.json"
 
     # Print the files and directories that are to be removed and verify
     # with the user that that is what he/she really wants to do.
@@ -96,6 +98,7 @@ if [ "$my_answer" == "1" ]; then
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/resolver/kbox
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin/syncthing
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/appRegistry.json
     fi
 
     if [ "$DOCKER" ]; then
