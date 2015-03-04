@@ -32,7 +32,7 @@ npm install kalabox -g
 
 Please make sure that you have installed [nodejs](http://nodejs.org/) first!
 
-### OSX
+### OSX / Linux
 
 ```bash
 cd ~
@@ -40,25 +40,9 @@ git clone git@github.com:kalabox/kalabox.git
 cd kalabox
 npm install
 
-# link kbox executable, you may have to remove /usr/local/bin/kbox first!!! -
-# USE FULL PATH TO bin, like in OS X if you've installed kalabox at /User/$USER/kalabox use
-# ln -s /Users/$USER/kalabox/bin/kbox.js /usr/local/bin/kbox
-ln -s <full path to install>/bin/kbox.js /usr/local/bin/kbox
-
-kbox provision
-```
-
-### Linux
-
-```bash
-cd ~
-git clone git@github.com:kalabox/kalabox.git
-cd kalabox
-npm install
-
-# link kbox executable
-# USE FULL PATH TO bin
-ln -s /home/pirog/Desktop/kalabox/bin/kbox.js /usr/local/bin/kbox
+# link kbox executable.
+# NOTE: you may have to remove /usr/local/bin/kbox first!
+ln -s `pwd`/bin/kbox.js /usr/local/bin/kbox
 
 kbox provision
 ```
@@ -78,7 +62,7 @@ mklink kbox C:\Users\bspears\Desktop\kalabox\bin\kbox.js
 
 ```
 
-When the install is done you will probably want to open up a mysysgit bash shell to run your kalabox commands. 
+When the install is done you will probably want to open up a mysysgit bash shell to run your kalabox commands.
 
 Start by turning on kbox with `kbox up`
 
@@ -106,23 +90,23 @@ This will show a list of apps you have. Apps that are in the global appsRoot wil
 
 This will print out the current config for Kalabox. This is a great way to confir, whether config overrides specificed in `~/.kalabox/kalabox.json` have taken or not. More on that below...
 
-**`kbox containers`** 
+**`kbox containers`**
 
 This will list all the containers that currently exist in Kalabox. If you run it inside of an app directory you will get more fancy info about ports and things like that.
 
-**`kbox down`** 
+**`kbox down`**
 
 Spin down kalabox.
 
-**`kbox up`** 
+**`kbox up`**
 
 Spin up kalabox.
 
-**`kbox status`** 
+**`kbox status`**
 
 Check to see whether Kalabox is up or down.
 
-**`kbox provision`** 
+**`kbox provision`**
 
 The initial setup and installation of Kalabox
 
