@@ -7,6 +7,11 @@ var events = kbox.core.events;
 
 describe('events module', function() {
 
+  before(function() {
+    var globalConfig = kbox.core.config.getGlobalConfig();
+    kbox.core.deps.registerIf('globalConfig', globalConfig);
+  });
+
   describe('#emit()', function() {
 
     it('should wait for all event handlers before calling cb.',

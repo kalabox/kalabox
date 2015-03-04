@@ -43,7 +43,7 @@ npm install
 # link kbox executable, you may have to remove /usr/local/bin/kbox first!!! -
 # USE FULL PATH TO bin, like in OS X if you've installed kalabox at /User/$USER/kalabox use
 # ln -s /Users/$USER/kalabox/bin/kbox.js /usr/local/bin/kbox
-ln -s bin/kbox.js /usr/local/bin/kbox
+ln -s <full path to install>/bin/kbox.js /usr/local/bin/kbox
 
 kbox provision
 ```

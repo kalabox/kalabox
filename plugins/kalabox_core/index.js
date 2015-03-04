@@ -17,6 +17,17 @@ module.exports = function(argv, plugin, kbox) {
 
   var tasks = kbox.core.tasks;
 
+  tasks.registerTask('ip', function(done) {
+    kbox.engine.provider.getIp(function(err, ip) {
+      if (err) {
+        done(err);
+      } else {
+        console.log(ip);
+        done();
+      }
+    });
+  });
+
   // Display list of dependencies.
   tasks.registerTask('deps', function(done) {
     var keys = kbox.core.deps.keys().sort();
@@ -32,8 +43,13 @@ module.exports = function(argv, plugin, kbox) {
       if (err) {
         done(err);
       } else {
+        var appNames = [];
         _.forEach(apps, function(app) {
-          console.log(app.name);
+          appNames.push(app.name);
+        });
+        appNames.sort();
+        _.forEach(appNames, function(appName) {
+          console.log(appName);
         });
         done();
       }

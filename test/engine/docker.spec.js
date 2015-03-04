@@ -7,8 +7,14 @@ var expect = chai.expect;
 var assert = chai.assert;
 var sinon = require('sinon');
 var _ = require('lodash');
+var kbox = require('../../lib/kbox.js');
 
 describe('docker module', function() {
+
+  before(function() {
+    var globalConfig = kbox.core.config.getGlobalConfig();
+    kbox.core.deps.registerIf('globalConfig', globalConfig);
+  });
 
   var fakeDocker = {
     getContainer: function(cid) {
@@ -148,7 +154,12 @@ describe('docker module', function() {
       Id: cid,
       Names: [name],
       inspect: function(cb) { cb(null, {State: {Running: isRunning}}); },
-      remove: function(cb) { cb(null); },
+      remove: function(opts, cb) {
+        if (opts && !cb) {
+          cb = opts;
+        }
+        cb(null);
+      },
       start: function(startOptions, cb) {cb(null); },
       stop: function(cb) { cb(null); }
     };
