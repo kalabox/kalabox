@@ -19,7 +19,9 @@ module.exports = function(argv, plugin, kbox) {
 
   // @todo: remove
   tasks.registerTask('test', function(done) {
-    kbox.engine.queryString('kalabox/syncthing:stable', '/bin/ls', {}, {}, function(err, data) {
+    var image = 'kalabox/syncthing:stable';
+    var cmd = '/bin/ls';
+    kbox.engine.queryString(image, cmd, {}, {}, function(err, data) {
       if (err) {
         throw err;
       } else {
