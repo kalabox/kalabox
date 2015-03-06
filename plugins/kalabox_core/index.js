@@ -17,6 +17,17 @@ module.exports = function(argv, plugin, kbox) {
 
   var tasks = kbox.core.tasks;
 
+  // @todo: remove
+  tasks.registerTask('test', function(done) {
+    kbox.engine.queryString('kalabox/syncthing:stable', '/bin/ls', {}, {}, function(err, data) {
+      if (err) {
+        throw err;
+      } else {
+        console.log(data);
+      }
+    });
+  });
+
   tasks.registerTask('ip', function(done) {
     kbox.engine.provider.getIp(function(err, ip) {
       if (err) {
