@@ -22,7 +22,7 @@ With Kalabox you can
 
 Please make sure that you have installed [nodejs](http://nodejs.org/) first!
 
-If you have installed a pre-0.3.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional. 
+If you have installed a pre-0.3.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional.
 
 ```
 cd path/to/kalabox/repo
@@ -41,7 +41,7 @@ npm install kalabox -g
 
 Please make sure that you have installed [nodejs](http://nodejs.org/) first!
 
-If you have installed a pre-0.3.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional. 
+If you have installed a pre-0.3.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional.
 
 ```
 cd path/to/kalabox/repo
@@ -163,6 +163,37 @@ User's can override some global configuration by putting a file called `kalabox.
 }
 
 ```
+## Database Setup
+
+You can install the GUI client of your choice, whatever works for your OS.
+
+To import a DB into kalabox from the CLI, do the following:
+
+```
+kbox containers
+```
+
+Which outputs something like:
+
+```
+{
+  "id": "29617516c8610b5032a922b8fcdbf8d5d8b79eb5d1f37f41b0ebfe00b02e3146",
+  "name": "kb_example_db",
+  "app": "example",
+  "ports": [
+    "3306/tcp=>49173"
+  ],
+  "running": true
+}
+```
+
+Grab the port #, which in this case is 49173.  Also make sure you have an unpacked local copy of the DB you want to import.  Now just run this command:
+
+```
+mysql -u kalabox -h example.kbox -P 49173 kalabox < ~/path/to/db.sql
+```
+
+
 
 ## Sharing
 
