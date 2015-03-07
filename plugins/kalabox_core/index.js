@@ -17,13 +17,15 @@ module.exports = function(argv, plugin, kbox) {
 
   var tasks = kbox.core.tasks;
 
-  tasks.registerTask('ip', function(done) {
-    kbox.engine.provider.getIp(function(err, ip) {
+  // @todo: remove
+  tasks.registerTask('test', function(done) {
+    var image = 'kalabox/syncthing:stable';
+    var cmd = '/bin/ls';
+    kbox.engine.queryString(image, cmd, {}, {}, function(err, data) {
       if (err) {
-        done(err);
+        throw err;
       } else {
-        console.log(ip);
-        done();
+        console.log(data);
       }
     });
   });
@@ -93,64 +95,5 @@ module.exports = function(argv, plugin, kbox) {
     console.log(JSON.stringify(target, null, '\t'));
     done();
   });
-
-  // Display status of provider.
-  tasks.registerTask('status', function(done) {
-    kbox.engine.provider.isUp(function(err, isUp) {
-      if (err) {
-        done(err);
-      } else if (isUp) {
-        console.log('up');
-      } else {
-        console.log('down');
-      }
-    });
-  });
-
-  /*tasks.registerTask('list', function(done) {
-    // --containers will show all built containers
-    if (argv.containers) {
-      manager.list(function(err, containers) {
-        // @todo: pretty print this eventually
-        console.log(containers);
-      });
-    }
-    // --apps will show all built containers
-    if (argv.apps) {
-      var i = 1;
-      manager.getApps(function(apps) {
-        _(apps).each(function(a) {
-          var status = '';
-          if (a.status === 'enabled') {
-            status = 'Enabled';
-            console.log(chalk.green(' ' + i + '. ' + a.config.title + ' (' + a.name + ')\t\t', a.url + '\t\t', status));
-          }
-          else if (a.status === 'disabled') {
-            status = 'Disabled';
-            console.log(chalk.magenta(' ' + i + '. ' + a.config.title + ' (' + a.name + ')\t\t', a.url + '\t\t', status));
-          }
-          else {
-            status = 'Uninstalled';
-            console.log(chalk.red(' ' + i + '. ' + a.config.title + ' (' + a.name + ')\t\t', a.url + '\t\t', status));
-          }
-          i++;
-        });
-        console.log('');
-      });
-      console.log('');
-    }
-    done();
-  });*/
-
-  // @todo: Do we need this? If so should it be in engine or app?
-  /*tasks.registerTask('pc', function(done) {
-    var onRemove = function(data) {
-      // container was removed
-    };
-    var onDone = function() {
-      done();
-    };
-    manager.purgeContainers(onRemove, onDone);
-  });*/
 
 };
