@@ -22,7 +22,7 @@ With Kalabox you can
 
 Please make sure that you have installed [nodejs](http://nodejs.org/) first!
 
-If you have installed a pre-0.3.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional. 
+If you have installed a pre-0.3.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional.
 
 ```
 cd path/to/kalabox/repo
@@ -41,7 +41,7 @@ npm install kalabox -g
 
 Please make sure that you have installed [nodejs](http://nodejs.org/) first!
 
-If you have installed a pre-0.3.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional. 
+If you have installed a pre-0.3.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional.
 
 ```
 cd path/to/kalabox/repo
@@ -138,7 +138,6 @@ User's can override some global configuration by putting a file called `kalabox.
 {
 	"appRegistry": "/Users/mpirog/.kalabox/appRegistry.json",
 	"appsRoot": "/Users/mpirog/kalabox/apps",
-	"codeRoot": "/Users/mpirog/kalabox/code",
 	"domain": "kbox",
 	"engine": "docker",
 	"globalPluginRoot": "/Users/mpirog/kalabox/plugins",
@@ -168,7 +167,7 @@ User's can override some global configuration by putting a file called `kalabox.
 
 Right now Kalabox uses syncthing for sharing. Syncthing is a nifty p2p client written in Go that works kind of like a bi-directional auto rsync. This enables our apps to run super fast compared to something like NFS.
 
-When you start an app you will get a folder in `~/kalabox/code/<APPNAME>` which is where you should put your code. If you override the `codeRoot` in the global config then you will want to check that directory instead.
+When you start an app you will get a folder inside your app called `code` which is where you should put your code files. For example if this were Drupal app you would probably want to git clone the drupal project inside of `code`.
 
 If you are importing a massive payload of files it may take a bit for everything to sync up. You can mitigate this by putting your code into the container first. If you arent seeing the code you think you should be seeing you can check out the syncthing UI on both your local machine or kalabox by going to the following places in your browser.
 
