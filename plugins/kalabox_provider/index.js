@@ -23,6 +23,30 @@ module.exports = function(engine, events, tasks, services) {
       engine.down(PROVIDER_DOWN_ATTEMPTS, done);
     });
 
+    // Display status of provider.
+    tasks.registerTask('status', function(done) {
+      engine.provider.isUp(function(err, isUp) {
+        if (err) {
+          done(err);
+        } else if (isUp) {
+          console.log('up');
+        } else {
+          console.log('down');
+        }
+      });
+    });
+
+    tasks.registerTask('ip', function(done) {
+      engine.provider.getIp(function(err, ip) {
+        if (err) {
+          done(err);
+        } else {
+          console.log(ip);
+          done();
+        }
+      });
+    });
+
     // Events
     events.on('post-up', function(done) {
       console.log(chalk.green('Kalabox engine has been activated.'));

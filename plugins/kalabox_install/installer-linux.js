@@ -395,9 +395,6 @@ module.exports.run = function(done) {
             }
           });
           dnsIsSet = (_.isEmpty(KALABOX_DNS_OPTIONS)) ? true : false;
-          // @todo: this will assume that dns is set for now
-          // until we resolve the slow dns issue
-          dnsIsSet = true;
           var msg = dnsIsSet ? 'is set.' : 'is not set.';
           log.info('DNS ' + msg);
           log.newline();
@@ -494,22 +491,6 @@ module.exports.run = function(done) {
             next(null);
           },
 
-          // Set DNS
-          function(next) {
-            if (!dnsIsSet) {
-              log.info('Setting up DNS for Kalabox.');
-              var ipCmds = cmd.buildDnsCmd(
-                KALABOX_DNS_OPTIONS, [KALABOX_DNS_PATH, KALABOX_DNS_FILE]
-              );
-              adminCmds = adminCmds.concat(ipCmds);
-              adminCmds = adminCmds.concat('resolvconf -u');
-              next(null);
-            }
-            else {
-              next(null);
-            }
-          },
-
           function(next) {
             if (!_.isEmpty(adminCmds)) {
               var child = cmd.runCmdsAsync(adminCmds);
@@ -600,6 +581,63 @@ module.exports.run = function(done) {
         log.info('Core sharing installed.');
         next(null);
       });
+    },
+
+    // setup DNS
+    function(next) {
+      if (!providerIsInstalled || !dnsIsSet) {
+        log.header('Setting DNS up.');
+        log.alert('ADMINISTRATIVE PASSWORD MAY BE REQUIRED!');
+
+        async.series([
+
+          // Set DNS
+          function(next) {
+            if (!dnsIsSet) {
+              log.info('Setting up DNS for Kalabox.');
+              var ipCmds = cmd.buildDnsCmd(
+                KALABOX_DNS_OPTIONS, [KALABOX_DNS_PATH, KALABOX_DNS_FILE]
+              );
+              adminCmds = adminCmds.concat(ipCmds);
+              adminCmds = adminCmds.concat('resolvconf -u');
+              next(null);
+            }
+            else {
+              next(null);
+            }
+          },
+
+          function(next) {
+            if (!_.isEmpty(adminCmds)) {
+              var child = cmd.runCmdsAsync(adminCmds);
+              child.stdout.on('data', function(data) {
+                log.info(data);
+              });
+              child.stdout.on('end', function() {
+                log.info('Finished installing');
+                log.newline();
+                next();
+              });
+              child.stderr.on('data', function(data) {
+                log.warn(data);
+              });
+            }
+            else {
+              next(null);
+            }
+          }
+
+        ], function(err, results) {
+            if (err) {
+              throw err;
+            }
+            next();
+          });
+
+      }
+      else {
+        next(null);
+      }
     },
 
     // Init and start boot2docker
