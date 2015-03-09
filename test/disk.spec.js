@@ -5,15 +5,20 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var rewire = require('rewire');
 var disk = rewire('../lib/util/disk.js');
+var core = require('../lib/core.js');
 
 describe('disk.js', function() {
+
+  before(function() {
+    var globalConfig = core.config.getGlobalConfig();
+    core.deps.registerIf('globalConfig', globalConfig);
+  });
 
   describe('#getTempDir()', function() {
 
     it('should return the correct temp dir.', function() {
-      var expected = '/tmp';
       var result = disk.getTempDir();
-      expect(result).to.equal(expected);
+      expect(result).to.match(/.*\/.kalabox\/downloads/);
     });
 
   });
