@@ -183,8 +183,7 @@ function getAppContextFromCwd(apps) {
   var cwd = S(process.cwd());
   return _.find(apps, function(app) {
     var appRoot = app.config.appRoot;
-    var codeRoot = path.join(app.config.codeRoot, app.config.appName);
-    return cwd.startsWith(appRoot) || cwd.startsWith(codeRoot);
+    return cwd.startsWith(appRoot);
   });
 }
 
