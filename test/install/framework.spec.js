@@ -50,7 +50,7 @@ describe('install framework module', function() {
       step.all.win32 = function(state, next) {
         state.foo += step.name;
         next();
-      }
+      };
       done();
     });
     fw.registerStep(function(step, done) {
