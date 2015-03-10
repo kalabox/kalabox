@@ -28,7 +28,7 @@ var INSTALL_MB = 1 * 1000;
 var PROVIDER_INIT_ATTEMPTS = 3;
 var PROVIDER_UP_ATTEMPTS = 3;
 var KALABOX_DNS_PATH = '/etc/resolver';
-var KALABOX_DNS_FILE = 'kbox';
+var KALABOX_DNS_FILE;
 var PROVIDER_URL_V1_4_1 =
   'https://github.com/boot2docker/osx-installer/releases/download/v1.4.1/' +
   'Boot2Docker-1.4.1.pkg';
@@ -190,6 +190,7 @@ module.exports.run = function(done) {
     // Check if DNS file is already set.
     function(next) {
       log.header('Checking if DNS is set.');
+      KALABOX_DNS_FILE = deps.lookup('globalConfig').domain;
       dnsIsSet = fs.existsSync(path.join(KALABOX_DNS_PATH, KALABOX_DNS_FILE));
       var msg = dnsIsSet ? 'is set.' : 'is not set.';
       log.info('DNS ' + msg);
