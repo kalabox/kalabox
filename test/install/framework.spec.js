@@ -10,6 +10,7 @@ describe('install framework module', function() {
   before(function(beforeDone) {
     fw.registerStep(function(step) {
       step.name = 'a';
+      step.description = 'step a';
       step.deps = ['b'];
       step.all = function(state) {
         state.foo += step.name;
@@ -17,6 +18,7 @@ describe('install framework module', function() {
     });
     fw.registerStep(function(step) {
       step.name = 'b';
+      step.description = 'step b';
       step.deps = [];
       step.all = function(state) {
         state.foo = step.name;
@@ -24,6 +26,7 @@ describe('install framework module', function() {
     });
     fw.registerStep(function(step, done) {
       step.name = 'c';
+      step.description = 'step c';
       step.deps = ['a', 'd'];
       step.all = function(state, next) {
         state.foo += step.name;
@@ -35,6 +38,7 @@ describe('install framework module', function() {
     });
     fw.registerStep(function(step, done) {
       step.name = 'd';
+      step.description = 'step d';
       step.deps = ['a'];
       step.all = function(state, next) {
         state.foo += step.name;
@@ -44,6 +48,7 @@ describe('install framework module', function() {
     });
     fw.registerStep(function(step, done) {
       step.name = 'e';
+      step.description = 'step e';
       step.deps = [];
       step.all.win32 = function(state, next) {
         state.foo += step.name;
@@ -53,6 +58,7 @@ describe('install framework module', function() {
     });
     fw.registerStep(function(step, done) {
       step.name = 'f';
+      step.description = 'step f';
       step.deps = ['a'];
       step.all.linux = function(state, next) {
         state.foo += step.name;
@@ -90,9 +96,19 @@ describe('install framework module', function() {
 
     it('should run the correct steps in the correct order.', function(done) {
       var install = fw.getInstall('darwin');
+      var preStepLog = '';
+      fw.events.on('pre-step', function(step) {
+        preStepLog += step.name;
+      });
+      var postStepLog = '';
+      fw.events.on('post-step', function(step) {
+        postStepLog += step.name;
+      });
       install(function(err, state) {
         expect(err).to.equal(undefined);
         expect(state.foo).to.equal('badc');
+        expect(preStepLog).to.equal('badc');
+        expect(postStepLog).to.equal('badc');
         done();
       });
     });
