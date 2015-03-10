@@ -8,30 +8,28 @@ var expect = chai.expect;
 describe('install framework module', function() {
 
   before(function(beforeDone) {
-    fw.registerStep(function(step, done) {
+    fw.registerStep(function(step) {
       step.name = 'a';
       step.deps = ['b'];
-      step.all = function(state, next) {
+      step.all = function(state) {
         state.foo += step.name;
-        next();
       };
-      done();
     });
-    fw.registerStep(function(step, done) {
+    fw.registerStep(function(step) {
       step.name = 'b';
       step.deps = [];
-      step.all = function(state, next) {
+      step.all = function(state) {
         state.foo = step.name;
-        next();
       };
-      done();
     });
     fw.registerStep(function(step, done) {
       step.name = 'c';
       step.deps = ['a', 'd'];
       step.all = function(state, next) {
         state.foo += step.name;
-        next();
+        setTimeout(function() {
+          next();
+        }, 300);
       };
       done();
     });
