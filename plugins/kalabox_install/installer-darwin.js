@@ -144,23 +144,6 @@ module.exports.run = function(done) {
       next(null);
     },
 
-    // Check if VirtualBox.app is running.
-    function(next) {
-      log.header('Checking if VirtualBox is running.');
-      vb.isRunning(function(err, isRunning) {
-        if (err) {
-          throw err;
-        }
-        if (isRunning) {
-          log.info('VirtualBox: is currently running.');
-        } else {
-          log.info('VirtualBox: is NOT currently running.');
-        }
-        log.newline();
-        next();
-      });
-    },
-
     // Check the firewall settings.
     function(next) {
       log.header('Checking firewall settings.');
@@ -207,7 +190,7 @@ module.exports.run = function(done) {
     // Check if DNS file is already set.
     function(next) {
       log.header('Checking if DNS is set.');
-      dnsIsSet = fs.existsSync(KALABOX_DNS_FILE);
+      dnsIsSet = fs.existsSync(path.join(KALABOX_DNS_PATH, KALABOX_DNS_FILE));
       var msg = dnsIsSet ? 'is set.' : 'is not set.';
       log.info('DNS ' + msg);
       log.newline();
