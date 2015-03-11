@@ -96,4 +96,10 @@ module.exports = function(argv, plugin, kbox) {
     done();
   });
 
+  // Prints out the kbox version.
+  tasks.registerTask('version', function(done) {
+    console.log(kbox.core.config.getGlobalConfig().version);
+    done();
+  });
+
 };
