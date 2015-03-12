@@ -20,13 +20,21 @@ module.exports = function(argv, plugin, kbox) {
   // @todo: remove
   tasks.registerTask('test', function(done) {
     var image = 'kalabox/syncthing:stable';
-    var cmd = '/bin/ls';
-    kbox.engine.queryString(image, cmd, {}, {}, function(err, data) {
-      if (err) {
-        throw err;
-      } else {
-        console.log(data);
-      }
+    var cmd = argv._;
+    kbox.engine.once(image, '/bin/bash', {}, {}, function(container, done) {
+      kbox.engine.query(container.id, cmd, function(err, stream) {
+        if (err) {
+          done(err);
+        } else {
+          stream.pipe(process.stdout);
+          stream.on('end', function() {
+            done();
+          });
+        }
+      });
+    },
+    function(err) {
+      done(err);
     });
   });
 
