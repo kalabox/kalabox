@@ -305,6 +305,7 @@ module.exports.run = function(done) {
               path.join(tmp, path.basename(stBinary, '.tar.gz'), 'syncthing'),
               path.join(binPath, 'syncthing')
             );
+            fs.chmodSync(path.join(binPath, 'syncthing'), '0755');
             log.ok('OK');
             log.newline();
             next(null);
