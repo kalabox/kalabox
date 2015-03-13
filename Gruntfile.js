@@ -35,7 +35,7 @@ module.exports = function(grunt) {
             './test/'
         },
       testLarge: {
-        command: 'node_modules/mocha/bin/_mocha --bail test/large'},
+        command: 'node_modules/mocha/bin/_mocha --bail test_large'},
       testCoverage: {
         command:
         'node_modules/istanbul/lib/cli.js ' +
@@ -155,7 +155,7 @@ module.exports = function(grunt) {
 
   // large functional testing
   grunt.registerTask('test:large', [
-    'shell:test_large'
+    'shell:testLarge'
   ]);
 
   grunt.registerTask('test:code', [
