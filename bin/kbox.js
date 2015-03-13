@@ -162,6 +162,7 @@ function processTask(env) {
     // Display menu choices or run task.
     if (!result || !result.task || !result.task.task) {
       tasks.prettyPrint(result.task);
+      process.exit(1);
     } else {
       argv._ = result.args;
       result.task.task(function(err) {
