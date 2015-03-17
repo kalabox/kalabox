@@ -1,3 +1,5 @@
+'use strict';
+
 var chai = require('chai');
 var expect = chai.expect;
 var rewire = require('rewire');
@@ -7,7 +9,7 @@ var deps = rewire('../lib/core/deps');
 var testUtil = require('../lib/testUtil.js');
 deps.__set__('events', events);
 
-describe.only('require.js', function() {
+describe.skip('require.js', function() {
 
   var globalConfig = {
     kalaboxRoot: '',
