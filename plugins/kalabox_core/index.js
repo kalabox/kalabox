@@ -17,6 +17,27 @@ module.exports = function(argv, plugin, kbox) {
 
   var tasks = kbox.core.tasks;
 
+  // @todo: remove
+  tasks.registerTask('test', function(done) {
+    var image = 'kalabox/syncthing:stable';
+    var cmd = argv._;
+    kbox.engine.once(image, '/bin/bash', {}, {}, function(container, done) {
+      kbox.engine.query(container.id, cmd, function(err, stream) {
+        if (err) {
+          done(err);
+        } else {
+          stream.pipe(process.stdout);
+          stream.on('end', function() {
+            done();
+          });
+        }
+      });
+    },
+    function(err) {
+      done(err);
+    });
+  });
+
   // Display list of dependencies.
   tasks.registerTask('deps', function(done) {
     var keys = kbox.core.deps.keys().sort();
