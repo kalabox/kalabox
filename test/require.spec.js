@@ -1,23 +1,54 @@
 var chai = require('chai');
 var expect = chai.expect;
+var rewire = require('rewire');
 var _require = require('../lib/require.js');
+var events = require('../lib/core/events');
+var deps = rewire('../lib/core/deps');
+var testUtil = require('../lib/testUtil.js');
+deps.__set__('events', events);
 
-describe('require.js', function() {
+describe.only('require.js', function() {
 
-  var _app = null;
+  var globalConfig = {
+    kalaboxRoot: '',
+    srcRoot: ''
+  };
 
   var kbox = {
     id: 'abcd1234',
     core: {
-      deps: {
-        lookup: function(name) {
-          if (name === 'app') {
-            return _app;
-          }
-        }
-      }
+      deps: deps,
+      events: events
     }
   };
+
+  /*describe('#resolve', function() {
+
+    var mockFs = null;
+
+    var mockFsOpts = {
+      'kalabox': {
+        'plugins': {
+          'foo': 'foo plugin code'
+        }
+      }
+    };
+
+    before(function() {
+      kbox.core.deps.register('globalConfig', globalConfig);
+      mockFs = testUtil.mockFs.create(mockFsOpts);
+    });
+
+    after(function() {
+      mockFs.restore();
+    });
+
+    it('should find node modules.', function() {
+      var filepath = _require.resolve(kbox, 'foo');
+      expect(filepath).to.not.equal(null);
+    });
+
+  });*/
 
   describe('#require', function() {
 
@@ -40,18 +71,20 @@ describe('require.js', function() {
       expect(module.test()).to.equal(kbox.id);
     });
 
-    it('shouldnt load a module using app if it is not registerd.', function() {
-      var module = _require.require(kbox, './require-d');
-      expect(typeof module).to.equal('function');
-    });
-
-    it('should load a module using app if it is registed.', function() {
-      _app = {
-        name: 'elvis'
-      };
-      var module = _require.require(kbox, '../test/require-d');
-      expect(typeof module).to.equal('object');
-      expect(module.test()).to.equal('elvis');
+    it('should handle a module using app correctly.', function(done) {
+      var module1 = _require.require(kbox, './require-d');
+      var module2 = _require.require(kbox, './require-d');
+      expect(typeof module1).to.equal('object');
+      expect(typeof module2).to.equal('object');
+      expect(module1.loaded).to.equal(false);
+      expect(module2.loaded).to.equal(false);
+      kbox.core.deps.register('app', {name:'elvis'}, function() {
+        expect(module1.loaded).to.equal(true);
+        expect(module2.loaded).to.equal(true);
+        expect(module1.test()).to.equal('elvis');
+        expect(module2.test()).to.equal('elvis');
+        done();
+      });
     });
 
   });
