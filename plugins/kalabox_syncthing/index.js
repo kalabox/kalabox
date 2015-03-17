@@ -4,10 +4,13 @@ var fs = require('fs');
 var mkdirp = require('mkdirp');
 var os = require('os');
 var path = require('path');
+var share = require('./../../lib/share.js');
 
 module.exports = function(argv, app, appConfig, engine, events, kbox) {
 
   var tasks = kbox.core.tasks;
+  var shareIgnores = app.config.shareIgnores.join(os.EOL);
+  var stignoreFile = path.join(app.config.codeRoot, '.stignore');
 
   var prettyPrint = function(obj) {
     console.log(JSON.stringify(obj, null, '  '));
@@ -42,20 +45,37 @@ module.exports = function(argv, app, appConfig, engine, events, kbox) {
   printConfig('local');
   printConfig('remote');
 
+  // EVENT: pre-down
+  events.on('pre-down', function(done) {
+    // Get local sync instance
+    share.getLocalSync()
+    .then(function(localSync) {
+      // Check if it's up
+      return localSync.isUp()
+      .then(function(isUp) {
+        if (isUp) {
+          // If it's up, then shut'er down.
+          return localSync.shutdown();
+        }
+      });
+    })
+    .then(function() {
+      done();
+    })
+    .catch(function(err) {
+      done(err);
+    });
+  });
+
   // APP EVENT: pre-start
   // Set up an ignore file if needed
-  var shareIgnores = app.config.shareIgnores.join(os.EOL);
-  var stignoreFile = path.join(app.config.codeRoot, '.stignore');
   events.on('pre-start', function(app, done) {
     // Add a local .stignore file
     if (!fs.existsSync(app.config.codeRoot)) {
       mkdirp.sync(app.config.codeRoot);
     }
     fs.writeFileSync(stignoreFile, shareIgnores);
-    done();
-  });
 
-  events.on('post-start', function(app, done) {
     // Add a remote .stignore
     var cmd = ['cp', '/src/code/.stignore', '/data/.stignore'];
     kbox.engine.once(
@@ -71,7 +91,6 @@ module.exports = function(argv, app, appConfig, engine, events, kbox) {
         Binds: [app.rootBind + ':/src:rw']
       },
       function(container, done) {
-        console.log(container);
         kbox.engine.queryData(container.id, cmd, function(err, data) {
           if (err) {
             done(err);
@@ -84,5 +103,13 @@ module.exports = function(argv, app, appConfig, engine, events, kbox) {
         done(err);
       }
     );
+  });
+
+  events.on('post-stop', function(app, done) {
+    share.restart(done);
+  });
+
+  events.on('post-start', function(app, done) {
+    share.restart(done);
   });
 };
