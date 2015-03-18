@@ -5,15 +5,16 @@ var expect = chai.expect;
 var rewire = require('rewire');
 var _require = require('../lib/require.js');
 var events = require('../lib/core/events');
-var deps = rewire('../lib/core/deps');
-var testUtil = require('../lib/testUtil.js');
-deps.__set__('events', events);
+//var deps = rewire('../lib/core/deps');
+var deps = require('../lib/core/deps');
+//var testUtil = require('../lib/testUtil.js');
+//deps.__set__('events', events);
 
 describe.skip('require.js', function() {
 
   var globalConfig = {
-    kalaboxRoot: '',
-    srcRoot: ''
+    kalaboxRoot: 'foo',
+    srcRoot: 'foo'
   };
 
   var kbox = {
@@ -54,6 +55,14 @@ describe.skip('require.js', function() {
 
   describe('#require', function() {
 
+    kbox.core.deps.register('globalConfig', globalConfig);
+    console.log('afasdfdf');
+
+    before(function() {
+      //console.log('afasdfdf');
+      //kbox.core.deps.register('globalConfig', globalConfig);
+    });
+
     it('should load a normal module correctly.', function() {
       var module = _require.require(kbox, './require-a.js');
       expect(typeof module).to.equal('object');
@@ -87,6 +96,15 @@ describe.skip('require.js', function() {
         expect(module2.test()).to.equal('elvis');
         done();
       });
+    });
+
+    it('should load a legacy module correctly.', function() {
+      kbox.core.deps.register('a', 'a');
+      kbox.core.deps.register('b', 'b');
+      kbox.core.deps.register('c', 'c');
+      var module = _require.require(kbox, './require-e');
+      expect(typeof module).to.equal('object');
+      expect(module.test()).to.equal('a-b-c');
     });
 
   });

@@ -25,6 +25,12 @@ var _util = kbox.util;
 var shell = kbox.util.shell;
 
 var init = function() {
+  // globalConfig
+  var globalConfig = config.getGlobalConfig();
+  deps.register('globalConfig', globalConfig);
+  deps.register('config', globalConfig);
+  // require
+  deps.register('kboxRequire', kbox.require);
   // mode
   deps.register('mode', kbox.core.mode.set('cli'));
   // shell
@@ -38,10 +44,6 @@ var init = function() {
   // tasks
   tasks.init();
   deps.register('tasks', tasks);
-  // globalConfig
-  var globalConfig = config.getGlobalConfig();
-  deps.register('globalConfig', globalConfig);
-  deps.register('config', globalConfig);
   // engine
   kbox.engine.init(globalConfig);
   deps.register('engine', kbox.engine);
@@ -49,7 +51,9 @@ var init = function() {
   kbox.services.init(globalConfig);
   deps.register('services', kbox.services);
   // plugins
-  kbox.core.plugin.init(globalConfig);
+  globalConfig.globalPlugins.forEach(function(pluginName) {
+    kbox.require(pluginName);
+  });
 };
 
 var initWithApp = function(app) {
@@ -57,7 +61,6 @@ var initWithApp = function(app) {
   deps.register('appConfig', app.config);
   // app
   deps.register('app', app);
-  kbox.app.loadPlugins(app);
 };
 
 // set env var for ORIGINAL cwd before anything touches it

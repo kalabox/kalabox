@@ -6,7 +6,12 @@ var os = require('os');
 var path = require('path');
 var share = require('./../../lib/share.js');
 
-module.exports = function(app, globalConfig, engine, events, tasks) {
+module.exports = function(kbox, app) {
+
+  var globalConfig = kbox.core.deps.lookup('globalConfig');
+  var engine = kbox.engine;
+  var events = kbox.core.events;
+  var tasks = kbox.core.tasks;
 
   var shareIgnores = app.config.shareIgnores.join(os.EOL);
   var stignoreFile = path.join(app.config.codeRoot, '.stignore');

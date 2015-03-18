@@ -13,7 +13,7 @@ var B2D_DOWN_ATTEMPTS = 3;
 var B2D_STATUS_ATTEMPTS = 3;
 var B2D_IP_ATTEMPTS = 3;
 
-module.exports = function(argv, plugin, kbox) {
+module.exports = function(argv, kbox) {
 
   var tasks = kbox.core.tasks;
 
