@@ -55,12 +55,8 @@ describe.skip('require.js', function() {
 
   describe('#require', function() {
 
-    kbox.core.deps.register('globalConfig', globalConfig);
-    console.log('afasdfdf');
-
     before(function() {
-      //console.log('afasdfdf');
-      //kbox.core.deps.register('globalConfig', globalConfig);
+      kbox.core.deps.register('globalConfig', globalConfig);
     });
 
     it('should load a normal module correctly.', function() {
