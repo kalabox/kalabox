@@ -12,6 +12,7 @@ var path = require('path');
 var _ = require('lodash');
 var S = require('string');
 var argv = require('minimist')(process.argv.slice(2));
+var async = require('async');
 var chalk = require('chalk');
 var Liftoff = require('liftoff');
 var tildify = require('tildify');
@@ -24,7 +25,21 @@ var tasks = kbox.core.tasks;
 var _util = kbox.util;
 var shell = kbox.util.shell;
 
-var init = function() {
+var initPlugins = function(globalConfig, callback) {
+  var plugins = globalConfig.globalPlugins;
+  async.eachSeries(plugins, function(plugin, next) {
+    kbox.require(plugin, next);
+  },
+  function(err) {
+    callback(err);
+  });
+};
+
+var init = function(callback) {
+  if (typeof callback !== 'function') {
+    throw new TypeError('Invalid callback function');
+  }
+
   // globalConfig
   var globalConfig = config.getGlobalConfig();
   deps.register('globalConfig', globalConfig);
@@ -44,15 +59,21 @@ var init = function() {
   // tasks
   tasks.init();
   deps.register('tasks', tasks);
-  // engine
-  kbox.engine.init(globalConfig);
-  deps.register('engine', kbox.engine);
-  // services
-  kbox.services.init(globalConfig);
-  deps.register('services', kbox.services);
-  // plugins
-  globalConfig.globalPlugins.forEach(function(pluginName) {
-    kbox.require(pluginName);
+  kbox.engine.init(globalConfig, function(err) {
+    if (err) {
+      return callback(err);
+    }
+
+    kbox.services.init(globalConfig, kbox, function(err) {
+      if (err) {
+        return callback(err);
+      }
+
+      deps.register('services', kbox.services);
+      deps.register('engine', kbox.engine);
+      initPlugins(globalConfig, callback);
+
+    });
   });
 };
 
@@ -261,31 +282,36 @@ function handleArguments(env) {
   var configPath = path.join(env.cwd, '.kalabox', 'profile.json');
 
   // Init dependencies.
-  init();
-
-  kbox.app.list(function(err, apps) {
+  init(function(err) {
     if (err) {
-      handleError(err);
+      return handleError(err);
     }
 
-    getAppContext(apps, function(err, appContext) {
+    kbox.app.list(function(err, apps) {
       if (err) {
-        handleError(err);
+        return handleError(err);
       }
 
-      if (appContext) {
-        env.app = appContext;
-        initWithApp(appContext);
-      }
+      getAppContext(apps, function(err, appContext) {
+        if (err) {
+          return handleError(err);
+        }
 
-      try {
-        // Run the task.
-        processTask(env);
-      } catch (err) {
-        handleError(err);
-      }
+        if (appContext) {
+          env.app = appContext;
+          initWithApp(appContext);
+        }
+
+        try {
+          // Run the task.
+          processTask(env);
+        } catch (err) {
+          return handleError(err);
+        }
+      });
     });
   });
+
 }
 
 cli.on('require', function(name) {
