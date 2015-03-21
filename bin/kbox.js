@@ -283,7 +283,7 @@ function getAppContext(apps, callback) {
     }
 
   },
-  function (err, appContext) {
+  function(err, appContext) {
     if (err) {
       callback(err);
     } else if (appContext) {
