@@ -13,9 +13,10 @@ var B2D_DOWN_ATTEMPTS = 3;
 var B2D_STATUS_ATTEMPTS = 3;
 var B2D_IP_ATTEMPTS = 3;
 
-module.exports = function(argv, kbox) {
+module.exports = function(kbox) {
 
   var tasks = kbox.core.tasks;
+  var argv = kbox.core.deps.lookup('argv');
 
   // @todo: remove
   tasks.registerTask('test', function(done) {
