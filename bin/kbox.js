@@ -177,7 +177,9 @@ function processTask(env) {
     })();
     // Display menu choices or run task.
     if (!result || !result.task || !result.task.task) {
-      tasks.prettyPrint(result.task);
+      // Always print menu from base of task tree.
+      //tasks.prettyPrint(result.task);
+      tasks.prettyPrint(null);
       process.exit(1);
     } else {
       argv._ = result.args;
