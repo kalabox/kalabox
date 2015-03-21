@@ -190,28 +190,42 @@ function processTask(env) {
   });
 }
 
-function getAppContextFromArgv(apps) {
-  return _.find(apps, function(app) {
+function getAppContextFromArgv(apps, callback) {
+  if (typeof callback !== 'function') {
+    throw new TypeError('Invalid callback function: ' + callback);
+  }
+
+  callback(null, _.find(apps, function(app) {
     return app.name === argv._[0];
-  });
+  }));
 }
 
-function getAppContextFromCwd(apps) {
+function getAppContextFromCwd(apps, callback) {
+  if (typeof callback !== 'function') {
+    throw new TypeError('Invalid callback function: ' + callback);
+  }
+
   var cwd = S(process.cwd());
-  return _.find(apps, function(app) {
+  callback(null, _.find(apps, function(app) {
     var appRoot = app.config.appRoot;
     return cwd.startsWith(appRoot);
-  });
+  }));
 }
 
-function getAppContextFromCwdConfig(apps) {
+function getAppContextFromCwdConfig(apps, callback) {
+  if (typeof callback !== 'function') {
+    throw new TypeError('Invalid callback function: ' + callback);
+  }
+
   var cwd = process.cwd();
   var configFilepath = path.join(cwd, 'kalabox.json');
   if (fs.existsSync(configFilepath)) {
     var config = kbox.core.config.getAppConfig(null, cwd);
-    return kbox.app.create(config.appName, config);
+    kbox.app.create(config.appName, config, function(err, app) {
+      callback(err, app);
+    });
   } else {
-    return null;
+    callback(null);
   }
 }
 
@@ -259,22 +273,28 @@ function getAppContext(apps, callback) {
     getAppContextFromCwd,
     getAppContextFromCwdConfig
   ];
-  var appContext = _.reduce(funcs, function(answer, func) {
+  async.reduce(funcs, null, function(answer, func, next) {
     if (answer) {
-      return answer;
+      next(null, answer);
     } else {
-      return func(apps);
+      func(apps, function(err, result) {
+        next(err, result);
+      });
     }
-  }, null);
 
-  // If there is an app context, make sure it's node modules are installed.
-  if (appContext) {
-    ensureAppNodeModulesInstalled(appContext, function(err) {
-      callback(err, appContext);
-    });
-  } else {
-    callback();
-  }
+  },
+  function (err, appContext) {
+    if (err) {
+      callback(err);
+    } else if (appContext) {
+      // If there is an app context, make sure it's node modules are installed.
+      ensureAppNodeModulesInstalled(appContext, function(err) {
+        callback(err, appContext);
+      });
+    } else {
+      callback();
+    }
+  });
 }
 
 function handleArguments(env) {
