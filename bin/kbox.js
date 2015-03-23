@@ -71,8 +71,7 @@ var init = function(callback) {
 
       deps.register('services', kbox.services);
       deps.register('engine', kbox.engine);
-      initPlugins(globalConfig, callback);
-
+      callback(null, globalConfig);
     });
   });
 };
@@ -304,32 +303,63 @@ function handleArguments(env) {
   var configPath = path.join(env.cwd, '.kalabox', 'profile.json');
 
   // Init dependencies.
-  init(function(err) {
+  init(function(err, globalConfig) {
     if (err) {
       return handleError(err);
     }
 
+    // Get full list of registered apps.
     kbox.app.list(function(err, apps) {
       if (err) {
         return handleError(err);
       }
 
+      // Find the app context if there is one.
       getAppContext(apps, function(err, appContext) {
         if (err) {
           return handleError(err);
         }
 
+        // Register the app context as a dependency.
         if (appContext) {
           env.app = appContext;
           initWithApp(appContext);
         }
 
-        try {
-          // Run the task.
-          processTask(env);
-        } catch (err) {
-          return handleError(err);
-        }
+        // Init global plugins.
+        initPlugins(globalConfig, function(err) {
+          if (err) {
+
+            handleError(err);
+
+          } else {
+
+            if (appContext) {
+
+              // Load app plugins for the app context app.
+              kbox.app.loadPlugins(appContext, function(err) {
+                if (err) {
+
+                  handleError(err);
+
+                } else {
+
+                  // Run the task.
+                  processTask(env);
+
+                }
+              });
+
+            } else {
+
+              // Run the task.
+              processTask(env);
+
+            }
+
+          }
+        });
+
       });
     });
   });
