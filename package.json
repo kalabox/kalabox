@@ -1,6 +1,6 @@
 {
   "name": "kalabox",
-  "description": "A Docker orchestration and app building library with CLI",
+  "description": "A framework to build reusable, super fast, highly customizable, extensible integrated workflow solutions for all kinds of apps.",
   "keywords": [
     "docker",
     "kalabox",
@@ -31,11 +31,9 @@
     "async": "^0.9.0",
     "async-eventemitter": "^0.2.2",
     "bluebird": "^2.9.3",
-    "bunyan": "~1.0.1",
     "chalk": "~0.5.1",
     "decompress": "^2.1.1",
     "diskspace": "^0.1.7",
-    "dockerode": "~2.0.3",
     "download": "^3.3.0",
     "download-progress": "0.0.1",
     "download-status": "^2.1.0",
@@ -47,8 +45,6 @@
     "npm": "^2.5.1",
     "plist": "^1.1.0",
     "progress": "^1.1.8",
-    "q": "^1.0.1",
-    "redis": "~0.12.1",
     "restler": "^3.2.2",
     "rimraf": "~2.2.8",
     "shelljs": "^0.3.0",

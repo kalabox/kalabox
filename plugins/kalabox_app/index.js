@@ -7,7 +7,12 @@ var _ = require('lodash');
 var async = require('async');
 var rimraf = require('rimraf');
 
-module.exports = function(argv, app, appConfig, events, kbox, tasks) {
+module.exports = function(kbox, app) {
+
+  var argv = kbox.core.deps.lookup('argv');
+  var appConfig = app.config;
+  var events = kbox.core.events;
+  var tasks = kbox.core.tasks;
 
   tasks.registerTask([app.name, 'config'], function(done) {
     var query = argv._[0];
