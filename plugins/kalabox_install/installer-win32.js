@@ -262,6 +262,7 @@ module.exports.run = function(done) {
               path.join(tmp, path.basename(stBinary, '.zip'), 'syncthing.exe'),
               path.join(binPath, 'syncthing.exe')
             );
+            fs.chmodSync(path.join(binPath, 'syncthing.exe'), '0755');
             log.ok('OK');
             log.newline();
             next(null);

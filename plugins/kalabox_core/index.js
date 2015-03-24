@@ -13,31 +13,10 @@ var B2D_DOWN_ATTEMPTS = 3;
 var B2D_STATUS_ATTEMPTS = 3;
 var B2D_IP_ATTEMPTS = 3;
 
-module.exports = function(argv, plugin, kbox) {
+module.exports = function(kbox) {
 
   var tasks = kbox.core.tasks;
-
-  // @todo: remove
-  tasks.registerTask('test', function(done) {
-    var image = 'kalabox/syncthing:stable';
-    var cmd = '/bin/ls';
-    kbox.engine.queryString(image, cmd, {}, {}, function(err, data) {
-      if (err) {
-        throw err;
-      } else {
-        console.log(data);
-      }
-    });
-  });
-
-  // Display list of dependencies.
-  tasks.registerTask('deps', function(done) {
-    var keys = kbox.core.deps.keys().sort();
-    _.each(keys, function(key) {
-      console.log(key);
-    });
-    done();
-  });
+  var argv = kbox.core.deps.lookup('argv');
 
   // Display list of apps.
   tasks.registerTask('apps', function(done) {
@@ -93,6 +72,12 @@ module.exports = function(argv, plugin, kbox) {
       target = target[query];
     }
     console.log(JSON.stringify(target, null, '\t'));
+    done();
+  });
+
+  // Prints out the kbox version.
+  tasks.registerTask('version', function(done) {
+    console.log(kbox.core.config.getGlobalConfig().version);
     done();
   });
 

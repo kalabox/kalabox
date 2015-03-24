@@ -61,8 +61,6 @@ if ([ "$my_answer" == "1" ]); then
     # Just start the sudo party
     /usr/bin/sudo -p "Please enter %u's password:" echo "Let's get it started"
 
-    :
-
     # Gather some data on the things
     B2D=$(which boot2docker)
     VBOX=$(which VBoxManage)
@@ -95,6 +93,8 @@ if ([ "$my_answer" == "1" ]); then
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin/syncthing
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/appRegistry.json
+        /usr/bin/sudo /bin/sed -i '/nameserver 10.13.37/d' /etc/resolvconf/resolv.conf.d/head
+        /usr/bin/sudo /sbin/resolvconf -u
     fi
 
     # Delete the B2D application

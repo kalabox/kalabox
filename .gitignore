@@ -19,3 +19,4 @@ cids
 .boot2docker
 built
 *.tar
+kalabox.json
