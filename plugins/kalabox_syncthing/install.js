@@ -10,6 +10,7 @@ module.exports = function(kbox) {
       setTimeout(function() {
         console.log(step.name);
         console.log(state.testing4);
+        done();
       }, 3 * 1000);
     };
   });
