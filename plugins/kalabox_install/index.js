@@ -4,13 +4,11 @@
  * This contains all the core commands that kalabox can run on every machine
  */
 
-var installer = require('./installer-' + process.platform + '.js');
-
 module.exports = function(kbox) {
-  // @todo: infinite timeout?
-  // Installs the dependencies for kalabox to run
-  kbox.core.tasks.registerTask('provision', function(done) {
-    installer.run(done);
-  });
+
+  // Load install steps.
+  require('./install.js')(kbox);
+  // Load CLI tasks.
+  require('./tasks.js')(kbox);
 
 };
