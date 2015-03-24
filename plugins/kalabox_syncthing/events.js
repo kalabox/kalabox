@@ -8,6 +8,7 @@ var path = require('path');
 module.exports = function(kbox) {
 
   var events = kbox.core.events;
+  var share = kbox.share;
 
   // EVENT: pre-down
   events.on('pre-down', function(done) {
