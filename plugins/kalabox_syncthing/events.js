@@ -7,6 +7,8 @@ var path = require('path');
 
 module.exports = function(kbox) {
 
+  var events = kbox.core.events;
+
   // EVENT: pre-down
   events.on('pre-down', function(done) {
     // Get local sync instance
