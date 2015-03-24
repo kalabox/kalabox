@@ -1,6 +1,6 @@
 {
   "name": "kalabox",
-  "description": "A Docker orchestration and app building library with CLI",
+  "description": "A framework to build reusable, super fast, highly customizable, extensible integrated workflow solutions for all kinds of apps.",
   "keywords": [
     "docker",
     "kalabox",
