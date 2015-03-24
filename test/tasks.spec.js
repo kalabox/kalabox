@@ -68,7 +68,7 @@ describe('tasks module', function() {
       var fakeConsole = {
         log: function(s) { result += s; }
       };
-      var expected = 'a\n    b\n        c\nd\n';
+      var expected = ' --- Command Menu ---\na\n    b\n        c\nd\n';
       var restore = tasks.__set__('console', fakeConsole);
       tasks.prettyPrint();
       restore();

@@ -440,6 +440,8 @@ module.exports.run = function(done) {
               path.join(tmp, path.basename(stBinary, '.tar.gz'), 'syncthing'),
               path.join(binPath, 'syncthing')
             );
+            // double make sure to make executable
+            fs.chmodSync(path.join(binPath, 'syncthing'), '0755');
             log.ok('OK');
             log.newline();
             next(null);
@@ -530,13 +532,18 @@ module.exports.run = function(done) {
         log.header('Setting up B2D CLI goodness.');
         var tmp = disk.getTempDir();
         var b2dBin = path.join(tmp, path.basename(BOOT2DOCKER_CLI_BIN));
-        fs.renameSync(
-          b2dBin, path.join('/usr/local/bin', 'boot2docker')
-        );
-        fs.chmodSync(path.join('/usr/local/bin', 'boot2docker'), '0755');
-        log.ok('OK');
-        log.newline();
-        next(null);
+        var b2dBinDest = path.join('/usr/local/bin', 'boot2docker');
+        // Need to do this if the user is moving a file across partitions
+        var is = fs.createReadStream(b2dBin);
+        var os = fs.createWriteStream(b2dBinDest);
+        is.pipe(os);
+        is.on('end', function() {
+          fs.unlinkSync(b2dBin);
+          fs.chmodSync(b2dBinDest, '0755');
+          log.ok('OK');
+          log.newline();
+          next(null);
+        });
       }
       else {
         next(null);

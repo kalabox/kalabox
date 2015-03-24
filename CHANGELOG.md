@@ -1,10 +1,35 @@
 # Changelog
 
+## 0.4.0 (2015-3-24)
+
+Bug fixes and external backends for services and engine
+
+- Refactored plugins to handle external backends
+- Moved docker engine and kalabox services into their own projects
+- Provided sharing on/off option in global config file
+- Simplified plugin function signatures to just kbox and app
+- Allow syncthing to ignore patterns specified in app kalabox.json
+- Refactored core plugins to be more modular
+- Added additional methods to engine including interactive mode
+- Added basic installer framework to be implemented in 0.5.0
+- Removed resolvconf entries on linux uninstall
+- Added global config overrides via source kalabox.json
+- Added kbox version command
+- Added support for vanity DNS suffixes
+- Moved code directory to live inside of an app
+- Added better DNS handling on linux
+- Improved error handling and logging
+- Added version and OS info to logging
+- Support home directories on external volumes or that are encrypted
+- Updated CI to run on node 10/11/12
+- Changed syncthing to use non standard port for GUI
+- Removed bugs and made all the things smarter
+
 ## 0.3.0 (2015-2-25)
 
 First pass on interfaces, APIs and other various abstractions
 
-- Provided more flexible app discovery 
+- Provided more flexible app discovery
 - Added back support for external plugins
 - Fixed issues for user folder binding on Windows and Linux
 - Added more legit logging with Winston
