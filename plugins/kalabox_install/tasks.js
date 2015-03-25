@@ -1,5 +1,7 @@
 'use strict';
 
+var chalk = require('chalk');
+
 module.exports = function(kbox) {
 
   // Installs the dependencies for kalabox to run
@@ -9,9 +11,15 @@ module.exports = function(kbox) {
     var log = function(msg) {
       if (msg) {
         console.log('#### ' + msg + ' ####');
+        //console.log(chalk.green('#### ' + msg + ' ####'));
       } else {
         console.log('');
       }
+    };
+
+    // State to inject into install.
+    var state = {
+      log: console.log
     };
 
     // Keep track of which step we are on.
@@ -64,7 +72,7 @@ module.exports = function(kbox) {
     });
 
     // Run the installer.
-    kbox.install.run();
+    kbox.install.run(state);
 
   });
 
