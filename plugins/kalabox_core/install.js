@@ -54,7 +54,6 @@ module.exports = function(kbox) {
           var enoughFreeSpace = freeMbs > (1 * 1000);
           var status = enoughFreeSpace ? ok : notOk;
           state.log('status: ' + status);
-          var err = null;
           if (!enoughFreeSpace) {
             err = new Error('Not enough disk space for install!');
           }
