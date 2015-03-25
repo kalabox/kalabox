@@ -7,6 +7,8 @@ module.exports = function(kbox) {
   // Installs the dependencies for kalabox to run
   kbox.core.tasks.registerTask('provision', function(done) {
 
+    var argv = kbox.core.deps.lookup('argv');
+
     // Logging function.
     var log = function(msg) {
       if (msg) {
@@ -16,6 +18,17 @@ module.exports = function(kbox) {
         console.log('');
       }
     };
+
+    // Test provision, just print out step info.
+    if (argv.t) {
+      var steps = kbox.install.getSteps();
+      // Output each step to console.
+      steps.forEach(function(step) {
+        console.log(step);
+      });
+      // Return.
+      return done();
+    }
 
     // State to inject into install.
     var state = {
