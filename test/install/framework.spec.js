@@ -27,7 +27,7 @@ describe('install framework module', function() {
     fw.registerStep(function(step, done) {
       step.name = 'c';
       step.description = 'step c';
-      step.deps = ['a', 'd'];
+      step.deps = ['d', 'a'];
       step.all = function(state, next) {
         state.foo += step.name;
         setTimeout(function() {
@@ -83,11 +83,11 @@ describe('install framework module', function() {
     it('should handle win32 correctly.', function() {
       var steps = fw.getSteps('win32');
       expect(steps.length).to.equal(5);
-      expect(steps[0].name).to.equal('b');
-      expect(steps[1].name).to.equal('a');
-      expect(steps[2].name).to.equal('d');
-      expect(steps[3].name).to.equal('c');
-      expect(steps[4].name).to.equal('e');
+      expect(steps[0].name).to.equal('e');
+      expect(steps[1].name).to.equal('b');
+      expect(steps[2].name).to.equal('a');
+      expect(steps[3].name).to.equal('d');
+      expect(steps[4].name).to.equal('c');
     });
 
   });
