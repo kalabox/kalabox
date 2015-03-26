@@ -5,7 +5,7 @@ module.exports = function(kbox) {
   kbox.install.registerStep(function(step) {
     step.name = 'testing';
     step.description = 'blah blah blah blah';
-    step.deps = ['testing2', 'testing3'];
+    step.deps = ['testing3', 'testing2'];
     step.all.darwin = function(state) {
       console.log(step.name);
     };
