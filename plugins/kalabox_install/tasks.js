@@ -8,6 +8,7 @@ module.exports = function(kbox) {
   kbox.core.tasks.registerTask('provision', function(done) {
 
     var argv = kbox.core.deps.lookup('argv');
+    var config = kbox.core.deps.lookup('config');
 
     // Logging function.
     var log = function(msg) {
@@ -32,7 +33,12 @@ module.exports = function(kbox) {
 
     // State to inject into install.
     var state = {
-      log: console.log
+      config: config,
+      log: console.log,
+      status: {
+        ok: chalk.green('OK'),
+        notOk: chalk.red('NOT OK')
+      }
     };
 
     // Keep track of which step we are on.
