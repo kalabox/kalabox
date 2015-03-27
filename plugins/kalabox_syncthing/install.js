@@ -114,4 +114,22 @@ module.exports = function(kbox) {
     };
   });
 
+  // Install syncthing image.
+  kbox.install.registerStep(function(step) {
+    step.name = 'install-syncthing-image';
+    step.description = 'Install syncthing image.';
+    step.deps = ['init-engine'];
+    step.all.darwin = function(state, done) {
+      kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
+        if (err) {
+          state.log(state.status.notOk);
+          done(err);
+        } else {
+          state.log(state.status.ok);
+          done();
+        }
+      });
+    };
+  });
+
 };
