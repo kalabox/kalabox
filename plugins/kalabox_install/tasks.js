@@ -33,6 +33,7 @@ module.exports = function(kbox) {
 
     // State to inject into install.
     var state = {
+      adminCommands: [],
       config: config,
       downloads: [],
       log: console.log,
