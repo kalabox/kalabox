@@ -47,7 +47,7 @@ module.exports = function(kbox) {
     step.name = 'disk-space';
     step.description = 'Check for available disk space.';
     step.deps = [];
-    step.all = function(state, done) {
+    step.all.darwin = function(state, done) {
       state.log('Checking available disk space.');
       kbox.util.disk.getFreeSpace(function(err, freeMbs) {
         if (err) {
@@ -62,6 +62,26 @@ module.exports = function(kbox) {
           done(err);
         }
       });
+    };
+    step.all.linux = function(state, done) {
+      state.log('Checking available disk space.');
+      kbox.util.disk.getFreeSpace(function(err, freeMbs) {
+        if (err) {
+          done(err);
+        } else {
+          var enoughFreeSpace = freeMbs > (1 * 1000);
+          var status = enoughFreeSpace ? ok : notOk;
+          state.log('status: ' + status);
+          if (!enoughFreeSpace) {
+            err = new Error('Not enough disk space for install!');
+          }
+          done(err);
+        }
+      });
+    };
+    step.all.win32 = function(state, done) {
+      // @todo:
+      done();
     };
   });
 

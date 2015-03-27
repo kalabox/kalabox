@@ -43,7 +43,7 @@ module.exports = function(kbox) {
     step.subscribes = ['downloads'];
     step.all = function(state) {
       if (!state.isSyncthingInstalled) {
-        state.downloads.push(meta.SYNCTHING_DOWNLOAD_URL);
+        state.downloads.push(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
       }
       if (!state.syncthingConfigExists) {
         state.downloads.push(meta.SYNCTHING_CONFIG_URL);
@@ -65,19 +65,30 @@ module.exports = function(kbox) {
       if (!state.syncthingConfigExists) {
         var syncthingDir = path.join(state.config.sysConfRoot, 'syncthing');
         mkdirp.sync(syncthingDir);
-        var config = path.join(tmp, path.basename(meta.SYNCTHING_CONFIG_URL));
+        var config = path.join(
+          tmp,
+          path.basename(meta.SYNCTHING_CONFIG_URL)
+        );
         fs.renameSync(config, path.join(syncthingDir, path.basename(config)));
       }
 
       // Install syncthing binary.
       if (!state.isSyncthingInstalled) {
-        var filename = path.basename(meta.SYNCTHING_DOWNLOAD_URL);
+        var filename =
+          path.basename(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
         var binary = path.join(tmp, filename);
-        var decompress = new Decompress({mode: '755'})
-          .src(binary)
-          .dest(tmp)
-          .use(Decompress.targz());
-
+        if (process.platform === 'win32') {
+          var decompress = new Decompress({mode: '755'})
+            .src(binary)
+            .dest(tmp)
+            .use(Decompress.targz());
+        }
+        else {
+          var decompress = new Decompress({mode: '755'})
+            .src(binary)
+            .dest(tmp)
+            .use(Decompress.zip());
+        }
         decompress.run(function(err, files, stream) {
           if (err) {
             state.log(state.status.notOk);
@@ -85,11 +96,13 @@ module.exports = function(kbox) {
           } else {
             var binDir = path.join(state.config.sysConfRoot, 'bin');
             mkdirp.sync(binDir);
+            var bin =
+              (process.platform === 'win32') ? 'syncthing.exe' : 'syncthing';
             fs.renameSync(
-              path.join(tmp, path.basename(binary, '.tar.gz'), 'syncthing'),
-              path.join(binDir, 'syncthing')
+              path.join(tmp, path.basename(binary)),
+              path.join(binDir, bin)
             );
-            fs.chmodSync(path.join(binDir, 'syncthing'), '0755');
+            fs.chmodSync(path.join(binDir, bin), '0755');
             state.log(state.status.ok);
             done();
           }
