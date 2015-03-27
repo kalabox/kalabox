@@ -50,6 +50,7 @@
     "shelljs": "^0.3.0",
     "string": "^3.0.0",
     "tildify": "~1.0.0",
+    "tsort": "0.0.1",
     "vasync": "~1.6.0",
     "winston": "^0.9.0"
   },

@@ -27,7 +27,7 @@ describe('install framework module', function() {
     fw.registerStep(function(step, done) {
       step.name = 'c';
       step.description = 'step c';
-      step.deps = ['a', 'd'];
+      step.deps = ['d', 'a'];
       step.all = function(state, next) {
         state.foo += step.name;
         setTimeout(function() {
@@ -83,11 +83,11 @@ describe('install framework module', function() {
     it('should handle win32 correctly.', function() {
       var steps = fw.getSteps('win32');
       expect(steps.length).to.equal(5);
-      expect(steps[0].name).to.equal('b');
-      expect(steps[1].name).to.equal('a');
-      expect(steps[2].name).to.equal('d');
-      expect(steps[3].name).to.equal('c');
-      expect(steps[4].name).to.equal('e');
+      expect(steps[0].name).to.equal('e');
+      expect(steps[1].name).to.equal('b');
+      expect(steps[2].name).to.equal('a');
+      expect(steps[3].name).to.equal('d');
+      expect(steps[4].name).to.equal('c');
     });
 
   });
@@ -96,6 +96,7 @@ describe('install framework module', function() {
 
     it('should run the correct steps in the correct order.', function(done) {
       var install = fw.getInstall('darwin');
+      var state = {};
       var preStepLog = '';
       fw.events.on('pre-step', function(step) {
         preStepLog += step.name;
@@ -104,13 +105,16 @@ describe('install framework module', function() {
       fw.events.on('post-step', function(step) {
         postStepLog += step.name;
       });
-      install(function(err, state) {
-        expect(err).to.equal(undefined);
+      fw.events.on('error', function(err) {
+        throw err;
+      });
+      fw.events.on('end', function(state) {
         expect(state.foo).to.equal('badc');
         expect(preStepLog).to.equal('badc');
         expect(postStepLog).to.equal('badc');
         done();
       });
+      install(state);
     });
 
   });

@@ -22,14 +22,17 @@ With Kalabox you can
 
 Please make sure that you have installed [nodejs](http://nodejs.org/) first!
 
-If you have installed a pre-0.4.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional.
+If you have installed a pre-0.5.0 version of Kalabox you might want to start by running the uninstall to clean up the cruft from a previous install. You can do that on the command line. Uninstalling VirtualBox is optional.
+
+**Post version 0.5.0 we actually will be following the tenets of SEMVER so there should be very few big breaking changes that
+will require a full uninstall!**
 
 ```
 cd path/to/kalabox/repo
 ./scripts/uninstall-darwin.sh # on Windows this will be uninstall-win32.bat and on Linux it will be uninstall-linux.sh
 ```
 
-You may also want to delete your `node_modules` folder and make sure you update your apps to be using 0.4.0 compatible plugins.
+You may also want to delete your `node_modules` folder and make sure you update your apps to be using 0.5.0 compatible plugins.
 
 ## Normal Install
 
@@ -156,8 +159,6 @@ User's can override some global configuration by putting a file called `kalabox.
 		"kalabox-services-kalabox",
 		"kalabox-engine-docker",
 		"kalabox_core",
-		"kalabox_install",
-		"kalabox_app",
 		"kalabox_syncthing"
 	],
 	"home": "/Users/mpirog",
@@ -178,8 +179,7 @@ User's can override some global configuration by putting a file called `kalabox.
 	"srcRoot": "/Users/mpirog/Desktop/kalabox",
 	"sysConfRoot": "/Users/mpirog/.kalabox",
 	"sysProviderRoot": "/Users/mpirog/.kalabox/.provider",
-	"version": "0.3.26"
-}
+	"version": "0.5.0
 
 ```
 
