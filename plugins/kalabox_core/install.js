@@ -64,4 +64,31 @@ module.exports = function(kbox) {
     };
   });
 
+  // Downloads.
+  kbox.install.registerStep(function(step) {
+    step.name = 'downloads';
+    step.description = 'Download intallation files.';
+    step.deps = ['disk-space', 'internet'];
+    step.all = function(state, done) {
+      if (state.downloads && state.downloads.length > 0) {
+        state.downloadDir = kbox.util.disk.getTempDir();
+        state.downloads.forEach(function(url) {
+          state.log([url, state.downloadDir].join(' -> '));
+        });
+        var downloadFiles = kbox.util.download.downloadFiles;
+        downloadFiles(state.downloads, state.downloadDir, function(err) {
+          if (err) {
+            state.log(state.status.notOk);
+            done(err);
+          } else {
+            state.log(state.status.ok);
+            done();
+          }
+        });
+      } else {
+        done();
+      }
+    };
+  });
+
 };

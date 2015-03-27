@@ -34,6 +34,7 @@ module.exports = function(kbox) {
     // State to inject into install.
     var state = {
       config: config,
+      downloads: [],
       log: console.log,
       status: {
         ok: chalk.green('OK'),
