@@ -10,7 +10,7 @@ With Kalabox you can
 
 [Read more](https://github.com/kalabox/kalabox/wiki)
 
-**This project is currently under heavy development.** The documentation here is currently directed towards developers working on the project. It was last updated to reflect changes in `v0.4.0`. For other changes please check the [changelog](https://github.com/kalabox/kalabox/blob/master/CHANGELOG.md)
+**This project is currently under heavy development.** The documentation here is currently directed towards developers working on the project. It was last updated to reflect changes in `v0.5.0`. For other changes please check the [changelog](https://github.com/kalabox/kalabox/blob/master/CHANGELOG.md)
 
 ## Key Features
 
