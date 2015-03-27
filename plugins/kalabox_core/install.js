@@ -91,4 +91,26 @@ module.exports = function(kbox) {
     };
   });
 
+  // Run administator commands.
+  kbox.install.registerStep(function(step) {
+    step.name = 'run-admin-commands';
+    step.description = 'Run shell commands as adminstrator.';
+    step.all.darwin = function(state, done) {
+      if (state.adminCommands.length > 0) {
+        var child = kbox.install.cmd.runCmdsAsync(state.adminCommands);
+        child.stdout.on('data', function(data) {
+          state.log(data);
+        });
+        child.stdout.on('end', function() {
+          done();
+        });
+        child.stderr.on('data', function(data) {
+          done(new Error(data));
+        });
+      } else {
+        done();
+      }
+    };
+  });
+
 };
