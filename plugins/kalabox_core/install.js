@@ -70,13 +70,28 @@ module.exports = function(kbox) {
     step.description = 'Download intallation files.';
     step.deps = ['disk-space', 'internet'];
     step.all = function(state, done) {
-      if (state.downloads && state.downloads.length > 0) {
+      // Grab downloads from state.
+      var downloads = state.downloads;
+
+      // Validation.
+      if (!Array.isArray(downloads)) {
+        return done(new TypeError('Invalid downloads: ' + downloads));
+      }
+      downloads.forEach(function(download, index) {
+        if (typeof download !== 'string' || download.length < 1) {
+          done(new TypeError('Invalid download: index: ' + index +
+            ' cmd: ' + download));
+        }
+      });
+
+      // Download.
+      if (downloads.length > 0) {
         state.downloadDir = kbox.util.disk.getTempDir();
-        state.downloads.forEach(function(url) {
+        downloads.forEach(function(url) {
           state.log([url, state.downloadDir].join(' -> '));
         });
         var downloadFiles = kbox.util.download.downloadFiles;
-        downloadFiles(state.downloads, state.downloadDir, function(err) {
+        downloadFiles(downloads, state.downloadDir, function(err) {
           if (err) {
             state.log(state.status.notOk);
             done(err);
@@ -96,8 +111,23 @@ module.exports = function(kbox) {
     step.name = 'run-admin-commands';
     step.description = 'Run shell commands as adminstrator.';
     step.all.darwin = function(state, done) {
-      if (state.adminCommands.length > 0) {
-        var child = kbox.install.cmd.runCmdsAsync(state.adminCommands);
+      // Grab admin commands from state.
+      var adminCommands = state.adminCommands;
+
+      // Validation.
+      if (!Array.isArray(adminCommands)) {
+        return done(new TypeError('Invalid adminCommands: ' + adminCommands));
+      }
+      adminCommands.forEach(function(adminCommand, index) {
+        if (typeof adminCommand !== 'string' || adminCommand.length < 1) {
+          done(new TypeError('Invalid adminCommand index: ' + index +
+            ' cmd: ' + adminCommand));
+        }
+      });
+
+      // Process admin commands.
+      if (adminCommands.length > 0) {
+        var child = kbox.install.cmd.runCmdsAsync(adminCommands);
         child.stdout.on('data', function(data) {
           state.log(data);
         });
