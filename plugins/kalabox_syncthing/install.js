@@ -56,6 +56,7 @@ module.exports = function(kbox) {
     step.name = 'setup-syncthing';
     step.description = 'Setup syncthing.';
     step.deps = ['downloads'];
+    // @todo: seperate out more
     step.all = function(state, done) {
 
       // Get the download location.
@@ -119,7 +120,7 @@ module.exports = function(kbox) {
     step.name = 'install-syncthing-image';
     step.description = 'Install syncthing image.';
     step.deps = ['init-engine'];
-    step.all.darwin = function(state, done) {
+    step.all = function(state, done) {
       kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
         if (err) {
           state.log(state.status.notOk);
