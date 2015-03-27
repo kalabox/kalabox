@@ -13,6 +13,8 @@ module.exports = function(kbox) {
     step.name = 'is-syncthing-installed';
     step.description = 'Check if syncthing binary is installed.';
     step.all = function(state) {
+      var bin =
+        (process.platform === 'win32') ? 'syncthing.exe' : 'syncthing';
       state.isSyncthingInstalled = fs.existsSync(
         path.join(state.config.sysConfRoot, 'bin', 'syncthing')
       );
@@ -82,13 +84,13 @@ module.exports = function(kbox) {
           var decompress = new Decompress({mode: '755'})
             .src(binary)
             .dest(tmp)
-            .use(Decompress.targz());
+            .use(Decompress.zip());
         }
         else {
           var decompress = new Decompress({mode: '755'})
             .src(binary)
             .dest(tmp)
-            .use(Decompress.zip());
+            .use(Decompress.targz());
         }
         decompress.run(function(err, files, stream) {
           if (err) {
@@ -99,8 +101,9 @@ module.exports = function(kbox) {
             mkdirp.sync(binDir);
             var bin =
               (process.platform === 'win32') ? 'syncthing.exe' : 'syncthing';
+            var ext = (process.platform === 'win32') ? '.zip' : '.tar.gz';
             fs.renameSync(
-              path.join(tmp, path.basename(binary)),
+              path.join(tmp, path.basename(binary, ext), bin),
               path.join(binDir, bin)
             );
             fs.chmodSync(path.join(binDir, bin), '0755');
