@@ -13,6 +13,7 @@ module.exports = function(kbox) {
     step.name = 'firewall';
     step.description = 'Check firewall settings.';
     step.deps = [];
+    step.subscribes = ['internet'];
     step.all.darwin = function(state, done) {
       state.log('checking firewall settings...');
       kbox.util.firewall.isOkay(function(isOkay) {
@@ -28,7 +29,7 @@ module.exports = function(kbox) {
   kbox.install.registerStep(function(step) {
     step.name = 'internet';
     step.description = 'Check for Internet access.';
-    step.deps = ['firewall'];
+    step.deps = [];
     step.all = function(state, done) {
       var url = 'www.google.com';
       state.log('checking: ' + url);
