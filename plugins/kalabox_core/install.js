@@ -1,6 +1,7 @@
 'use strict';
 
 var chalk = require('chalk');
+var fs = require('fs');
 
 module.exports = function(kbox) {
 
@@ -106,11 +107,26 @@ module.exports = function(kbox) {
     };
   });
 
+  // Prepares /usr/local/bin on nix
+  kbox.install.registerStep(function(step) {
+    step.name = 'prepare-usr-bin';
+    step.description  = 'Preparing /usr/local/bin';
+    step.subscribes = ['run-admin-commands'];
+    step.all.linux = function(state, done) {
+      var owner = [process.env.USER, process.env.USER].join(':');
+      state.adminCommands.unshift('chown ' + owner + ' /usr/local/bin');
+      if (!fs.existsSync('/usr/local/bin')) {
+        state.adminCommands.unshift('mkdir -p /usr/local/bin');
+      }
+      done();
+    };
+  });
+
   // Run administator commands.
   kbox.install.registerStep(function(step) {
     step.name = 'run-admin-commands';
     step.description = 'Run shell commands as adminstrator.';
-    step.all.darwin = function(state, done) {
+    step.all = function(state, done) {
       // Grab admin commands from state.
       var adminCommands = state.adminCommands;
 
@@ -127,6 +143,7 @@ module.exports = function(kbox) {
 
       // Process admin commands.
       if (adminCommands.length > 0) {
+        console.log(adminCommands);
         var child = kbox.install.cmd.runCmdsAsync(adminCommands);
         child.stdout.on('data', function(data) {
           state.log(data);
@@ -135,7 +152,8 @@ module.exports = function(kbox) {
           done();
         });
         child.stderr.on('data', function(data) {
-          done(new Error(data));
+          // If we done() here it fails on linux
+          state.log(data);
         });
       } else {
         done();
