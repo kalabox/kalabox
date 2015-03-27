@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 (2015-3-27)
+
+Moved to new installer framework
+
+- Refactored installer to use new installer framework
+- Simplified plugins
+- Moved install steps into relevant projects ie syncthing/engine/services
+
 ## 0.4.0 (2015-3-24)
 
 Bug fixes and external backends for services and engine
