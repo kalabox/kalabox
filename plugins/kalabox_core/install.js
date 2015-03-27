@@ -88,12 +88,11 @@ module.exports = function(kbox) {
   // Downloads.
   kbox.install.registerStep(function(step) {
     step.name = 'downloads';
-    step.description = 'Download intallation files.';
+    step.description = 'Download installation files.';
     step.deps = ['disk-space', 'internet'];
     step.all = function(state, done) {
       // Grab downloads from state.
       var downloads = state.downloads;
-
       // Validation.
       if (!Array.isArray(downloads)) {
         return done(new TypeError('Invalid downloads: ' + downloads));
