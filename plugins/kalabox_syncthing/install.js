@@ -78,17 +78,18 @@ module.exports = function(kbox) {
         var filename =
           path.basename(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
         var binary = path.join(tmp, filename);
+        var decompress;
         if (process.platform === 'win32') {
-          var decompress = new Decompress({mode: '755'})
-            .src(binary)
-            .dest(tmp)
-            .use(Decompress.targz());
-        }
-        else {
-          var decompress = new Decompress({mode: '755'})
+          decompress = new Decompress({mode: '755'})
             .src(binary)
             .dest(tmp)
             .use(Decompress.zip());
+        }
+        else {
+          decompress = new Decompress({mode: '755'})
+            .src(binary)
+            .dest(tmp)
+            .use(Decompress.targz());
         }
         decompress.run(function(err, files, stream) {
           if (err) {
