@@ -145,10 +145,7 @@ module.exports = function(kbox) {
     };
 
     // Keep track of which step we are on.
-    var stepCount = 1;
-
-    // Total number of steps.
-    var totalSteps = kbox.install.stepCount();
+    var stepIndex = 1;
 
     // Get the current time in milliseconds.
     var getTime = function() {
@@ -163,14 +160,14 @@ module.exports = function(kbox) {
 
     // Runs right before step.
     kbox.install.events.on('pre-step', function(step) {
-      var stepNumberInfo = [stepCount, totalSteps].join(':');
+      var stepNumberInfo = [stepIndex, state.stepCount].join(':');
       var stepInfo = 'Starting ' + step.name;
 
       log('[' + stepNumberInfo + '] ' + stepInfo);
       log('description => ' + step.description);
       log('dependencies => ' + step.deps.join(', '));
 
-      stepCount += 1;
+      stepIndex += 1;
     });
 
     // Runs right after step.
