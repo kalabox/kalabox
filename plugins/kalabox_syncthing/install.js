@@ -125,7 +125,22 @@ module.exports = function(kbox) {
     step.description = 'Install syncthing image.';
     step.deps = ['init-engine'];
     step.all = function(state, done) {
-      kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
+      var opts = {
+        name: 'kalabox/syncthing:stable',
+        build: false,
+        src: ''
+      };
+      var globalConfig = kbox.core.deps.lookup('globalConfig');
+      if (globalConfig.profile === 'dev') {
+        opts.build = true;
+        opts.src = path.resolve(
+          globalConfig.srcRoot,
+          'dockerfiles',
+          'syncthing',
+          'Dockerfile'
+        );
+      }
+      kbox.engine.build(opts, function(err) {
         if (err) {
           state.log(state.status.notOk);
           done(err);
