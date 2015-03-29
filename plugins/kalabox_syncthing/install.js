@@ -47,9 +47,6 @@ module.exports = function(kbox) {
       if (!state.isSyncthingInstalled) {
         state.downloads.push(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
       }
-      if (!state.syncthingConfigExists) {
-        state.downloads.push(meta.SYNCTHING_CONFIG_URL);
-      }
     };
   });
 
@@ -69,10 +66,19 @@ module.exports = function(kbox) {
         var syncthingDir = path.join(state.config.sysConfRoot, 'syncthing');
         mkdirp.sync(syncthingDir);
         var config = path.join(
-          tmp,
-          path.basename(meta.SYNCTHING_CONFIG_URL)
+          state.config.srcRoot,
+          'dockerfiles',
+          'syncthing',
+          'config.xml'
         );
-        fs.renameSync(config, path.join(syncthingDir, path.basename(config)));
+        fs.createReadStream(config)
+          .pipe(fs.createWriteStream(
+            path.join(
+              syncthingDir,
+              path.basename(config)
+            )
+          )
+        );
       }
 
       // Install syncthing binary.

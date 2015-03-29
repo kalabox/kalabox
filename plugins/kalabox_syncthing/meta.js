@@ -8,7 +8,5 @@ module.exports = {
       'v0.10.29/syncthing-windows-amd64-v0.10.29.zip',
     linux: 'https://github.com/syncthing/syncthing/releases/download/' +
     'v0.10.29/syncthing-linux-amd64-v0.10.29.tar.gz'
-  },
-  SYNCTHING_CONFIG_URL: 'https://raw.githubusercontent.com/kalabox/' +
-    'kalabox-dockerfiles/master/syncthing/config.xml'
+  }
 };
