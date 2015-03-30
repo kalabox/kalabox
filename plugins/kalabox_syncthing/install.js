@@ -47,9 +47,6 @@ module.exports = function(kbox) {
       if (!state.isSyncthingInstalled) {
         state.downloads.push(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
       }
-      if (!state.syncthingConfigExists) {
-        state.downloads.push(meta.SYNCTHING_CONFIG_URL);
-      }
     };
   });
 
@@ -69,10 +66,19 @@ module.exports = function(kbox) {
         var syncthingDir = path.join(state.config.sysConfRoot, 'syncthing');
         mkdirp.sync(syncthingDir);
         var config = path.join(
-          tmp,
-          path.basename(meta.SYNCTHING_CONFIG_URL)
+          state.config.srcRoot,
+          'dockerfiles',
+          'syncthing',
+          'config.xml'
         );
-        fs.renameSync(config, path.join(syncthingDir, path.basename(config)));
+        fs.createReadStream(config)
+          .pipe(fs.createWriteStream(
+            path.join(
+              syncthingDir,
+              path.basename(config)
+            )
+          )
+        );
       }
 
       // Install syncthing binary.
@@ -125,7 +131,22 @@ module.exports = function(kbox) {
     step.description = 'Install syncthing image.';
     step.deps = ['init-engine'];
     step.all = function(state, done) {
-      kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
+      var opts = {
+        name: 'kalabox/syncthing:stable',
+        build: false,
+        src: ''
+      };
+      var globalConfig = kbox.core.deps.lookup('globalConfig');
+      if (globalConfig.profile === 'dev') {
+        opts.build = true;
+        opts.src = path.resolve(
+          globalConfig.srcRoot,
+          'dockerfiles',
+          'syncthing',
+          'Dockerfile'
+        );
+      }
+      kbox.engine.build(opts, function(err) {
         if (err) {
           state.log(state.status.notOk);
           done(err);
