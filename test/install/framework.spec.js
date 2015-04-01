@@ -1,7 +1,7 @@
 'use strict';
 
 var kbox = require('../../lib/kbox.js');
-var fw = kbox.install.framework;
+var fw = kbox.install.framework();
 var chai = require('chai');
 var expect = chai.expect;
 

@@ -105,6 +105,30 @@ module.exports = function(kbox) {
     done();
   });
 
+  // Update kalabox.
+  kbox.core.tasks.registerTask('update', function(done) {
+
+    var argv = kbox.core.deps.lookup('argv');
+    var config = kbox.core.deps.lookup('config');
+
+    if (argv.t) {
+      var steps = kbox.update.getSteps();
+      steps.forEach(function(step) {
+        console.log(step);
+      });
+      return done();
+    }
+
+  });
+
+  kbox.update.registerStep(function(step) {
+    step.name = 'foo';
+    step.description = step.name;
+    step.all = function(state) {
+      console.log(step.name);
+    };
+  });
+
   // Installs the dependencies for kalabox to run
   kbox.core.tasks.registerTask('provision', function(done) {
 
