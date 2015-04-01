@@ -105,118 +105,128 @@ module.exports = function(kbox) {
     done();
   });
 
-  // Update kalabox.
-  kbox.core.tasks.registerTask('update', function(done) {
-
-    var argv = kbox.core.deps.lookup('argv');
-    var config = kbox.core.deps.lookup('config');
-
-    if (argv.t) {
-      var steps = kbox.update.getSteps();
-      steps.forEach(function(step) {
-        console.log(step);
-      });
-      return done();
+  var createFrameworkTask = function(taskPath, frameworkModule) {
+    if (!Array.isArray(taskPath) && typeof taskPath !== 'string') {
+      throw new TypeError('Invalid taskPath: ' + taskPath);
+    }
+    if (typeof frameworkModule !== 'object') {
+      throw new TypeError('Invalid frameworkModule: ' + frameworkModule);
     }
 
+    kbox.core.tasks.registerTask(taskPath, function(done) {
+
+      var argv = kbox.core.deps.lookup('argv');
+      var config = kbox.core.deps.lookup('config');
+
+      if (argv.t) {
+        var steps = frameworkModule.getSteps();
+        steps.forEach(function(step) {
+          console.log(step);
+        });
+        return done();
+      }
+
+      // Logging function.
+      var log = function(msg) {
+        if (msg) {
+          console.log('#### ' + msg + ' ####');
+          //console.log(chalk.green('#### ' + msg + ' ####'));
+        } else {
+          console.log('');
+        }
+      };
+
+      // State to inject into install.
+      var state = {
+        adminCommands: [],
+        config: config,
+        downloads: [],
+        log: console.log,
+        status: {
+          ok: chalk.green('OK'),
+          notOk: chalk.red('NOT OK')
+        }
+      };
+
+      // Add app object to state.
+      kbox.whenApp(function(app) {
+        state.app = app;
+      });
+
+      // Keep track of which step we are on.
+      var stepIndex = 1;
+
+      // Get the current time in milliseconds.
+      var getTime = function() {
+        return Date.now();
+      };
+
+      // Time the install started.
+      var startTime = getTime();
+
+      // Time the current step started.
+      var stepStartTime = startTime;
+
+      // Runs right before step.
+      frameworkModule.events.on('pre-step', function(step) {
+        var stepNumberInfo = [stepIndex, state.stepCount].join(':');
+        var stepInfo = 'Starting ' + step.name;
+
+        log('[' + stepNumberInfo + '] ' + stepInfo);
+        log('description => ' + step.description);
+        log('dependencies => ' + step.deps.join(', '));
+
+        stepIndex += 1;
+      });
+
+      // Runs right after step.
+      frameworkModule.events.on('post-step', function(step) {
+        var now = getTime();
+        var duration = now - stepStartTime;
+        stepStartTime = now;
+
+        log('Finished ' + step.name + ' (' + duration + ')');
+        log();
+      });
+
+      // Error.
+      frameworkModule.events.on('error', function(err) {
+        done(err);
+      });
+
+      // Install is done.
+      frameworkModule.events.on('end', function(state) {
+        done();
+      });
+
+      // Run the installer.
+      frameworkModule.run(state);
+
+    });
+
+  };
+
+  // Update task.
+  createFrameworkTask(['update'], kbox.update);
+
+  // Update app task.
+  kbox.whenApp(function(app) {
+    createFrameworkTask([app.name, 'update'], kbox.update);
   });
 
+  // Provision task.
+  createFrameworkTask(['provision'], kbox.install);
+
+  // @todo: remove
   kbox.update.registerStep(function(step) {
     step.name = 'foo';
     step.description = step.name;
     step.all = function(state) {
+      if (state.app) {
+        console.log(state.app.name);
+      }
       console.log(step.name);
     };
-  });
-
-  // Installs the dependencies for kalabox to run
-  kbox.core.tasks.registerTask('provision', function(done) {
-
-    var argv = kbox.core.deps.lookup('argv');
-    var config = kbox.core.deps.lookup('config');
-
-    // Logging function.
-    var log = function(msg) {
-      if (msg) {
-        console.log('#### ' + msg + ' ####');
-        //console.log(chalk.green('#### ' + msg + ' ####'));
-      } else {
-        console.log('');
-      }
-    };
-
-    // Test provision, just print out step info.
-    if (argv.t) {
-      var steps = kbox.install.getSteps();
-      // Output each step to console.
-      steps.forEach(function(step) {
-        console.log(step);
-      });
-      // Return.
-      return done();
-    }
-
-    // State to inject into install.
-    var state = {
-      adminCommands: [],
-      config: config,
-      downloads: [],
-      log: console.log,
-      status: {
-        ok: chalk.green('OK'),
-        notOk: chalk.red('NOT OK')
-      }
-    };
-
-    // Keep track of which step we are on.
-    var stepIndex = 1;
-
-    // Get the current time in milliseconds.
-    var getTime = function() {
-      return Date.now();
-    };
-
-    // Time the install started.
-    var startTime = getTime();
-
-    // Time the current step started.
-    var stepStartTime = startTime;
-
-    // Runs right before step.
-    kbox.install.events.on('pre-step', function(step) {
-      var stepNumberInfo = [stepIndex, state.stepCount].join(':');
-      var stepInfo = 'Starting ' + step.name;
-
-      log('[' + stepNumberInfo + '] ' + stepInfo);
-      log('description => ' + step.description);
-      log('dependencies => ' + step.deps.join(', '));
-
-      stepIndex += 1;
-    });
-
-    // Runs right after step.
-    kbox.install.events.on('post-step', function(step) {
-      var now = getTime();
-      var duration = now - stepStartTime;
-      stepStartTime = now;
-
-      log('Finished ' + step.name + ' (' + duration + ')');
-      log();
-    });
-
-    // Error.
-    kbox.install.events.on('error', function(err) {
-      done(err);
-    });
-
-    // Install is done.
-    kbox.install.events.on('end', function(state) {
-      done();
-    });
-
-    // Run the installer.
-    kbox.install.run(state);
-
   });
 
   /*
