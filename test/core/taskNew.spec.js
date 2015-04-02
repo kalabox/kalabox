@@ -49,7 +49,7 @@ describe.only('CLI Task Module', function() {
       expect(root.__isBranch).to.equal(true);
       expect(root.name).to.equal('root');
       expect(root.children.length).to.equal(1);
-      
+
       var a = root.children[0];
       expect(a.__isBranch).to.equal(true);
       expect(a.name).to.equal('a');
@@ -69,7 +69,7 @@ describe.only('CLI Task Module', function() {
 
       var x = a.children[1];
       expect(x.__isTask).to.equal(true);
-      expect(x.path).to.deep.equal(['x'])
+      expect(x.path).to.deep.equal(['x']);
 
     });
 
