@@ -6,44 +6,37 @@ var m = require('../../lib/core/taskNew.js');
 
 describe.only('CLI Task Module', function() {
 
+  before(function() {
+
+    m.registerTask(function(task) {
+      task.path = ['a', 'b', 'd'];
+      task.description = task.path.join('');
+      task.func = function() {
+        return task.description;
+      };
+    });
+
+    m.registerTask(function(task) {
+      task.path = ['a', 'b', 'c'];
+      task.description = task.path.join('');
+      task.func = function() {
+        return task.description;
+      };
+    });
+
+    m.registerTask(function(task) {
+      task.path = ['a', 'x'];
+      task.description = task.path.join('');
+      task.func = function() {
+        return task.description;
+      };
+    });
+
+  });
+
   describe('#registerTask()', function() {
 
     it('Should add tasks to the task tree in the correct way.', function() {
-
-      m.registerTask(function(task) {
-        task.path = ['a', 'b', 'd'];
-        task.description = task.path.join('');
-        task.func = function() {
-          return task.description;
-        };
-      });
-
-      m.registerTask(function(task) {
-        task.path = ['a', 'b', 'c'];
-        task.description = task.path.join('');
-        task.func = function() {
-          return task.description;
-        };
-      });
-
-      m.registerTask(function(task) {
-        task.path = ['a', 'x'];
-        task.description = task.path.join('');
-        task.func = function() {
-          return task.description;
-        };
-      });
-
-      /*
-
-      root
-        a
-          b
-            c
-            d
-          x
-
-      */
 
       var root = m.getTaskTree();
       expect(root.__isBranch).to.equal(true);
@@ -70,6 +63,49 @@ describe.only('CLI Task Module', function() {
       var x = a.children[1];
       expect(x.__isTask).to.equal(true);
       expect(x.path).to.deep.equal(['x']);
+
+    });
+
+  });
+
+  describe('#find()', function() {
+
+    var makeArgv = function(names) {
+      return {
+        _: names,
+        options: {}
+      };
+    };
+
+    it('should return null if no task exists.', function() {
+
+      var root = m.getTaskTree();
+      var argv = makeArgv(['not', 'a', 'real', 'task']);
+      var result = m.find(root, argv);
+      expect(result).to.equal(null);
+
+    });
+
+    it('should find the correct branch.', function() {
+
+      var root = m.getTaskTree();
+      var argv = makeArgv(['a']);
+      var result = m.find(root, argv);
+      expect(result).to.not.equal(null);
+      expect(argv._).to.deep.equal([]);
+      expect(result.__isBranch).to.equal(true);
+
+    });
+
+    it('should find the correct task.', function() {
+
+      var root = m.getTaskTree();
+      var argv = makeArgv(['a', 'b', 'c']);
+      var result = m.find(root, argv);
+      expect(result).to.not.equal(null);
+      expect(argv._).to.deep.equal([]);
+      expect(result.__isTask).to.equal(true);
+      expect(result.func()).to.equal('abc');
 
     });
 
