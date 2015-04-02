@@ -6,5 +6,7 @@ module.exports = function(kbox) {
   require('./install.js')(kbox);
   // Load CLI tasks for this plugin.
   require('./tasks.js')(kbox);
+  // Load update steps
+  require('./updates.js')(kbox);
 
 };

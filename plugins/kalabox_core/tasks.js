@@ -209,31 +209,16 @@ module.exports = function(kbox) {
   // Update task.
   createFrameworkTask(['update'], kbox.update);
 
-  // Update app task.
-  kbox.whenApp(function(app) {
-    createFrameworkTask([app.name, 'update'], kbox.update);
-  });
-
   // Provision task.
   createFrameworkTask(['provision'], kbox.install);
-
-  // @todo: remove
-  kbox.update.registerStep(function(step) {
-    step.name = 'foo';
-    step.description = step.name;
-    step.all = function(state) {
-      if (state.app) {
-        console.log(state.app.name);
-      }
-      console.log(step.name);
-    };
-  });
 
   /*
    * TASKS THAT **DO** NEED THE APP OBJECT.
    */
 
   kbox.whenApp(function(app) {
+
+    createFrameworkTask([app.name, 'update'], kbox.update);
 
     tasks.registerTask([app.name, 'install'], function(done) {
       kbox.app.install(app, done);
