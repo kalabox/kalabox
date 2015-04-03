@@ -59,4 +59,21 @@ module.exports = function(kbox) {
     };
   });
 
+  // Authorize the update process
+  kbox.update.registerStep(function(step) {
+    step.name = 'update-backends';
+    step.deps = ['update-auth'];
+    step.description = 'Updating your backend codes.';
+    step.all = function(state, done) {
+      kbox.util.npm.updateBackends(function(err) {
+        if (err) {
+          done(err);
+        }
+        else {
+          done();
+        }
+      });
+    };
+  });
+
 };
