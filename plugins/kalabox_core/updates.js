@@ -87,9 +87,9 @@ module.exports = function(kbox) {
     step.all = function(state, done) {
       kbox.engine.up(PROVIDER_ATTEMPTS, function(err) {
         if (err) {
-           done(err);
-         }
-         else {
+          done(err);
+        }
+        else {
           kbox.engine.list(function(err, containers) {
             if (err) {
               done(err);
@@ -157,7 +157,7 @@ module.exports = function(kbox) {
               );
             }
           });
-         }
+        }
       });
     };
   });
