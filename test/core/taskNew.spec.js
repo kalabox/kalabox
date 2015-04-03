@@ -71,10 +71,7 @@ describe.only('CLI Task Module', function() {
   describe('#find()', function() {
 
     var makeArgv = function(names) {
-      return {
-        _: names,
-        options: {}
-      };
+      return names;
     };
 
     it('should return null if no task exists.', function() {
@@ -92,7 +89,7 @@ describe.only('CLI Task Module', function() {
       var argv = makeArgv(['a']);
       var result = m.find(root, argv);
       expect(result).to.not.equal(null);
-      expect(argv._).to.deep.equal([]);
+      expect(result.argv).to.deep.equal([]);
       expect(result.__isBranch).to.equal(true);
 
     });
@@ -103,9 +100,26 @@ describe.only('CLI Task Module', function() {
       var argv = makeArgv(['a', 'b', 'c']);
       var result = m.find(root, argv);
       expect(result).to.not.equal(null);
-      expect(argv._).to.deep.equal([]);
+      expect(result.argv).to.deep.equal([]);
       expect(result.__isTask).to.equal(true);
       expect(result.func()).to.equal('abc');
+
+    });
+
+  });
+
+  describe.skip('#getMenu()', function() {
+
+    it('should return a string menu.', function() {
+
+      var root = m.getTaskTree();
+      var menuString = m.getMenu(root);
+      var expected = 'a\n' +
+        '    b\n' +
+        '        c\n' +
+        '        d\n' +
+        '    x';
+      expect(menuString).to.equal(expected);
 
     });
 
