@@ -248,7 +248,7 @@ function ensureAppNodeModulesInstalled(app, callback) {
               var nodeModulesDir = path.join(appRoot, 'node_modules');
               fs.exists(nodeModulesDir, function(nodeModulesDirExists) {
                 if (!nodeModulesDirExists) {
-                  kbox.app.installPackages(appRoot, callback);
+                  _util.npm.installPackages(appRoot, callback);
                 } else {
                   callback();
                 }

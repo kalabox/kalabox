@@ -44,12 +44,18 @@ module.exports = function(kbox) {
 
   // Authorize the update process
   kbox.update.registerStep(function(step) {
-    step.name = 'update-start';
+    step.name = 'update-backends';
     step.deps = ['update-auth'];
-    step.description = 'Rawegwegewg';
+    step.description = 'Updating your backend codes.';
     step.all = function(state, done) {
-      console.log('things');
-      done();
+      kbox.util.npm.updateBackends(function(err) {
+        if (err) {
+          done(err);
+        }
+        else {
+          done();
+        }
+      });
     };
   });
 
