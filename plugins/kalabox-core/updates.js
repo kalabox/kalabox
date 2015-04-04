@@ -42,42 +42,6 @@ module.exports = function(kbox) {
     };
   });
 
-  // Authorize the update process
-  kbox.update.registerStep(function(step) {
-    step.name = 'kbox-backends';
-    step.deps = ['kbox-update'];
-    step.description = 'Updating your Kalabox backends.';
-    step.all = function(state, done) {
-      kbox.util.npm.updateBackends(function(err) {
-        if (err) {
-          done(err);
-        }
-        else {
-          state.log('Updated kalabox backends!');
-          done();
-        }
-      });
-    };
-  });
-
-  // Authorize the update process
-  kbox.update.registerStep(function(step) {
-    step.name = 'kbox-update';
-    step.deps = ['kbox-auth'];
-    step.description = 'Updating your Kalabox codes.';
-    step.all = function(state, done) {
-      kbox.util.npm.updateKalabox(function(err) {
-        if (err) {
-          done(err);
-        }
-        else {
-          state.log('Updated kalabox dependencies!');
-          done();
-        }
-      });
-    };
-  });
-
   // Shutdown running apps and containers
   // this should go in kalabox-engine-docker
   kbox.update.registerStep(function(step) {

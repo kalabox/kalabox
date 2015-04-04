@@ -230,43 +230,6 @@ function getAppContextFromCwdConfig(apps, callback) {
   }
 }
 
-function ensureAppNodeModulesInstalled(app, callback) {
-  var appRoot = app.config.appRoot;
-  var packageFilepath = path.join(appRoot, 'package.json');
-  fs.exists(packageFilepath, function(packageFileExists) {
-    if (packageFileExists) {
-      fs.readFile(packageFilepath, function(err, data) {
-        if (err) {
-          callback(err);
-        } else {
-          var json = JSON.parse(data);
-          if (json.dependencies) {
-            var depCount = _.reduce(json.dependencies, function(count, x) {
-              return count += 1;
-            }, 0);
-            if (depCount > 0) {
-              var nodeModulesDir = path.join(appRoot, 'node_modules');
-              fs.exists(nodeModulesDir, function(nodeModulesDirExists) {
-                if (!nodeModulesDirExists) {
-                  _util.npm.installPackages(appRoot, callback);
-                } else {
-                  callback();
-                }
-              });
-            } else {
-              callback();
-            }
-          } else {
-            callback();
-          }
-        }
-      });
-    } else {
-      callback();
-    }
-  });
-}
-
 function getAppContext(apps, callback) {
   // Find the app context.
   var funcs = [
@@ -287,13 +250,9 @@ function getAppContext(apps, callback) {
   function(err, appContext) {
     if (err) {
       callback(err);
-    } else if (appContext) {
-      // If there is an app context, make sure it's node modules are installed.
-      ensureAppNodeModulesInstalled(appContext, function(err) {
-        callback(err, appContext);
-      });
-    } else {
-      callback();
+    }
+    else {
+      callback(err, appContext);
     }
   });
 }
