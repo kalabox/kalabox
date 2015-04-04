@@ -4,7 +4,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var m = require('../../lib/core/taskNew.js');
 
-describe.only('CLI Task Module', function() {
+describe('CLI Task Module', function() {
 
   before(function() {
 

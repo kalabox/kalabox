@@ -18,6 +18,7 @@ var Liftoff = require('liftoff');
 var tildify = require('tildify');
 
 var kbox = require('../lib/kbox.js');
+var assert = require('assert');
 var config = kbox.core.config;
 var deps = kbox.core.deps;
 var env = kbox.core.env;
@@ -125,7 +126,7 @@ function handleError(err) {
   });
 }
 
-function processTask(env) {
+/*function processTask(env) {
   // Get dependencies.
   deps.call(function(tasks) {
     // Get app specific task.
@@ -189,7 +190,7 @@ function processTask(env) {
       });
     }
   });
-}
+}*/
 
 function getAppContextFromArgv(apps, callback) {
   if (typeof callback !== 'function') {
@@ -298,6 +299,69 @@ function getAppContext(apps, callback) {
   });
 }
 
+/*
+ * Find the correct cli task and run it.
+ */
+function processTask(app) {
+
+  // Grab cli args, but slice out the node and kbox.js args.
+  var argv = process.argv.slice(2);
+
+  // Search for a task with the app name.
+  var appResult = (function() {
+    if (!app) {
+      return null;
+    } else if (argv.length === 0) {
+      return null;
+    } else {
+      var appArgv = argv.slice(0);
+      if (!_.contains(argv, app.name)) {
+        appArgv.unshift(app.name);
+      }
+      return kbox.tasks.find(appArgv);
+    }
+  })();
+
+  // Search for a task without the app name.
+  var globalResult = kbox.tasks.find(argv);
+
+  // Is there a conflict between an app task and a global task?
+  var conflict = !!appResult && !!globalResult;
+
+  // For now just use the app result if it exists.
+  var result = (function() {
+    if (appResult) {
+      return appResult;
+    } else {
+      return globalResult;
+    }
+  })();
+
+  if (kbox.tasks.isTask(result)) {
+
+    // We found a task, so run it.
+    kbox.tasks.run(result, function(err) {
+
+      // Whoops an error happened.
+      if (err) {
+        handleError(err);
+      }
+
+    });
+
+  } else if (kbox.tasks.isBranch(result)) {
+
+    // We ended up with a branch, so display task tree.
+    kbox.tasks.showMenu(result);
+
+  } else {
+
+    // This should never happen.
+    assert(false);
+
+  }
+}
+
 function handleArguments(env) {
   var workingDir = env.cwd;
   var configPath = path.join(env.cwd, '.kalabox', 'profile.json');
@@ -345,7 +409,7 @@ function handleArguments(env) {
                 } else {
 
                   // Run the task.
-                  processTask(env);
+                  processTask(appContext);
 
                 }
               });
@@ -353,7 +417,7 @@ function handleArguments(env) {
             } else {
 
               // Run the task.
-              processTask(env);
+              processTask();
 
             }
 
