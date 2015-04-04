@@ -25,7 +25,8 @@
     "kbox": "./bin/kbox.js"
   },
   "scripts": {
-    "test": "istanbul cover _mocha"
+    "test": "istanbul cover _mocha",
+    "postinstall": "node ./scripts/postinstall.js"
   },
   "dependencies": {
     "async": "^0.9.0",
