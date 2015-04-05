@@ -337,7 +337,17 @@ function processTask(app) {
     }
   })();
 
-  if (kbox.tasks.isTask(result)) {
+  if (!result) {
+
+    // We ended up with a branch, so display task tree.
+    kbox.tasks.showMenu(kbox.tasks.getTaskTree());
+
+  } else if (kbox.tasks.isBranch(result)) {
+
+    // We ended up with a branch, so display task tree.
+    kbox.tasks.showMenu(result);
+
+  } else if (kbox.tasks.isTask(result)) {
 
     // We found a task, so run it.
     kbox.tasks.run(result, function(err) {
@@ -348,11 +358,6 @@ function processTask(app) {
       }
 
     });
-
-  } else if (kbox.tasks.isBranch(result)) {
-
-    // We ended up with a branch, so display task tree.
-    kbox.tasks.showMenu(result);
 
   } else {
 
