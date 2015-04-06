@@ -49,28 +49,32 @@ module.exports = function(kbox) {
     };
 
     var printConfig = function(which) {
-      tasks.registerTask(['sync', which, 'config'], function(done) {
-        var instance;
-        if (which === 'local') {
-          instance = share.getLocalSync;
-        } else if (which === 'remote') {
-          instance = share.getRemoteSync;
-        } else {
-          var msg = 'The option [' + which + '] is invalid, please choose ' +
-            'either local or remote.';
-          done(new Error(msg));
-        }
-        instance()
-        .then(function(sync) {
-          sync.getConfig()
-          .then(function(config) {
-            prettyPrint(config);
-            done(null);
-          })
-          .catch(function(err) {
-            done(err);
+      kbox.tasks.add(function(task) {
+        task.path = ['sync', which, 'config'];
+        task.description = 'Display syncthing instance config.';
+        task.func = function(done) {
+          var instance;
+          if (which === 'local') {
+            instance = share.getLocalSync;
+          } else if (which === 'remote') {
+            instance = share.getRemoteSync;
+          } else {
+            var msg = 'The option [' + which + '] is invalid, please choose ' +
+              'either local or remote.';
+            done(new Error(msg));
+          }
+          instance()
+          .then(function(sync) {
+            sync.getConfig()
+            .then(function(config) {
+              prettyPrint(config);
+              done(null);
+            })
+            .catch(function(err) {
+              done(err);
+            });
           });
-        });
+        };
       });
     };
 
