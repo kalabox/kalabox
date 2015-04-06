@@ -105,17 +105,22 @@ module.exports = function(kbox) {
     };
   });
 
-  var createFrameworkFunc = function(frameworkModule) {
+  var createFrameworkFunc = function(task, frameworkModule) {
     if (typeof frameworkModule !== 'object') {
       throw new TypeError('Invalid frameworkModule: ' + frameworkModule);
     }
+
+    // Provide an option for viewing install steps instead of running them.
+    task.options = [
+      ['t', 'test', 'Display list of steps.']
+    ];
 
     return function(done) {
 
       var argv = kbox.core.deps.lookup('argv');
       var config = kbox.core.deps.lookup('config');
 
-      if (argv.t) {
+      if (this.options.test) {
         var steps = frameworkModule.getSteps();
         steps.forEach(function(step) {
           console.log(step);
@@ -206,14 +211,14 @@ module.exports = function(kbox) {
   kbox.tasks.add(function(task) {
     task.path = ['update'];
     task.description = 'Update kbox and it\'s dependencies.';
-    task.func = createFrameworkFunc(kbox.update);
+    task.func = createFrameworkFunc(task, kbox.update);
   });
 
   // Provision task.
   kbox.tasks.add(function(task) {
     task.path = ['provision'];
     task.description = 'Install kbox and it\'s dependencies.';
-    task.func = createFrameworkFunc(kbox.install);
+    task.func = createFrameworkFunc(task, kbox.install);
   });
 
   /*
