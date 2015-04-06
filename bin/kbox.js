@@ -57,9 +57,6 @@ var init = function(callback) {
   deps.register('events', kbox.core.events);
   // argv
   deps.register('argv', argv);
-  // tasks
-  tasks.init();
-  deps.register('tasks', tasks);
   kbox.engine.init(globalConfig, function(err) {
     if (err) {
       return callback(err);
