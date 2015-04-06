@@ -231,7 +231,7 @@ module.exports = function(kbox) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'update'];
       task.description = 'Update application and it\'s dependencies.';
-      task.func = createFrameworkFunc(kbox.update);
+      task.func = createFrameworkFunc(task, kbox.update);
     });
 
     kbox.tasks.add(function(task) {
