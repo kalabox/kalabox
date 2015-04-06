@@ -46,9 +46,28 @@ module.exports = function(kbox) {
   kbox.update.registerStep(function(step) {
     step.name = 'kbox-update';
     step.deps = ['kbox-auth'];
-    step.description = 'Updating your Kalabox backends.';
+    step.description = 'Updating your Kalabox dependencies.';
     step.all = function(state, done) {
       kbox.util.npm.updateKalabox(function(err) {
+        if (err) {
+          done(err);
+        }
+        else {
+          state.log('Updated kalabox deps!');
+          done();
+        }
+      });
+    };
+  });
+
+  // Authorize the update process
+  // Separate this into services/engines
+  kbox.update.registerStep(function(step) {
+    step.name = 'kbox-backends';
+    step.deps = ['kbox-auth'];
+    step.description = 'Updating your Kalabox backends.';
+    step.all = function(state, done) {
+      kbox.util.npm.updateBackends(function(err) {
         if (err) {
           done(err);
         }
@@ -83,17 +102,15 @@ module.exports = function(kbox) {
                   kbox.engine.info(container.id, function(err, info) {
                     if (err) {
                       done(err);
-                    } else {
-                      if (!info.running) {
-                        done();
-                      }
-                      else {
-                        if (info.app !== null) {
-                          kbox.app.get(info.app, function(err, app) {
-                            if (err) {
-                              done(err);
-                            }
-                            else {
+                    }
+                    else {
+                      if (info.app !== null) {
+                        kbox.app.get(info.app, function(err, app) {
+                          if (err) {
+                            done(err);
+                          }
+                          else {
+                            if (!info.running) {
                               kbox.app.stop(app, function(errs) {
                                 if (errs) {
                                   done(errs);
@@ -104,9 +121,14 @@ module.exports = function(kbox) {
                                 }
                               });
                             }
-                          });
-                        }
-                        else {
+                            else {
+                              done();
+                            }
+                          }
+                        });
+                      }
+                      else {
+                        if (!info.running) {
                           kbox.engine.stop(info.id, function(err) {
                             if (err) {
                               done(err);
@@ -124,6 +146,17 @@ module.exports = function(kbox) {
                             }
                           });
                         }
+                        else {
+                          kbox.engine.remove(info.id, function(err) {
+                            if (err) {
+                              done(err);
+                            }
+                            else {
+                              state.log('Removed ' + info.name);
+                              done();
+                            }
+                          });
+                        }
                       }
                     }
                   });
@@ -133,7 +166,14 @@ module.exports = function(kbox) {
                     done(err);
                   }
                   else {
-                    kbox.engine.down(PROVIDER_ATTEMPTS, done);
+                    kbox.engine.down(PROVIDER_ATTEMPTS, function(err) {
+                      if (err) {
+                        done(err);
+                      }
+                      else {
+                        kbox.engine.up(PROVIDER_ATTEMPTS, done);
+                      }
+                    });
                   }
                 }
               );
@@ -143,4 +183,24 @@ module.exports = function(kbox) {
       });
     };
   });
+
+  // Authorize the update process
+  // Separate this into services/engines
+  kbox.update.registerStep(function(step) {
+    step.name = 'services-update';
+    step.deps = ['engine-prepare'];
+    step.description = 'Updating your Kalabox services.';
+    step.all = function(state, done) {
+      kbox.services.install(function(err) {
+        if (err) {
+          state.log(state.status.notOk);
+          done(err);
+        } else {
+          state.log(state.status.ok);
+          done();
+        }
+      });
+    };
+  });
+
 };
