@@ -15,19 +15,6 @@ var B2D_IP_ATTEMPTS = 3;
 
 module.exports = function(kbox) {
 
-  var tasks = kbox.core.tasks;
-  var argv = kbox.core.deps.lookup('argv');
-
-  var outputConfig = function(config, done) {
-    var query = argv._[0];
-    var target = config;
-    if (query) {
-      target = target[query];
-    }
-    console.log(JSON.stringify(target, null, '\t'));
-    done();
-  };
-
   var outputContainers = function(app, done) {
     if (typeof app === 'function' && !done) {
       done = app;
@@ -69,130 +56,149 @@ module.exports = function(kbox) {
    */
 
   // Display list of apps.
-  tasks.registerTask('apps', function(done) {
-    kbox.app.list(function(err, apps) {
-      if (err) {
-        done(err);
-      } else {
-        var appNames = [];
-        _.forEach(apps, function(app) {
-          appNames.push(app.name);
-        });
-        appNames.sort();
-        _.forEach(appNames, function(appName) {
-          console.log(appName);
-        });
-        done();
-      }
-
-    });
+  kbox.tasks.add(function(task) {
+    task.path = ['apps'];
+    task.description = 'Display list of apps.';
+    task.func = function(done) {
+      kbox.app.list(function(err, apps) {
+        if (err) {
+          done(err);
+        } else {
+          var appNames = _.map(apps, function(app) {
+            return app.name;
+          });
+          appNames.sort();
+          _.forEach(appNames, function(appName) {
+            console.log(appName);
+          });
+          done();
+        }
+      });
+    };
   });
 
   // Display list of containers.
-  tasks.registerTask('containers', function(done) {
-    outputContainers(done);
+  kbox.tasks.add(function(task) {
+    task.path = ['containers'];
+    task.description = 'Display list of all installed kbox containers.';
+    task.func = function(done) {
+      outputContainers(done);
+    };
   });
 
-  // Prints out the config based on context
-  tasks.registerTask('config', function(done) {
-    var config = kbox.core.config.getGlobalConfig();
-    outputConfig(config, done);
+  // Prints out the config.
+  kbox.tasks.add(function(task) {
+    task.path = ['config'];
+    task.description = 'Display the kbox configuration.';
+    task.func = function() {
+      var config = kbox.core.config.getGlobalConfig();
+      console.log(JSON.stringify(config, null, '  '));
+    };
   });
 
   // Prints out the kbox version.
-  tasks.registerTask('version', function(done) {
-    console.log(kbox.core.config.getGlobalConfig().version);
-    done();
+  kbox.tasks.add(function(task) {
+    task.path = ['version'];
+    task.description = 'Display the kbox version.';
+    task.func = function() {
+      console.log(kbox.core.config.getGlobalConfig().version);
+    };
   });
 
   // Installs the dependencies for kalabox to run
-  kbox.core.tasks.registerTask('provision', function(done) {
+  kbox.tasks.add(function(task) {
+    task.path = ['provision'];
+    task.description = 'Install kalabox dependencies.';
+    task.options = [
+      ['t', 'test', 'Display list of provision steps.']
+    ];
+    task.func = function(done) {
 
-    var argv = kbox.core.deps.lookup('argv');
-    var config = kbox.core.deps.lookup('config');
+      var config = kbox.core.deps.lookup('config');
 
-    // Logging function.
-    var log = function(msg) {
-      if (msg) {
-        console.log('#### ' + msg + ' ####');
-        //console.log(chalk.green('#### ' + msg + ' ####'));
-      } else {
-        console.log('');
+      // Logging function.
+      var log = function(msg) {
+        if (msg) {
+          console.log('#### ' + msg + ' ####');
+          //console.log(chalk.green('#### ' + msg + ' ####'));
+        } else {
+          console.log('');
+        }
+      };
+
+      // Test provision, just print out step info.
+      if (this.options.test) {
+        var steps = kbox.install.getSteps();
+        // Output each step to console.
+        steps.forEach(function(step) {
+          console.log(step);
+        });
+        // Return.
+        return done();
       }
-    };
 
-    // Test provision, just print out step info.
-    if (argv.t) {
-      var steps = kbox.install.getSteps();
-      // Output each step to console.
-      steps.forEach(function(step) {
-        console.log(step);
+      // State to inject into install.
+      var state = {
+        adminCommands: [],
+        config: config,
+        downloads: [],
+        log: console.log,
+        status: {
+          ok: chalk.green('OK'),
+          notOk: chalk.red('NOT OK')
+        }
+      };
+
+      // Keep track of which step we are on.
+      var stepIndex = 1;
+
+      // Get the current time in milliseconds.
+      var getTime = function() {
+        return Date.now();
+      };
+
+      // Time the install started.
+      var startTime = getTime();
+
+      // Time the current step started.
+      var stepStartTime = startTime;
+
+      // Runs right before step.
+      kbox.install.events.on('pre-step', function(step) {
+        var stepNumberInfo = [stepIndex, state.stepCount].join(':');
+        var stepInfo = 'Starting ' + step.name;
+
+        log('[' + stepNumberInfo + '] ' + stepInfo);
+        log('description => ' + step.description);
+        log('dependencies => ' + step.deps.join(', '));
+
+        stepIndex += 1;
       });
-      // Return.
-      return done();
-    }
 
-    // State to inject into install.
-    var state = {
-      adminCommands: [],
-      config: config,
-      downloads: [],
-      log: console.log,
-      status: {
-        ok: chalk.green('OK'),
-        notOk: chalk.red('NOT OK')
-      }
+      // Runs right after step.
+      kbox.install.events.on('post-step', function(step) {
+        var now = getTime();
+        var duration = now - stepStartTime;
+        stepStartTime = now;
+
+        log('Finished ' + step.name + ' (' + duration + ')');
+        log();
+      });
+
+      // Error.
+      kbox.install.events.on('error', function(err) {
+        done(err);
+      });
+
+      // Install is done.
+      kbox.install.events.on('end', function(state) {
+        done();
+      });
+
+      // Run the installer.
+      kbox.install.run(state);
+
     };
-
-    // Keep track of which step we are on.
-    var stepIndex = 1;
-
-    // Get the current time in milliseconds.
-    var getTime = function() {
-      return Date.now();
-    };
-
-    // Time the install started.
-    var startTime = getTime();
-
-    // Time the current step started.
-    var stepStartTime = startTime;
-
-    // Runs right before step.
-    kbox.install.events.on('pre-step', function(step) {
-      var stepNumberInfo = [stepIndex, state.stepCount].join(':');
-      var stepInfo = 'Starting ' + step.name;
-
-      log('[' + stepNumberInfo + '] ' + stepInfo);
-      log('description => ' + step.description);
-      log('dependencies => ' + step.deps.join(', '));
-
-      stepIndex += 1;
-    });
-
-    // Runs right after step.
-    kbox.install.events.on('post-step', function(step) {
-      var now = getTime();
-      var duration = now - stepStartTime;
-      stepStartTime = now;
-
-      log('Finished ' + step.name + ' (' + duration + ')');
-      log();
-    });
-
-    // Error.
-    kbox.install.events.on('error', function(err) {
-      done(err);
-    });
-
-    // Install is done.
-    kbox.install.events.on('end', function(state) {
-      done();
-    });
-
-    // Run the installer.
-    kbox.install.run(state);
-
   });
 
   /*
@@ -201,57 +207,102 @@ module.exports = function(kbox) {
 
   kbox.whenApp(function(app) {
 
-    tasks.registerTask([app.name, 'install'], function(done) {
-      kbox.app.install(app, done);
+    kbox.tasks.add(function(task) {
+      task.path = [app.name, 'install'];
+      task.description = 'Install a kbox application.';
+      task.func = function(done) {
+        kbox.app.install(app, done);
+      };
     });
 
-    tasks.registerTask([app.name, 'uninstall'], function(done) {
-      kbox.app.uninstall(app, done);
+    kbox.tasks.add(function(task) {
+      task.path = [app.name, 'uninstall'];
+      task.description = 'Uninstall an installed kbox application';
+      task.func = function(done) {
+        kbox.app.uninstall(app, done);
+      };
     });
 
-    tasks.registerTask([app.name, 'start'], function(done) {
-      kbox.app.start(app, done);
+    kbox.tasks.add(function(task) {
+      task.path = [app.name, 'start'];
+      task.description = 'Start an installed kbox application.';
+      task.func = function(done) {
+        kbox.app.start(app, done);
+      };
     });
 
-    tasks.registerTask([app.name, 'stop'], function(done) {
-      kbox.app.stop(app, done);
+    kbox.tasks.add(function(task) {
+      task.path = [app.name, 'stop'];
+      task.description = 'Stop a running kbox application.';
+      task.func = function(done) {
+        kbox.app.stop(app, done);
+      };
     });
 
-    tasks.registerTask([app.name, 'restart'], function(done) {
-      kbox.app.restart(app, done);
+    kbox.tasks.add(function(task) {
+      task.path = [app.name, 'restart'];
+      task.description = 'Stop and then start a running kbox application.';
+      task.func = function(done) {
+        kbox.app.restart(app, done);
+      };
     });
 
-    tasks.registerTask([app.name, 'config'], function(done) {
-      outputConfig(app.config, done);
+    kbox.tasks.add(function(task) {
+      task.path = [app.name, 'config'];
+      task.description = 'Display the kbox application\'s configuration.';
+      task.func = function() {
+        console.log(JSON.stringify(app.config, null, '  '));
+      };
     });
 
-    tasks.registerTask([app.name, 'containers'], function(done) {
-      outputContainers(app, done);
+    kbox.tasks.add(function(task) {
+      task.path = [app.name, 'containers'];
+      task.description =
+        'Display list of application\'s installed containers.';
+      task.func = function(done) {
+        outputContainers(app, done);
+      };
     });
 
-    tasks.registerTask([app.name, 'inspect'], function(done) {
-      var targetName = argv._[0];
-      kbox.engine.list(app.name, function(err, containers) {
-        if (err) {
-          done(err);
-        } else {
-          var target = _.find(containers, function(container) {
-            return container.name === targetName;
-          });
-          if (target === undefined) {
-            done(new Error('No item named "' + targetName + '" found!'));
+    kbox.tasks.add(function(task) {
+      task.path = [app.name, 'inspect'];
+      task.description = 'Inspect containers.';
+      task.allowArgv = true;
+      task.func = function(done) {
+        var targets = this.argv;
+        kbox.engine.list(app.name, function(err, containers) {
+          if (err) {
+            done(err);
           } else {
-            kbox.engine.inspect(target.id, function(err, data) {
-              if (err) {
-                done(err);
+            // Map argv to containers.
+            targets = _.map(targets, function(target) {
+              var result = _.find(containers, function(container) {
+                return container.name === target;
+              });
+              if (!result) {
+                done(new Error('No container named: ' + target));
               } else {
-                console.log(data);
-                done();
+                return result;
               }
             });
+            // Inspect each container and output data.
+            async.eachSeries(targets,
+            function(target, next) {
+              kbox.engine.inspect(target.id, function(err, data) {
+                if (err) {
+                  next(err);
+                } else {
+                  console.log(data);
+                  next();
+                }
+              });
+            },
+            function(err) {
+              done(err);
+            });
           }
-        }
-      });
+        });
+      };
     });
 
   });
