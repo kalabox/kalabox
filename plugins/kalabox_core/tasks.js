@@ -197,7 +197,7 @@ module.exports = function(kbox) {
 
       // Run the installer.
       kbox.install.run(state);
-        
+
     };
   });
 
@@ -236,7 +236,7 @@ module.exports = function(kbox) {
       task.description = 'Stop a running kbox application.';
       task.func = function(done) {
         kbox.app.stop(app, done);
-      };  
+      };
     });
 
     kbox.tasks.add(function(task) {
