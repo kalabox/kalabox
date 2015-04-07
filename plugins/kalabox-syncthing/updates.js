@@ -15,6 +15,35 @@ module.exports = function(kbox) {
   var argv = kbox.core.deps.lookup('argv');
   var share = kbox.share;
 
+  // Submitting services for updates
+  kbox.update.registerStep(function(step) {
+    step.name = 'syncthing-image-prepare';
+    step.subscribes = ['kbox-image-prepare'];
+    step.deps = ['kbox-auth'];
+    step.description = 'Submitting syncthing image for update.';
+    step.all = function(state, done) {
+      state.containers.push('kalabox_syncthing');
+      done();
+    };
+  });
+
+  kbox.update.registerStep(function(step) {
+    step.name = 'syncthing-image';
+    step.deps = ['engine-prepared'];
+    step.description = 'Updating your Syncthing services.';
+    step.all = function(state, done) {
+      kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
+        if (err) {
+          state.log(state.status.notOk);
+          done(err);
+        } else {
+          state.log(state.status.ok);
+          done();
+        }
+      });
+    };
+  });
+
   kbox.update.registerStep(function(step) {
     step.name = 'syncthing-off';
     step.deps = ['kbox-auth'];
@@ -138,24 +167,6 @@ module.exports = function(kbox) {
         }
       });
 
-    };
-  });
-
-
-  kbox.update.registerStep(function(step) {
-    step.name = 'syncthing-image';
-    step.deps = ['engine-prepare'];
-    step.description = 'Updating your Syncthing services.';
-    step.all = function(state, done) {
-      kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
-        if (err) {
-          state.log(state.status.notOk);
-          done(err);
-        } else {
-          state.log(state.status.ok);
-          done();
-        }
-      });
     };
   });
 

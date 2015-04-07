@@ -138,6 +138,7 @@ module.exports = function(kbox) {
         adminCommands: [],
         config: config,
         downloads: [],
+        containers: [],
         log: console.log,
         status: {
           ok: chalk.green('OK'),
