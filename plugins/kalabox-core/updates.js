@@ -7,12 +7,14 @@
 var prompt = require('prompt');
 var _ = require('lodash');
 
-var PROVIDER_ATTEMPTS = 3;
-
 module.exports = function(kbox) {
 
-  var argv = kbox.core.deps.lookup('argv');
   var helpers = kbox.util.helpers;
+  var argv = kbox.core.deps.lookup('argv');
+  var util = require('./util.js')(kbox);
+
+  // Add common steps
+  require('./steps/common.js')(kbox, 'update');
 
   // Authorize the update process
   kbox.update.registerStep(function(step) {
@@ -40,6 +42,18 @@ module.exports = function(kbox) {
           process.exit(1);
         }
       });
+    };
+  });
+
+  // Downloads.
+  kbox.update.registerStep(function(step) {
+    step.name = 'downloads';
+    step.description = 'Download installation files.';
+    step.deps = ['disk-space', 'internet', 'kbox-auth'];
+    step.all = function(state, done) {
+      // Grab downloads from state.
+      var downloads = state.downloads;
+      util.downloadFiles(downloads, done);
     };
   });
 
@@ -90,63 +104,7 @@ module.exports = function(kbox) {
     step.description = 'Preparing services for updates.';
     step.all = function(state, done) {
       var sContainers = state.containers;
-      console.log(sContainers);
-      kbox.engine.list(function(err, containers) {
-        if (err) {
-          done(err);
-        }
-        else {
-          helpers.mapAsync(
-            containers,
-            function(container, done) {
-              if (_.include(sContainers, container.name)) {
-                kbox.engine.info(container.id, function(err, info) {
-                  if (!info.running) {
-                    kbox.engine.stop(info.id, function(err) {
-                      if (err) {
-                        done(err);
-                      }
-                      else {
-                        kbox.engine.remove(info.id, function(err) {
-                          if (err) {
-                            done(err);
-                          }
-                          else {
-                            state.log('Removed ' + info.name);
-                            done();
-                          }
-                        });
-                      }
-                    });
-                  }
-                  else {
-                    kbox.engine.remove(info.id, function(err) {
-                      if (err) {
-                        done(err);
-                      }
-                      else {
-                        state.log('Removed ' + info.name);
-                        done();
-                      }
-                    });
-                  }
-                });
-              }
-              else {
-                done();
-              }
-            },
-            function(errs) {
-              if (err) {
-                done(err);
-              }
-              else {
-                done();
-              }
-            }
-          );
-        }
-      });
+      util.prepareImages(sContainers, done);
     };
   });
 
