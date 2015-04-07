@@ -217,18 +217,17 @@ module.exports = function(kbox) {
           function(container, done) {
             if (_.include(sContainers, container.name)) {
               kbox.engine.info(container.id, function(err, info) {
-                if (!info.running) {
-                  kbox.engine.stop(info.id, function(err) {
+                if (info.running) {
+                  kbox.engine.stop(container.id, function(err) {
                     if (err) {
                       done(err);
                     }
                     else {
-                      kbox.engine.remove(info.id, function(err) {
+                      kbox.engine.remove(container.id, function(err) {
                         if (err) {
                           done(err);
                         }
                         else {
-                          console.log('Removed ' + info.name);
                           done();
                         }
                       });
@@ -236,12 +235,11 @@ module.exports = function(kbox) {
                   });
                 }
                 else {
-                  kbox.engine.remove(info.id, function(err) {
+                  kbox.engine.remove(container.id, function(err) {
                     if (err) {
                       done(err);
                     }
                     else {
-                      console.log('Removed ' + info.name);
                       done();
                     }
                   });

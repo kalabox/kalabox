@@ -59,7 +59,6 @@ module.exports = function(kbox) {
 
   // Authorize the update process
   // hide these until services and engine are done
-  /*
   kbox.update.registerStep(function(step) {
     step.name = 'kbox-update';
     step.deps = ['kbox-auth'];
@@ -95,24 +94,11 @@ module.exports = function(kbox) {
       });
     };
   });
-  */
-
- // Preparing services for updates
-  kbox.update.registerStep(function(step) {
-    step.name = 'kbox-image-prepare';
-    step.deps = ['engine-up'];
-    step.description = 'Preparing services for updates.';
-    step.all = function(state, done) {
-      var sContainers = state.containers;
-      util.prepareImages(sContainers, done);
-    };
-  });
 
   // stop running apps
   kbox.update.registerStep(function(step) {
     step.name = 'kbox-apps-prepare';
-    step.subscribes = ['kbox-image-prepare'];
-    step.deps = ['kbox-auth'];
+    step.deps = ['engine-up'];
     step.description = 'Preparing apps for updates.';
     step.all = function(state, done) {
       kbox.engine.list(function(err, containers) {
@@ -140,7 +126,7 @@ module.exports = function(kbox) {
                               done(errs);
                             }
                             else {
-                              state.log('Stopped ' + info.name);
+                              state.log('Stopped ' + app.name);
                               done();
                             }
                           });
@@ -168,6 +154,16 @@ module.exports = function(kbox) {
           );
         }
       });
+    };
+  });
+
+ // Preparing services for updates
+  kbox.update.registerStep(function(step) {
+    step.name = 'kbox-image-prepare';
+    step.deps = ['kbox-apps-prepare'];
+    step.description = 'Preparing services for updates.';
+    step.all = function(state, done) {
+      util.prepareImages(state.containers, done);
     };
   });
 
