@@ -5,13 +5,16 @@
  */
 
 var prompt = require('prompt');
-
-var PROVIDER_ATTEMPTS = 3;
+var _ = require('lodash');
 
 module.exports = function(kbox) {
 
-  var argv = kbox.core.deps.lookup('argv');
   var helpers = kbox.util.helpers;
+  var argv = kbox.core.deps.lookup('argv');
+  var util = require('./util.js')(kbox);
+
+  // Add common steps
+  require('./steps/common.js')(kbox, 'update');
 
   // Authorize the update process
   kbox.update.registerStep(function(step) {
@@ -42,87 +45,126 @@ module.exports = function(kbox) {
     };
   });
 
-  // Shutdown running apps and containers
-  // this should go in kalabox-engine-docker
+  // Downloads.
   kbox.update.registerStep(function(step) {
-    step.name = 'engine-prepare';
-    step.deps = ['kbox-backends'];
-    step.description = 'Preparing engine for updates.';
+    step.name = 'downloads';
+    step.description = 'Download installation files.';
+    step.deps = ['disk-space', 'internet', 'kbox-auth'];
     step.all = function(state, done) {
-      kbox.engine.up(PROVIDER_ATTEMPTS, function(err) {
+      // Grab downloads from state.
+      var downloads = state.downloads;
+      util.downloadFiles(downloads, done);
+    };
+  });
+
+  // Authorize the update process
+  // hide these until services and engine are done
+  kbox.update.registerStep(function(step) {
+    step.name = 'kbox-update';
+    step.deps = ['kbox-auth'];
+    step.description = 'Updating your Kalabox dependencies.';
+    step.all = function(state, done) {
+      kbox.util.npm.updateKalabox(function(err) {
         if (err) {
           done(err);
         }
         else {
-          kbox.engine.list(function(err, containers) {
-            if (err) {
-              done(err);
-            }
-            else {
-              helpers.mapAsync(
-                containers,
-                function(container, done) {
-                  kbox.engine.info(container.id, function(err, info) {
-                    if (err) {
-                      done(err);
-                    } else {
-                      if (!info.running) {
-                        done();
-                      }
-                      else {
-                        if (info.app !== null) {
-                          kbox.app.get(info.app, function(err, app) {
-                            if (err) {
-                              done(err);
-                            }
-                            else {
-                              kbox.app.stop(app, function(errs) {
-                                if (errs) {
-                                  done(errs);
-                                }
-                                else {
-                                  state.log('Stopped ' + info.name);
-                                  done();
-                                }
-                              });
-                            }
-                          });
-                        }
-                        else {
-                          kbox.engine.stop(info.id, function(err) {
-                            if (err) {
-                              done(err);
-                            }
-                            else {
-                              kbox.engine.remove(info.id, function(err) {
-                                if (err) {
-                                  done(err);
-                                }
-                                else {
-                                  state.log('Removed ' + info.name);
-                                  done();
-                                }
-                              });
-                            }
-                          });
-                        }
-                      }
-                    }
-                  });
-                },
-                function(errs) {
-                  if (err) {
-                    done(err);
-                  }
-                  else {
-                    kbox.engine.down(PROVIDER_ATTEMPTS, done);
-                  }
-                }
-              );
-            }
-          });
+          state.log('Updated kalabox deps!');
+          done();
         }
       });
     };
   });
+
+  // Authorize the update process
+  // Separate this into services/engines
+  kbox.update.registerStep(function(step) {
+    step.name = 'kbox-backends';
+    step.deps = ['kbox-auth'];
+    step.description = 'Updating your Kalabox backends.';
+    step.all = function(state, done) {
+      kbox.util.npm.updateBackends(function(err) {
+        if (err) {
+          done(err);
+        }
+        else {
+          state.log('Updated kalabox backends!');
+          done();
+        }
+      });
+    };
+  });
+
+  // stop running apps
+  kbox.update.registerStep(function(step) {
+    step.name = 'kbox-apps-prepare';
+    step.deps = ['engine-up'];
+    step.description = 'Preparing apps for updates.';
+    step.all = function(state, done) {
+      kbox.engine.list(function(err, containers) {
+        if (err) {
+          done(err);
+        }
+        else {
+          helpers.mapAsync(
+            containers,
+            function(container, done) {
+              kbox.engine.info(container.id, function(err, info) {
+                if (err) {
+                  done(err);
+                }
+                else {
+                  if (info.app !== null) {
+                    kbox.app.get(info.app, function(err, app) {
+                      if (err) {
+                        done(err);
+                      }
+                      else {
+                        if (!info.running) {
+                          kbox.app.stop(app, function(errs) {
+                            if (errs) {
+                              done(errs);
+                            }
+                            else {
+                              state.log('Stopped ' + app.name);
+                              done();
+                            }
+                          });
+                        }
+                        else {
+                          done();
+                        }
+                      }
+                    });
+                  }
+                  else {
+                    done();
+                  }
+                }
+              });
+            },
+            function(errs) {
+              if (err) {
+                done(err);
+              }
+              else {
+                done();
+              }
+            }
+          );
+        }
+      });
+    };
+  });
+
+ // Preparing services for updates
+  kbox.update.registerStep(function(step) {
+    step.name = 'kbox-image-prepare';
+    step.deps = ['kbox-apps-prepare'];
+    step.description = 'Preparing services for updates.';
+    step.all = function(state, done) {
+      util.prepareImages(state.containers, done);
+    };
+  });
+
 };
