@@ -47,17 +47,26 @@ module.exports = function(kbox) {
     });
   };
 
-  var createFrameworkFunc = function(frameworkModule) {
+  var createFrameworkFunc = function(task, frameworkModule) {
+    if (typeof task !== 'object') {
+      throw new TypeError('Invalid task object: ' + task);
+    }
     if (typeof frameworkModule !== 'object') {
       throw new TypeError('Invalid frameworkModule: ' + frameworkModule);
     }
 
+    // Add test option.
+    task.options.push({
+      name: 'test',
+      alias: 't',
+      description: 'Display list of steps instead of running steps.'
+    });
+
     return function(done) {
 
-      var argv = kbox.core.deps.lookup('argv');
       var config = kbox.core.deps.lookup('config');
 
-      if (argv.t) {
+      if (this.options.test) {
         var steps = frameworkModule.getSteps();
         steps.forEach(function(step) {
           console.log(step);

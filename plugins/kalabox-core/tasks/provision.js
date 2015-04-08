@@ -12,7 +12,7 @@ module.exports = function(kbox) {
   kbox.tasks.add(function(task) {
     task.path = ['provision'];
     task.description = 'Install kbox and it\'s dependencies.';
-    task.func = util.createFrameworkFunc(kbox.install);
+    task.func = util.createFrameworkFunc(task, kbox.install);
   });
 
 };
