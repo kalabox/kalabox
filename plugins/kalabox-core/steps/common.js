@@ -91,7 +91,7 @@ module.exports = function(kbox, framework) {
   // Downloads.
   kbox[framework].registerStep(function(step) {
     step.name = 'core-downloads';
-    step.description = 'Download files...';
+    step.description = 'Downloading files...';
     step.deps = [
       'core-disk-space',
       'core-internet'
@@ -112,7 +112,7 @@ module.exports = function(kbox, framework) {
       if (downloads.length > 0) {
         var downloadDir = kbox.util.disk.getTempDir();
         downloads.forEach(function(url) {
-          state.log.info([url, downloadDir].join(' -> '));
+          state.log.debug([url, downloadDir].join(' -> '));
         });
         var downloadFiles = kbox.util.download.downloadFiles;
         downloadFiles(downloads, downloadDir, function(err) {

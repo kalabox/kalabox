@@ -51,7 +51,6 @@ module.exports = function(kbox) {
     if (typeof frameworkModule !== 'object') {
       throw new TypeError('Invalid frameworkModule: ' + frameworkModule);
     }
-
     return function(done) {
 
       var argv = kbox.core.deps.lookup('argv');

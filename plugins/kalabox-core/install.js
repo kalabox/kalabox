@@ -30,7 +30,7 @@ module.exports = function(kbox) {
   kbox.install.registerStep(function(step) {
     step.name = 'core-run-admin-commands';
     step.deps = ['core-downloads'];
-    step.description = 'Run shell commands as adminstrator.';
+    step.description = 'Running admin install commands...';
     step.all = function(state, done) {
       // Grab admin commands from state.
       var adminCommands = state.adminCommands;
