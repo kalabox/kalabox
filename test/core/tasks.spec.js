@@ -8,6 +8,8 @@ describe('CLI Task Module', function() {
 
   before(function() {
 
+    m.clearTasks();
+
     m.registerTask(function(task) {
       task.path = ['a', 'b', 'd'];
       task.description = task.path.join('');
