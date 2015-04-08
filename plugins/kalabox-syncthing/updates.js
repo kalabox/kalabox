@@ -30,10 +30,9 @@ module.exports = function(kbox) {
     step.all = function(state, done) {
       kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
         if (err) {
-          state.log(state.status.notOk);
+          state.status = false;
           done(err);
         } else {
-          state.log(state.status.ok);
           done();
         }
       });

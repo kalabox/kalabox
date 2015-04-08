@@ -13,11 +13,11 @@ module.exports = function(kbox, framework) {
     step.deps = [];
     step.subscribes = ['internet'];
     step.all.darwin = function(state, done) {
-      state.log('checking firewall settings...');
+      state.log.debug('checking firewall settings...');
       kbox.util.firewall.isOkay(function(isOkay) {
         var status = isOkay ? state.status.Ok : state.status.notOk;
         var err = isOkay ? null : new Error('Invalid firewall settings.');
-        state.log('status: ' + status);
+        state.log.debug('status: ' + status);
         done(err);
       });
     };
@@ -30,10 +30,10 @@ module.exports = function(kbox, framework) {
     step.deps = [];
     step.all = function(state, done) {
       var url = 'www.google.com';
-      state.log('checking: ' + url);
+      state.log.debug('checking: ' + url);
       kbox.util.internet.check(url, function(err) {
         var status = err ? state.status.notOk : state.status.Ok;
-        state.log('status: ' + status);
+        state.log.debug('status: ' + status);
         done(err);
       });
     };
@@ -45,14 +45,14 @@ module.exports = function(kbox, framework) {
     step.description = 'Check for available disk space.';
     step.deps = [];
     step.all.darwin = function(state, done) {
-      state.log('Checking available disk space.');
+      state.log.debug('Checking available disk space.');
       kbox.util.disk.getFreeSpace(function(err, freeMbs) {
         if (err) {
           done(err);
         } else {
           var enoughFreeSpace = freeMbs > (1 * 1000);
           var status = enoughFreeSpace ? state.status.Ok : state.status.notOk;
-          state.log('status: ' + status);
+          state.log.debug('status: ' + status);
           if (!enoughFreeSpace) {
             err = new Error('Not enough disk space for install!');
           }
@@ -61,14 +61,14 @@ module.exports = function(kbox, framework) {
       });
     };
     step.all.linux = function(state, done) {
-      state.log('Checking available disk space.');
+      state.log.debug('Checking available disk space.');
       kbox.util.disk.getFreeSpace(function(err, freeMbs) {
         if (err) {
           done(err);
         } else {
           var enoughFreeSpace = freeMbs > (1 * 1000);
           var status = enoughFreeSpace ? state.status.Ok : state.status.notOk;
-          state.log('status: ' + status);
+          state.log.debug('status: ' + status);
           if (!enoughFreeSpace) {
             err = new Error('Not enough disk space for install!');
           }

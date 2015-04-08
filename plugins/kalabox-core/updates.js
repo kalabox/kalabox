@@ -38,7 +38,7 @@ module.exports = function(kbox) {
           done();
         }
         else {
-          state.log('Fine, be that way!');
+          state.log.debug('Fine, be that way!');
           process.exit(1);
         }
       });
@@ -69,7 +69,7 @@ module.exports = function(kbox) {
           done(err);
         }
         else {
-          state.log('Updated kalabox deps!');
+          state.log.debug('Updated kalabox deps!');
           done();
         }
       });
@@ -88,7 +88,7 @@ module.exports = function(kbox) {
           done(err);
         }
         else {
-          state.log('Updated kalabox backends!');
+          state.log.debug('Updated kalabox backends!');
           done();
         }
       });
@@ -126,7 +126,7 @@ module.exports = function(kbox) {
                               done(errs);
                             }
                             else {
-                              state.log('Stopped ' + app.name);
+                              state.log.debug('Stopped ' + app.name);
                               done();
                             }
                           });

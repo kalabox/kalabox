@@ -66,14 +66,7 @@ module.exports = function(kbox) {
       }
 
       // Logging function.
-      var log = function(msg) {
-        if (msg) {
-          console.log('#### ' + msg + ' ####');
-          //console.log(chalk.green('#### ' + msg + ' ####'));
-        } else {
-          console.log('');
-        }
-      };
+      var log = kbox.core.log;
 
       // State to inject into install.
       var state = {
@@ -81,11 +74,8 @@ module.exports = function(kbox) {
         config: config,
         downloads: [],
         containers: [],
-        log: console.log,
-        status: {
-          ok: chalk.green('OK'),
-          notOk: chalk.red('NOT OK')
-        }
+        log: log,
+        status: true
       };
 
       // Add app object to state.
@@ -112,9 +102,12 @@ module.exports = function(kbox) {
         var stepNumberInfo = [stepIndex, state.stepCount].join(':');
         var stepInfo = 'Starting ' + step.name;
 
-        log('[' + stepNumberInfo + '] ' + stepInfo);
-        log('description => ' + step.description);
-        log('dependencies => ' + step.deps.join(', '));
+        log.debug('[' + stepNumberInfo + '] ' + stepInfo);
+        log.debug('description => ' + step.description);
+        log.debug('dependencies => ' + step.deps.join(', '));
+
+        log.info(chalk.cyan('-- Step ' + stepIndex + ' --'));
+        log.info(chalk.grey(step.description));
 
         stepIndex += 1;
       });
@@ -124,9 +117,14 @@ module.exports = function(kbox) {
         var now = getTime();
         var duration = now - stepStartTime;
         stepStartTime = now;
-
-        log('Finished ' + step.name + ' (' + duration + ')');
-        log();
+        if (state.status) {
+          log.debug('Finished ' + step.name + ' (' + duration + ')');
+          log.info(chalk.green('OK!'));
+        }
+        else {
+          log.info(chalk.red('FAIL.'));
+        }
+        log.info('');
       });
 
       // Error.
@@ -136,6 +134,7 @@ module.exports = function(kbox) {
 
       // Install is done.
       frameworkModule.events.on('end', function(state) {
+        log.info(chalk.green('Huzzah! process complete!')
         done();
       });
 

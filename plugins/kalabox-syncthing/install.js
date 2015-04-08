@@ -19,7 +19,7 @@ module.exports = function(kbox) {
       state.isSyncthingInstalled = fs.existsSync(
         path.join(state.config.sysConfRoot, 'bin', 'syncthing')
       );
-      state.log('Syncthing installed?: ' + state.isSyncthingInstalled);
+      state.log.debug('Syncthing installed?: ' + state.isSyncthingInstalled);
     };
   });
 
@@ -30,7 +30,7 @@ module.exports = function(kbox) {
       state.syncthingConfigExists = fs.existsSync(
         path.join(state.config.sysConfRoot, 'syncthing', 'config.xml')
       );
-      state.log('Syncthing config exists?: ' + state.syncthingConfigExists);
+      state.log.debug('Syncthing config exists?: ' + state.syncthingConfigExists);
     };
   });
 
@@ -73,10 +73,9 @@ module.exports = function(kbox) {
     step.all = function(state, done) {
       kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
         if (err) {
-          state.log(state.status.notOk);
+          state.status = false;
           done(err);
         } else {
-          state.log(state.status.ok);
           done();
         }
       });
