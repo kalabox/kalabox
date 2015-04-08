@@ -99,13 +99,12 @@ module.exports = function(kbox) {
 
       // Runs right before step.
       frameworkModule.events.on('pre-step', function(step) {
+        // Logging stuff
         var stepNumberInfo = [stepIndex, state.stepCount].join(':');
         var stepInfo = 'Starting ' + step.name;
-
         log.debug('[' + stepNumberInfo + '] ' + stepInfo);
         log.debug('description => ' + step.description);
         log.debug('dependencies => ' + step.deps.join(', '));
-
         log.info(chalk.cyan('-- Step ' + stepIndex + ' --'));
         log.info(chalk.grey(step.description));
 
@@ -119,12 +118,12 @@ module.exports = function(kbox) {
         stepStartTime = now;
         if (state.status) {
           log.debug('Finished ' + step.name + ' (' + duration + ')');
-          log.info(chalk.green('OK!'));
+          log.info(chalk.cyan('-- ') + chalk.green('OK!') + chalk.cyan(' --'));
         }
         else {
-          log.info(chalk.red('FAIL.'));
+          log.info(chalk.cyan('-- ') + chalk.red('FAIL.') + chalk.cyan(' --'));
         }
-        log.info('');
+        console.log('');
       });
 
       // Error.
@@ -134,7 +133,7 @@ module.exports = function(kbox) {
 
       // Install is done.
       frameworkModule.events.on('end', function(state) {
-        log.info(chalk.green('Huzzah! process complete!')
+        log.info(chalk.green('Huzzah! process complete!'));
         done();
       });
 
@@ -142,37 +141,6 @@ module.exports = function(kbox) {
       frameworkModule.run(state);
 
     };
-  };
-
-  var downloadFiles = function(downloads, callback) {
-    // Validation.
-    if (!Array.isArray(downloads)) {
-      return callback(new TypeError('Invalid downloads: ' + downloads));
-    }
-    downloads.forEach(function(download, index) {
-      if (typeof download !== 'string' || download.length < 1) {
-        callback(new TypeError('Invalid download: index: ' + index +
-          ' cmd: ' + download));
-      }
-    });
-    // Download.
-    if (downloads.length > 0) {
-      var downloadDir = kbox.util.disk.getTempDir();
-      downloads.forEach(function(url) {
-        console.log([url, downloadDir].join(' -> '));
-      });
-      var downloadFiles = kbox.util.download.downloadFiles;
-      downloadFiles(downloads, downloadDir, function(err) {
-        if (err) {
-          callback(err);
-        } else {
-          callback();
-        }
-      });
-    }
-    else {
-      callback();
-    }
   };
 
   var runAdminCmds = function(adminCommands, callback) {
@@ -265,7 +233,6 @@ module.exports = function(kbox) {
   return {
     outputContainers: outputContainers,
     createFrameworkFunc: createFrameworkFunc,
-    downloadFiles: downloadFiles,
     runAdminCmds: runAdminCmds,
     prepareImages: prepareImages
   };

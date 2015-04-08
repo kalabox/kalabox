@@ -11,8 +11,9 @@ module.exports = function(kbox) {
   var util = require('./util.js')(kbox);
 
   kbox.install.registerStep(function(step) {
-    step.name = 'is-syncthing-installed';
+    step.name = 'syncthing-is-syncthing-installed';
     step.description = 'Check if syncthing binary is installed.';
+    step.deps = ['core-auth'];
     step.all = function(state) {
       var bin =
         (process.platform === 'win32') ? 'syncthing.exe' : 'syncthing';
@@ -26,22 +27,23 @@ module.exports = function(kbox) {
   kbox.install.registerStep(function(step) {
     step.name = 'syncthing-config-exists';
     step.description = 'Check if syncthing config exists.';
+    step.deps = ['core-auth'];
     step.all = function(state) {
       state.syncthingConfigExists = fs.existsSync(
         path.join(state.config.sysConfRoot, 'syncthing', 'config.xml')
       );
-      state.log.debug('Syncthing config exists?: ' + state.syncthingConfigExists);
+      state.log.debug('Syncthing config?: ' + state.syncthingConfigExists);
     };
   });
 
   kbox.install.registerStep(function(step) {
-    step.name = 'gather-syncthing-dependencies';
+    step.name = 'syncthing-gather-syncthing-dependencies';
     step.description = 'Gathering syncthing dependencies.';
     step.deps = [
-      'is-syncthing-installed',
+      'syncthing-is-syncthing-installed',
       'syncthing-config-exists'
     ];
-    step.subscribes = ['downloads'];
+    step.subscribes = ['core-downloads'];
     step.all = function(state) {
       if (!state.isSyncthingInstalled) {
         state.downloads.push(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
@@ -53,9 +55,11 @@ module.exports = function(kbox) {
   });
 
   kbox.install.registerStep(function(step) {
-    step.name = 'setup-syncthing';
+    step.name = 'syncthing-setup-syncthing';
     step.description = 'Setup syncthing.';
-    step.deps = ['downloads'];
+    step.deps = [
+      'core-downloads'
+    ];
     step.all = function(state, done) {
       if (!state.syncthingConfigExists && !state.isSyncthingInstalled) {
         util.installSyncthing(state.config.sysConfRoot, done);
@@ -67,9 +71,11 @@ module.exports = function(kbox) {
   });
 
   kbox.install.registerStep(function(step) {
-    step.name = 'install-syncthing-image';
+    step.name = 'syncthing-install-syncthing-image';
     step.description = 'Install syncthing image.';
-    step.deps = ['init-engine'];
+    step.deps = [
+      'engine-docker-init-engine'
+    ];
     step.all = function(state, done) {
       kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
         if (err) {

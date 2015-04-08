@@ -10,23 +10,12 @@ module.exports = function(kbox) {
   // Add common steps
   require('./steps/common.js')(kbox, 'install');
 
-  // Downloads.
-  kbox.install.registerStep(function(step) {
-    step.name = 'downloads';
-    step.description = 'Download installation files.';
-    step.deps = ['disk-space', 'internet'];
-    step.all = function(state, done) {
-      // Grab downloads from state.
-      var downloads = state.downloads;
-      util.downloadFiles(downloads, done);
-    };
-  });
-
   // Prepares /usr/local/bin on nix
   kbox.install.registerStep(function(step) {
-    step.name = 'prepare-usr-bin';
+    step.name = 'core-prepare-usr-bin';
     step.description  = 'Preparing /usr/local/bin';
-    step.subscribes = ['run-admin-commands'];
+    step.subscribes = ['core-run-admin-commands'];
+    step.deps = ['core-auth'];
     step.all.linux = function(state, done) {
       var owner = [process.env.USER, process.env.USER].join(':');
       state.adminCommands.unshift('chown ' + owner + ' /usr/local/bin');
@@ -39,7 +28,8 @@ module.exports = function(kbox) {
 
   // Run administator commands.
   kbox.install.registerStep(function(step) {
-    step.name = 'run-admin-commands';
+    step.name = 'core-run-admin-commands';
+    step.deps = ['core-downloads'];
     step.description = 'Run shell commands as adminstrator.';
     step.all = function(state, done) {
       // Grab admin commands from state.

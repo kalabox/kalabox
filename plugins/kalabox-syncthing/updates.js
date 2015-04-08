@@ -14,8 +14,7 @@ module.exports = function(kbox) {
 
   kbox.update.registerStep(function(step) {
     step.name = 'syncthing-image-prepare';
-    step.subscribes = ['kbox-image-prepare'];
-    step.deps = ['kbox-auth'];
+    step.subscribes = ['core-image-prepare'];
     step.description = 'Submitting syncthing image for update.';
     step.all = function(state, done) {
       state.containers.push('kalabox_syncthing');
@@ -25,7 +24,7 @@ module.exports = function(kbox) {
 
   kbox.update.registerStep(function(step) {
     step.name = 'syncthing-image';
-    step.deps = ['engine-prepared'];
+    step.deps = ['engine-docker-prepared'];
     step.description = 'Updating your Syncthing services.';
     step.all = function(state, done) {
       kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
@@ -41,7 +40,7 @@ module.exports = function(kbox) {
 
   kbox.update.registerStep(function(step) {
     step.name = 'syncthing-off';
-    step.deps = ['kbox-auth'];
+    step.deps = ['core-auth'];
     step.description = 'Making sure syncthing is not running';
     step.all = function(state, done) {
       share.getLocalSync()
@@ -64,7 +63,8 @@ module.exports = function(kbox) {
 
   kbox.update.registerStep(function(step) {
     step.name = 'syncthing-download';
-    step.subscribes = ['downloads'];
+    step.subscribes = ['core-downloads'];
+    step.deps = ['core-auth'];
     step.description = 'Downloading new syncthing things.';
     step.all = function(state, done) {
       // Grab downloads from state.
@@ -79,7 +79,9 @@ module.exports = function(kbox) {
   kbox.update.registerStep(function(step) {
     step.name = 'syncthing-update';
     step.description = 'Updating syncthing.';
-    step.deps = ['downloads'];
+    step.deps = [
+      'core-downloads'
+    ];
     step.all = function(state, done) {
       util.installSyncthing(state.config.sysConfRoot, done);
     };
