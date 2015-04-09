@@ -11,7 +11,6 @@ var path = require('path');
 
 var _ = require('lodash');
 var S = require('string');
-var argv = require('minimist')(process.argv.slice(2));
 var async = require('async');
 var chalk = require('chalk');
 var Liftoff = require('liftoff');
@@ -25,6 +24,13 @@ var env = kbox.core.env;
 var tasks = kbox.core.tasks;
 var _util = kbox.util;
 var shell = kbox.util.shell;
+
+// @todo: remove oldArgv after argv changes have been finalized.
+var oldArgv = require('minimist')(process.argv.slice(2));
+// Partition argv between globa and task.
+var argv = kbox.tasks.partitionArgv(process.argv.slice(2));
+var globalArgv = kbox.tasks.parseGlobalArgv(argv.global);
+var taskArgv = argv.task;
 
 var initPlugins = function(globalConfig, callback) {
   var plugins = globalConfig.globalPlugins;
@@ -56,7 +62,8 @@ var init = function(callback) {
   // events
   deps.register('events', kbox.core.events);
   // argv
-  deps.register('argv', argv);
+  deps.register('argv', oldArgv);
+  deps.register('globalArgv', globalArgv);
   kbox.engine.init(globalConfig, function(err) {
     if (err) {
       return callback(err);
@@ -103,8 +110,8 @@ process.once('exit', function(code) {
 });
 
 var cliPackage = require('../package');
-var versionFlag = argv.v || argv.version;
-var tasksFlag = argv.T || argv.tasks;
+//var versionFlag = argv.v || argv.version;
+//var tasksFlag = argv.T || argv.tasks;
 
 function handleError(err) {
   var cancel = false;
@@ -123,79 +130,13 @@ function handleError(err) {
   });
 }
 
-/*function processTask(env) {
-  // Get dependencies.
-  deps.call(function(tasks) {
-    // Get app specific task.
-    var appTask = (function() {
-      if (!env.app) {
-        return null;
-      } else {
-        var args = argv._.slice();
-        if (args[0] !== env.app.name) {
-          args.unshift(env.app.name);
-        }
-        return tasks.getTask(args);
-      }
-    })();
-    // Get global task.
-    var globalTask = (function() {
-      var args = argv._.slice();
-      if (env.app && args[0] === env.app.name) {
-        return null;
-      } else {
-        return tasks.getTask(args);
-      }
-    })();
-    // Figure out if the app specific task or the global task should be used.
-    var result = (function() {
-      var result = {
-        task: null,
-        hasGlobalConflict: false,
-        args: null
-      };
-      if (appTask && appTask.task.task && globalTask && globalTask.task.task) {
-        if (argv.g) {
-          result.task = globalTask.task;
-          result.args = globalTask.args;
-        } else {
-          result.task = appTask.task;
-          result.hasGlobalConflict = true;
-          result.args = appTask.args;
-        }
-      } else if (appTask) {
-        result.task = appTask.task;
-        result.args = appTask.args;
-      } else if (globalTask) {
-        result.task = globalTask.task;
-        result.args = globalTask.args;
-      }
-      return result;
-    })();
-    // Display menu choices or run task.
-    if (!result || !result.task || !result.task.task) {
-      // Always print menu from base of task tree.
-      //tasks.prettyPrint(result.task);
-      tasks.prettyPrint(null);
-      process.exit(1);
-    } else {
-      argv._ = result.args;
-      result.task.task(function(err) {
-        if (err) {
-          handleError(err);
-        }
-      });
-    }
-  });
-}*/
-
 function getAppContextFromArgv(apps, callback) {
   if (typeof callback !== 'function') {
     throw new TypeError('Invalid callback function: ' + callback);
   }
 
   callback(null, _.find(apps, function(app) {
-    return app.name === argv._[0];
+    return app.name === taskArgv[0];
   }));
 }
 
@@ -260,26 +201,23 @@ function getAppContext(apps, callback) {
  */
 function processTask(app) {
 
-  // Grab cli args, but slice out the node and kbox.js args.
-  var argv = process.argv.slice(2);
-
   // Search for a task with the app name.
   var appResult = (function() {
     if (!app) {
       return null;
-    } else if (argv.length === 0) {
+    } else if (taskArgv.length === 0) {
       return null;
     } else {
-      var appArgv = argv.slice(0);
-      if (!_.contains(argv, app.name)) {
+      var appArgv = taskArgv.slice(0);
+      if (!_.contains(taskArgv, app.name)) {
         appArgv.unshift(app.name);
       }
-      return kbox.tasks.find(appArgv);
+      return kbox.tasks.find(appArgv, globalArgv);
     }
   })();
 
   // Search for a task without the app name.
-  var globalResult = kbox.tasks.find(argv);
+  var globalResult = kbox.tasks.find(taskArgv, globalArgv);
 
   // Is there a conflict between an app task and a global task?
   var conflict = !!appResult && !!globalResult;
