@@ -51,6 +51,10 @@ var init = function(callback) {
   var globalConfig = config.getGlobalConfig();
   deps.register('globalConfig', globalConfig);
   deps.register('config', globalConfig);
+  // argv
+  deps.register('argv', oldArgv);
+  deps.register('globalArgv', globalArgv);
+  deps.register('verbose', globalArgv.verbose);
   // require
   deps.register('kboxRequire', kbox.require);
   // mode
@@ -61,9 +65,6 @@ var init = function(callback) {
   deps.register('kbox', kbox);
   // events
   deps.register('events', kbox.core.events);
-  // argv
-  deps.register('argv', oldArgv);
-  deps.register('globalArgv', globalArgv);
   kbox.engine.init(globalConfig, function(err) {
     if (err) {
       return callback(err);
