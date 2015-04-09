@@ -12,7 +12,7 @@ module.exports = function(kbox) {
 
   kbox.install.registerStep(function(step) {
     step.name = 'syncthing-downloads';
-    step.description = 'Qeueing up syncthing downloads...';
+    step.description = 'Queuing up syncthing downloads...';
     step.subscribes = ['core-downloads'];
     step.deps = ['core-auth'];
     step.all = function(state) {
@@ -30,12 +30,11 @@ module.exports = function(kbox) {
     };
   });
 
-  /*
   kbox.install.registerStep(function(step) {
-    step.name = 'syncthing-install-syncthing-image';
-    step.description = 'Install syncthing image.';
+    step.name = 'syncthing-install-image';
+    step.description = 'Installing syncthing image...';
     step.deps = [
-      'engine-docker-init-engine'
+      'engine-docker-up'
     ];
     step.all = function(state, done) {
       kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
@@ -48,6 +47,5 @@ module.exports = function(kbox) {
       });
     };
   });
-*/
 
 };
