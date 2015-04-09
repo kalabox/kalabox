@@ -13,7 +13,7 @@ module.exports = function(kbox) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'inspect'];
       task.description = 'Inspect containers.';
-      task.allowArgv = true;
+      task.kind = 'argv*';
       task.func = function(done) {
         var targets = this.argv;
         kbox.engine.list(app.name, function(err, containers) {
