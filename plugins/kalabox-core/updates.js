@@ -55,9 +55,7 @@ module.exports = function(kbox) {
   // stop running apps
   kbox.update.registerStep(function(step) {
     step.name = 'core-apps-prepare';
-    step.deps = [
-      'engine-docker-up'
-    ];
+    step.deps = ['engine-up'];
     step.description = 'Preparing apps for updates.';
     step.all = function(state, done) {
       kbox.engine.list(function(err, containers) {

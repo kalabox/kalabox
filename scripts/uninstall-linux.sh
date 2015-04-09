@@ -67,6 +67,7 @@ if ([ "$my_answer" == "1" ]); then
     BOOT2DOCKER_PROFILE=$HOME/.kalabox/.provider/profile
     kala_files=()
     append kala_files "$HOME/.kalabox/.provider"
+    append kala_files "$HOME/.kalabox/.provisioned"
     append kala_files "$B2D"
     append kala_files "$BOOT2DOCKER_PROFILE"
     append kala_files "$HOME/.kalabox/syncthing"
@@ -88,6 +89,7 @@ if ([ "$my_answer" == "1" ]); then
         fi
         sleep 10s
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/.provider
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/.provisioned
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $B2D
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $BOOT2DOCKER_PROFILE
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing

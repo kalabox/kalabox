@@ -33,9 +33,7 @@ module.exports = function(kbox) {
   kbox.install.registerStep(function(step) {
     step.name = 'syncthing-install-image';
     step.description = 'Installing syncthing image...';
-    step.deps = [
-      'engine-docker-up'
-    ];
+    step.deps = ['engine-up'];
     step.all = function(state, done) {
       kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
         if (err) {
