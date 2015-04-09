@@ -75,14 +75,7 @@ module.exports = function(kbox) {
       }
 
       // Logging function.
-      var log = function(msg) {
-        if (msg) {
-          console.log('#### ' + msg + ' ####');
-          //console.log(chalk.green('#### ' + msg + ' ####'));
-        } else {
-          console.log('');
-        }
-      };
+      var log = kbox.core.log;
 
       // State to inject into install.
       var state = {
@@ -90,11 +83,8 @@ module.exports = function(kbox) {
         config: config,
         downloads: [],
         containers: [],
-        log: console.log,
-        status: {
-          ok: chalk.green('OK'),
-          notOk: chalk.red('NOT OK')
-        }
+        log: log,
+        status: true
       };
 
       // Add app object to state.
@@ -118,13 +108,15 @@ module.exports = function(kbox) {
 
       // Runs right before step.
       frameworkModule.events.on('pre-step', function(step) {
-        var stepNumberInfo = [stepIndex, state.stepCount].join(':');
+        // Logging stuff
+        var totalSteps = state.stepCount;
+        var stepNumberInfo = [stepIndex, totalSteps].join(':');
         var stepInfo = 'Starting ' + step.name;
-
-        log('[' + stepNumberInfo + '] ' + stepInfo);
-        log('description => ' + step.description);
-        log('dependencies => ' + step.deps.join(', '));
-
+        log.debug('[' + stepNumberInfo + '] ' + stepInfo);
+        log.debug('description => ' + step.description);
+        log.debug('dependencies => ' + step.deps.join(', '));
+        log.info(chalk.cyan('-- Step ' + stepIndex + '/' + totalSteps + ' --'));
+        log.info(chalk.grey(step.description));
         stepIndex += 1;
       });
 
@@ -133,9 +125,18 @@ module.exports = function(kbox) {
         var now = getTime();
         var duration = now - stepStartTime;
         stepStartTime = now;
-
-        log('Finished ' + step.name + ' (' + duration + ')');
-        log();
+        if (state.status) {
+          log.debug('Finished ' + step.name + ' (' + duration + ')');
+          var progress = Math.round(((stepIndex - 1) / state.stepCount) * 100);
+          var msg =
+            chalk.cyan('-- ') + chalk.green('OK! ' + progress + '% complete!') +
+             chalk.cyan(' --');
+          log.info(msg);
+        }
+        else {
+          log.info(chalk.cyan('-- ') + chalk.red('FAIL.') + chalk.cyan(' --'));
+        }
+        console.log('');
       });
 
       // Error.
@@ -145,6 +146,7 @@ module.exports = function(kbox) {
 
       // Install is done.
       frameworkModule.events.on('end', function(state) {
+        log.info(chalk.green('Huzzah! Victory!'));
         done();
       });
 
@@ -152,37 +154,6 @@ module.exports = function(kbox) {
       frameworkModule.run(state);
 
     };
-  };
-
-  var downloadFiles = function(downloads, callback) {
-    // Validation.
-    if (!Array.isArray(downloads)) {
-      return callback(new TypeError('Invalid downloads: ' + downloads));
-    }
-    downloads.forEach(function(download, index) {
-      if (typeof download !== 'string' || download.length < 1) {
-        callback(new TypeError('Invalid download: index: ' + index +
-          ' cmd: ' + download));
-      }
-    });
-    // Download.
-    if (downloads.length > 0) {
-      var downloadDir = kbox.util.disk.getTempDir();
-      downloads.forEach(function(url) {
-        console.log([url, downloadDir].join(' -> '));
-      });
-      var downloadFiles = kbox.util.download.downloadFiles;
-      downloadFiles(downloads, downloadDir, function(err) {
-        if (err) {
-          callback(err);
-        } else {
-          callback();
-        }
-      });
-    }
-    else {
-      callback();
-    }
   };
 
   var runAdminCmds = function(adminCommands, callback) {
@@ -275,7 +246,6 @@ module.exports = function(kbox) {
   return {
     outputContainers: outputContainers,
     createFrameworkFunc: createFrameworkFunc,
-    downloadFiles: downloadFiles,
     runAdminCmds: runAdminCmds,
     prepareImages: prepareImages
   };
