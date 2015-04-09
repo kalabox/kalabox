@@ -15,13 +15,22 @@ module.exports = function(kbox, framework) {
     step.description = 'Authorizing ' + framework + ' subroutines...';
     step.all = function(state, done) {
       // this is how we pass in CLI options to stop interactive mode
+      // Because freedom
+      var date = new Date();
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      var day = date.getDate();
+      var color = 'magenta';
+      if ((year === 2015) && (month === 6) && (day >= 21 && day <= 28)) {
+        color = 'rainbow';
+      }
       // prompt.override = { doit: 'yes' }
       prompt.start();
       var msg = 'Are you sure you want to install/update Kalabox? (y/n)';
       prompt.get({
         properties: {
           doit: {
-            message: msg.magenta,
+            message: msg[color],
             validator: /y[es]*|n[o]?/,
             warning: 'Must respond yes or no',
             default: 'no'
