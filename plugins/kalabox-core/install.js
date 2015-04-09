@@ -8,26 +8,10 @@ module.exports = function(kbox) {
 
   var util = require('./util.js')(kbox);
   var provisioned = kbox.core.deps.lookup('globalConfig').provisioned;
+  var helpers = kbox.util.helpers;
 
   // Add common steps
   require('./steps/common.js')(kbox, 'install');
-
-  if (!provisioned) {
-    kbox.install.registerStep(function(step) {
-      step.name = 'core-prepare-usr-bin';
-      step.description  = 'Preparing /usr/local/bin';
-      step.subscribes = ['core-run-admin-commands'];
-      step.deps = ['core-auth'];
-      step.all.linux = function(state, done) {
-        var owner = [process.env.USER, process.env.USER].join(':');
-        state.adminCommands.unshift('chown ' + owner + ' /usr/local/bin');
-        if (!fs.existsSync('/usr/local/bin')) {
-          state.adminCommands.unshift('mkdir -p /usr/local/bin');
-        }
-        done();
-      };
-    });
-  }
 
   // Run administator commands.
   kbox.install.registerStep(function(step) {
@@ -54,13 +38,30 @@ module.exports = function(kbox) {
     };
   });
 
+  if (!provisioned) {
+    kbox.install.registerStep(function(step) {
+      step.name = 'core-prepare-usr-bin';
+      step.description  = 'Preparing /usr/local/bin...';
+      step.subscribes = ['core-run-admin-commands'];
+      step.deps = ['core-auth'];
+      step.all.linux = function(state, done) {
+        var owner = [process.env.USER, process.env.USER].join(':');
+        state.adminCommands.unshift('chown ' + owner + ' /usr/local/bin');
+        if (!fs.existsSync('/usr/local/bin')) {
+          state.adminCommands.unshift('mkdir -p /usr/local/bin');
+        }
+        done();
+      };
+    });
+  }
+
   if (provisioned) {
     // Authorize the update process
     // hide these until services and engine are done
     kbox.install.registerStep(function(step) {
       step.name = 'core-update';
       step.deps = ['core-auth'];
-      step.description = 'Updating your Kalabox dependencies.';
+      step.description = 'Updating your Kalabox dependencies...';
       step.all = function(state, done) {
         kbox.util.npm.updateKalabox(function(err) {
           if (err) {
@@ -79,7 +80,7 @@ module.exports = function(kbox) {
     kbox.install.registerStep(function(step) {
       step.name = 'core-backends';
       step.deps = ['core-auth'];
-      step.description = 'Updating your Kalabox backends.';
+      step.description = 'Updating your Kalabox backends...';
       step.all = function(state, done) {
         kbox.util.npm.updateBackends(function(err) {
           if (err) {
@@ -94,11 +95,10 @@ module.exports = function(kbox) {
     });
 
     // stop running apps
-    /*
     kbox.install.registerStep(function(step) {
       step.name = 'core-apps-prepare';
       step.deps = ['engine-up'];
-      step.description = 'Preparing apps for updates.';
+      step.description = 'Preparing apps for updates...';
       step.all = function(state, done) {
         kbox.engine.list(function(err, containers) {
           if (err) {
@@ -159,13 +159,12 @@ module.exports = function(kbox) {
    // Preparing services for updates
     kbox.install.registerStep(function(step) {
       step.name = 'core-image-prepare';
-      step.description = 'Preparing services for updates.';
+      step.deps = ['engine-up'];
+      step.description = 'Preparing images for updates...';
       step.all = function(state, done) {
         util.prepareImages(state.containers, done);
       };
     });
-    */
   }
-
 
 };
