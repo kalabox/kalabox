@@ -17,7 +17,7 @@ module.exports = function(kbox, framework) {
       // this is how we pass in CLI options to stop interactive mode
       // prompt.override = { doit: 'yes' }
       prompt.start();
-      var msg = 'Are you sure you want to ' + framework + ' Kalabox? (y/n)';
+      var msg = 'Are you sure you want to install/update Kalabox? (y/n)';
       prompt.get({
         properties: {
           doit: {

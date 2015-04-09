@@ -9,6 +9,8 @@ var Decompress = require('decompress');
 module.exports = function(kbox) {
 
   var util = require('./util.js')(kbox);
+  var provisioned = kbox.core.deps.lookup('globalConfig').provisioned;
+  var share = kbox.share;
 
   kbox.install.registerStep(function(step) {
     step.name = 'syncthing-downloads';
@@ -30,6 +32,7 @@ module.exports = function(kbox) {
     };
   });
 
+  /*
   kbox.install.registerStep(function(step) {
     step.name = 'syncthing-install-image';
     step.description = 'Installing syncthing image...';
@@ -45,5 +48,59 @@ module.exports = function(kbox) {
       });
     };
   });
+*/
+
+  if (provisioned) {
+        /*
+    kbox.install.registerStep(function(step) {
+      step.name = 'syncthing-image-prepare';
+      step.subscribes = ['core-image-prepare'];
+      step.description = 'Submitting syncthing image for update.';
+      step.all = function(state, done) {
+        state.containers.push('kalabox_syncthing');
+        done();
+      };
+    });
+
+    kbox.install.registerStep(function(step) {
+      step.name = 'syncthing-image';
+      step.deps = ['engine-docker-prepared'];
+      step.description = 'Updating your Syncthing services.';
+      step.all = function(state, done) {
+        kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
+          if (err) {
+            state.status = false;
+            done(err);
+          } else {
+            done();
+          }
+        });
+      };
+    });
+*/
+
+    kbox.install.registerStep(function(step) {
+      step.name = 'syncthing-off';
+      step.deps = ['core-auth'];
+      step.description = 'Making sure syncthing is not running';
+      step.all = function(state, done) {
+        share.getLocalSync()
+        .then(function(localSync) {
+          return localSync.isUp()
+          .then(function(isUp) {
+            if (isUp) {
+              return localSync.shutdown();
+            }
+          });
+        })
+        .then(function() {
+          done();
+        })
+        .catch(function(err) {
+          done(err);
+        });
+      };
+    });
+  }
 
 };

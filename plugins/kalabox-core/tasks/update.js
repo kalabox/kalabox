@@ -8,18 +8,11 @@ module.exports = function(kbox) {
 
   var util = require('./../util.js')(kbox);
 
-  // Update task.
-  kbox.tasks.add(function(task) {
-    task.path = ['update'];
-    task.description = 'Update kbox and it\'s dependencies.';
-    task.func = util.createFrameworkFunc(kbox.update);
-  });
-
   kbox.whenApp(function(app) {
-    // Update task.
     kbox.tasks.add(function(task) {
+      console.log('COMING SOON!');
       task.path = [app.name, 'update'];
-      task.description = 'Update application and it\'s dependencies.';
+      task.description = 'Update app and it\'s dependencies.';
       task.func = util.createFrameworkFunc(task, kbox.update);
     });
   });
