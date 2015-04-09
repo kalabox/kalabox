@@ -7,8 +7,8 @@ var path = require('path');
 module.exports = function(kbox) {
 
   var util = require('./util.js')(kbox);
-  var provisioned = kbox.core.deps.lookup('globalConfig').provisioned;
   var helpers = kbox.util.helpers;
+  var provisioned = kbox.core.deps.lookup('globalConfig').provisioned;
 
   // Add common steps
   require('./steps/common.js')(kbox, 'install');
@@ -16,25 +16,14 @@ module.exports = function(kbox) {
   // Run administator commands.
   kbox.install.registerStep(function(step) {
     step.name = 'core-run-admin-commands';
-    step.deps = ['core-auth'];
+    if (provisioned) {
+      step.deps = ['core-auth'];
+    }
     step.description = 'Running admin install commands...';
     step.all = function(state, done) {
       // Grab admin commands from state.
       var adminCommands = state.adminCommands;
       util.runAdminCmds(adminCommands, done);
-    };
-  });
-
-  kbox.install.registerStep(function(step) {
-    step.name = 'core-finish';
-    step.description = 'Finishing install...';
-    step.deps = ['core-auth'];
-    step.all = function(state, done) {
-      fs.writeFileSync(
-        path.join(state.config.sysConfRoot, 'provisioned'),
-        'true'
-      );
-      done();
     };
   });
 
@@ -53,11 +42,23 @@ module.exports = function(kbox) {
         done();
       };
     });
+
+    kbox.install.registerStep(function(step) {
+      step.name = 'core-finish';
+      step.description = 'Finishing install...';
+      // @todo: need core dep
+      step.deps = ['services-kalabox-finalize'];
+      step.all = function(state, done) {
+        fs.writeFileSync(
+          path.join(state.config.sysConfRoot, 'provisioned'),
+          'true'
+        );
+        done();
+      };
+    });
   }
 
   if (provisioned) {
-    // Authorize the update process
-    // hide these until services and engine are done
     kbox.install.registerStep(function(step) {
       step.name = 'core-update';
       step.deps = ['core-auth'];
@@ -75,8 +76,6 @@ module.exports = function(kbox) {
       };
     });
 
-    // Authorize the update process
-    // Separate this into services/engines
     kbox.install.registerStep(function(step) {
       step.name = 'core-backends';
       step.deps = ['core-auth'];
@@ -94,7 +93,6 @@ module.exports = function(kbox) {
       };
     });
 
-    // stop running apps
     kbox.install.registerStep(function(step) {
       step.name = 'core-apps-prepare';
       step.deps = ['engine-up'];

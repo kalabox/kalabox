@@ -8,13 +8,15 @@ module.exports = function(kbox) {
 
   var util = require('./../util.js')(kbox);
 
+  // @todo: scaffolding is in place for a kbox update command for apps
+  /*
   kbox.whenApp(function(app) {
     kbox.tasks.add(function(task) {
-      console.log('COMING SOON!');
       task.path = [app.name, 'update'];
       task.description = 'Update app and it\'s dependencies.';
       task.func = util.createFrameworkFunc(task, kbox.update);
     });
   });
+  */
 
 };
