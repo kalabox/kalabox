@@ -13,7 +13,6 @@ var Decompress = require('decompress');
 module.exports = function(kbox) {
 
   var installSyncthing = function(sysConfRoot, callback) {
-    console.log(sysConfRoot);
     // Get the download location.
     var tmp = kbox.util.disk.getTempDir();
     // Move config from download location to the correct location.

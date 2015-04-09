@@ -95,20 +95,4 @@ describe('#shell module', function() {
 
   });
 
-  describe('#psAll()', function() {
-
-    it('should contain a grep command.', function(done) {
-      var expected = 'ps';
-      shell.psAll(function(err, output) {
-        var match = output.match(/(ps)/);
-        expect(err).to.equal(null);
-        expect(match).to.not.equal(null);
-        expect(match[1]).to.not.equal(null);
-        expect(match[1]).to.equal(expected);
-        done();
-      });
-    });
-
-  });
-
 });

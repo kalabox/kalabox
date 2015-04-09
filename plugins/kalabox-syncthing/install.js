@@ -9,78 +9,81 @@ var Decompress = require('decompress');
 module.exports = function(kbox) {
 
   var util = require('./util.js')(kbox);
+  var provisioned = kbox.core.deps.lookup('globalConfig').provisioned;
+  var share = kbox.share;
 
   kbox.install.registerStep(function(step) {
-    step.name = 'is-syncthing-installed';
-    step.description = 'Check if syncthing binary is installed.';
+    step.name = 'syncthing-downloads';
+    step.description = 'Queuing up syncthing downloads...';
+    step.subscribes = ['core-downloads'];
+    step.deps = ['core-auth'];
     step.all = function(state) {
-      var bin =
-        (process.platform === 'win32') ? 'syncthing.exe' : 'syncthing';
-      state.isSyncthingInstalled = fs.existsSync(
-        path.join(state.config.sysConfRoot, 'bin', 'syncthing')
-      );
-      state.log('Syncthing installed?: ' + state.isSyncthingInstalled);
+      state.downloads.push(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
+      state.downloads.push(meta.SYNCTHING_CONFIG_URL);
     };
   });
 
   kbox.install.registerStep(function(step) {
-    step.name = 'syncthing-config-exists';
-    step.description = 'Check if syncthing config exists.';
-    step.all = function(state) {
-      state.syncthingConfigExists = fs.existsSync(
-        path.join(state.config.sysConfRoot, 'syncthing', 'config.xml')
-      );
-      state.log('Syncthing config exists?: ' + state.syncthingConfigExists);
-    };
-  });
-
-  kbox.install.registerStep(function(step) {
-    step.name = 'gather-syncthing-dependencies';
-    step.description = 'Gathering syncthing dependencies.';
-    step.deps = [
-      'is-syncthing-installed',
-      'syncthing-config-exists'
-    ];
-    step.subscribes = ['downloads'];
-    step.all = function(state) {
-      if (!state.isSyncthingInstalled) {
-        state.downloads.push(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
-      }
-      if (!state.syncthingConfigExists) {
-        state.downloads.push(meta.SYNCTHING_CONFIG_URL);
-      }
-    };
-  });
-
-  kbox.install.registerStep(function(step) {
-    step.name = 'setup-syncthing';
-    step.description = 'Setup syncthing.';
-    step.deps = ['downloads'];
+    step.name = 'syncthing-setup';
+    step.description = 'Setting up syncthing...';
+    step.deps = ['core-downloads'];
     step.all = function(state, done) {
-      if (!state.syncthingConfigExists && !state.isSyncthingInstalled) {
-        util.installSyncthing(state.config.sysConfRoot, done);
-      }
-      else {
-        done();
-      }
+      util.installSyncthing(state.config.sysConfRoot, done);
     };
   });
 
+  var engineDep = (provisioned) ? 'engine-docker-prepared' : 'engine-up';
   kbox.install.registerStep(function(step) {
-    step.name = 'install-syncthing-image';
-    step.description = 'Install syncthing image.';
-    step.deps = ['init-engine'];
+    step.name = 'syncthing-image';
+    step.deps = [engineDep];
+    step.description = 'Installing your Syncthing images.';
     step.all = function(state, done) {
       kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
         if (err) {
-          state.log(state.status.notOk);
+          state.status = false;
           done(err);
         } else {
-          state.log(state.status.ok);
           done();
         }
       });
     };
   });
+
+  if (provisioned) {
+
+    kbox.install.registerStep(function(step) {
+      step.name = 'syncthing-image-prepare';
+      step.subscribes = ['core-image-prepare'];
+      step.deps = ['core-auth'];
+      step.description = 'Submitting syncthing image for update...';
+      step.all = function(state, done) {
+        state.containers.push('kalabox_syncthing');
+        done();
+      };
+    });
+
+    kbox.install.registerStep(function(step) {
+      step.name = 'syncthing-off';
+      step.deps = ['core-auth'];
+      step.description = 'Making sure syncthing is not running';
+      step.all = function(state, done) {
+        share.getLocalSync()
+        .then(function(localSync) {
+          return localSync.isUp()
+          .then(function(isUp) {
+            if (isUp) {
+              return localSync.shutdown();
+            }
+          });
+        })
+        .then(function() {
+          done();
+        })
+        .catch(function(err) {
+          done(err);
+        });
+      };
+    });
+  }
 
 };
