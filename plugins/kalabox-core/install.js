@@ -94,6 +94,15 @@ module.exports = function(kbox) {
     });
 
     kbox.install.registerStep(function(step) {
+      step.name = 'core-image-prepare';
+      step.deps = ['core-apps-prepare'];
+      step.description = 'Preparing images for updates...';
+      step.all = function(state, done) {
+        util.prepareImages(state.containers, done);
+      };
+    });
+
+    kbox.install.registerStep(function(step) {
       step.name = 'core-apps-prepare';
       step.deps = ['engine-up'];
       step.description = 'Preparing apps for updates...';
@@ -117,13 +126,13 @@ module.exports = function(kbox) {
                           done(err);
                         }
                         else {
-                          if (!info.running) {
+                          if (info.running) {
                             kbox.app.stop(app, function(errs) {
                               if (errs) {
                                 done(errs);
                               }
                               else {
-                                state.log.debug('Stopped ' + app.name);
+                                state.log.info('Stopped ' + app.name);
                                 done();
                               }
                             });
@@ -153,16 +162,5 @@ module.exports = function(kbox) {
         });
       };
     });
-
-   // Preparing services for updates
-    kbox.install.registerStep(function(step) {
-      step.name = 'core-image-prepare';
-      step.deps = ['engine-up'];
-      step.description = 'Preparing images for updates...';
-      step.all = function(state, done) {
-        util.prepareImages(state.containers, done);
-      };
-    });
   }
-
 };

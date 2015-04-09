@@ -36,7 +36,7 @@ module.exports = function(kbox) {
   kbox.install.registerStep(function(step) {
     step.name = 'syncthing-image';
     step.deps = [engineDep];
-    step.description = 'Installing your Syncthing images.';
+    step.description = 'Installing your Syncthing image...';
     step.all = function(state, done) {
       kbox.engine.build({name: 'kalabox/syncthing:stable'}, function(err) {
         if (err) {
@@ -65,7 +65,7 @@ module.exports = function(kbox) {
     kbox.install.registerStep(function(step) {
       step.name = 'syncthing-off';
       step.deps = ['core-auth'];
-      step.description = 'Making sure syncthing is not running';
+      step.description = 'Making sure syncthing is not running...';
       step.all = function(state, done) {
         share.getLocalSync()
         .then(function(localSync) {

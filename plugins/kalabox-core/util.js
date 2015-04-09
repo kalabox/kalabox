@@ -109,14 +109,14 @@ module.exports = function(kbox) {
       // Runs right before step.
       frameworkModule.events.on('pre-step', function(step) {
         // Logging stuff
-        var stepNumberInfo = [stepIndex, state.stepCount].join(':');
+        var totalSteps = state.stepCount;
+        var stepNumberInfo = [stepIndex, totalSteps].join(':');
         var stepInfo = 'Starting ' + step.name;
         log.debug('[' + stepNumberInfo + '] ' + stepInfo);
         log.debug('description => ' + step.description);
         log.debug('dependencies => ' + step.deps.join(', '));
-        log.info(chalk.cyan('-- Step ' + stepIndex + ' --'));
+        log.info(chalk.cyan('-- Step ' + stepIndex + '/' + totalSteps + ' --'));
         log.info(chalk.grey(step.description));
-
         stepIndex += 1;
       });
 
@@ -127,7 +127,11 @@ module.exports = function(kbox) {
         stepStartTime = now;
         if (state.status) {
           log.debug('Finished ' + step.name + ' (' + duration + ')');
-          log.info(chalk.cyan('-- ') + chalk.green('OK!') + chalk.cyan(' --'));
+          var progress = Math.round(((stepIndex - 1) / state.stepCount) * 100);
+          var msg =
+            chalk.cyan('-- ') + chalk.green('OK! ' + progress + '% complete!') +
+             chalk.cyan(' --');
+          log.info(msg);
         }
         else {
           log.info(chalk.cyan('-- ') + chalk.red('FAIL.') + chalk.cyan(' --'));
@@ -142,7 +146,7 @@ module.exports = function(kbox) {
 
       // Install is done.
       frameworkModule.events.on('end', function(state) {
-        log.info(chalk.green('Huzzah! process complete!'));
+        log.info(chalk.green('Huzzah! Victory!'));
         done();
       });
 
