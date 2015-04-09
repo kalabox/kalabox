@@ -12,6 +12,7 @@ describe('config module', function() {
   before(function() {
     var globalConfig = core.config.getGlobalConfig();
     core.deps.register('globalConfig', globalConfig);
+    core.deps.register('verbose', false);
     core.log.init({consoleOnly:true});
   });
 
