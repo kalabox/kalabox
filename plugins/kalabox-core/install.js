@@ -19,6 +19,9 @@ module.exports = function(kbox) {
     if (provisioned) {
       step.deps = ['core-auth'];
     }
+    if (process.platform === 'win32') {
+      step.deps.push('core-downloads');
+    }
     step.description = 'Running admin install commands...';
     step.all = function(state, done) {
       // Grab admin commands from state.

@@ -103,6 +103,10 @@ module.exports = function(kbox, framework) {
       });
     };
     step.all.linux = step.all.darwin;
+    step.all.win32 = function(state, done) {
+      // @todo
+      done();
+    };
   });
 
   // Downloads.
