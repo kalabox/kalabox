@@ -37,6 +37,7 @@ IF %id% == 1 (
   IF EXIST "%HOMEPATH%\.kalabox" (
     ECHO Removing Kalabox directories
     RMDIR %HOMEPATH%\.kalabox /S /Q
+    RMDIR "%HOMEPATH%\VirtualBox VMs\Kalabox2" /S /Q
     ECHO REMOVED!
     ECHO.
   )
