@@ -60,6 +60,14 @@ module.exports = function(kbox, framework) {
         done(err);
       });
     };
+    step.all.linux = function(state, done) {
+      // @todo
+      done();
+    };
+    step.all.win32 = function(state, done) {
+      // @todo
+      done();
+    };
   });
 
   // Internet.
