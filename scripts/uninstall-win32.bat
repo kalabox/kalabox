@@ -31,7 +31,7 @@ SET /p id=Choose your destiny:
 
 IF %id% == 1 (
   ECHO Stopping and removing Kalabox2
-  boot2docker --vm="Kalabox2" destroy
+  "C:\Program Files\Boot2Docker for Windows\boot2docker.exe" --vm="Kalabox2" destroy
   ECHO DESTROYED!
   ECHO.
   IF EXIST "%HOMEPATH%\.kalabox" (
