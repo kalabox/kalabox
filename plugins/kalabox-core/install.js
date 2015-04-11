@@ -20,11 +20,11 @@ module.exports = function(kbox) {
       step.deps = ['core-auth'];
     }
     if (!provisioned && process.platform === 'win32') {
-      step.deps.push('core-downloads');
+      // @todo: this should be a core dep
+      step.deps.push('engine-docker-provider-profile');
     }
     step.description = 'Running admin install commands...';
     step.all = function(state, done) {
-      // Grab admin commands from state.
       var adminCommands = state.adminCommands;
       util.runAdminCmds(adminCommands, done);
     };
