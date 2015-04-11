@@ -114,21 +114,29 @@ var cliPackage = require('../package');
 //var versionFlag = argv.v || argv.version;
 //var tasksFlag = argv.T || argv.tasks;
 
+/*
+ * Handler errors.
+ */
 function handleError(err) {
-  var cancel = false;
-  // This is just in case logging module has an issue.
-  var timer = setTimeout(function() {
-    if (!cancel) {
-      throw err;
-    }
-  }, 5000);
+
+  // Print error message.
+  console.log(chalk.red(err.message));
+
+  if (globalArgv.verbose) {
+
+    // When verbose output, also print stack trace.
+    console.log(chalk.red(err.stack));
+
+  }
+
   // Log error.
   kbox.core.log.error(err, function() {
-    // Cancel safety timer and throw err.
-    cancel = true;
-    clearTimeout(timer);
-    throw err;
+
+    // Exit the process with a failure.
+    process.exit(1);
+
   });
+
 }
 
 function getAppContextFromArgv(apps, callback) {
