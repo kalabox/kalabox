@@ -20,7 +20,7 @@ module.exports = function(kbox) {
       step.deps = ['core-auth'];
     }
     if (!provisioned && process.platform === 'win32') {
-      steps.deps.push('core-downloads');
+      step.deps.push('core-downloads');
     }
     step.description = 'Running admin install commands...';
     step.all = function(state, done) {
