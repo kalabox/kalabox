@@ -17,10 +17,7 @@ module.exports = function(kbox) {
   kbox.install.registerStep(function(step) {
     step.name = 'core-run-admin-commands';
     if (provisioned) {
-      step.deps = ['core-auth'];
-    }
-    if (process.platform === 'win32') {
-      step.deps.push('core-downloads');
+      step.deps = ['core-auth', 'core-downloads'];
     }
     step.description = 'Running admin install commands...';
     step.all = function(state, done) {
