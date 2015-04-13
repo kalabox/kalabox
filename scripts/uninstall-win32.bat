@@ -31,12 +31,13 @@ SET /p id=Choose your destiny:
 
 IF %id% == 1 (
   ECHO Stopping and removing Kalabox2
-  boot2docker --vm="Kalabox2" destroy
+  "C:\Program Files\Boot2Docker for Windows\boot2docker.exe" --vm="Kalabox2" destroy
   ECHO DESTROYED!
   ECHO.
   IF EXIST "%HOMEPATH%\.kalabox" (
     ECHO Removing Kalabox directories
     RMDIR %HOMEPATH%\.kalabox /S /Q
+    RMDIR "%HOMEPATH%\VirtualBox VMs\Kalabox2" /S /Q
     ECHO REMOVED!
     ECHO.
   )
@@ -47,7 +48,7 @@ IF %id% == 1 (
   )
   IF EXIST "C:\Program Files\Boot2Docker for Windows\unins000.exe" (
     "C:\Program Files\Boot2Docker for Windows\unins000.exe" /SILENT /SUPRESSMSGBOXES /NORESTART
-    ECHO UNINSTALLED MYSYS GIT!
+    ECHO UNINSTALLED Boot2Docker!
     ECHO.
   )
   ECHO "YOU WILL NEED TO UNINSTALL VIRTUALBOX MANUALLY TO COMPLETE THE UNINSTALL"

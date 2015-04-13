@@ -19,9 +19,12 @@ module.exports = function(kbox) {
     if (provisioned) {
       step.deps = ['core-auth'];
     }
+    if (!provisioned && process.platform === 'win32') {
+      // @todo: this should be a core dep
+      step.deps.push('engine-docker-provider-profile');
+    }
     step.description = 'Running admin install commands...';
     step.all = function(state, done) {
-      // Grab admin commands from state.
       var adminCommands = state.adminCommands;
       util.runAdminCmds(adminCommands, done);
     };
@@ -63,7 +66,7 @@ module.exports = function(kbox) {
       step.name = 'core-update';
       step.deps = ['core-auth'];
       step.description = 'Updating your Kalabox dependencies...';
-      step.all = function(state, done) {
+      step.all.darwin = function(state, done) {
         kbox.util.npm.updateKalabox(function(err) {
           if (err) {
             done(err);
@@ -73,6 +76,11 @@ module.exports = function(kbox) {
             done();
           }
         });
+      };
+      step.all.linux = step.all.darwin;
+      step.all.win32 = function(state, done) {
+        state.log.info(chalk.yellow('NPM update not yet available on Win'));
+        done();
       };
     });
 
