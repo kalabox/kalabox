@@ -25,12 +25,8 @@ var tasks = kbox.core.tasks;
 var _util = kbox.util;
 var shell = kbox.util.shell;
 
-// @todo: remove oldArgv after argv changes have been finalized.
-var oldArgv = require('minimist')(process.argv.slice(2));
-// Partition argv between globa and task.
+// Partition and parse argv.
 var argv = kbox.tasks.partitionArgv(process.argv.slice(2));
-var globalArgv = kbox.tasks.parseGlobalArgv(argv.global);
-var taskArgv = argv.task;
 
 var initPlugins = function(globalConfig, callback) {
   var plugins = globalConfig.globalPlugins;
@@ -52,9 +48,8 @@ var init = function(callback) {
   deps.register('globalConfig', globalConfig);
   deps.register('config', globalConfig);
   // argv
-  deps.register('argv', oldArgv);
-  deps.register('globalArgv', globalArgv);
-  deps.register('verbose', globalArgv.verbose);
+  deps.register('argv', argv);
+  deps.register('verbose', argv.options.verbose);
   // require
   deps.register('kboxRequire', kbox.require);
   // mode
@@ -122,7 +117,7 @@ function handleError(err) {
   // Print error message.
   console.log(chalk.red(err.message));
 
-  if (globalArgv.verbose) {
+  if (argv.options.verbose) {
 
     // When verbose output, also print stack trace.
     console.log(chalk.red(err.stack));
@@ -145,7 +140,7 @@ function getAppContextFromArgv(apps, callback) {
   }
 
   callback(null, _.find(apps, function(app) {
-    return app.name === taskArgv[0];
+    return app.name === argv.payload[0];
   }));
 }
 
@@ -214,19 +209,23 @@ function processTask(app) {
   var appResult = (function() {
     if (!app) {
       return null;
-    } else if (taskArgv.length === 0) {
+    } else if (argv.payload.length === 0) {
       return null;
     } else {
-      var appArgv = taskArgv.slice(0);
-      if (!_.contains(taskArgv, app.name)) {
-        appArgv.unshift(app.name);
+      var appPayload = argv.payload.slice(0);
+      if (!_.contains(appPayload, app.name)) {
+        appPayload.unshift(app.name);
       }
-      return kbox.tasks.find(appArgv, globalArgv);
+      return kbox.tasks.find({
+        payload: appPayload,
+        options: argv.options,
+        rawOptions: argv.rawOptions
+      });
     }
   })();
 
   // Search for a task without the app name.
-  var globalResult = kbox.tasks.find(taskArgv, globalArgv);
+  var globalResult = kbox.tasks.find(argv);
 
   // Is there a conflict between an app task and a global task?
   var conflict = !!appResult && !!globalResult;
