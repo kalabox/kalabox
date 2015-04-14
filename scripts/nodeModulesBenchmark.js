@@ -18,7 +18,7 @@ var clearCache = function() {
 // Get node modules directory.
 var nodeModulesDir = path.join(__dirname, 'node_modules');
 
-// Loop through each 
+// Loop through each
 fs.readdir(nodeModulesDir, function(err, dirs) {
 
   // Check for error.
@@ -49,12 +49,12 @@ fs.readdir(nodeModulesDir, function(err, dirs) {
     clearCache();
 
     var ms = ben(1, function() {
-      var x = require(dir);  
+      var x = require(dir);
     });
 
     results.push({
       id: dir,
-      ms: ms  
+      ms: ms
     });
 
   });
@@ -76,6 +76,5 @@ fs.readdir(nodeModulesDir, function(err, dirs) {
 
   // Display results.
   console.log(results);
-
 
 });
