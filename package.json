@@ -40,7 +40,7 @@
     "download-status": "^2.1.0",
     "fileinput": "https://github.com/kalabox/node-fileinput/tarball/master",
     "liftoff": "~0.13.2",
-    "lodash": "~2.4.1",
+    "lodash": "~3.6.0",
     "minimist": "~1.1.0",
     "mkdirp": "^0.5.0",
     "node-getopt": "^0.2.3",
