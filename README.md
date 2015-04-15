@@ -1,8 +1,6 @@
 # Kalabox
 
-A framework to build reusable, super fast, highly customizable, extensible and local integrated workflow solutions for all kinds of apps.
-
-You can think about it as a superfast Vagrant for containers.
+A framework to build reusable, super fast, highly customizable, extensible and local integrated workflow solutions for all kinds of apps.**You can think about it as a superfast Vagrant for containers.**
 
 With Kalabox you can
 
@@ -80,7 +78,6 @@ User's can override some global configuration by putting a file called `kalabox.
 
 ```json
 {
-	{
   "appRegistry": "/Users/mpirog/.kalabox/appRegistry.json",
   "appsRoot": "/Users/mpirog/kalabox/apps",
   "configSources": [
