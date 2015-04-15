@@ -4,7 +4,6 @@ var fs = require('fs');
 var path = require('path');
 var meta = require('./meta.js');
 var mkdirp = require('mkdirp');
-var Decompress = require('decompress');
 
 module.exports = function(kbox) {
 

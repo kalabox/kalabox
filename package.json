@@ -40,12 +40,11 @@
     "download-status": "^2.1.0",
     "fileinput": "https://github.com/kalabox/node-fileinput/tarball/master",
     "liftoff": "~0.13.2",
-    "lodash": "~2.4.1",
+    "lodash": "~3.6.0",
     "minimist": "~1.1.0",
     "mkdirp": "^0.5.0",
     "node-getopt": "^0.2.3",
     "npm": "^2.5.1",
-    "plist": "^1.1.0",
     "progress": "^1.1.8",
     "prompt": "^0.2.14",
     "restler": "^3.2.2",
@@ -59,6 +58,7 @@
     "yargs": "^3.7.0"
   },
   "devDependencies": {
+    "ben": "0.0.0",
     "chai": "^1.9.2",
     "grunt": "^0.4.5",
     "grunt-bump": "0.0.16",
