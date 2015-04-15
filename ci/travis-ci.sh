@@ -73,72 +73,74 @@ after-success() {
     [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ]; then
 
-    # DO VERSION BUMPING FOR KALABOX/KALABOX
-    COMMIT_MESSAGE=$(git log --format=%B -n 1)
-    BUILD_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat $TRAVIS_BUILD_DIR/package.json)")
-    # BUMP patch but only on master and not a tag
-    if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_BRANCH == "master" ] && [ "${COMMIT_MESSAGE}" != "Release v${BUILD_VERSION}" ] ; then
-      grunt bump-patch
+    # Only do our stuff on the latest node version
+    if [ $TRAVIS_NODE_VERSION == "0.12" ] ; then
+      # DO VERSION BUMPING FOR KALABOX/KALABOX
+      COMMIT_MESSAGE=$(git log --format=%B -n 1)
+      BUILD_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat $TRAVIS_BUILD_DIR/package.json)")
+      # BUMP patch but only on master and not a tag
+      if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_BRANCH == "master" ] && [ "${COMMIT_MESSAGE}" != "Release v${BUILD_VERSION}" ] ; then
+        grunt bump-patch
+      fi
+      # Get updated build version
+      BUILD_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat $TRAVIS_BUILD_DIR/package.json)")
+      chmod 600 $HOME/.ssh/travis.id_rsa
+
+      # SET UP SSH THINGS
+      eval "$(ssh-agent)"
+      ssh-add $HOME/.ssh/travis.id_rsa
+      git config --global user.name "Kala C. Bot"
+      git config --global user.email "kalacommitbot@kalamuna.com"
+
+      # RESET UPSTREAM SO WE CAN PUSH VERSION CHANGES TO IT
+      # We need to re-add this in because our clone was originally read-only
+      git remote rm origin
+      git remote add origin git@github.com:$TRAVIS_REPO_SLUG.git
+      git checkout $TRAVIS_BRANCH
+      git add -A
+      if [ -z "$TRAVIS_TAG" ]; then
+        git commit -m "KALABOT BUILDING NEGATIVE POWER COUPLING VERSION ${BUILD_VERSION} [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
+      fi
+      git push origin $TRAVIS_BRANCH
+
+      # DEPLOY OUR BUILD TO NPM
+      $HOME/npm-config.sh > /dev/null
+      npm publish ./
+
+      # PUSH OUR GENERATED JSDOCS TO API.KALABOX.ME
+      rm -rf $TRAVIS_BUILD_DIR/deploy
+      mkdir $TRAVIS_BUILD_DIR/deploy
+      git clone git@github.com:kalabox/kalabox-api.git $TRAVIS_BUILD_DIR/deploy
+      cd $TRAVIS_BUILD_DIR/deploy
+      rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/doc/ $TRAVIS_BUILD_DIR/deploy/
+      git add --all
+      git commit -m "Building API DOCS with ${BUILD_VERSION}"
+      if [ ! -z "$TRAVIS_TAG" ]; then
+        git tag $TRAVIS_TAG
+      fi
+      # deploy it!
+      git push origin master --tags
+      # clean up again
+      rm -rf $TRAVIS_BUILD_DIR/deploy
+
+      # PUSH OUR GENERATED TEST COVERAGE REPORTS TO COVERAGE.KALABOX.ME
+      rm -rf $TRAVIS_BUILD_DIR/deploy
+      mkdir $TRAVIS_BUILD_DIR/deploy
+      cd $TRAVIS_BUILD_DIR/deploy
+      TRAVIS_REPO=$(echo $TRAVIS_REPO_SLUG | awk -F'/' '{print $2}')
+      git clone git@github.com:kalabox/kalabox-coverage.git $TRAVIS_BUILD_DIR/deploy
+      mkdir -p $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
+      rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/coverage/ $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
+      git add --all
+      git commit -m "Building COVERAGE DOCS with ${BUILD_VERSION}"
+      if [ ! -z "$TRAVIS_TAG" ]; then
+        git tag $TRAVIS_TAG
+      fi
+      # deploy it!
+      git push origin master --tags
+      # clean up again
+      rm -rf $TRAVIS_BUILD_DIR/deploy
     fi
-    # Get updated build version
-    BUILD_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat $TRAVIS_BUILD_DIR/package.json)")
-    chmod 600 $HOME/.ssh/travis.id_rsa
-
-    # SET UP SSH THINGS
-    eval "$(ssh-agent)"
-    ssh-add $HOME/.ssh/travis.id_rsa
-    git config --global user.name "Kala C. Bot"
-    git config --global user.email "kalacommitbot@kalamuna.com"
-
-    # RESET UPSTREAM SO WE CAN PUSH VERSION CHANGES TO IT
-    # We need to re-add this in because our clone was originally read-only
-    git remote rm origin
-    git remote add origin git@github.com:$TRAVIS_REPO_SLUG.git
-    git checkout $TRAVIS_BRANCH
-    git add -A
-    if [ -z "$TRAVIS_TAG" ]; then
-      git commit -m "KALABOT BUILDING NEGATIVE POWER COUPLING VERSION ${BUILD_VERSION} [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
-    fi
-    git push origin $TRAVIS_BRANCH
-
-    # DEPLOY OUR BUILD TO NPM
-    $HOME/npm-config.sh > /dev/null
-    npm publish ./
-
-    # PUSH OUR GENERATED JSDOCS TO API.KALABOX.ME
-    rm -rf $TRAVIS_BUILD_DIR/deploy
-    mkdir $TRAVIS_BUILD_DIR/deploy
-    git clone git@github.com:kalabox/kalabox-api.git $TRAVIS_BUILD_DIR/deploy
-    cd $TRAVIS_BUILD_DIR/deploy
-    rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/doc/ $TRAVIS_BUILD_DIR/deploy/
-    git add --all
-    git commit -m "Building API DOCS with ${BUILD_VERSION}"
-    if [ ! -z "$TRAVIS_TAG" ]; then
-      git tag $TRAVIS_TAG
-    fi
-    # deploy it!
-    git push origin master --tags
-    # clean up again
-    rm -rf $TRAVIS_BUILD_DIR/deploy
-
-    # PUSH OUR GENERATED TEST COVERAGE REPORTS TO COVERAGE.KALABOX.ME
-    rm -rf $TRAVIS_BUILD_DIR/deploy
-    mkdir $TRAVIS_BUILD_DIR/deploy
-    cd $TRAVIS_BUILD_DIR/deploy
-    TRAVIS_REPO=$(echo $TRAVIS_REPO_SLUG | awk -F'/' '{print $2}')
-    git clone git@github.com:kalabox/kalabox-coverage.git $TRAVIS_BUILD_DIR/deploy
-    mkdir -p $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
-    rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/coverage/ $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
-    git add --all
-    git commit -m "Building COVERAGE DOCS with ${BUILD_VERSION}"
-    if [ ! -z "$TRAVIS_TAG" ]; then
-      git tag $TRAVIS_TAG
-    fi
-    # deploy it!
-    git push origin master --tags
-    # clean up again
-    rm -rf $TRAVIS_BUILD_DIR/deploy
-
   else
     exit $EXIT_VALUE
   fi
