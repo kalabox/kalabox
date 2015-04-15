@@ -242,12 +242,12 @@ function processTask(app) {
   if (!result) {
 
     // We ended up with a branch, so display task tree.
-    kbox.tasks.showMenu(kbox.tasks.getTaskTree());
+    kbox.tasks.showMenu(kbox.tasks.getTaskTree(), app);
 
   } else if (kbox.tasks.isBranch(result)) {
 
     // We ended up with a branch, so display task tree.
-    kbox.tasks.showMenu(result);
+    kbox.tasks.showMenu(result, app);
 
   } else if (kbox.tasks.isTask(result)) {
 
