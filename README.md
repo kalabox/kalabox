@@ -1,6 +1,6 @@
 # Kalabox
 
-A framework to build reusable, super fast, highly customizable, extensible and local integrated workflow solutions for all kinds of apps.**You can think about it as a superfast Vagrant for containers.**
+A framework to build reusable, super fast, highly customizable, extensible and local integrated workflow solutions for all kinds of apps. **You can think about Kalabox as a super-fast Vagrant for containers.**
 
 With Kalabox you can
 
@@ -9,15 +9,9 @@ With Kalabox you can
     3. Standardize your teams dev environments and tools on OSX, Windows and Linux.
     4. Easily customize or extend tooling and deployment options.
 
-[Read more](https://github.com/kalabox/kalabox/wiki)
+For more info on how you can do some of the above check out the [wiki](https://github.com/kalabox/kalabox/wiki).
 
-**This project is currently under heavy development.**
-
-## Key Features
-
-1. [Pluggable backends](https://github.com/kalabox/kalabox/wiki/Pluggable-Backends)
-2. [Easy app creation](https://github.com/kalabox/kalabox-app-examples)
-3. [Plugins](https://github.com/kalabox/kalabox/wiki/Plugin-System)
+**This project is currently under heavy development and is changing quickly.**
 
 ## Installation
 
@@ -42,18 +36,27 @@ Here is an example of `kbox` from a non-app directory.
 ```
 kbox
 
---- Command Menu ---
+Usage: kbox <command> [-- <options>]
 
-apps          Display list of apps.
-config        Display the kbox configuration.
-containers    Display list of all installed kbox containers.
-down          Bring kbox container engine down.
-ip            Display kbox container engine's ip address.
-provision     Install or update kbox and it's dependencies.
-shields       Shield generator operation.
-status        Display status of kbox container engine.
-up            Bring kbox container engine up.
-version       Display the kbox version.
+Examples:
+  kbox apps -- -h
+  kbox config -- --verbose
+
+Commands:
+  apps          Display list of apps.
+  config        Display the kbox configuration.
+  containers    Display list of all installed kbox containers.
+  down          Bring kbox container engine down.
+  ip            Display kbox container engine's ip address.
+  provision     Install or update kbox and it's dependencies.
+  shields       Shield generator operation.
+  status        Display status of kbox container engine.
+  up            Bring kbox container engine up.
+  version       Display the kbox version.
+
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolea
 ```
 
 And specific command help.
