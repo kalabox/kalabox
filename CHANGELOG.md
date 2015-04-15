@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.6.0 (2015-4-14)
+
+Kbox provision as updater, better task framework and bug fixes
+
+- Created `kbox shields` command
+- Allowed versions of backends to be specified in config
+- Refactored how we load backends and plugin deps
+- Created npm util module to
+- Added in prompt to kick off `kbox provision`
+- Reached 1000 commits!!!
+- Refactored tasks to use new task framework
+- Stopped winston from throwing errors
+- Fixed invalid command path bug in cli menu
+- Fixed missing return in taskNew
+- Changed provision to run updates on second run
+- Cleaned and refactored plugins and provision code
+- Created better framework for tasks
+- Provided framework for future `kbox update` command.
+- Fixed bug where syncthing failed when running two or more apps
+- Fixed bug calculating the number of install steps
+
 ## 0.5.0 (2015-3-27)
 
 Moved to new installer framework
