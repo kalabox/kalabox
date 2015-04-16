@@ -62,27 +62,6 @@ module.exports = function(kbox) {
   }
 
   if (provisioned) {
-    kbox.install.registerStep(function(step) {
-      step.name = 'core-update';
-      step.deps = ['core-auth'];
-      step.description = 'Updating your Kalabox dependencies...';
-      step.all.darwin = function(state, done) {
-        kbox.util.npm.updateKalabox(function(err) {
-          if (err) {
-            done(err);
-          }
-          else {
-            state.log.debug('Updated kalabox deps!');
-            done();
-          }
-        });
-      };
-      step.all.linux = step.all.darwin;
-      step.all.win32 = function(state, done) {
-        state.log.info(chalk.yellow('NPM update not yet available on Win'));
-        done();
-      };
-    });
 
     kbox.install.registerStep(function(step) {
       step.name = 'core-backends';
