@@ -22,7 +22,7 @@ module.exports = function(kbox) {
 
     events.on('post-uninstall', function(app, done) {
       console.log('Removing the codez.');
-      rmdir(app.config.codeRoot, function(error) {
+      rmdir(app.config.codeRoot, function(err) {
         if (err) {
           done(err);
         }
