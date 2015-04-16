@@ -62,6 +62,14 @@ module.exports = function(kbox) {
       description: 'Display list of steps instead of running steps.'
     });
 
+    // Add disksize option
+    task.options.push({
+      name: 'disksize',
+      kind: 'string',
+      alias: 'd',
+      description: 'Change the default disk size, in MB units.'
+    });
+
     return function(done) {
 
       var config = kbox.core.deps.lookup('config');
@@ -74,11 +82,14 @@ module.exports = function(kbox) {
         return done();
       }
 
+      var disksize = (this.options.disksize) ? this.options.disksize : false;
+
       // Logging function.
       var log = kbox.core.log;
 
       // State to inject into install.
       var state = {
+        disksize: disksize,
         adminCommands: [],
         config: config,
         downloads: [],
