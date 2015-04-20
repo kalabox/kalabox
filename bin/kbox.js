@@ -80,6 +80,9 @@ var init = function(callback) {
   // argv
   deps.register('argv', argv);
   deps.register('verbose', argv.options.verbose);
+  //deps.register('buildLocal', argv.options.buildLocal);
+  // @todo: add a build-local global cli option.
+  deps.register('buildLocal', true);
   // require
   deps.register('kboxRequire', kbox.require);
   // mode
