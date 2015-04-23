@@ -28,6 +28,36 @@ var shell = kbox.util.shell;
 // Partition and parse argv.
 var argv = kbox.tasks.partitionArgv(process.argv.slice(2));
 
+/*
+ * Handler errors.
+ */
+function handleError(err) {
+
+  // Print error message.
+  console.log(chalk.red(err.message));
+
+  if (argv.options.verbose) {
+
+    // When verbose output, also print stack trace.
+    console.log(chalk.red(err.stack));
+
+  }
+
+  // Log error.
+  kbox.core.log.error(err, function() {
+
+    // Exit the process with a failure.
+    process.exit(1);
+
+  });
+
+}
+
+/*
+ * Ensure all uncaught exceptions get handled.
+ */
+process.on('uncaughtException', handleError);
+
 var initPlugins = function(globalConfig, callback) {
   var plugins = globalConfig.globalPlugins;
   async.eachSeries(plugins, function(plugin, next) {
@@ -50,6 +80,7 @@ var init = function(callback) {
   // argv
   deps.register('argv', argv);
   deps.register('verbose', argv.options.verbose);
+  deps.register('buildLocal', argv.options.buildLocal);
   // require
   deps.register('kboxRequire', kbox.require);
   // mode
@@ -108,31 +139,6 @@ process.once('exit', function(code) {
 var cliPackage = require('../package');
 //var versionFlag = argv.v || argv.version;
 //var tasksFlag = argv.T || argv.tasks;
-
-/*
- * Handler errors.
- */
-function handleError(err) {
-
-  // Print error message.
-  console.log(chalk.red(err.message));
-
-  if (argv.options.verbose) {
-
-    // When verbose output, also print stack trace.
-    console.log(chalk.red(err.stack));
-
-  }
-
-  // Log error.
-  kbox.core.log.error(err, function() {
-
-    // Exit the process with a failure.
-    process.exit(1);
-
-  });
-
-}
 
 function getAppContextFromArgv(apps, callback) {
   if (typeof callback !== 'function') {

@@ -70,6 +70,13 @@ module.exports = function(kbox) {
       description: 'Change the default disk size, in MB units.'
     });
 
+    // Add build local option.
+    task.options.push({
+      name: 'build-local',
+      kind: 'boolean',
+      description: 'Build images locally instead of pulling them remotely.'
+    });
+
     return function(done) {
 
       var config = kbox.core.deps.lookup('config');

@@ -94,7 +94,7 @@ module.exports = function(kbox) {
         // Add a remote .stignore
         var cmd = ['cp', '/src/code/.stignore', '/data/.stignore'];
         engine.once(
-          'kalabox/debian:stable',
+          'debian',
           ['/bin/bash'],
           {
             'Env': ['APPDOMAIN=' + app.domain],
