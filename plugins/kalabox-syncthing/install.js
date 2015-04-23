@@ -48,6 +48,29 @@ module.exports = function(kbox) {
     };
   });
 
+  kbox.install.registerStep(function(step) {
+    step.name = 'syncthing-off';
+    step.deps = ['core-auth'];
+    step.description = 'Making sure syncthing is not running...';
+    step.all = function(state, done) {
+      share.getLocalSync()
+      .then(function(localSync) {
+        return localSync.isUp()
+        .then(function(isUp) {
+          if (isUp) {
+            return localSync.shutdown();
+          }
+        });
+      })
+      .then(function() {
+        done();
+      })
+      .catch(function(err) {
+        done(err);
+      });
+    };
+  });
+
   if (provisioned) {
 
     kbox.install.registerStep(function(step) {
@@ -61,28 +84,6 @@ module.exports = function(kbox) {
       };
     });
 
-    kbox.install.registerStep(function(step) {
-      step.name = 'syncthing-off';
-      step.deps = ['core-auth'];
-      step.description = 'Making sure syncthing is not running...';
-      step.all = function(state, done) {
-        share.getLocalSync()
-        .then(function(localSync) {
-          return localSync.isUp()
-          .then(function(isUp) {
-            if (isUp) {
-              return localSync.shutdown();
-            }
-          });
-        })
-        .then(function() {
-          done();
-        })
-        .catch(function(err) {
-          done(err);
-        });
-      };
-    });
   }
 
 };
