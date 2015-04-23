@@ -80,6 +80,7 @@ var init = function(callback) {
   // argv
   deps.register('argv', argv);
   deps.register('verbose', argv.options.verbose);
+  deps.register('buildLocal', argv.options.buildLocal);
   // require
   deps.register('kboxRequire', kbox.require);
   // mode
