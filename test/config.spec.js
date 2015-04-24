@@ -22,9 +22,9 @@ describe('config module', function() {
         bar: 'xx:foo:xx',
         foo: 'asdf'
       };
-      var key = 'bar';
-      core.config.normalizeValue(key, config);
-      expect(config.bar).to.equal('xxasdfxx');
+      config = core.config.normalize(config);
+      var result = core.config.normalizeValue(config, 'aaa:bar:bbb');
+      expect(result).to.equal('aaaxxasdfxxbbb');
     });
   });
 
