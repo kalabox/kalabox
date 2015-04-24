@@ -64,7 +64,7 @@ module.exports = function(kbox) {
               if (isUpVersion10) {
                 return localSync.shutdownVersion10();
               }
-            })
+            });
           } else {
             return err;    
           }
