@@ -38,7 +38,7 @@ module.exports = function(kbox) {
     step.deps = [engineDep];
     step.description = 'Installing your Syncthing image...';
     step.all = function(state, done) {
-      kbox.engine.build({name: 'syncthing'}, function(err) {
+      kbox.engine.build({name: 'kalabox/syncthing:dev'}, function(err) {
         if (err) {
           state.status = false;
           done(err);
