@@ -10,7 +10,6 @@ var fs = require('fs');
 var path = require('path');
 
 var _ = require('lodash');
-var S = require('string');
 var async = require('async');
 var chalk = require('chalk');
 var Liftoff = require('liftoff');
@@ -155,10 +154,10 @@ function getAppContextFromCwd(apps, callback) {
     throw new TypeError('Invalid callback function: ' + callback);
   }
 
-  var cwd = S(process.cwd());
+  var cwd = process.cwd();
   callback(null, _.find(apps, function(app) {
     var appRoot = app.config.appRoot;
-    return cwd.startsWith(appRoot);
+    return _.startsWith(cwd, appRoot);
   }));
 }
 

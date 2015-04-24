@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var meta = require('./meta.js');
 var mkdirp = require('mkdirp');
+var S = require('string');
 
 module.exports = function(kbox) {
 
@@ -48,6 +49,41 @@ module.exports = function(kbox) {
     };
   });
 
+  kbox.install.registerStep(function(step) {
+    step.name = 'syncthing-off';
+    step.deps = ['core-auth'];
+    step.description = 'Making sure syncthing is not running...';
+    step.all = function(state, done) {
+      share.getLocalSync()
+      .then(function(localSync) {
+        return localSync.isUp()
+        .catch(function(err) {
+          if (S(err.message).startsWith('404 page not found')) {
+            return localSync.isUpVersion10()
+            .then(function(isUpVersion10) {
+              if (isUpVersion10) {
+                return localSync.shutdownVersion10();
+              }
+            });
+          } else {
+            return err;
+          }
+        })
+        .then(function(isUp) {
+          if (isUp) {
+            return localSync.shutdown();
+          }
+        });
+      })
+      .then(function() {
+        done();
+      })
+      .catch(function(err) {
+        done(err);
+      });
+    };
+  });
+
   if (provisioned) {
 
     kbox.install.registerStep(function(step) {
@@ -61,28 +97,6 @@ module.exports = function(kbox) {
       };
     });
 
-    kbox.install.registerStep(function(step) {
-      step.name = 'syncthing-off';
-      step.deps = ['core-auth'];
-      step.description = 'Making sure syncthing is not running...';
-      step.all = function(state, done) {
-        share.getLocalSync()
-        .then(function(localSync) {
-          return localSync.isUp()
-          .then(function(isUp) {
-            if (isUp) {
-              return localSync.shutdown();
-            }
-          });
-        })
-        .then(function() {
-          done();
-        })
-        .catch(function(err) {
-          done(err);
-        });
-      };
-    });
   }
 
 };
