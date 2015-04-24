@@ -4,7 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var meta = require('./meta.js');
 var mkdirp = require('mkdirp');
-var S = require('string');
+var _ = require('lodash');
 
 module.exports = function(kbox) {
 
@@ -58,7 +58,7 @@ module.exports = function(kbox) {
       .then(function(localSync) {
         return localSync.isUp()
         .catch(function(err) {
-          if (S(err.message).startsWith('404 page not found')) {
+          if (_.startsWith(err.message, '404 page not found')) {
             return localSync.isUpVersion10()
             .then(function(isUpVersion10) {
               if (isUpVersion10) {
