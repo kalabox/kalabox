@@ -66,7 +66,7 @@ module.exports = function(kbox) {
               }
             });
           } else {
-            return err;    
+            return err;
           }
         })
         .then(function(isUp) {
