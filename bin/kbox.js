@@ -170,9 +170,13 @@ function getAppContextFromCwdConfig(apps, callback) {
   var configFilepath = path.join(cwd, 'kalabox.json');
   if (fs.existsSync(configFilepath)) {
     var config = kbox.core.config.getAppConfig(null, cwd);
-    kbox.app.create(config.appName, config, function(err, app) {
-      callback(err, app);
-    });
+    if (config.appName) {
+      kbox.app.create(config.appName, config, function(err, app) {
+        callback(err, app);
+      });
+    } else {
+      callback(null);
+    }
   } else {
     callback(null);
   }
