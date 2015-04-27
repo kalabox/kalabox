@@ -8,18 +8,18 @@
 var config = require('./../lib/core/config.js');
 var npm = require('./../lib/util/npm.js');
 
-var defaultConfig = config.getDefaultConfig();
+var globalConfig = config.getGlobalConfig();
 var pkgs = [];
 
 // Grab our backends
-pkgs.push(defaultConfig.engine);
-pkgs.push(defaultConfig.services);
+pkgs.push(globalConfig.engine);
+pkgs.push(globalConfig.services);
 // Grab our apps
-pkgs = pkgs.concat(defaultConfig.apps);
+pkgs = pkgs.concat(globalConfig.apps);
 // Could easily add support for external plugins with something like below
 // pkgs.concat(defaultConfig.externalPlugins);
 
-npm.installPackages(defaultConfig.srcRoot, pkgs, function(err) {
+npm.installPackages(globalConfig.srcRoot, pkgs, function(err) {
   if (err) {
     console.log(err);
   } else {
