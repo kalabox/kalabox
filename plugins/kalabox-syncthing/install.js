@@ -3,7 +3,6 @@
 var fs = require('fs');
 var path = require('path');
 var meta = require('./meta.js');
-var mkdirp = require('mkdirp');
 var _ = require('lodash');
 
 module.exports = function(kbox) {
