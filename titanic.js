@@ -3,10 +3,6 @@
 var _ = require('lodash');
 var async = require('async');
 
-var notImp = function() {
-  return new Error('Not implemented');
-};
-
 // Singleton array of actions.
 var actions = [];
 
@@ -14,9 +10,25 @@ var actions = [];
 var checks = [];
 
 /*
+ * Validate typeof and length of function.
+ */
+var validateFunction = function(fn) {
+
+  if (typeof fn !== 'function') {
+    throw new TypeError('Invalid function: ' + fn);
+  }
+
+  if (fn.length !== 1) {
+    throw new TypeError('Invalid function signature: ' + fn.toString());
+  }
+
+};
+
+/*
  * Add to list of actions.
  */
 var addAction = exports.addAction = function(action) {
+  validateFunction(action);
   actions.push(action);
 };
 
@@ -24,6 +36,7 @@ var addAction = exports.addAction = function(action) {
  * Add to list of checks.
  */
 var addCheck = exports.addCheck = function(check) {
+  validateFunction(check);
   checks.push(check);
 };
 
@@ -31,7 +44,7 @@ var addCheck = exports.addCheck = function(check) {
  * Return a random number between 0 and max.
  */
 var getRandomNumber = function(min, max) {
-
+  
   return _.random(min, max);
 
 };
@@ -60,25 +73,6 @@ var getRandomAction = function() {
 var getRandomCheck = function() {
 
   return getRandomFromArray(checks);
-
-};
-
-/*
- * Bring kbox back to a valid status.
- */
-var restore = function(done) {
-
-  // Is kbox installed?
-
-  // Is kbox running?
-
-  // Is app installed?
-
-  // Is app running?
-
-  //throw notImp();
-
-  done();
 
 };
 
@@ -112,7 +106,7 @@ var getChecks = function(max) {
 /*
  * Run each action and restore state of kbox after each.
  */
-var runActions = function(actions, done) {
+var runActions = function(actions, restore, done) {
 
   // Map actions to also call restore.
   actions = _.map(actions, function(action) {
@@ -155,16 +149,16 @@ var runChecks = function(checks, done) {
 /*
  * Run through to completion a full state change.
  */
-var increment = function(done) {
+var increment = function(restore, done) {
 
   // Get a random number of random actions.
-  var actions = getActions(5);
+  var actions = getActions(10);
 
   // Get a random number of random checks.
-  var checks = getChecks(5);
+  var checks = getChecks(10);
 
   // Run each action and restore state of kbox after each.
-  runActions(actions, function(err) {
+  runActions(actions, restore, function(err) {
 
     // Report errors.
     if (err) {
@@ -186,9 +180,9 @@ var increment = function(done) {
 /*
  * Increment until whileFunc returns false.
  */
-var run = exports.run = function(whileFunc, done) {
+var run = exports.run = function(whileFunc, restoreFunc, done) {
 
   // While whileFunc returns true, run increment.
-  async.whilst(whileFunc, increment, done);
+  async.whilst(whileFunc, _.partial(increment, restoreFunc), done);
   
 };

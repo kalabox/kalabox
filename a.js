@@ -26,6 +26,10 @@ t.addCheck(function(done) {
   done();
 });
 
+var restore = function(done) {
+  done();
+};
+
 var runs = 10;
 var cursor = 0;
 
@@ -36,6 +40,7 @@ function() {
   return cursor <= runs;
   
 },
+restore,
 function(err) {
 
   if (err) {
