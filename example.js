@@ -1,19 +1,6 @@
 var t = require('./titanic');
 var krun = require('./krun');
 
-/*t.addAction(function(done) {
-  console.log('action a');
-  done();
-});
-t.addAction(function(done) {
-  console.log('action b');
-  done();
-});
-t.addAction(function(done) {
-  console.log('action c');
-  done();
-});*/
-
 t.addAction(function(done) {
   krun()
   .run('kbox down', 20).ok()
@@ -26,19 +13,6 @@ t.addAction(function(done) {
   })
   .done(done);
 });
-
-/*t.addCheck(function(done) {
-  console.log('check a');
-  done();
-});
-t.addCheck(function(done) {
-  console.log('check b');
-  done();
-});
-t.addCheck(function(done) {
-  console.log('check c');
-  done();
-});*/
 
 t.addCheck(function(done) {
   krun()
