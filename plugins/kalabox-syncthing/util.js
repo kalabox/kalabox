@@ -4,10 +4,9 @@
  * This contains all the core commands that kalabox can run on every machine
  */
 
-var fs = require('fs');
+var fs = require('fs-extra');
 var path = require('path');
 var meta = require('./meta.js');
-var mkdirp = require('mkdirp');
 
 module.exports = function(kbox) {
 
@@ -17,7 +16,7 @@ module.exports = function(kbox) {
     var tmp = kbox.util.disk.getTempDir();
     // Move config from download location to the correct location.
     var syncthingDir = path.join(sysConfRoot, 'syncthing');
-    mkdirp.sync(syncthingDir);
+    fs.mkdirpSync(syncthingDir);
     var config = path.join(
       tmp,
       path.basename(meta.SYNCTHING_CONFIG_URL)
@@ -46,7 +45,7 @@ module.exports = function(kbox) {
         callback(err);
       } else {
         var binDir = path.join(sysConfRoot, 'bin');
-        mkdirp.sync(binDir);
+        fs.mkdirpSync(binDir);
         var bin =
           (process.platform === 'win32') ? 'syncthing.exe' : 'syncthing';
         var ext = (process.platform === 'win32') ? '.zip' : '.tar.gz';

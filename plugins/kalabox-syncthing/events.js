@@ -1,7 +1,6 @@
 'use strict';
 
-var fs = require('fs');
-var mkdirp = require('mkdirp');
+var fs = require('fs-extra');
 var os = require('os');
 var path = require('path');
 
@@ -87,7 +86,7 @@ module.exports = function(kbox) {
       events.on('pre-start', function(app, done) {
         // Add a local .stignore file
         if (!fs.existsSync(app.config.codeRoot)) {
-          mkdirp.sync(app.config.codeRoot);
+          fs.mkdirpSync(app.config.codeRoot);
         }
         fs.writeFileSync(stignoreFile, shareIgnores);
 

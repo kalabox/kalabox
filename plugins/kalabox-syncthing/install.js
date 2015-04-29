@@ -3,7 +3,7 @@
 var fs = require('fs');
 var path = require('path');
 var meta = require('./meta.js');
-var mkdirp = require('mkdirp');
+var _ = require('lodash');
 
 module.exports = function(kbox) {
 
@@ -37,13 +37,48 @@ module.exports = function(kbox) {
     step.deps = [engineDep];
     step.description = 'Installing your Syncthing image...';
     step.all = function(state, done) {
-      kbox.engine.build({name: 'syncthing'}, function(err) {
+      kbox.engine.build({name: 'kalabox/syncthing:dev'}, function(err) {
         if (err) {
           state.status = false;
           done(err);
         } else {
           done();
         }
+      });
+    };
+  });
+
+  kbox.install.registerStep(function(step) {
+    step.name = 'syncthing-off';
+    step.deps = ['core-auth'];
+    step.description = 'Making sure syncthing is not running...';
+    step.all = function(state, done) {
+      share.getLocalSync()
+      .then(function(localSync) {
+        return localSync.isUp()
+        .catch(function(err) {
+          if (_.startsWith(err.message, '404 page not found')) {
+            return localSync.isUpVersion10()
+            .then(function(isUpVersion10) {
+              if (isUpVersion10) {
+                return localSync.shutdownVersion10();
+              }
+            });
+          } else {
+            return err;
+          }
+        })
+        .then(function(isUp) {
+          if (isUp) {
+            return localSync.shutdown();
+          }
+        });
+      })
+      .then(function() {
+        done();
+      })
+      .catch(function(err) {
+        done(err);
       });
     };
   });
@@ -61,28 +96,6 @@ module.exports = function(kbox) {
       };
     });
 
-    kbox.install.registerStep(function(step) {
-      step.name = 'syncthing-off';
-      step.deps = ['core-auth'];
-      step.description = 'Making sure syncthing is not running...';
-      step.all = function(state, done) {
-        share.getLocalSync()
-        .then(function(localSync) {
-          return localSync.isUp()
-          .then(function(isUp) {
-            if (isUp) {
-              return localSync.shutdown();
-            }
-          });
-        })
-        .then(function() {
-          done();
-        })
-        .catch(function(err) {
-          done(err);
-        });
-      };
-    });
   }
 
 };

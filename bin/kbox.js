@@ -10,7 +10,6 @@ var fs = require('fs');
 var path = require('path');
 
 var _ = require('lodash');
-var S = require('string');
 var async = require('async');
 var chalk = require('chalk');
 var Liftoff = require('liftoff');
@@ -155,10 +154,11 @@ function getAppContextFromCwd(apps, callback) {
     throw new TypeError('Invalid callback function: ' + callback);
   }
 
-  var cwd = S(process.cwd());
+  var cwd = process.cwd();
   callback(null, _.find(apps, function(app) {
     var appRoot = app.config.appRoot;
-    return cwd.startsWith(appRoot);
+    var diff = cwd.replace(appRoot, '').substring(0, 1);
+    return (!diff || diff === path.sep) ? true : false;
   }));
 }
 
@@ -171,9 +171,13 @@ function getAppContextFromCwdConfig(apps, callback) {
   var configFilepath = path.join(cwd, 'kalabox.json');
   if (fs.existsSync(configFilepath)) {
     var config = kbox.core.config.getAppConfig(null, cwd);
-    kbox.app.create(config.appName, config, function(err, app) {
-      callback(err, app);
-    });
+    if (config.appName) {
+      kbox.app.create(config.appName, config, function(err, app) {
+        callback(err, app);
+      });
+    } else {
+      callback(null);
+    }
   } else {
     callback(null);
   }
@@ -276,8 +280,6 @@ function processTask(app) {
 }
 
 function handleArguments(env) {
-  var workingDir = env.cwd;
-  var configPath = path.join(env.cwd, '.kalabox', 'profile.json');
 
   // Init dependencies.
   init(function(err, globalConfig) {
@@ -353,7 +355,6 @@ cli.on('requireFail', function(name) {
 
 cli.launch({
   cwd: argv.cwd,
-  configPath: argv.kalaboxfile,
   require: argv.require,
   completion: argv.completion,
   verbose: argv.verbose,
