@@ -106,33 +106,10 @@ var getChecks = function(max) {
 /*
  * Run each action and restore state of kbox after each.
  */
-var runActions = function(actions, restore, done) {
-
-  // Map actions to also call restore.
-  actions = _.map(actions, function(action) {
-
-    // Return composite function.
-    return function(next) {
-
-      // Run action.
-      action(function(err) {
-
-        // Report errors.
-        if (err) {
-          return next(err);
-        }
-
-        // Restore state of kbox.
-        restore(next);
-
-      });
-
-    };
-
-  });
+var runActions = function(actions, done) {
 
   // Loop through each action.
-  async.series(actions, done)
+  async.series(actions, done);
 
 };
 
@@ -149,16 +126,16 @@ var runChecks = function(checks, done) {
 /*
  * Run through to completion a full state change.
  */
-var increment = function(restore, done) {
+var increment = function(done) {
 
   // Get a random number of random actions.
-  var actions = getActions(10);
+  var actions = getActions(5);
 
   // Get a random number of random checks.
-  var checks = getChecks(10);
+  var checks = getChecks(5);
 
-  // Run each action and restore state of kbox after each.
-  runActions(actions, restore, function(err) {
+  // Run each action.
+  runActions(actions, function(err) {
 
     // Report errors.
     if (err) {
@@ -180,9 +157,9 @@ var increment = function(restore, done) {
 /*
  * Increment until whileFunc returns false.
  */
-var run = exports.run = function(whileFunc, restoreFunc, done) {
+var run = exports.run = function(whileFunc, done) {
 
   // While whileFunc returns true, run increment.
-  async.whilst(whileFunc, _.partial(increment, restoreFunc), done);
+  async.whilst(whileFunc, increment, done);
   
 };

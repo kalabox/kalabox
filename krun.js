@@ -50,13 +50,13 @@ module.exports = function(silent) {
 
       // Instance already has a promise, so chain them.
       api.p = api.p.then(function() {
-        return new Promise(fn).timeout(timeout);
+        return new Promise(fn).timeout(timeout, 'timeout: ' + cmd);
       });
 
     } else {
 
       // Instance does not already have a promise.
-      api.p = new Promise(fn).timeout(timeout);
+      api.p = new Promise(fn).timeout(timeout, 'timeout: ' + cmd);
 
     }
 
