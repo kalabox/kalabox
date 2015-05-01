@@ -92,8 +92,7 @@ module.exports = function(kbox) {
         fs.writeFileSync(stignoreFile, shareIgnores);
 
         // Add a remote .stignore
-
-        var codeDir = deps.lookup('globalConfig').codeDir
+        var codeDir = deps.lookup('globalConfig').codeDir;
         var cmd = [
           'cp',
           '/src/' + codeDir + '/.stignore',
