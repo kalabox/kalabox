@@ -27,7 +27,6 @@ module.exports = function(kbox) {
     else {
       createOptions.Env = envs;
     }
-    console.log(createOptions);
     done();
   });
 
