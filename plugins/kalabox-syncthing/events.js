@@ -8,6 +8,7 @@ module.exports = function(kbox) {
 
   var events = kbox.core.events;
   var share = kbox.share;
+  var deps = kbox.core.deps;
 
   // EVENT: pre-down
   events.on('pre-down', function(done) {
@@ -91,7 +92,12 @@ module.exports = function(kbox) {
         fs.writeFileSync(stignoreFile, shareIgnores);
 
         // Add a remote .stignore
-        var cmd = ['cp', '/src/code/.stignore', '/data/.stignore'];
+        var codeDir = deps.lookup('globalConfig').codeDir;
+        var cmd = [
+          'cp',
+          '/src/' + codeDir + '/.stignore',
+          '/' + codeDir + '/.stignore'
+        ];
         engine.once(
           'debian',
           ['/bin/bash'],
