@@ -9,8 +9,6 @@ module.exports = function(kbox) {
 
   var util = require('./util.js')(kbox);
   var helpers = kbox.util.helpers;
-  var app = kbox.core.deps.lookup('app');
-  var appConfig = kbox.core.deps.lookup('appConfig');
 
   // Add common steps
   require('./steps/common.js')(kbox, 'update');
@@ -20,7 +18,8 @@ module.exports = function(kbox) {
     step.deps = ['core-downloads'];
     step.description = 'Updating your app deps...';
     step.all = function(state, done) {
-      kbox.util.npm.installPackages(appConfig.appRoot, function(err) {
+      var appConfig = kbox.core.deps.lookup('appConfig').appRoot;
+      kbox.util.npm.installPackages(appRoot, function(err) {
         if (err) {
           done(err);
         }
@@ -67,6 +66,7 @@ module.exports = function(kbox) {
             if (err) {
               done(err);
             } else {
+              var app = kbox.core.deps.lookup('app');
               kbox.app.rebuild(app, done);
             }
           });
