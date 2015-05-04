@@ -18,7 +18,7 @@ module.exports = function(kbox) {
     step.deps = ['core-downloads'];
     step.description = 'Updating your app deps...';
     step.all = function(state, done) {
-      var appConfig = kbox.core.deps.lookup('appConfig').appRoot;
+      var appRoot = kbox.core.deps.lookup('appConfig').appRoot;
       kbox.util.npm.installPackages(appRoot, function(err) {
         if (err) {
           done(err);
