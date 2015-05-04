@@ -13,6 +13,7 @@ module.exports = function(kbox) {
   require('./tasks/install.js')(kbox);
   require('./tasks/provision.js')(kbox);
   require('./tasks/query.js')(kbox);
+  require('./tasks/rebuild.js')(kbox);
   require('./tasks/restart.js')(kbox);
   require('./tasks/shields.js')(kbox);
   require('./tasks/start.js')(kbox);
