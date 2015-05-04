@@ -247,7 +247,7 @@ t.addCheck(function(done) {
   done);
 });
 
-var runs = 1;
+var runs = 25;
 var cursor = 0;
 
 var keepGoing = function() {
