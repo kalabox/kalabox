@@ -29,7 +29,6 @@ module.exports = function(kbox) {
             forcePull: true
           };
           var containerName = ['kb', app.name, 'data'].join('_');
-          console.log(containerName);
           kbox.engine.build(dataImage, function() {
             kbox.engine.create(
               {
