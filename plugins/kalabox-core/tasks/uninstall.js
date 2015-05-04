@@ -19,7 +19,8 @@ module.exports = function(kbox) {
       task.description = 'Uninstall an installed kbox application';
       task.func = function(done) {
         // Do this even ONLY when uninstall is run
-        events.on('post-uninstall', function(app, done) {
+        // @todo: what would this do on the GUI?
+        events.on('pre-uninstall', function(app, done) {
           var containerIdFile = path.join(app.config.appCidsRoot, 'data');
           var containerId;
           if (fs.existsSync(containerIdFile)) {

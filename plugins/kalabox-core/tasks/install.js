@@ -10,6 +10,7 @@ var path = require('path');
 module.exports = function(kbox) {
 
   var events = kbox.core.events;
+  var deps = kbox.core.deps;
 
   kbox.whenApp(function(app) {
     kbox.tasks.add(function(task) {
@@ -23,10 +24,11 @@ module.exports = function(kbox) {
       task.func = function(done) {
         // Install the data container before our things
         // Do this event ONLY when install is run
+        // @todo: what would this do on the GUI?
         events.on('pre-install', function(app, done) {
           var dataImage = {
             name: 'kalabox/data:dev',
-            forcePull: true
+            srcRoot: deps.lookup('globalConfig').srcRoot
           };
           var containerName = ['kb', app.name, 'data'].join('_');
           kbox.engine.build(dataImage, function() {
