@@ -24,9 +24,15 @@ module.exports = function(kbox, framework) {
       if ((year === 2015) && (month === 6) && (day >= 21 && day <= 28)) {
         color = 'rainbow';
       }
-      // prompt.override = { doit: 'yes' }
+      prompt.override = {doit: state.nonInteractive};
       prompt.start();
-      var msg = 'Are you sure you want to install/update Kalabox? (y/n)';
+      var msg;
+      if (framework === 'install') {
+        msg = 'Are you sure you want to install Kalabox? (y/n)';
+      }
+      else {
+        msg = 'Are you sure you want to update this app? (y/n)';
+      }
       prompt.get({
         properties: {
           doit: {
@@ -38,7 +44,7 @@ module.exports = function(kbox, framework) {
         }
       },
       function(err, result) {
-        if (result.doit.match(/y[es]*?/)) {
+        if (result.doit === true || result.doit.match(/y[es]*?/)) {
           done();
         }
         else {

@@ -77,6 +77,13 @@ module.exports = function(kbox) {
       description: 'Build images locally instead of pulling them remotely.'
     });
 
+    task.options.push({
+      name: 'yes',
+      alias: 'y',
+      kind: 'boolean',
+      description: 'Pass in an auto-affirmative for a non-interactive mode.'
+    });
+
     return function(done) {
 
       var config = kbox.core.deps.lookup('config');
@@ -90,6 +97,7 @@ module.exports = function(kbox) {
       }
 
       var disksize = (this.options.disksize) ? this.options.disksize : false;
+      var nonInteractive = (this.options.yes) ? this.options.yes : false;
 
       // Logging function.
       var log = kbox.core.log;
@@ -97,6 +105,7 @@ module.exports = function(kbox) {
       // State to inject into install.
       var state = {
         disksize: disksize,
+        nonInteractive: nonInteractive,
         adminCommands: [],
         config: config,
         downloads: [],

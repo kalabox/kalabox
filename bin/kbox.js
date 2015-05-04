@@ -136,8 +136,6 @@ process.once('exit', function(code) {
 });
 
 var cliPackage = require('../package');
-//var versionFlag = argv.v || argv.version;
-//var tasksFlag = argv.T || argv.tasks;
 
 function getAppContextFromArgv(apps, callback) {
   if (typeof callback !== 'function') {
@@ -157,6 +155,9 @@ function getAppContextFromCwd(apps, callback) {
   var cwd = process.cwd();
   callback(null, _.find(apps, function(app) {
     var appRoot = app.config.appRoot;
+    if (cwd.replace(appRoot, '') === cwd) {
+      return false;
+    }
     var diff = cwd.replace(appRoot, '').substring(0, 1);
     return (!diff || diff === path.sep) ? true : false;
   }));
