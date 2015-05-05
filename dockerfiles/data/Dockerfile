@@ -1,6 +1,10 @@
 # docker build -t kalabox/data .
 FROM busybox
 
+# This exists just for legacy
+# Will deprecate soon
+VOLUME ["/data"]
+
 # App code goes here
 VOLUME ["/code"]
 

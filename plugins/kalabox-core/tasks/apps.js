@@ -131,7 +131,14 @@ module.exports = function(kbox) {
           // Loop through each app info.
           _.each(appInfos, function(appInfo) {
 
-            var containerInfos = appInfo.containerInfos;
+            var containerInfos = [];
+            _.each(appInfo.containerInfos, function(container) {
+              var split = container.name.split('_');
+              var isData = (split[2] === 'data') ? true : false;
+              if (!isData) {
+                containerInfos.push(container);
+              }
+            });
 
             // Reduce array of container infos to a stats object.
             var stats =
@@ -152,7 +159,6 @@ module.exports = function(kbox) {
 
             // Output stats.
             console.log(stats);
-
           });
 
           // Task is done.
