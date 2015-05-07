@@ -79,8 +79,11 @@ module.exports = function(kbox) {
     };
 
     if (sharing) {
-      printConfig('local');
-      printConfig('remote');
+
+      // @todo: bcauldwell - Commenting these two out for now, until we
+      // need them, and find a good place for them.
+      //printConfig('local');
+      //printConfig('remote');
 
       // APP EVENT: pre-start
       // Set up an ignore file if needed
@@ -99,7 +102,7 @@ module.exports = function(kbox) {
           '/' + codeDir + '/.stignore'
         ];
         engine.once(
-          'debian',
+          'kalabox/debian:stable',
           ['/bin/bash'],
           {
             'Env': ['APPDOMAIN=' + app.domain],

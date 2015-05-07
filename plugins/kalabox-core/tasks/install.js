@@ -1,7 +1,7 @@
 'use strict';
 
-var fs = require('fs-extra');
 var path = require('path');
+var _ = require('lodash');
 
 /**
  * This contains all the core commands that kalabox can run on every machine
@@ -10,6 +10,7 @@ var path = require('path');
 module.exports = function(kbox) {
 
   var events = kbox.core.events;
+  var deps = kbox.core.deps;
 
   kbox.whenApp(function(app) {
     kbox.tasks.add(function(task) {
@@ -21,42 +22,38 @@ module.exports = function(kbox) {
         description: 'Build images locally instead of pulling them remotely.'
       });
       task.func = function(done) {
-        // Install the data container before our things
-        // Do this event ONLY when install is run
-        events.on('pre-install', function(app, done) {
-          var dataImage = {
-            name: 'kalabox/data:dev',
-            forcePull: true
-          };
-          var containerName = ['kb', app.name, 'data'].join('_');
-          kbox.engine.build(dataImage, function() {
-            kbox.engine.create(
-              {
-                Image: dataImage.name,
-                name: containerName
-              },
-              function(err, container) {
-                if (err) {
-                  done(err);
-                }
-                else {
-                  var containerIdFile = path.join(
-                    app.config.appCidsRoot,
-                    'data'
-                  );
-                  fs.writeFileSync(
-                    path.resolve(containerIdFile), container.cid
-                  );
-                  done();
-                }
-              }
-            );
-          });
-        });
-
-        // Actually do the app install
         kbox.app.install(app, done);
       };
+    });
+  });
+
+  // Event to add in our data container if it doesn't exist
+  events.on('pre-install', function(app, done) {
+    kbox.engine.list(app.name, function(err, containers) {
+      if (err) {
+        done(err);
+      }
+      else {
+        var containerName = ['kb', app.name, 'data'].join('_');
+        var hasData = _.find(containers, function(container) {
+          return container.name === containerName;
+        });
+        if (_.isEmpty(hasData)) {
+          var containerIdFile = path.join(app.config.appCidsRoot, 'data');
+          app.components.data = {
+            image: {
+              name: 'data',
+              srcRoot: deps.lookup('globalConfig').srcRoot
+            },
+            name: 'data',
+            appDomain: app.domain,
+            dataContainerName: null,
+            containerName: containerName,
+            containerIdFile: containerIdFile
+          };
+        }
+        done();
+      }
     });
   });
 

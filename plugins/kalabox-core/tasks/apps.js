@@ -142,8 +142,12 @@ module.exports = function(kbox) {
             // Loop through each container info and update object.
             _.each(appInfo.containerInfos, function(containerInfo) {
 
+              // Find out if this container is a data container.
+              var split = containerInfo.name.split('_');
+              var isDataContainer = split[2] === 'data';
+
               // Increment running counter.
-              if (containerInfo.running) {
+              if (!isDataContainer && containerInfo.running) {
                 obj[key].running += 1;
               }
 

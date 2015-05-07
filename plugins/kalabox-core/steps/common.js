@@ -4,54 +4,45 @@
  * This contains all the core commands that kalabox can run on every machine
  */
 
-var prompt = require('prompt');
-var chalk = require('chalk');
-
 module.exports = function(kbox, framework) {
+  var inquirer = require('inquirer');
+  var chalk = require('chalk');
+
   // Are you sure?
   // Authorize the update process
   kbox[framework].registerStep(function(step) {
     step.name = 'core-auth';
     step.description = 'Authorizing ' + framework + ' subroutines...';
     step.all = function(state, done) {
-      // this is how we pass in CLI options to stop interactive mode
-      // Because freedom
-      var date = new Date();
-      var year = date.getFullYear();
-      var month = date.getMonth() + 1;
-      var day = date.getDate();
-      var color = 'magenta';
-      if ((year === 2015) && (month === 6) && (day >= 21 && day <= 28)) {
-        color = 'rainbow';
-      }
-      prompt.override = {doit: state.nonInteractive};
-      prompt.start();
-      var msg;
-      if (framework === 'install') {
-        msg = 'Are you sure you want to install Kalabox? (y/n)';
+      if (state.nonInteractive) {
+        state.log.info(chalk.grey('Non-interactive mode.'));
+        done();
       }
       else {
-        msg = 'Are you sure you want to update this app? (y/n)';
-      }
-      prompt.get({
-        properties: {
-          doit: {
-            message: msg[color],
-            validator: /y[es]*|n[o]?/,
-            warning: 'Must respond yes or no',
-            default: 'no'
-          }
-        }
-      },
-      function(err, result) {
-        if (result.doit === true || result.doit.match(/y[es]*?/)) {
-          done();
+        var msg;
+        if (framework === 'install') {
+          msg = 'Are you sure you want to install Kalabox?';
         }
         else {
-          state.log.info(chalk.red('Fine!') + ' Be that way!');
-          process.exit(1);
+          msg = 'Are you sure you want to update this app?';
         }
-      });
+        var questions = [
+          {
+            type: 'confirm',
+            name: 'doit',
+            message: msg,
+          },
+        ];
+        inquirer.prompt(questions, function(answers) {
+          if (answers.doit) {
+            done();
+          }
+          else {
+            state.log.info(chalk.red('Fine!') + ' Be that way!');
+            process.exit(1);
+          }
+        });
+      }
     };
   });
 

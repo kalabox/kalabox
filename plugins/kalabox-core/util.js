@@ -34,7 +34,11 @@ module.exports = function(kbox) {
               next(err);
             } else {
               if (info) {
-                console.log(JSON.stringify(info, null, '  '));
+                var split = info.name.split('_');
+                var isData = (split[2] === 'data') ? true : false;
+                if (!isData) {
+                  console.log(JSON.stringify(info, null, '  '));
+                }
               }
               next();
             }
