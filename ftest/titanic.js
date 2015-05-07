@@ -129,7 +129,7 @@ var runChecks = function(checks, done) {
 var increment = function(done) {
 
   // Get a random number of random actions.
-  var actions = getActions(3);
+  var actions = getActions(5);
 
   // Get a random number of random checks.
   var checks = getChecks(9);
