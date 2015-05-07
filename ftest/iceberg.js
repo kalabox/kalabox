@@ -311,7 +311,7 @@ var local = function(filepath) {
       return new Promise(function(fulfill, reject) {
 
         var filename = path.basename(api.filepath);
-        var filepath = path.join('/data', filename);
+        var filepath = path.join('/code', filename);
         api.data.remote = remote(container, filepath);
         fulfill();
 
@@ -367,7 +367,7 @@ var local = function(filepath) {
         });
           
       })
-      .timeout(timeout * 1000, 'untilEqual')
+      .timeout(timeout * 1000, 'untilEqual -> ' + timeout)
       .catch(Promise.TimeoutError, function(err) {
          cancel = true;
          throw err;
