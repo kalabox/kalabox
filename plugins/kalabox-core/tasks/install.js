@@ -42,7 +42,7 @@ module.exports = function(kbox) {
           var containerIdFile = path.join(app.config.appCidsRoot, 'data');
           app.components.data = {
             image: {
-              name: 'kalabox/data:dev',
+              name: 'data',
               srcRoot: deps.lookup('globalConfig').srcRoot
             },
             name: 'data',
