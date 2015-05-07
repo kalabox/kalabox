@@ -1,12 +1,11 @@
 'use strict';
 
-var chalk = require('chalk');
-var fs = require('fs');
-var path = require('path');
-var prompt = require('prompt');
-
 module.exports = function(kbox) {
 
+  var chalk = require('chalk');
+  var fs = require('fs');
+  var path = require('path');
+  var inquirer = require('inquirer');
   var util = require('./util.js')(kbox);
   var helpers = kbox.util.helpers;
 
@@ -37,45 +36,39 @@ module.exports = function(kbox) {
     step.deps = ['core-deps'];
     step.description = 'Rebuild?';
     step.all = function(state, done) {
-      // this is how we pass in CLI options to stop interactive mode
-      // Because freedom
-      var date = new Date();
-      var year = date.getFullYear();
-      var month = date.getMonth() + 1;
-      var day = date.getDate();
-      var color = 'magenta';
-      if ((year === 2015) && (month === 6) && (day >= 21 && day <= 28)) {
-        color = 'rainbow';
-      }
-      prompt.override = {rebuild: state.nonInteractive};
-      prompt.start();
-      var msg = 'Download new containers and rebuild app? (y/n)';
-      prompt.get({
-        properties: {
-          rebuild: {
-            message: msg[color],
-            validator: /y[es]*|n[o]?/,
-            warning: 'Must respond yes or no',
-            default: 'no'
+
+      var rebuild = function(done) {
+        kbox.engine.up(3, function(err) {
+          if (err) {
+            done(err);
+          } else {
+            var app = kbox.core.deps.lookup('app');
+            kbox.app.rebuild(app, done);
           }
-        }
-      },
-      function(err, result) {
-        if (result.rebuild === true || result.rebuild.match(/y[es]*?/)) {
-          kbox.engine.up(3, function(err) {
-            if (err) {
-              done(err);
-            } else {
-              var app = kbox.core.deps.lookup('app');
-              kbox.app.rebuild(app, done);
-            }
-          });
-        }
-        else {
-          state.log.info(chalk.yellow('Not rebuilding may cause issues!'));
-          done();
-        }
-      });
+        });
+      };
+
+      if (state.nonInteractive) {
+        state.log.info(chalk.grey('Non-interactive mode.'));
+        rebuild(done);
+      }
+      else {
+        var questions = [
+          {
+            type: 'confirm',
+            name: 'doit',
+            message: 'Download new containers and rebuild app?'
+          },
+        ];
+        inquirer.prompt(questions, function(answers) {
+          if (answers.doit) {
+            rebuild(done);
+          }
+          else {
+            state.log.info(chalk.yellow('Not rebuilding may cause issues!'));
+          }
+        });
+      }
     };
   });
 

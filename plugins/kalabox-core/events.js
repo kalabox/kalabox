@@ -1,13 +1,15 @@
 'use strict';
 
+var _ = require('lodash');
+
 module.exports = function(kbox) {
 
   var events = kbox.core.events;
   var deps = kbox.core.deps;
-  var envs = [];
 
   // EVENT: pre-engine-create
   events.on('pre-engine-create', function(createOptions, done) {
+    var envs = [];
     var codeRoot = deps.lookup('globalConfig').codeDir;
     var kboxCode = 'KBOX_CODEDIR=' + codeRoot;
     envs.push(kboxCode);
@@ -21,7 +23,9 @@ module.exports = function(kbox) {
 
     if (createOptions.Env) {
       envs.forEach(function(env) {
-        createOptions.Env.push(env);
+        if (!_.includes(createOptions.Env, env)) {
+          createOptions.Env.push(env);
+        }
       });
     }
     else {

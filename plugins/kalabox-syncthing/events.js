@@ -102,7 +102,7 @@ module.exports = function(kbox) {
           '/' + codeDir + '/.stignore'
         ];
         engine.once(
-          'debian',
+          'kalabox/debian:stable',
           ['/bin/bash'],
           {
             'Env': ['APPDOMAIN=' + app.domain],
