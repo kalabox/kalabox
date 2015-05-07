@@ -3,6 +3,7 @@
 var _ = require('lodash');
 var shell = require('shelljs');
 var Promise = require('bluebird');
+Promise.longStackTraces();
 
 /*
  * Init an instance of krun.
