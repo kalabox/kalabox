@@ -13,7 +13,7 @@ RUN apt-get update && \
     apt-get autoclean -y && \
     apt-get autoremove -y && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
-    rm -f /tmp/* && rm -rf /tmp/*
+    rm -rf /tmp/*
 
 ADD ./config.xml /etc/syncthing/config.xml
 ADD ./syncthing-supervisor.conf /etc/supervisor/conf.d/syncthing-supervisor.conf
