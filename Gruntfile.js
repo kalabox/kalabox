@@ -50,6 +50,9 @@ module.exports = function(grunt) {
           ' --branches ' + 0 +
           ' --functions ' + 0 +
           ' --lines ' + 0
+      },
+      functionalTest: {
+        command: 'time node ftest/ftest.js'
       }
     },
 
@@ -137,6 +140,11 @@ module.exports = function(grunt) {
   // unit testing
   grunt.registerTask('unit', [
     'shell:testUnit'
+  ]);
+
+  // functional testing
+  grunt.registerTask('ftest', [
+    'shell:functionalTest'
   ]);
 
   // testing code coverage

@@ -128,38 +128,38 @@ module.exports = function(kbox) {
 
           }
 
-          // Loop through each app info.
+          // Reduce list of app infos to a json object.
+          var obj = {};
           _.each(appInfos, function(appInfo) {
 
-            var containerInfos = [];
-            _.each(appInfo.containerInfos, function(container) {
-              var split = container.name.split('_');
-              var isData = (split[2] === 'data') ? true : false;
-              if (!isData) {
-                containerInfos.push(container);
+            // Init app property.
+            var key = appInfo.appName;
+            obj[key] = {
+              running: 0,
+              total: 0
+            };
+
+            // Loop through each container info and update object.
+            _.each(appInfo.containerInfos, function(containerInfo) {
+
+              // Find out if this container is a data container.
+              var split = containerInfo.name.split('_');
+              var isDataContainer = split[2] === 'data';
+
+              // Increment running counter.
+              if (!isDataContainer && containerInfo.running) {
+                obj[key].running += 1;
               }
+
+              // Increment total counter.
+              obj[key].total += 1;
+
             });
 
-            // Reduce array of container infos to a stats object.
-            var stats =
-              _.reduce(containerInfos, function(stats, containerInfo) {
-
-                // Increment running counter.
-                if (containerInfo.running) {
-                  stats.running += 1;
-                }
-
-                // Increment total counter.
-                stats.total += 1;
-
-                // Return stats.
-                return stats;
-
-              }, {app: appInfo.appName, running: 0, total: 0});
-
-            // Output stats.
-            console.log(stats);
           });
+
+          // Output result.
+          console.log(JSON.stringify(obj, null, '  '));
 
           // Task is done.
           done();
