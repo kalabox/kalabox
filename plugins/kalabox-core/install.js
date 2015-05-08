@@ -66,7 +66,7 @@ module.exports = function(kbox) {
     kbox.install.registerStep(function(step) {
       step.name = 'core-backends';
       step.deps = ['core-auth'];
-      step.description = 'Updating your Kalabox backends...';
+      step.description = 'Updating your Kalabox apps and backends...';
       step.all = function(state, done) {
         kbox.util.npm.updateBackends(function(err) {
           if (err) {
@@ -74,7 +74,15 @@ module.exports = function(kbox) {
           }
           else {
             state.log.debug('Updated kalabox backends!');
-            done();
+            kbox.util.npm.updateApps(function(err) {
+              if (err) {
+                done(err);
+              }
+              else {
+                state.log.debug('Updated kalabox apps!');
+                done();
+              }
+            });
           }
         });
       };
