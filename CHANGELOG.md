@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.7.0 (2015-5-8)
+
+Kbox create/rebuild/update, app models, syncthing 0.11.0, fun
+
+- Created `kbox update` command to upgrade app dependencies
+- Created `kbox rebuild` command to rebuild an apps containers
+- Created Titanic functional testing framework
+- Created `kbox create` to auto-spin up apps of a certain type
+- Provided Drupal and Backdrop apps
+- Upgraded to syncthing 0.11.0
+- Fixed CI to only deploy from node 0.12.x
+- Changed `kbox apps` to print more detailed info
+- Simplified kbox.require
+- Added script for finding out which node modules take the longest to load.
+- Improved performance of require
+- Removed some old unit tests
+- Improved display of task menu for an app
+- Improved install to correctly prompt for password based on GUI or CLI
+- Provided a disk-size option for provision
+- Fixed handling of unbubbled errors
+- Moved syncthing dockerfile to core
+- Provided build-local option to build containers from local sources
+- Provided auto-decorating of image options
+- Moved `kbox shields` to its own plugin
+- Changed syncthing interval to 2 seconds
+- Swapped out core fs for fs-extra
+- Fixed bug where deps.register was not working for 'app'
+- FIxed bug where an app path that started with another app path failed
+- Moved data container to core and handled behind the scene
+- Updated data container volumes
+- Created new kbox event for all container creates
+- Reworked core dockerfiles
+- Removed bugs and made all the things smarter
+
 ## 0.6.0 (2015-4-14)
 
 Kbox provision as updater, better task framework and bug fixes
