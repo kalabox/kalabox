@@ -91,6 +91,7 @@ module.exports = function(grunt) {
           'README.md',
           'lib/app.js',
           'lib/core/*.js',
+          'lib/create.js',
           'lib/engine.js',
           'lib/engine/provider.js',
           'lib/install.js',
