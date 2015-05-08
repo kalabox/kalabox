@@ -1,13 +1,13 @@
 # Kalabox
 
-A framework to build reusable, super fast, highly customizable, extensible and local integrated workflow solutions for all kinds of apps. **You can think about Kalabox as a super-fast Vagrant for containers.**
+A framework to build reusable, super fast, highly customizable, extensible and local integrated workflow solutions for all kinds of apps. **You can think about Kalabox as a super-fast, highly-customizable Vagrant for containers.**
 
 With Kalabox you can
 
     1. Easily spin up a containerized infrastructure to develop your site or app.
     2. Develop, provision and deploy super quickly.
     3. Standardize your teams dev environments and tools on OSX, Windows and Linux.
-    4. Easily customize or extend tooling and deployment options.
+    4. Easily customize or extend tooling, deployment options and bascially any other functionality.
 
 For more info on how you can do some of the above check out the [wiki](https://github.com/kalabox/kalabox/wiki).
 
@@ -43,81 +43,61 @@ Examples:
   kbox config -- --verbose
 
 Commands:
-  apps          Display list of apps.
-  config        Display the kbox configuration.
-  containers    Display list of all installed kbox containers.
-  down          Bring kbox container engine down.
-  ip            Display kbox container engine's ip address.
-  provision     Install or update kbox and it's dependencies.
-  shields       Shield generator operation.
-  status        Display status of kbox container engine.
-  up            Bring kbox container engine up.
-  version       Display the kbox version.
+  apps            Display list of apps.
+  config          Display the kbox configuration.
+  containers      Display list of all installed kbox containers.
+  create
+      backdrop    Creates a backdrop app.
+      drupal      Creates a Drupal app.
+  down            Bring kbox container engine down.
+  ip              Display kbox container engine's ip address.
+  provision       Install or update kbox and it's dependencies.
+  query           Run a command against a container.
+  shields         Shield generator operation.
+  status          Display status of kbox container engine.
+  up              Bring kbox container engine up.
+  version         Display the kbox version.
 
 Options:
   -h, --help     Display help message.                                 [boolean]
-  -v, --verbose  Use verbose output.                                   [boolea
+  -v, --verbose  Use verbose output.                                   [boolean]
+
 ```
 
 And specific command help.
 
 ```
-kbox shields -- -h
+kbox create drupal -- -h
 
 Options:
-  -h, --help     Display help message.                                 [boolean]
-  -v, --verbose  Use verbose output.                                   [boolean]
-  -s, --status   Display shield generator status.                      [boolean]
-  -w, --webcam   Semi-real time web cam snapshot of the Death Star.    [boolean]
+  -h, --help       Display help message.                               [boolean]
+  -v, --verbose    Use verbose output.                                 [boolean]
+  --name           The name of your app.                                [string]
+  --php-version    Your php version.                                    [string]
+  --drush-version  The version of drush that you want.                  [string]
+  --git-username   Your git username.                                   [string]
+  --git-email      Your git email.                                      [string]
+  -i, --install    Auto install app after creation.                    [boolean]
+  --build-local    Build images locally instead of pulling them remotely.
+                                                                       [boolean]
+  -s, --start      Auto start app after creation. Requires --install.  [boolean]
+  --dir            Creates the app in this directory. Defaults to CWD.  [string]
 ```
 
-## Building, installing and starting your local site/app.
+## Getting started
 
-To get started running and developing your apps with Kalabox please go check out [some examples](https://github.com/kalabox/kalabox-app-examples) to get started.
+Kalabox is all about quickly setting up repeatable sets of infrastructure so you can start developing the next best thing. While you can [manually create your own apps and profiles](https://github.com/kalabox/kalabox/wiki/Creating-custom-apps) to use in your own custom Kalabox we've put together some basic ones to get you started with your Drupal or Backdrop project.
 
-### Global configuration
-
-User's can override some global configuration by putting a file called `kalabox.json` in the sysConfRoot (defaults to `~/.kalabox/`). You can also override system-wide or package kalabox with a override `kalabox.json` by putting it into the source directory. Here is an example of the things you can override
-
-```json
-{
-  "appRegistry": "/Users/mpirog/.kalabox/appRegistry.json",
-  "appsRoot": "/Users/mpirog/kalabox/apps",
-  "configSources": [
-    "ENV_CONFIG",
-    "DEFAULT_GLOBAL_CONFIG",
-    "/Users/mpirog/.kalabox/kalabox.json"
-  ],
-  "domain": "kbox",
-  "downloadsRoot": "/Users/mpirog/.kalabox/downloads",
-  "engine": "kalabox-engine-docker@0.6.7",
-  "globalPluginRoot": "/Users/mpirog/kalabox/plugins",
-  "globalPlugins": [
-    "kalabox-core",
-    "kalabox-syncthing"
-  ],
-  "home": "/Users/mpirog",
-  "kalaboxRoot": "/Users/mpirog/kalabox",
-  "kboxRoot": "/Users/mpirog/kalabox",
-  "logLevel": "debug",
-  "logLevelConsole": "info",
-  "logRoot": "/Users/mpirog/.kalabox/logs",
-  "os": {
-    "type": "Darwin",
-    "platform": "darwin",
-    "release": "14.3.0",
-    "arch": "x64"
-  },
-  "profile": "dev",
-  "provisioned": true,
-  "services": "kalabox-services-kalabox@0.6.7",
-  "sharing": true,
-  "srcRoot": "/Users/mpirog/Desktop/kalabox",
-  "sysConfRoot": "/Users/mpirog/.kalabox",
-  "sysProviderRoot": "/Users/mpirog/.kalabox/.provider",
-  "version": "0.6.0"
-}
 ```
+cd /dir/i/want/my/app/to/live
+kbox create backdrop --name="My App"
+cd my-app
+kbox install && kbox start
+kbox # This will list all the fun commands you get in your app
+cd code # This is where your code can live.
+```
+
+You can also pass in a bunch of options so make sure to check out the options for each create task by running it with `-- -h` first. **In coming releases it will also be super easy to import your app or site from places like Pantheon and Microsoft Azure.**
 
 ## Sharing
 
