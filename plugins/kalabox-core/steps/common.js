@@ -52,9 +52,14 @@ module.exports = function(kbox, framework) {
     step.description = 'Checking firewall settings...';
     step.deps = ['core-auth'];
     step.all.darwin = function(state, done) {
-      kbox.util.firewall.isOkay(function(isOkay) {
-        var err = isOkay ? null : new Error('Invalid firewall settings.');
-        done(err);
+      kbox.util.firewall.isOkay(function(err, isOkay) {
+        if (err) {
+          done(err);
+        } else if (!isOkay) {
+          done(new Error('Invalid firewall setting.'));
+        } else {
+          done();
+        }
       });
     };
     step.all.linux = function(state, done) {
