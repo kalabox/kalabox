@@ -4,10 +4,10 @@ A framework to build reusable, super fast, highly customizable, extensible and l
 
 With Kalabox you can
 
-    1. Easily spin up a containerized infrastructure to develop your site or app.
-    2. Develop, provision and deploy super quickly.
-    3. Standardize your teams dev environments and tools on OSX, Windows and Linux.
-    4. Easily customize or extend tooling, deployment options and bascially any other functionality.
+* Easily spin up a containerized infrastructure to develop your site or app.
+* Develop, provision and deploy super quickly.
+* Standardize your teams dev environments and tools on OSX, Windows and Linux.
+* Easily customize or extend tooling, deployment options and bascially any other functionality.
 
 For more info on how you can do some of the above check out the [wiki](https://github.com/kalabox/kalabox/wiki).
 
