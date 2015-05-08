@@ -107,7 +107,7 @@ t.addAction(function(done) {
 // ACTION: stop app.
 t.addAction(function(done) {
   krun()
-  .run('kbox ' + randomApp() + ' stop -- -v', 90).ok()
+  .run('kbox ' + randomApp() + ' stop -- -v', 180).ok()
   .call(restore)
   .done(done);
 });
@@ -120,14 +120,14 @@ t.addAction(function(done) {
 });
 
 // ACTION: uninstall app.
-/*t.addAction(function(done) {
+t.addAction(function(done) {
   var app = randomApp();
   krun()
   .run('kbox ' + app + ' stop -- -v', 90).ok()
-  .run('kbox ' + app + ' uninstall').ok()
+  .run('kbox ' + app + ' uninstall -- -p').ok()
   .call(restore)
   .done(done);
-});*/
+});
 
 // CHECK: kbox is up.
 t.addCheck(function(done) {
@@ -288,7 +288,7 @@ t.addCheck(function(done) {
   done);
 });
 
-var runs = 4;
+var runs = 12;
 var cursor = 0;
 
 var keepGoing = function() {
