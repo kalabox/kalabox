@@ -8,8 +8,8 @@
   },
   "plugins": [],
   "templates": {
-    "cleverLinks": false,
-    "monospaceLinks": false,
+    "cleverLinks": true,
+    "monospaceLinks": true,
     "default": {
       "outputSourceFiles": true
     },

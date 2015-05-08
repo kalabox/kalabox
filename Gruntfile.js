@@ -88,20 +88,17 @@ module.exports = function(grunt) {
     jsdoc: {
       safe: {
         src: [
+          'README.md',
           'lib/app.js',
           'lib/core/*.js',
           'lib/engine.js',
           'lib/engine/provider.js',
-          'lib/services.js'
+          'lib/install.js',
+          'lib/kbox.js',
+          'lib/services.js',
+          'lib/update.js',
+          'lib/util/*.js'
         ],
-        options: {
-          destination: 'doc',
-          template: 'node_modules/jsdoc-oblivion/template',
-          configure : '.jsdoc.conf.json'
-        }
-      },
-      secret: {
-        src: ['lib/**/*.js'],
         options: {
           destination: 'doc',
           template: 'node_modules/jsdoc-oblivion/template',
