@@ -125,6 +125,6 @@ Syncthing is also still in development so if you are experiencing trouble check 
 * [Docker](https://github.com/docker/docker)
 
 -------------------------------------------------------------------------------------
-(C) 2015 Kalamuna and friends
+(C) 2015 Kalamuna and friends and things
 
 
