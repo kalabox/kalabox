@@ -33,7 +33,7 @@ Kalabox is all about quickly setting up repeatable sets of infrastructure so you
 
 ```
 cd /dir/i/want/my/app/to/live
-kbox create backdrop --name="My App"
+kbox create backdrop -- --name="My App"
 cd my-app
 kbox install && kbox start
 kbox # This will list all the fun commands you get in your app
