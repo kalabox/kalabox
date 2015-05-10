@@ -7,7 +7,7 @@ With Kalabox you can
 * Easily spin up a containerized infrastructure to develop your site or app.
 * Develop, provision and deploy super quickly.
 * Standardize your teams dev environments and tools on OSX, Windows and Linux.
-* Easily customize or extend tooling, deployment options and bascially any other functionality.
+* Easily customize or extend tooling, deployment options and basically any other functionality.
 
 For more info on how you can do some of the above check out the [wiki](https://github.com/kalabox/kalabox/wiki).
 
@@ -26,6 +26,44 @@ If you've already installed Kalabox and it's pre-version 0.6.0 you should consid
 [uninstalling](https://github.com/kalabox/kalabox/wiki/Uninstalling-Kalabox/) first. If you're running 0.6.0 or higher check out the easy [update](https://github.com/kalabox/kalabox/wiki/Updating-Kalabox) guide.
 
 If you are interested in contributing to the project check out the [developer installation guide](https://github.com/kalabox/kalabox/wiki/Contribution-Guide).
+
+## Getting started
+
+Kalabox is all about quickly setting up repeatable sets of infrastructure so you can start developing the next best thing. While you can [manually create your own apps and profiles](https://github.com/kalabox/kalabox/wiki/Creating-custom-apps) to use in your own Kalabox we've put together some basic ones to get you started with your Drupal or Backdrop project.
+
+```
+cd /dir/i/want/my/app/to/live
+kbox create backdrop -- --name="My App"
+cd my-app
+kbox install && kbox start
+kbox # This will list all the fun commands you get in your app
+cd code # This is where your code can live.
+```
+
+For more in depth instructions on getting these apps spun up and your sites imported check out both our [Drupal](https://github.com/kalabox/kalabox/wiki/dDrupal-Guide) or [Backdrop](https://github.com/kalabox/kalabox/wiki/Backdrop-Guide) guides.
+
+Please also not that you canpass in a bunch of options to `kbox create` so make sure to check out the options for each create task by running it with `-- -h` first. Here is an example of what is possible for a Drupal app.
+
+
+```
+kbox create drupal -- -h
+
+Options:
+  -h, --help       Display help message.                               [boolean]
+  -v, --verbose    Use verbose output.                                 [boolean]
+  --name           The name of your app.                                [string]
+  --php-version    Your php version.                                    [string]
+  --drush-version  The version of drush that you want.                  [string]
+  --git-username   Your git username.                                   [string]
+  --git-email      Your git email.                                      [string]
+  -i, --install    Auto install app after creation.                    [boolean]
+  --build-local    Build images locally instead of pulling them remotely.
+                                                                       [boolean]
+  -s, --start      Auto start app after creation. Requires --install.  [boolean]
+  --dir            Creates the app in this directory. Defaults to CWD.  [string]
+```
+
+**In coming releases it will also be super easy to import your app or site code/data during `kbox create` from places like Pantheon, Microsoft Azure and more!**
 
 ## Kbox commands
 
@@ -63,41 +101,6 @@ Options:
   -v, --verbose  Use verbose output.                                   [boolean]
 
 ```
-
-And specific command help.
-
-```
-kbox create drupal -- -h
-
-Options:
-  -h, --help       Display help message.                               [boolean]
-  -v, --verbose    Use verbose output.                                 [boolean]
-  --name           The name of your app.                                [string]
-  --php-version    Your php version.                                    [string]
-  --drush-version  The version of drush that you want.                  [string]
-  --git-username   Your git username.                                   [string]
-  --git-email      Your git email.                                      [string]
-  -i, --install    Auto install app after creation.                    [boolean]
-  --build-local    Build images locally instead of pulling them remotely.
-                                                                       [boolean]
-  -s, --start      Auto start app after creation. Requires --install.  [boolean]
-  --dir            Creates the app in this directory. Defaults to CWD.  [string]
-```
-
-## Getting started
-
-Kalabox is all about quickly setting up repeatable sets of infrastructure so you can start developing the next best thing. While you can [manually create your own apps and profiles](https://github.com/kalabox/kalabox/wiki/Creating-custom-apps) to use in your own custom Kalabox we've put together some basic ones to get you started with your Drupal or Backdrop project.
-
-```
-cd /dir/i/want/my/app/to/live
-kbox create backdrop --name="My App"
-cd my-app
-kbox install && kbox start
-kbox # This will list all the fun commands you get in your app
-cd code # This is where your code can live.
-```
-
-You can also pass in a bunch of options so make sure to check out the options for each create task by running it with `-- -h` first. **In coming releases it will also be super easy to import your app or site from places like Pantheon and Microsoft Azure.**
 
 ## Sharing
 
