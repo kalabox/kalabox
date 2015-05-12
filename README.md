@@ -42,7 +42,7 @@ cd code # This is where your code can live.
 
 For more in depth instructions on getting these apps spun up and your sites imported check out both our [Drupal](https://github.com/kalabox/kalabox/wiki/dDrupal-Guide) or [Backdrop](https://github.com/kalabox/kalabox/wiki/Backdrop-Guide) guides.
 
-Please also not that you canpass in a bunch of options to `kbox create` so make sure to check out the options for each create task by running it with `-- -h` first. Here is an example of what is possible for a Drupal app.
+Please also note that you can pass in a bunch of options to `kbox create` so make sure to check out the options for each create task by running it with `-- -h` first. Here is an example of what is possible for a Drupal app.
 
 
 ```
