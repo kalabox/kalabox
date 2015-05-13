@@ -15,7 +15,7 @@ For more info on how you can do some of the above check out the [wiki](https://g
 
 ## Installation
 
-Please make sure that you have installed [nodejs](http://nodejs.org/) first!
+Please make sure that you have installed [nodejs](http://nodejs.org/) first and that it has the [correct permissions](https://docs.npmjs.com/getting-started/fixing-npm-permissions). If you get `EACCESS` errors on `npm install` then schedule an appointment with the [Doc](https://github.com/mattgrill/NPM-Doctor).
 
 ```bash
 npm install kalabox -g
