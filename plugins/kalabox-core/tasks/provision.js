@@ -11,7 +11,7 @@ module.exports = function(kbox) {
   // Provision task.
   kbox.tasks.add(function(task) {
     task.path = ['provision'];
-    task.description = 'Install or update kbox and it\'s dependencies.';
+    task.description = 'Install or update kbox and its dependencies.';
     task.func = util.createFrameworkFunc(task, kbox.install);
   });
 
