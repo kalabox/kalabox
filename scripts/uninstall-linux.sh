@@ -101,9 +101,6 @@ if ([ "$my_answer" == "1" ]); then
         /usr/bin/sudo /sbin/resolvconf -u
     fi
 
-    # Delete the B2D application
-    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -Rf /Applications/boot2docker.app
-
     #!/bin/sh
     #
     # VirtualBox Uninstaller Script.
