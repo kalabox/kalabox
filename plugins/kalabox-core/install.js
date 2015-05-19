@@ -26,7 +26,7 @@ module.exports = function(kbox) {
     step.description = 'Running admin install commands...';
     step.all = function(state, done) {
       var adminCommands = state.adminCommands;
-      util.runAdminCmds(adminCommands, done);
+      util.runAdminCmds(adminCommands, state, done);
     };
   });
 
