@@ -91,14 +91,9 @@ module.exports = function(kbox) {
     var config = kbox.core.deps.lookup('config');
     if (config.os.platform !== 'win32') {
       task.options.push({
-        name: 'user',
-        kind: 'string',
-        description: 'User with which to provision.'
-      });
-      task.options.push({
         name: 'password',
         kind: 'string',
-        description: 'Password which doth belongeth to thou user.'
+        description: 'Password which doth belongeth unto thee.'
       });
     }
 
@@ -116,7 +111,6 @@ module.exports = function(kbox) {
 
       var disksize = (this.options.disksize) ? this.options.disksize : false;
       var password = (this.options.password) ? this.options.password : false;
-      var user = (this.options.user) ? this.options.user : false;
       var nonInteractive = (this.options.yes) ? this.options.yes : false;
 
       // Logging function.
@@ -125,7 +119,6 @@ module.exports = function(kbox) {
       // State to inject into install.
       var state = {
         disksize: disksize,
-        user: user,
         password: password,
         nonInteractive: nonInteractive,
         adminCommands: [],
