@@ -54,6 +54,7 @@
     "tildify": "~1.0.0",
     "tsort": "0.0.1",
     "vasync": "~1.6.0",
+    "verror": "1.6.x",
     "winston": "^0.9.0",
     "yargs": "^3.7.0"
   },
