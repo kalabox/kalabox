@@ -34,13 +34,14 @@ module.exports = function(kbox) {
         done(err);
       }
       else {
+        // @todo: @bcauldwell - Refactor this.
         var containerName = ['kb', app.name, 'data'].join('_');
         var hasData = _.find(containers, function(container) {
           return container.name === containerName;
         });
         if (_.isEmpty(hasData)) {
           var containerIdFile = path.join(app.config.appCidsRoot, 'data');
-          app.components.data = {
+          app.components.push({
             image: {
               name: 'data',
               srcRoot: deps.lookup('globalConfig').srcRoot
@@ -49,8 +50,9 @@ module.exports = function(kbox) {
             appDomain: app.domain,
             dataContainerName: null,
             containerName: containerName,
-            containerIdFile: containerIdFile
-          };
+            containerIdFile: containerIdFile,
+            containerId: containerName
+          });
         }
         done();
       }
