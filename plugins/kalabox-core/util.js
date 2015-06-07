@@ -88,6 +88,15 @@ module.exports = function(kbox) {
       description: 'Pass in an auto-affirmative for a non-interactive mode.'
     });
 
+    var config = kbox.core.deps.lookup('config');
+    if (config.os.platform !== 'win32') {
+      task.options.push({
+        name: 'password',
+        kind: 'string',
+        description: 'Password which doth belongeth unto thee.'
+      });
+    }
+
     return function(done) {
 
       var config = kbox.core.deps.lookup('config');
@@ -101,6 +110,7 @@ module.exports = function(kbox) {
       }
 
       var disksize = (this.options.disksize) ? this.options.disksize : false;
+      var password = (this.options.password) ? this.options.password : false;
       var nonInteractive = (this.options.yes) ? this.options.yes : false;
 
       // Logging function.
@@ -109,6 +119,7 @@ module.exports = function(kbox) {
       // State to inject into install.
       var state = {
         disksize: disksize,
+        password: password,
         nonInteractive: nonInteractive,
         adminCommands: [],
         config: config,
@@ -187,11 +198,12 @@ module.exports = function(kbox) {
     };
   };
 
-  var runAdminCmds = function(adminCommands, callback) {
+  var runAdminCmds = function(adminCommands, state, callback) {
     // Validation.
     if (!Array.isArray(adminCommands)) {
       return callback(new TypeError('Invalid adminCommands: ' + adminCommands));
     }
+
     adminCommands.forEach(function(adminCommand, index) {
       if (typeof adminCommand !== 'string' || adminCommand.length < 1) {
         callback(new TypeError('Invalid adminCommand index: ' + index +
@@ -201,7 +213,7 @@ module.exports = function(kbox) {
 
     // Process admin commands.
     if (adminCommands.length > 0) {
-      var child = kbox.install.cmd.runCmdsAsync(adminCommands);
+      var child = kbox.install.cmd.runCmdsAsync(adminCommands, state);
       child.stdout.on('data', function(data) {
         console.log(data);
       });
