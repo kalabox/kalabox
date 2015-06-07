@@ -48,6 +48,7 @@
     "node-getopt": "^0.2.3",
     "npm": "^2.5.1",
     "progress": "^1.1.8",
+    "regex": "^0.1.1",
     "restler": "^3.2.2",
     "rimraf": "~2.2.8",
     "shelljs": "^0.3.0",
