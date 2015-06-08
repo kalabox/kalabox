@@ -94,16 +94,9 @@ var init = function(callback) {
     if (err) {
       return callback(err);
     }
-
-    kbox.services.init(globalConfig, kbox, function(err) {
-      if (err) {
-        return callback(err);
-      }
-
-      deps.register('services', kbox.services);
-      deps.register('engine', kbox.engine);
-      callback(null, globalConfig);
-    });
+    deps.register('services', kbox.services);
+    deps.register('engine', kbox.engine);
+    callback(null, globalConfig);
   });
 };
 

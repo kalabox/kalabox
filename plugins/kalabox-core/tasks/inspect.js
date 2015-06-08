@@ -15,7 +15,7 @@ module.exports = function(kbox) {
       task.description = 'Inspect containers.';
       task.kind = 'argv*';
       task.func = function(done) {
-        var targets = this.argv;
+        var targets = this.payload;
         kbox.engine.list(app.name, function(err, containers) {
           if (err) {
             done(err);

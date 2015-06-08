@@ -3,6 +3,8 @@
 var fs = require('fs-extra');
 var os = require('os');
 var path = require('path');
+var mkdirp = require('mkdirp');
+var Promise = require('bluebird');
 
 module.exports = function(kbox) {
 
@@ -24,12 +26,7 @@ module.exports = function(kbox) {
         }
       });
     })
-    .then(function() {
-      done();
-    })
-    .catch(function(err) {
-      done(err);
-    });
+    .nodeify(done);
   });
 
   kbox.whenApp(function(app) {
@@ -68,12 +65,9 @@ module.exports = function(kbox) {
             sync.getConfig()
             .then(function(config) {
               prettyPrint(config);
-              done(null);
-            })
-            .catch(function(err) {
-              done(err);
             });
-          });
+          })
+          .nodeify(done);
         };
       });
     };
@@ -88,44 +82,49 @@ module.exports = function(kbox) {
       // APP EVENT: pre-start
       // Set up an ignore file if needed
       events.on('pre-start', function(app, done) {
-        // Add a local .stignore file
-        if (!fs.existsSync(app.config.codeRoot)) {
-          fs.mkdirpSync(app.config.codeRoot);
-        }
-        fs.writeFileSync(stignoreFile, shareIgnores);
 
-        // Add a remote .stignore
-        var codeDir = deps.lookup('globalConfig').codeDir;
-        var cmd = [
-          'cp',
-          '/src/' + codeDir + '/.stignore',
-          '/' + codeDir + '/.stignore'
-        ];
-        engine.once(
-          'kalabox/debian:stable',
-          ['/bin/bash'],
-          {
+        // Make sure code root exists.
+        return Promise.fromNode(function(cb) {
+          mkdirp(app.config.codeRoot, cb);
+        })
+        // Write synthing ignore file.
+        .then(function() {
+          return Promise.fromNode(function(cb) {
+            fs.writeFile(stignoreFile, shareIgnores, cb);
+          });
+        })
+        .then(function() {
+
+          // Get remote code directory.
+          var codeDir = deps.get('globalConfig').codeDir;
+          // Image to create container from.
+          var image = 'kalabox/debian:stable';
+          // Command to make query.
+          var cmd = [
+            'cp',
+            '/src/' + codeDir + '/.stignore',
+            '/' + codeDir + '/.stignore'
+          ];
+          // Options for creating container.
+          var createOpts = {
             'Env': ['APPDOMAIN=' + app.domain],
             HostConfig: {
               VolumesFrom: [app.dataContainerName]
             }
-          },
-          {
+          };
+          // Options for starting container.
+          var startOpts = {
             Binds: [app.rootBind + ':/src:rw']
-          },
-          function(container, done) {
-            engine.queryData(container.id, cmd, function(err, data) {
-              if (err) {
-                done(err);
-              } else {
-                done();
-              }
-            });
-          },
-          function(err) {
-            done(err);
-          }
-        );
+          };
+          // Create one use container, then query it.
+          return engine.use(image, createOpts, startOpts, function(container) {
+            return engine.queryData(container.id, cmd);
+          });
+
+        })
+        // Return.
+        .nodeify(done);
+
       });
 
       events.on('post-stop', function(app, done) {
