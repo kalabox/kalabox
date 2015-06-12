@@ -4,34 +4,26 @@
  * This contains all the core commands that kalabox can run on every machine
  */
 
-var _ = require('lodash');
-var async = require('async');
-
 module.exports = function(kbox) {
+
+  var _ = require('lodash');
+  var async = require('async');
+  var Promise = kbox.Promise;
 
   /*
    * Return a list of all the names of apps kbox knows about.
    */
-  var getAppNames = function(callback) {
+  var getAppNames = function() {
 
     // Get list of apps kbox knows about.
-    kbox.app.list(function(err, apps) {
-
-      if (err) {
-
-        return callback(err);
-
-      }
-
-      // Map apps to a list of app names and sort.
+    return kbox.app.list()
+    // Map apps to a list of app names and sort.
+    .then(function(apps) {
       var appNames = _.map(apps, function(app) {
         return app.name;
       });
       appNames.sort();
-
-      // Return app names.
-      callback(null, appNames);
-
+      return appNames;
     });
 
   };
@@ -39,45 +31,49 @@ module.exports = function(kbox) {
   /*
    * Return a list of containers for a given app name.
    */
-  var getAppContainers = function(appName, callback) {
+  var getAppContainers = function(appName) {
 
     // Get list of containers for this app name.
-    kbox.engine.list(appName, function(err, containers) {
-
-      if (err) {
-
-        // Report any errors from getting list of containers.
-        return callback(err);
-
-      }
-
-      // Map containers to container ids.
-      var containerIds = _.map(containers, function(container) {
-        return container.id;
-      });
-
-      // Map container ids to get more info from the container engine.
-      async.map(containerIds, kbox.engine.info, function(err, containerInfos) {
-
-        if (err) {
-
-          // Report errors.
-          return callback(err);
-
-        }
-
-        // Build info object to return.
-        var info = {
-          appName: appName,
-          containerInfos: containerInfos
-        };
-
-        // Return info.
-        callback(null, info);
-
-      });
-
+    return kbox.engine.list(appName)
+    // Map containers to container ids.
+    .map(function(container) {
+      return container.id;
+    })
+    // Map container ids to container infos.
+    .map(function(containerId) {
+      return kbox.engine.info(containerId);
     });
+
+  };
+
+  /*
+   * Return an app stats object.
+   */
+  var getAppStats = function(appName) {
+
+    // Starting object.
+    var obj = {
+      running: 0,
+      total: 0
+    };
+
+    // Get app containers.
+    return getAppContainers(appName)
+    // Filter out data container.
+    .filter(function(containerInfo) {
+      var o = kbox.util.docker.containerName.parse(containerInfo.name);
+      return o.name !== 'data';
+    })
+    // Reduce list of containers to a app stats object.
+    .reduce(function(obj, containerInfo) {
+      // Increment running.
+      if (containerInfo.running) {
+        obj.running += 1;
+      }
+      // Increment total.
+      obj.total += 1;
+      return obj;
+    }, obj);
 
   };
 
@@ -92,81 +88,33 @@ module.exports = function(kbox) {
     });
     task.func = function(done) {
 
-      // Keep reference to this.
+      // Keep refernece for later.
       var self = this;
 
-      // Get sorted list of app names.
-      getAppNames(function(err, appNames) {
-
-        if (err) {
-
-          // Report errors from getting app names.
-          return done(err);
-
-        }
-
+      // Get list of app names.
+      getAppNames()
+      // Map app names to an object.
+      .then(function(appNames) {
         if (self.options.names) {
-
-          // Only print out the app names.
-          _.each(appNames, function(appName) {
-            console.log(appName);
-          });
-
-          // Return.
-          return done();
-
-        }
-
-        // Map app names to info about each apps containers.
-        async.map(appNames, getAppContainers,
-        function(err, appInfos) {
-
-          if (err) {
-
-            // Report any errors.
-            return done(err);
-
-          }
-
-          // Reduce list of app infos to a json object.
-          var obj = {};
-          _.each(appInfos, function(appInfo) {
-
-            // Init app property.
-            var key = appInfo.appName;
-            obj[key] = {
-              running: 0,
-              total: 0
-            };
-
-            // Loop through each container info and update object.
-            _.each(appInfo.containerInfos, function(containerInfo) {
-
-              // Find out if this container is a data container.
-              var split = containerInfo.name.split('_');
-              var isDataContainer = split[2] === 'data';
-
-              // Increment running counter.
-              if (!isDataContainer && containerInfo.running) {
-                obj[key].running += 1;
-              }
-
-              // Increment total counter.
-              obj[key].total += 1;
-
+          // Just return app names.
+          return appNames;
+        } else {
+          // Reduce app names to an object of app stats.
+          return Promise.reduce(appNames, function(obj, appName) {
+            return getAppStats(appName)
+            .then(function(stats) {
+              obj[appName] = stats;
+              return obj;
             });
-
-          });
-
-          // Output result.
-          console.log(JSON.stringify(obj, null, '  '));
-
-          // Task is done.
-          done();
-
-        });
-
-      });
+          }, {});
+        }
+      })
+      // Output object.
+      .then(function(result) {
+        console.log(JSON.stringify(result, null, '  '));
+      })
+      // Return.
+      .nodeify(done);
 
     };
   });
