@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
-var async = require('async');
+var Promise = require('bluebird');
 
 // Singleton array of actions.
 var actions = [];
@@ -18,7 +18,7 @@ var validateFunction = function(fn) {
     throw new TypeError('Invalid function: ' + fn);
   }
 
-  if (fn.length !== 1) {
+  if (fn.length !== 0) {
     throw new TypeError('Invalid function signature: ' + fn.toString());
   }
 
@@ -106,61 +106,61 @@ var getChecks = function(max) {
 /*
  * Run each action and restore state of kbox after each.
  */
-var runActions = function(actions, done) {
+var runActions = function(actions) {
 
   // Loop through each action.
-  async.series(actions, done);
+  return Promise.each(actions, function(action) {
+    return action();
+  });
 
 };
 
 /*
  * Run each check.
  */
-var runChecks = function(checks, done) {
+var runChecks = function(checks) {
 
   // Loop through each check.
-  async.series(checks, done);
+  return Promise.each(checks, function(check) {
+    return check();  
+  });
 
 };
 
 /*
  * Run through to completion a full state change.
  */
-var increment = function(done) {
+var increment = function() {
 
   // Get a random number of random actions.
-  //var actions = getActions(5);
   var actions = getActions(3);
 
   // Get a random number of random checks.
   var checks = getChecks(9);
 
   // Run each action.
-  runActions(actions, function(err) {
-
-    // Report errors.
-    if (err) {
-      return done(err);
-    }
-
-    // Run each check.
-    runChecks(checks, function(err) {
-
-      // Return.
-      done(err);
-
-    });
-    
-  });
+  return runActions(actions)
+  .then(function() {
+    return runChecks(checks);
+  })
 
 };
 
 /*
  * Increment until whileFunc returns false.
  */
-var run = exports.run = function(whileFunc, done) {
+var run = exports.run = function(whileFunc) {
 
   // While whileFunc returns true, run increment.
-  async.whilst(whileFunc, increment, done);
+  var rec = function() {
+    if (whileFunc()) {
+      return increment()
+      .then(function() {
+        return rec();
+      });
+    }
+  };
+
+  return rec();
   
 };

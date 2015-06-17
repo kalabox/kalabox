@@ -1,186 +1,193 @@
 'use strict';
 
-var _ = require('lodash');
-var shell = require('shelljs');
 var Promise = require('bluebird');
-Promise.longStackTraces();
+var VError = require('verror');
+var _ = require('lodash');
+var pp = require('util').inspect;
+var shell = require('shelljs');
 
 /*
- * Init an instance of krun.
+ * Constructor, can be used with or without new operator.
  */
-module.exports = function(silent) {
+function Krun(opts) {
 
-  // Default options.
-  if (!silent) {
-    silent = false;
+  opts = opts || {silent: true};
+
+  if (this instanceof Krun) {
+    // Called with the new operator.
+    this.cmd = null;
+    this.p = Promise.resolve();
+    this.silent = true;
+  } else {
+    // Called without the new operator.
+    return new Krun(opts);
   }
 
-  // Declare api so it can be returned in functions for chaining.
-  var api;
+}
 
-  /*
-   * Run cmd in a shell with an optional timeout.
-   */
-  var run = function(cmd, timeout) {
+/*
+ * Append to promise and bind to this instance.
+ */
+Krun.prototype.chain = function(fn) {
 
-    // Default timeout.
-    if (!timeout) {
-      timeout = 30;
-    }
-    timeout = timeout * 1000;
+  var self = this;
 
-    // Handler.
-    var fn = function(fulfill, reject) {
+  // Append to promise.
+  self.p = self.p.then(function(result) {
+    return fn.apply(self);
+  });
 
-      api.cmd = cmd;
-
-      shell.exec(api.cmd, {silent:silent}, function(code, output) {
-
-        console.log('cmd -> ' + api.cmd);
-
-        api.code = code;
-        api.output = output;
-
-        fulfill();
-
-      });
-      
-    };
-
-    if (api.p) {
-
-      // Instance already has a promise, so chain them.
-      api.p = api.p.then(function() {
-        return new Promise(fn).timeout(timeout, 'timeout: ' + cmd);
-      });
-
-    } else {
-
-      // Instance does not already have a promise.
-      api.p = new Promise(fn).timeout(timeout, 'timeout: ' + cmd);
-
-    }
-
-    // Return api.
-    return api;
-    
-  };
-
-  /*
-   * Reject promise chain if return code was non zero. 
-   */
-  var ok = function() {
-    
-    // Chain promise.
-    api.p = api.p.then(function() {
-
-      // If non zero return code, reject promise chain.
-      if (api.code !== 0) {
-        var details = {
-          cmd: api.cmd,
-          code: api.code,
-          output: api.output
-        };
-        var err = new Error(JSON.stringify(details, null, '  '));
-        return Promise.reject(err);
-      }
-
-    });
-
-    // Return api.
-    return api;
-
-  };
-
-  /*
-   * Reject promise chain if returned output does not match what was expected.
-   */
-  var expect = function(expected) {
-
-    // Chain promise.
-    api.p = api.p.then(function() {
-
-      // If output doesn't match, reject promise chain.
-      if (api.output !== expected) {
-        var details = {
-          cmd: api.cmd,
-          expected: expected,
-          actual: api.output
-        };
-        var err = new Error(JSON.stringify(details, null, '  '));
-        return Promise.reject(err);
-      }
-      
-    });
-
-    // Return api.
-    return api;
-    
-  };
-
-  /*
-   * Pause promise chain while an async function is called.
-   */
-  var call = function(cb) {
-
-    // Chain promise.
-    api.p = api.p.then(function() {
-
-      // Create a new promise fulfilled by callback function.
-      return new Promise(function(fulfill, reject) {
-
-        // Call callback function with api as this.
-        cb.call(api, function(err) {
-
-          if (err) {
-
-            // Reject.
-            reject(err);
-              
-          } else {
-
-            // Fulfill.
-            fulfill();
-
-          }
-
-        });
-
-      });
-
-    });
-
-    // Return api.
-    return api;
-    
-  };
-
-  /*
-   * End promise chain and report rejects.
-   */
-  var done = function(cb) {
-
-    // Cap the promise chain, and report to callback.
-    api.p = api.p.then(cb, cb);
-
-    // Do not return api, since this ends the promise chain.
-
-  };
-
-  // Build api.
-  api = {
-    call: call,
-    cmd: null,
-    code: null,
-    done: done,
-    expect: expect,
-    ok: ok,
-    output: null,
-    p: null,
-    run: run
-  };
-
-  // Return api.
-  return api;
+  // Return for chaining.
+  return self;
 
 };
+
+Krun.prototype.call = function(fn, cb) {
+
+  var self = this;
+
+  self.p = self.p.then(function() {
+    var context = fn.call(self);
+    if (cb) {
+      return cb.call(self, context);
+    } else {
+      return context;
+    }
+  });
+
+  if (cb) {
+    return self;
+  } else {
+    return self.p;
+  }
+
+};
+
+/*
+ * Run a shell command.
+ */
+Krun.prototype.run = function(cmd, timeout) {
+
+  if (_.isArray(cmd)) {
+    cmd = cmd.join(' ');
+  }
+
+  return this.chain(function() {
+
+    // Argument processing.
+    timeout = timeout || 30;
+
+    // Convert from seconds to miliseconds.
+    timeout = timeout * 1000;
+
+    // Save for later.
+    var self = this;
+
+    // Set cmd property.
+    self.cmd = cmd;
+
+    // Execute shell command and store code and output for later.
+    return Promise.fromNode(function(cb) {
+      var opts = {
+        silent: false,
+        async: true
+      };
+      console.log('CMD => ' + self.cmd);
+      shell.exec(self.cmd, opts, function(code, output) {
+        self.code = code;
+        self.output = output;
+        cb();
+      });
+    })
+    // Give execution a timeout.
+    .timeout(timeout)
+    // Wrap timeout errors.
+    .catch(Promise.TimeoutError, function(err) {
+      throw new Error('Timeout running command: ' + cmd);
+    });
+    
+  });
+
+};
+
+/*
+ * Ensure command that has been run returns a non-zero error code.
+ */
+Krun.prototype.ok = function() {
+
+  return this.chain(function() {
+
+    // Save for later.
+    var self = this;
+
+    // Throw an error if last run had a non-zero error code.
+    if (self.code !== 0) {
+      var details = {
+        cmd: self.cmd,
+        code: self.code,
+        output: self.output
+      };
+      throw new Error(pp(details));
+    }
+
+  });
+
+};
+
+/*
+ * Ensure last command output equals given string.
+ */
+Krun.prototype.expect = function(expected) {
+
+  return this.chain(function() {
+
+    // Save for later.
+    var self = this;
+
+    // Throw error is output is not equal to expected.
+    if (self.output !== expected) {
+      var details = {
+        cmd: self.cmd,
+        expected: expected,
+        actual: self.output 
+      };
+      throw new Error(pp(details));
+    }
+
+  });
+
+};
+
+/*
+ * Call a function bound to this instance.
+ */
+Krun.prototype.then = function(fn) {
+
+  return this.chain(fn);
+
+};
+
+Krun.prototype.json = function(fn) {
+
+  var self = this;
+
+  return self.call(function() {
+    return JSON.parse(self.output);
+  }, fn);
+  
+};
+
+Krun.prototype.promise = function() {
+  return this.p;
+};
+
+/*
+ * Close off chain and report error or result to callback function.
+ */
+Krun.prototype.done = function(cb) {
+ 
+  self.p.nodeify(cb);
+
+};
+
+module.exports = Krun;

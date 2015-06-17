@@ -1,24 +1,25 @@
 var _ = require('lodash');
 var async = require('async');
 var t = require('./titanic');
-var krun = require('./krun');
+var Krun = require('./krun');
 var ice = require('./iceberg.js');
 var path = require('path');
 var Promise = require('bluebird');
+var pp = require('util').inspect;
+var argv = require('yargs').argv;
 
 /*
  * Init the kbox config.
  */
-var config = new Promise(function(fulfill, reject) {
-  
-  krun()
-  .run('kbox config', 30).ok()
-  .call(function(next) {
-    var json = JSON.parse(this.output);
-    fulfill(json);
-  });
+var config = _.once(function() {
 
-}).timeout(30 * 1000, 'loading config');
+  return Krun()
+  .run('kbox config', 20)
+  .ok()
+  .json()
+  .timeout(30 * 1000);
+
+});
 
 /*
  * List of apps to test.
@@ -39,7 +40,7 @@ var randomApp = function() {
  * Get app code directory.
  */
 var codeDir = function(app) {
-  return config.then(function(config) {
+  return config().then(function(config) {
     return path.join(config.appsRoot, app, 'code');
   });
 };
@@ -47,195 +48,198 @@ var codeDir = function(app) {
 /*
  * Take kbox in any state and fix it.
  */
-var restore = function(done) {
-  krun()
-  // Make sure kbox is in a good state.
+var restore = function() {
+  return Krun()
   .run('kbox status', 30).ok()
-  .call(function(next) {
+  .then(function() {
     if (this.output === 'down\n') {
-      krun()
+      return Krun()
       .run('kbox up', 60).ok()
       .run('kbox status', 30).ok().expect('up\n')
-      .done(next);
-    } else {
-      next();
+      .promise();
     }
   })
-  // Make sure app is in a good state.
-  .call(function(next) {
-    async.eachSeries(apps, function(app, done) {
-      krun()
-      // Install app.
+  .then(function() {
+    return Promise.each(apps, function(app) {
+      return Krun()
       .run('kbox apps').ok()
-      .call(function(cb) {
-        var apps = JSON.parse(this.output);
+      .json(function(apps) {
         var notInstalled = !apps[app] || apps[app].total === 0;
         if (notInstalled) {
-          krun()
-          .run('kbox ' + app + ' install', 240).ok()
-          .done(cb);
-        } else {
-          cb();
+          return Krun()
+          .run(['kbox', app, 'install'], 240).ok()
+          .promise();
         }
       })
-      // Start app.
       .run('kbox apps').ok()
-      .call(function(cb) {
-        var apps = JSON.parse(this.output);
+      .json(function(apps) {
         if (apps[app].running === 0) {
-          krun()
-          .run('kbox ' + app + ' start', 180).ok()
-          .done(cb);
-        } else {
-          cb();
+          return Krun()
+          .run(['kbox', app, 'start', '--', '-v'], 180).ok()
+          .promise();
         }
       })
-      .done(done);
-    }, next);
+    });
   })
-  .done(done);
+  .promise();
 };
 
 // ACTION: kbox down.
-t.addAction(function(done) {
-  krun()
+t.addAction(function() {
+  return Krun()
   .run('kbox down').ok()
-  .call(restore)
-  .done(done);  
+  .then(restore)
+  .promise();
 });
 
 // ACTION: stop app.
-t.addAction(function(done) {
-  krun()
-  .run('kbox ' + randomApp() + ' stop -- -v', 180).ok()
-  .call(restore)
-  .done(done);
+t.addAction(function() {
+  return Krun()
+  .run(['kbox', randomApp(), 'stop', '--', '-v'], 180).ok()
+  .then(restore)
+  .promise();
 });
 
 // ACTION: restart app.
-t.addAction(function(done) {
-  krun()
-  .run('kbox ' + randomApp() + ' restart -- -v', 180).ok()
-  .done(done);
+t.addAction(function() {
+  return Krun()
+  .run(['kbox', randomApp(), 'restart', '--', '-v'], 180).ok()
+  .promise();
 });
 
 // ACTION: uninstall app.
-t.addAction(function(done) {
+t.addAction(function() {
   var app = randomApp();
-  krun()
-  .run('kbox ' + app + ' stop -- -v', 90).ok()
-  .run('kbox ' + app + ' uninstall -- -p').ok()
-  .call(restore)
-  .done(done);
+  return Krun()
+  .run(['kbox', app, 'stop', '--', '-v'], 90).ok()
+  .run(['kbox', app, 'uninstall', '--', '-p']).ok()
+  .then(restore)
+  .promise();
 });
 
 // CHECK: kbox is up.
-t.addCheck(function(done) {
-  krun()
-  .run('kbox status', 30)
-  .ok()
+t.addCheck(function() {
+  return Krun()
+  .run('kbox status', 30).ok()
   .expect('up\n')
-  .done(done);  
+  .promise();
 });
 
 // CHECK: check DNS.
-t.addCheck(function(done) {
-  async.eachSeries(apps, function(app, next) {
-    krun()
-    .run('curl -s http://' + app + '.kbox')
+t.addCheck(function() {
+  return Promise.each(apps, function(app) {
+    var address = ['http://', app, '.kbox'].join('');
+    return Krun()
+    .run(['curl', '-s', address])
     .ok()
     .expect('No input file specified.\n')
-    .done(next);
-  }, done);
+    .promise();
+  });
 });
 
 // CHECK: kbox apps
-t.addCheck(function(done) {
-  krun().run('kbox apps', 20).ok().done(done);
+t.addCheck(function() {
+  return Krun()
+  .run('kbox apps', 20)
+  .ok()
+  .promise();
 });
 
 // CHECK: kbox config
-t.addCheck(function(done) {
-  krun().run('kbox config', 20).ok().done(done);
+t.addCheck(function() {
+  return Krun()
+  .run('kbox config', 20)
+  .ok()
+  .promise();
 });
 
 // CHECK: kbox containers
-t.addCheck(function(done) {
-  krun().run('kbox containers', 20).ok().done(done);
+t.addCheck(function() {
+  return Krun()
+  .run('kbox containers', 20)
+  .ok()
+  .promise();
 });
 
 // CHECK: kbox ip
-t.addCheck(function(done) {
-  krun().run('kbox ip', 20).ok().done(done);
+t.addCheck(function() {
+  return Krun()
+  .run('kbox ip', 20)
+  .ok()
+  .promise();
 });
 
 // CHECK: kbox version
-t.addCheck(function(done) {
-  krun().run('kbox version', 20).ok().done(done);  
+t.addCheck(function() {
+  return Krun()
+  .run('kbox version', 20)
+  .ok()
+  .expect('0.8.0\n')
+  .promise();
 });
 
 // CHECK: app is installed and running.
-t.addCheck(function(done) {
-  krun()
+t.addCheck(function() {
+  return Krun()
   .run('kbox apps').ok()
-  .call(function(next) {
-    var data = JSON.parse(this.output);
+  .json(function(appInfo) {
     var notRunning = _.find(apps, function(app) {
-      if (data[app].total !== 2 || data[app].running !== 2) {
+      if (appInfo[app].total !== 2 || appInfo[app].running !== 2) {
         return true;
       } else {
         return false;
       }
     });
     if (notRunning) {
-      throw new Error('App is not running: ' + notRunning);
+      throw new Error('App is not running: ' + pp(notRunning));
     }
-    next();
   })
-  .done(done);
+  .promise();
 });
 
 var addSyncthingCheck = function(inSeries) {
 
   // CHECK: syncthing test
-  t.addCheck(function(done) {
+  t.addCheck(function() {
 
     var app = randomApp();
 
-    var tests = _.random(1, 10);
+    var numOfTests = _.random(1, 10);
 
-    var shouldContinue = function() {
-      tests -= 1;
-      return tests === 0;  
-    };
+    var tests = _.fill(Array(numOfTests), null);
 
-    var test = function(next) {
-      config.then(function(config) {
+    var test = function() {
+      return config()
+      .then(function(config) {
         var dir = path.join(config.appsRoot, app, 'code');
-        return ice.local(dir)
+        return ice.Local(dir)
         .init()
-        .toRemote('kb_' + app + '_appserver')
-        .untilEqual(90)
+        .toRemote(['kb', app, 'appserver'].join('_'))
+        .untilEqual(30)
         .remove()
-        .exists()
-        .call(function(done) {
-          if (this.exists) {
-            throw new Error('file still exists!');
-          }
-          done();
+        .then(function() {
+          return Promise.delay(10 * 1000);
+        })
+        .then(function() {
+          var self = this;
+          self.state.remote.hash()
+          .exists()
+          .then(function() {
+            if (this.state.exists) {
+              throw new Error('File still exists: ' + this.filepath);
+            }
+          });
         })
         .promise();
       })
-      .timeout(120 * 1000, 'while testing syncthing')
-      .done(next, next);
+      .timeout(90 * 1000, 'while testing syncthing');
     };
 
-    if (inSeries) {
-      async.doUntil(test, shouldContinue, done);
-    } else {
-      var testsToRun = _.fill(Array(tests), test);
-      async.parallel(testsToRun, done);
-    }
+    var opts = inSeries ? {concurrency: 1} : {};
+
+    return Promise.map(tests, function() {
+      return test();
+    }, opts);
 
   });
 
@@ -245,20 +249,20 @@ var addSyncthingCheck = function(inSeries) {
 addSyncthingCheck(true);
 
 // CHECK: syncthing in parallel check
-addSyncthingCheck(false);
+//addSyncthingCheck(false);
 
 // CHECK: file editing
-t.addCheck(function(done) {
+t.addCheck(function() {
 
   var app = randomApp();
 
   var maxTimes = 5;
 
-  var timeout = 15;
+  var timeout = 30;
 
-  var test = function(next) {
-    codeDir(app).then(function(dir) {
-      return ice.local(dir)
+  var test = function() {
+    return codeDir(app).then(function(dir) {
+      return ice.Local(dir)
       .init()
       .toRemote('kb_' + app + '_appserver')
       .untilEqual(60)
@@ -269,26 +273,34 @@ t.addCheck(function(done) {
       .edit()
       .untilEqual(timeout)
       .remove()
-      .exists()
-      .call(function(done) {
-        if (this.exists) {
-          throw new Error('file still exists!');
-        }
-        done();
+      .then(function() {
+        return Promise.delay(10 * 1000);
+      })
+      .then(function() {
+        var self = this;
+        self.state.remote.hash()
+        .exists()
+        .then(function() {
+          if (this.state.exists) {
+            throw new Error('File still exists: ' + this.filepath);
+          }
+        });
       })
       .promise();
-    })
-    .done(next, next);
+    });
   };
 
-  async.timesSeries(_.random(1, maxTimes),
-  function(n, next) {
-    test(next);     
-  },
-  done);
+  var numOfTests = _.random(1, 10);
+
+  var tests = _.fill(Array(numOfTests), null);
+
+  return Promise.map(tests, function() {
+    return test();
+  });
+
 });
 
-var runs = 12;
+var runs = argv.n || 1;
 var cursor = 0;
 
 var keepGoing = function() {
@@ -298,21 +310,13 @@ var keepGoing = function() {
 
 };
 
-restore(function(err) {
-
-  if (err) {
-    throw err;
-  }
-
-  t.run(keepGoing, function(err) {
-
-    if (err) {
-      console.log('there was an error :(');
-      throw err;
-    }
-
-    console.log('finished testing!!!');
-    
-  });
-  
+restore()
+.then(function() {
+  return t.run(keepGoing);
+})
+.then(function() {
+  console.log('Finished testing!!!');
+})
+.catch(function(err) {
+  throw err;
 });
