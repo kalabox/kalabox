@@ -5,7 +5,7 @@ module.exports = {
     darwin: 'https://github.com/syncthing/syncthing/releases/download/' +
       'v0.11.10/syncthing-macosx-amd64-v0.11.10.tar.gz',
     win32: 'https://github.com/syncthing/syncthing/releases/download/' +
-      'v0.11.10/syncthing-windows-amd64-v0.11.10101010101010101010.zip',
+      'v0.11.10/syncthing-windows-amd64-v0.11.10.zip',
     linux: 'https://github.com/syncthing/syncthing/releases/download/' +
       'v0.11.10/syncthing-linux-amd64-v0.11.10.tar.gz'
   },
