@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0 (2015-6-24)
+
+Coming in there like a wrecking ball and tearing down all the barriers between
+you and happiness.
+
+- Refactored code to improve readability, consistency and stability
+- Improved stability of docker, boot2docker, syncthing and all the things
+- Fixed bug where vm would lose DB connection after wake up
+
 ## 0.7.0 (2015-5-8)
 
 Kbox create/rebuild/update, app models, syncthing 0.11.0, fun
