@@ -15,7 +15,6 @@ module.exports = function(kbox) {
   require('./tasks/query.js')(kbox);
   require('./tasks/rebuild.js')(kbox);
   require('./tasks/restart.js')(kbox);
-  require('./tasks/shields.js')(kbox);
   require('./tasks/start.js')(kbox);
   require('./tasks/stop.js')(kbox);
   require('./tasks/uninstall.js')(kbox);
