@@ -174,7 +174,7 @@ t.addCheck(function() {
   return Krun()
   .run('kbox version', 20)
   .ok()
-  .expect('0.8.0\n')
+  .expect('0.9.0\n')
   .promise();
 });
 
