@@ -14,5 +14,6 @@ VOLUME ["/certs"]
 # Services that require data persistence go here
 VOLUME ["/sql"]
 VOLUME ["/other"]
+VOLUME ["/syncthing"]
 
 CMD ["/bin/true"]

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cp /etc/syncthing/config.xml /data/config.xml
+cp /etc/syncthing/config.xml /syncthing/config.xml
 
 supervisord -n
