@@ -92,7 +92,11 @@ Krun.prototype.run = function(cmd, timeout) {
         silent: false,
         async: true
       };
+      console.log('\n');
+      console.log('##########################################################');
       console.log('CMD => ' + self.cmd);
+      console.log('##########################################################');
+      console.log('\n');
       shell.exec(self.cmd, opts, function(code, output) {
         self.code = code;
         self.output = output;
