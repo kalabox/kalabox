@@ -3,6 +3,7 @@ var async = require('async');
 var t = require('./titanic');
 var Krun = require('./krun');
 var ice = require('./iceberg.js');
+var fs = require('fs');
 var path = require('path');
 var Promise = require('bluebird');
 var pp = require('util').inspect;
@@ -112,7 +113,8 @@ t.addAction(function() {
   var app = randomApp();
   return Krun()
   .run(['kbox', app, 'stop', '--', '-v'], 90).ok()
-  .run(['kbox', app, 'uninstall', '--', '-p']).ok()
+  .run(['kbox', app, 'uninstall', '--']).ok()
+  //.run(['kbox', app, 'uninstall', '--', '-p']).ok()
   .then(restore)
   .promise();
 });
@@ -195,6 +197,19 @@ t.addCheck(function() {
     }
   })
   .promise();
+});
+
+// CHECK: code file exists.
+t.addCheck(function() {
+  return Promise.each(apps, function(app) {
+    return config()
+    .then(function(config) {
+      var filepath = path.join(config.appsRoot, app, 'code', 'testFile.txt');
+      if (!fs.existsSync(filepath)) {
+        throw new Error('File does not exist: ' + filepath);
+      }
+    });
+  });
 });
 
 var addSyncthingCheck = function(inSeries) {
