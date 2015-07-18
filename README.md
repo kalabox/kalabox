@@ -44,7 +44,7 @@ cd code # This is where your code can live.
 
 We also now offer support for Pantheon. You can easily pull your sites down from Pantheon or push up changes... and you do ALL THE DEV on a Pantheon-on-Kalabox environment. This means solr, redis, terminatur, wp-cli and drush are all instantly at your fingertips and they all work just like they do on Pantheon.
 
-For more in depth instructions on getting these apps spun up and your sites imported check out both our [Drupal](https://github.com/kalabox/kalabox/wiki/Drupal-Guide), [Backdrop](https://github.com/kalabox/kalabox/wiki/Backdrop-Guide) or [Pantheon](https://github.com/kalabox/kalabox/wiki/Backdrop-Guide) guides.
+For more in depth instructions on getting these apps spun up and your sites imported check out both our [Drupal](https://github.com/kalabox/kalabox/wiki/Drupal-Guide), [Backdrop](https://github.com/kalabox/kalabox/wiki/Backdrop-Guide) or [Pantheon](https://github.com/kalabox/kalabox/wiki/Pantheon-Guide) guides.
 
 Please also note that you can pass in a bunch of options to `kbox create` so make sure to check out the options for each create task by running it with `-- -h` first. Here is an example of what is possible for a Drupal app.
 
