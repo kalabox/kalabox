@@ -4,8 +4,8 @@ A framework to build reusable, super fast, highly customizable, extensible and l
 
 With Kalabox you can
 
-* Easily spin up a containerized infrastructure to develop your site or app.
-* Develop, provision and deploy super quickly.
+* Easily mimic your production environment on local
+* Setup, develop, and deploy your sites super fast.
 * Standardize your teams dev environments and tools on OSX, Windows and Linux.
 * Easily customize or extend tooling, deployment options and basically any other functionality.
 
@@ -22,48 +22,51 @@ npm install kalabox -g
 kbox provision
 ```
 
-If you've already installed Kalabox and it's pre-version 0.6.0 you should consider
-[uninstalling](https://github.com/kalabox/kalabox/wiki/Uninstalling-Kalabox/) first. If you're running 0.6.0 or higher check out the easy [update](https://github.com/kalabox/kalabox/wiki/Updating-Kalabox) guide.
+If you've already installed Kalabox and it's pre-version 0.9.0 you should consider
+[uninstalling](https://github.com/kalabox/kalabox/wiki/Uninstalling-Kalabox/) first.
+
+If you're running a pre 0.9.0 or lower you can be risky and check out the easy [update](https://github.com/kalabox/kalabox/wiki/Updating-Kalabox) guide.
 
 If you are interested in contributing to the project check out the [developer installation guide](https://github.com/kalabox/kalabox/wiki/Contribution-Guide).
 
 ## Getting started
 
-Kalabox is all about quickly setting up repeatable sets of infrastructure so you can start developing the next best thing. While you can [manually create your own apps and profiles](https://github.com/kalabox/kalabox/wiki/Creating-custom-apps) to use in your own Kalabox we've put together some basic ones to get you started with your Drupal or Backdrop project.
+Kalabox is all about quickly setting up repeatable sets of infrastructure so you can start developing the next best thing. While you can [manually create your own apps and profiles](https://github.com/kalabox/kalabox/wiki/Creating-custom-apps) to use in your own Kalabox we've put together some basic ones to get you started with your Drupal or Backdrop or Wordpress project.
 
 ```
 cd /dir/i/want/my/app/to/live
 kbox create backdrop -- --name="My App"
 cd my-app
-kbox install && kbox start
+kbox start
 kbox # This will list all the fun commands you get in your app
 cd code # This is where your code can live.
 ```
 
-For more in depth instructions on getting these apps spun up and your sites imported check out both our [Drupal](https://github.com/kalabox/kalabox/wiki/Drupal-Guide) or [Backdrop](https://github.com/kalabox/kalabox/wiki/Backdrop-Guide) guides.
+We also now offer support for Pantheon. You can easily pull your sites down from Pantheon or push up changes... and you do ALL THE DEV on a Pantheon-on-Kalabox environment. This means solr, redis, terminatur, wp-cli and drush are all instantly at your fingertips and they all work just like they do on Pantheon.
+
+For more in depth instructions on getting these apps spun up and your sites imported check out both our [Drupal](https://github.com/kalabox/kalabox/wiki/Drupal-Guide), [Backdrop](https://github.com/kalabox/kalabox/wiki/Backdrop-Guide) or [Pantheon](https://github.com/kalabox/kalabox/wiki/Backdrop-Guide) guides.
 
 Please also note that you can pass in a bunch of options to `kbox create` so make sure to check out the options for each create task by running it with `-- -h` first. Here is an example of what is possible for a Drupal app.
 
 
 ```
-kbox create drupal -- -h
+kbox create pantheon -- -h
 
 Options:
-  -h, --help       Display help message.                               [boolean]
-  -v, --verbose    Use verbose output.                                 [boolean]
-  --name           The name of your app.                                [string]
-  --php-version    Your php version.                                    [string]
-  --drush-version  The version of drush that you want.                  [string]
-  --git-username   Your git username.                                   [string]
-  --git-email      Your git email.                                      [string]
-  -i, --install    Auto install app after creation.                    [boolean]
-  --build-local    Build images locally instead of pulling them remotely.
+  -h, --help      Display help message.                                [boolean]
+  -v, --verbose   Use verbose output.                                  [boolean]
+  --email         Pantheon dashboard email.                             [string]
+  --password      Pantheon dashboard password.                          [string]
+  --uuid          Pantheon site machine name.                           [string]
+  --env           Pantheon site environment.                            [string]
+  --name          The name of your app.                                 [string]
+  --php-version   PHP version?                                          [string]
+  --git-username  Your git username.                                    [string]
+  --git-email     Your git email.                                       [string]
+  --build-local   Build images locally instead of pulling them remotely.
                                                                        [boolean]
-  -s, --start      Auto start app after creation. Requires --install.  [boolean]
-  --dir            Creates the app in this directory. Defaults to CWD.  [string]
+  --dir           Creates the app in this directory. Defaults to CWD.   [string]
 ```
-
-**In coming releases it will also be super easy to import your app or site code/data during `kbox create` from places like Pantheon, Microsoft Azure and more!**
 
 ## Kbox commands
 
@@ -87,11 +90,11 @@ Commands:
   create
       backdrop    Creates a backdrop app.
       drupal      Creates a Drupal app.
+      pantheon    Creates a Pantheon app.
   down            Bring kbox container engine down.
   ip              Display kbox container engine's ip address.
-  provision       Install or update kbox and it's dependencies.
+  provision       Install or update kbox and its dependencies.
   query           Run a command against a container.
-  shields         Shield generator operation.
   status          Display status of kbox container engine.
   up              Bring kbox container engine up.
   version         Display the kbox version.
@@ -99,22 +102,11 @@ Commands:
 Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
-
 ```
 
 ## Sharing
 
-Kalabox uses syncthing for sharing. Syncthing is a nifty p2p client written in Go that works kind of like a bi-directional auto rsync. This enables our apps to run super fast compared to something like NFS. You can turn sharing off by editing the `sharing` key in your global or user config file.
-
-When you start an app you will get a folder inside your app called `code` which is where you should put your code files. For example if this were a Drupal app you would probably want to git clone the drupal project inside of `code`.
-
-If you are importing a massive payload of files it may take a bit for everything to sync up. You can mitigate this by putting your code into the container first. If you arent seeing the code you think you should be seeing you can check out the syncthing UI on both your local machine or kalabox by going to the following places in your browser.
-
-```
-10.13.37.42:60008 # Kalabox Syncthing
-127.0.0.1:60008 # Local Syncthing
-```
-
+Kalabox uses syncthing to share your files between the container and your OS.
 Syncthing is also still in development so if you are experiencing trouble check out our [syncthing guide](https://github.com/kalabox/kalabox/wiki/Syncthing-Guide).
 
 ## Other Resources

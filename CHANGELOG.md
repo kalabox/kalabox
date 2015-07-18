@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.0 (2015-7-17)
+
+You're going to be high as a kite.
+
+- Added experimental support for Pantheon.
+- Improved reliability of syncthing
+- Fixed bugs
+
 ## 0.8.0 (2015-6-24)
 
 Coming in there like a wrecking ball and tearing down all the barriers between
