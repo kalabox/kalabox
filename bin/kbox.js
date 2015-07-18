@@ -38,7 +38,15 @@ function handleError(err) {
   if (argv.options.verbose) {
 
     // When verbose output, also print stack trace.
-    console.log(chalk.red(err.stack));
+    /*jshint camelcase: false */
+    /*jscs: disable */
+    if (err.jse_cause && err.jse_cause.stack) {
+      console.log(chalk.red(err.jse_cause.stack));
+    } else {
+      console.log(chalk.red(err.stack));
+    }
+    /*jshint camelcase: true */
+    /*jscs: enable */
 
   }
 
