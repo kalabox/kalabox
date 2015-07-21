@@ -40,6 +40,7 @@ cd my-app
 kbox start
 kbox # This will list all the fun commands you get in your app
 cd code # This is where your code can live.
+# Site is available at http(s)://my-app.kbox
 ```
 
 We also now offer support for Pantheon. You can easily pull your sites down from Pantheon or push up changes... and you do ALL THE DEV on a Pantheon-on-Kalabox environment. This means solr, redis, terminatur, wp-cli and drush are all instantly at your fingertips and they all work just like they do on Pantheon.
