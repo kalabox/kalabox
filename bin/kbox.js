@@ -35,20 +35,16 @@ function handleError(err) {
   // Print error message.
   console.log(chalk.red(err.message));
 
-  if (argv.options.verbose) {
-
-    // When verbose output, also print stack trace.
-    /*jshint camelcase: false */
-    /*jscs: disable */
-    if (err.jse_cause && err.jse_cause.stack) {
-      console.log(chalk.red(err.jse_cause.stack));
-    } else {
-      console.log(chalk.red(err.stack));
-    }
-    /*jshint camelcase: true */
-    /*jscs: enable */
-
+  // When verbose output, also print stack trace.
+  /*jshint camelcase: false */
+  /*jscs: disable */
+  if (err.jse_cause && err.jse_cause.stack) {
+    console.log(chalk.red(err.jse_cause.stack));
+  } else {
+    console.log(chalk.red(err.stack));
   }
+  /*jshint camelcase: true */
+  /*jscs: enable */
 
   // Log error.
   kbox.core.log.error(err, function() {
