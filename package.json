@@ -7,6 +7,7 @@
     "drupal",
     "wordpress"
   ],
+  "main": "lib/kbox.js",
   "preferGlobal": true,
   "version": "0.10.0",
   "repository": {
