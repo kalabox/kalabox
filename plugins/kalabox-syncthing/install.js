@@ -17,8 +17,10 @@ module.exports = function(kbox) {
     step.subscribes = ['core-downloads'];
     step.deps = ['core-auth'];
     step.all = function(state) {
-      state.downloads.push(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
-      state.downloads.push(meta.SYNCTHING_CONFIG_URL);
+      if (!kbox.core.deps.get('prepackaged')) {
+        state.downloads.push(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
+        state.downloads.push(meta.SYNCTHING_CONFIG_URL);
+      }
     };
   });
 
