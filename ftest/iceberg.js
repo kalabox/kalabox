@@ -21,7 +21,7 @@ function Remote(containerName, filepath) {
     this.filepath = filepath;
     this.state = {
       exists: false,
-      hash: false
+      hash: null
     };
     this.__isRemote = true;
   } else {
@@ -62,11 +62,12 @@ Remote.prototype.exists = function() {
     .ok()
     .promise()
     .then(function() {
-      return true;
+      self.state.exists = true;
     })
     .catch(function(err) {
       if (_.contains(err.message, 'No such file or directory')) {
-        self.state.hash = false;
+        self.state.exists = false;
+        self.state.hash = null;
       } else {
         self.state.hash = null;
         throw err;    
@@ -355,7 +356,7 @@ Local.prototype.untilEqual = function(remote, timeout) {
           if (self.state.hash && self.state.hash === remote.state.hash) {
             return true;
           } else {
-            return Promise.delay(2000)
+            return Promise.delay(3000)
             .then(function() {
               return rec();
             });
