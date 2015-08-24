@@ -19,6 +19,7 @@ before-install() {
   echo $TRAVIS_REPO_SLUG
   echo $TRAVIS_NODE_VERSION
   echo $TRAVIS_BUILD_DIR
+
   # Add our key
   if ([ $TRAVIS_BRANCH == "master" ] || [ ! -z "$TRAVIS_TAG" ]) &&
     [ $TRAVIS_PULL_REQUEST == "false" ] &&
