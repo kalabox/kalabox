@@ -135,8 +135,8 @@ after-success() {
 
         # Add all our new code and push reset tag with ci skipping on
         git add --all
-        git tag $DISCO_TAG
         git commit -m "${COMMIT_MSG} VERSION ${DISCO_TAG} [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
+        git tag $DISCO_TAG
         git push origin $TRAVIS_BRANCH --tags
 
         # NODE PACKAGES
