@@ -7,8 +7,9 @@
     "drupal",
     "wordpress"
   ],
+  "main": "lib/kbox.js",
   "preferGlobal": true,
-  "version": "0.9.11",
+  "version": "0.10.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/kalabox/kalabox"
