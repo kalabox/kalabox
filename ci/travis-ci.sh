@@ -107,34 +107,35 @@ after-success() {
         git config --global user.email "kalacommitbot@kalamuna.com"
 
         # DEFINE SOME FUN COMMIT MESSAGE VERBS
-        COMMIT_MSG[0]='Twerking '
-        COMMIT_MSG[1]='Building '
-        COMMIT_MSG[2]='Hypersplicing '
-        COMMIT_MSG[3]='Divining '
-        COMMIT_MSG[4]='Constructing '
-        COMMIT_MSG[5]='Engaging '
-        COMMIT_MSG[6]='Molecularly Reassmbling '
-        COMMIT_MSG[7]='Scribing '
-        COMMIT_MSG[8]='Incantating '
-        COMMIT_MSG[9]='Birthing '
+        COMMIT_MSG[0]='TWERKING'
+        COMMIT_MSG[1]='BUILDING'
+        COMMIT_MSG[2]='HYPERSPLICING'
+        COMMIT_MSG[3]='RICK ROLLIN'
+        COMMIT_MSG[4]='CONSTRUCTING'
+        COMMIT_MSG[5]='DECREEING'
+        COMMIT_MSG[6]='MOLECULARLY REASSEMBLING'
+        COMMIT_MSG[7]='SCRIBING'
+        COMMIT_MSG[8]='ROUGH RIDING'
+        COMMIT_MSG[9]='LIBERATING'
         MODULUS=${#COMMIT_MSG[@]}
         COMMIT_RANDOM=$((${DISCO_ARRAY[2]}%${MODULUS}))
         COMMIT_MSG=${COMMIT_MSG[COMMIT_RANDOM]}
 
         # PUSH BACK TO OUR GIT REPO
         # Bump our things and reset tags
-        git tag -d $DISCO_TAG
         grunt bump-patch
-        git tag $DISCO_TAG
 
-        # Reset upstream so we can push our changes to it
+        # Reset upstream and tags so we can push our changes to it
         # We need to re-add this in because our clone was originally read-only
         git remote rm origin
         git remote add origin git@github.com:$TRAVIS_REPO_SLUG.git
         git checkout $TRAVIS_BRANCH
+        git tag -d $DISCO_TAG
+        git push origin :$DISCO_TAG
 
         # Add all our new code and push reset tag with ci skipping on
         git add --all
+        git tag $DISCO_TAG
         git commit -m "${COMMIT_MSG} VERSION ${DISCO_TAG} [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
         git push origin $TRAVIS_BRANCH --tags
 
