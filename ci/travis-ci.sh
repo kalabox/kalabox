@@ -12,6 +12,13 @@ EXIT_VALUE=0
 # Do some stuff before npm install
 #
 before-install() {
+  # Gather intel
+  echo $TRAVIS_TAG
+  echo $TRAVIS_BRANCH
+  echo $TRAVIS_PULL_REQUEST
+  echo $TRAVIS_REPO_SLUG
+  echo $TRAVIS_NODE_VERSION
+  echo $TRAVIS_BUILD_DIR
   # Add our key
   if ([ $TRAVIS_BRANCH == "master" ] || [ ! -z "$TRAVIS_TAG" ]) &&
     [ $TRAVIS_PULL_REQUEST == "false" ] &&
@@ -20,16 +27,12 @@ before-install() {
   fi
 }
 
-#$ node -pe 'JSON.parse(process.argv[1]).foo' "$(cat foobar.json)"
-
 # before-script
 #
-# Setup Drupal to run the tests.
+# Run before tests
 #
 before-script() {
-  npm install -g grunt-cli
-  # Upgrade to lastest NPM
-  npm install -g npm
+  sudo ln -s bin/kbox.js /usr/local/bin/kbox
 }
 
 # script
@@ -37,23 +40,11 @@ before-script() {
 # Run the tests.
 #
 script() {
-  sudo ln -s bin/kbox.js /usr/local/bin/kbox
-  # Code l/hinting and standards
-  grunt test:code
-  # @todo clean this up
-  EXIT_STATUS=$?
-  if [[ $EXIT_STATUS != 0 ]] ; then
-    exit $EXIT_STATUS
-  fi
-
-  # Unit tests and coverage reports
-  bin/kbox.js config
-  grunt test
-  EXIT_STATUS=$?
-  if [[ $EXIT_STATUS != 0 ]] ; then
-    exit $EXIT_STATUS
-  fi
-  grunt jsdoc:safe
+  # Tests
+  run_command grunt test:code
+  run_command bin/kbox.js config
+  run_command grunt test
+  run_command grunt jsdoc:safe
 }
 
 # after-script
