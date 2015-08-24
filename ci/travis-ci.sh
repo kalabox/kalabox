@@ -106,11 +106,26 @@ after-success() {
         git config --global user.name "Kala C. Bot"
         git config --global user.email "kalacommitbot@kalamuna.com"
 
+        # DEFINE SOME FUN COMMIT MESSAGE VERBS
+        COMMIT_MSG[0]='Twerking '
+        COMMIT_MSG[1]='Building '
+        COMMIT_MSG[2]='Hypersplicing '
+        COMMIT_MSG[3]='Divining '
+        COMMIT_MSG[4]='Constructing '
+        COMMIT_MSG[5]='Engaging '
+        COMMIT_MSG[6]='Molecularly Reassmbling '
+        COMMIT_MSG[7]='Scribing '
+        COMMIT_MSG[8]='Incantating '
+        COMMIT_MSG[9]='Birthing '
+        MODULUS=${#COMMIT_MSG[@]}
+        COMMIT_RANDOM=$((${DISCO_ARRAY[2]}%${MODULUS}))
+        COMMIT_MSG=${COMMIT_MSG[COMMIT_RANDOM]}
+
         # PUSH BACK TO OUR GIT REPO
         # Bump our things and reset tags
-        git tag -d $DISCOTAG
+        git tag -d $DISCO_TAG
         grunt bump-patch
-        git tag $DISCOTAG
+        git tag $DISCO_TAG
 
         # Reset upstream so we can push our changes to it
         # We need to re-add this in because our clone was originally read-only
@@ -120,7 +135,7 @@ after-success() {
 
         # Add all our new code and push reset tag with ci skipping on
         git add --all
-        git commit -m "MAKING VERSION ${DISCOTAG} SO [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
+        git commit -m "${COMMIT_MSG} VERSION ${DISCO_TAG} [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
         git push origin $TRAVIS_BRANCH --tags
 
         # NODE PACKAGES
@@ -144,8 +159,8 @@ after-success() {
         # Push our generated docs to api.kalabox.me
         # clean up again
         git add --all
-        git commit -m "Building API DOCS with ${DISCOTAG}"
-        git tag $DISCOTAG
+        git commit -m "${COMMIT_MSG} API DOCS with ${DISCO_TAG}"
+        git tag $DISCO_TAG
         git push origin master --tags
         rm -rf $TRAVIS_BUILD_DIR/deploy
 
@@ -165,8 +180,8 @@ after-success() {
         mkdir -p $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
         rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/coverage/ $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
         git add --all
-        git commit -m "Building COVERAGE DOCS with ${DISCOTAG}"
-        git tag $DISCOTAG
+        git commit -m "${COMMIT_MSG} COVERAGE DOCS with ${DISCO_TAG}"
+        git tag $DISCO_TAG
         git push origin master --tags
         rm -rf $TRAVIS_BUILD_DIR/deploy
       fi

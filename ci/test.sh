@@ -65,7 +65,22 @@ if [ $TRAVIS_PULL_REQUEST == "false" ] &&
     #   2. If this is a new minor version and that minor version is larger than previous minor versions
     if [ "${DISCO_ARRAY[1]}" -gt "${BUILD_ARRAY[1]}" ] ||
       ([ "${DISCO_ARRAY[1]}" -eq "${BUILD_ARRAY[1]}" ] && [ "${DISCO_ARRAY[2]}" -gt "${BUILD_ARRAY[2]}" ]); then
-      echo "TAG PATCH IS LARGER"
+
+      # DEFINE SOME FUN COMMIT MESSAGE VERBS
+      COMMIT_MSG[0]='Twerking '
+      COMMIT_MSG[1]='Building '
+      COMMIT_MSG[2]='Hypersplicing '
+      COMMIT_MSG[3]='Divining '
+      COMMIT_MSG[4]='Constructing '
+      COMMIT_MSG[5]='Engaging '
+      COMMIT_MSG[6]='Molecularly Reassmbling '
+      COMMIT_MSG[7]='Scribing '
+      COMMIT_MSG[8]='Incantating '
+      COMMIT_MSG[9]='Birthing '
+      MODULUS=${#COMMIT_MSG[@]}
+      COMMIT_RANDOM=$((${DISCO_ARRAY[2]}%${MODULUS}))
+      COMMIT_MSG=${COMMIT_MSG[COMMIT_RANDOM]}
+
     fi
   fi
 fi
