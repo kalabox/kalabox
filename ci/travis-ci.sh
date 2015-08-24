@@ -74,84 +74,102 @@ after-success() {
     [ $TRAVIS_NODE_VERSION == "0.12" ]; then
 
     # Try to grab our git tag
-    DISCOTAG=$(git describe --contains HEAD)
-    echo $DISCOTAG
+    DISCO_TAG=$(git describe --contains HEAD)
+    echo $DISCO_TAG
+    # Grab our package.json version
+    BUILD_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat $TRAVIS_BUILD_DIR/package.json)")
+    echo $BUILD_VERSION
 
-    # Only do stuff if our DISCO_TAG exists and indicates our commit is a tagged commit
+    # Only do stuff if
+    #   1. DISCO_TAG is non-empty
+    #   2. Our commit is a tagged commit
+    #   3. Our branch name is contained within the tag
     # If this is all true then we want to roll a new package and push up other relevant
-    # versioned things
-    if [ ! -z "$DISCOTAG" ] && [[ ! "$DISCOTAG" =~ "~" ]]; then
+    # versioned thing. This gaurantees that we can still tag things without setting off a build/deploy
+    if [ ! -z "$DISCO_TAG" ] && [[ ! "$DISCO_TAG" =~ "~" ]] && [[ "$DISCO_TAG" =~ "$TRAVIS_BRANCH" ]]; then
 
-      # SET UP SSH THINGS
-      eval "$(ssh-agent)"
-      chmod 600 $HOME/.ssh/travis.id_rsa
-      ssh-add $HOME/.ssh/travis.id_rsa
-      git config --global user.name "Kala C. Bot"
-      git config --global user.email "kalacommitbot@kalamuna.com"
+      # Split our package version and tag into arrays so we can make sure our tag is larger
+      # than the package version
+      IFS='.' read -a BUILD_ARRAY <<< "$BUILD_VERSION"
+      IFS='.' read -a DISCO_ARRAY <<< "$DISCO_TAG"
 
-      # PUSH BACK TO OUR GIT REPO
-      # Bump our things and reset tags
-      git tag -d $DISCOTAG
-      grunt bump-patch
-      git tag $DISCOTAG
+      # Build and deploy packages only in the two scenarios
+      #   1. If our minor versions are the same and the tag patch version is larger
+      #   2. If this is a new minor version and that minor version is larger than previous minor versions
+      if [ "${DISCO_ARRAY[1]}" -gt "${BUILD_ARRAY[1]}" ] ||
+        ([ "${DISCO_ARRAY[1]}" -eq "${BUILD_ARRAY[1]}" ] && [ "${DISCO_ARRAY[2]}" -gt "${BUILD_ARRAY[2]}" ]); then
 
-      # Reset upstream so we can push our changes to it
-      # We need to re-add this in because our clone was originally read-only
-      git remote rm origin
-      git remote add origin git@github.com:$TRAVIS_REPO_SLUG.git
-      git checkout $TRAVIS_BRANCH
+        # SET UP SSH THINGS
+        eval "$(ssh-agent)"
+        chmod 600 $HOME/.ssh/travis.id_rsa
+        ssh-add $HOME/.ssh/travis.id_rsa
+        git config --global user.name "Kala C. Bot"
+        git config --global user.email "kalacommitbot@kalamuna.com"
 
-      # Add all our new code and push reset tag with ci skipping on
-      git add --all
-      git commit -m "MAKING VERSION ${DISCOTAG} SO [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
-      git push origin $TRAVIS_BRANCH --tags
+        # PUSH BACK TO OUR GIT REPO
+        # Bump our things and reset tags
+        git tag -d $DISCOTAG
+        grunt bump-patch
+        git tag $DISCOTAG
 
-      # NODE PACKAGES
-      # Deploy to NPM
-      $HOME/npm-config.sh > /dev/null
-      npm publish ./
+        # Reset upstream so we can push our changes to it
+        # We need to re-add this in because our clone was originally read-only
+        git remote rm origin
+        git remote add origin git@github.com:$TRAVIS_REPO_SLUG.git
+        git checkout $TRAVIS_BRANCH
 
-      # DEPLOY API DOCS to API.KALABOX.ME
-      # Clean deploy directory and recreate before we start
-      rm -rf $TRAVIS_BUILD_DIR/deploy
-      mkdir $TRAVIS_BUILD_DIR/deploy
+        # Add all our new code and push reset tag with ci skipping on
+        git add --all
+        git commit -m "MAKING VERSION ${DISCOTAG} SO [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
+        git push origin $TRAVIS_BRANCH --tags
 
-      # Clone down our current API docs and switch to it
-      git clone git@github.com:kalabox/kalabox-api.git $TRAVIS_BUILD_DIR/deploy
-      cd $TRAVIS_BUILD_DIR/deploy
+        # NODE PACKAGES
+        # Deploy to NPM
+        $HOME/npm-config.sh > /dev/null
+        npm publish ./
 
-      # Move generated docs into our deploy directory
-      rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/doc/ $TRAVIS_BUILD_DIR/deploy/
+        # DEPLOY API DOCS to API.KALABOX.ME
+        # Clean deploy directory and recreate before we start
+        rm -rf $TRAVIS_BUILD_DIR/deploy
+        mkdir $TRAVIS_BUILD_DIR/deploy
 
-      # Add, tag, commit and deploy our new API docs
-      # Push our generated docs to api.kalabox.me
-      # clean up again
-      git add --all
-      git commit -m "Building API DOCS with ${DISCOTAG}"
-      git tag $DISCOTAG
-      git push origin master --tags
-      rm -rf $TRAVIS_BUILD_DIR/deploy
+        # Clone down our current API docs and switch to it
+        git clone git@github.com:kalabox/kalabox-api.git $TRAVIS_BUILD_DIR/deploy
+        cd $TRAVIS_BUILD_DIR/deploy
 
-      # DEPLOY TEST COVERAGE DOCS TO COVERAGE.KALABOX.ME
-      # Clean deploy directory and recreate before we start
-      rm -rf $TRAVIS_BUILD_DIR/deploy
-      mkdir $TRAVIS_BUILD_DIR/deploy
+        # Move generated docs into our deploy directory
+        rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/doc/ $TRAVIS_BUILD_DIR/deploy/
 
-      # Clone and enter
-      git clone git@github.com:kalabox/kalabox-coverage.git $TRAVIS_BUILD_DIR/deploy
-      cd $TRAVIS_BUILD_DIR/deploy
+        # Add, tag, commit and deploy our new API docs
+        # Push our generated docs to api.kalabox.me
+        # clean up again
+        git add --all
+        git commit -m "Building API DOCS with ${DISCOTAG}"
+        git tag $DISCOTAG
+        git push origin master --tags
+        rm -rf $TRAVIS_BUILD_DIR/deploy
 
-      # Copy over generated coverage reports
-      # Deploy it!
-      # Clean up again
-      TRAVIS_REPO=$(echo $TRAVIS_REPO_SLUG | awk -F'/' '{print $2}')
-      mkdir -p $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
-      rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/coverage/ $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
-      git add --all
-      git commit -m "Building COVERAGE DOCS with ${DISCOTAG}"
-      git tag $DISCOTAG
-      git push origin master --tags
-      rm -rf $TRAVIS_BUILD_DIR/deploy
+        # DEPLOY TEST COVERAGE DOCS TO COVERAGE.KALABOX.ME
+        # Clean deploy directory and recreate before we start
+        rm -rf $TRAVIS_BUILD_DIR/deploy
+        mkdir $TRAVIS_BUILD_DIR/deploy
+
+        # Clone and enter
+        git clone git@github.com:kalabox/kalabox-coverage.git $TRAVIS_BUILD_DIR/deploy
+        cd $TRAVIS_BUILD_DIR/deploy
+
+        # Copy over generated coverage reports
+        # Deploy it!
+        # Clean up again
+        TRAVIS_REPO=$(echo $TRAVIS_REPO_SLUG | awk -F'/' '{print $2}')
+        mkdir -p $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
+        rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/coverage/ $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
+        git add --all
+        git commit -m "Building COVERAGE DOCS with ${DISCOTAG}"
+        git tag $DISCOTAG
+        git push origin master --tags
+        rm -rf $TRAVIS_BUILD_DIR/deploy
+      fi
     fi
   fi
 }
