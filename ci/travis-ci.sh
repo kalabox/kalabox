@@ -20,9 +20,10 @@ before-install() {
   echo $TRAVIS_NODE_VERSION
   echo $TRAVIS_BUILD_DIR
   # Add our key
-  if ([ $TRAVIS_BRANCH == "master" ] || [ ! -z "$TRAVIS_TAG" ]) &&
-    [ $TRAVIS_PULL_REQUEST == "false" ] &&
-    [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ]; then
+  if [ $TRAVIS_PULL_REQUEST == "false" ] &&
+    [ -z "$TRAVIS_TAG" ] &&
+    [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ] &&
+    [ $TRAVIS_NODE_VERSION == "0.12" ]; then
       openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/travis.id_rsa.enc -out $HOME/.ssh/travis.id_rsa -d
   fi
 }
@@ -35,7 +36,6 @@ before-script() {
   # Global install some npm
   npm install -g grunt-cli
   npm install -g npm
-  ln -s bin/kbox.js /usr/local/bin/kbox
 }
 
 # script
@@ -75,6 +75,7 @@ after-success() {
 
     # Try to grab our git tag
     DISCOTAG=$(git describe --contains HEAD)
+    echo $DISCOTAG
 
     # Only do stuff if our DISCO_TAG exists and indicates our commit is a tagged commit
     # If this is all true then we want to roll a new package and push up other relevant
