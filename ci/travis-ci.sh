@@ -32,7 +32,11 @@ before-install() {
 # Run before tests
 #
 before-script() {
-  sudo ln -s bin/kbox.js /usr/local/bin/kbox
+  # Global install some npm things
+  npm install -g grunt-cli
+  npm install -g npm
+  # Link our binary
+  ln -s bin/kbox.js /usr/local/bin/kbox
 }
 
 # script
@@ -42,7 +46,7 @@ before-script() {
 script() {
   # Tests
   run_command grunt test:code
-  run_command bin/kbox.js config
+  run_command kbox config
   run_command grunt test
   run_command grunt jsdoc:safe
 }
