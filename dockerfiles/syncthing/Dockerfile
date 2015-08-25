@@ -9,11 +9,10 @@ RUN apt-get update && \
     mkdir -p /etc/syncthing/ && \
     mkdir -p /sync/ && \
     mkdir -p /sync/code/ && \
-    apt-get clean -y && \
-    apt-get autoclean -y && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
-    rm -rf /tmp/*
+    apt-get -y clean && \
+    apt-get -y autoclean && \
+    apt-get -y autoremove && \
+    rm -rf /var/lib/apt/* && rm -rf && rm -rf /var/lib/cache/* && rm -rf /var/lib/log/* && rm -rf /tmp/*
 
 ADD ./config.xml /etc/syncthing/config.xml
 ADD ./syncthing-supervisor.conf /etc/supervisor/conf.d/syncthing-supervisor.conf
