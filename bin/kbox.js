@@ -61,52 +61,15 @@ function handleError(err) {
  */
 process.on('uncaughtException', handleError);
 
-var initPlugins = function(globalConfig, callback) {
-  var plugins = globalConfig.globalPlugins;
-  async.eachSeries(plugins, function(plugin, next) {
-    kbox.require(plugin, next);
-  },
-  function(err) {
-    callback(err);
-  });
-};
-
+/*
+ * Initialize the kalabox core library.
+ */
 var init = function(callback) {
-  if (typeof callback !== 'function') {
-    throw new TypeError('Invalid callback function');
-  }
-
-  // globalConfig
-  var globalConfig = config.getGlobalConfig();
-  deps.register('globalConfig', globalConfig);
-  deps.register('config', globalConfig);
-  // argv
-  deps.register('argv', argv);
-  deps.register('verbose', argv.options.verbose);
-  deps.register('buildLocal', argv.options.buildLocal);
-  // require
-  deps.register('kboxRequire', kbox.require);
-  // mode
-  deps.register('mode', kbox.core.mode.set('cli'));
-  // shell
-  deps.register('shell', shell);
-  // kbox
-  deps.register('kbox', kbox);
-  // events
-  deps.register('events', kbox.core.events);
-  kbox.engine.init(globalConfig, function(err) {
-    if (err) {
-      return callback(err);
-    }
-    kbox.services.init(function(err) {
-      if (err) {
-        return callback(err);
-      }
-      deps.register('services', kbox.services);
-      deps.register('engine', kbox.engine);
-      callback(null, globalConfig);
-    });
-  });
+  var opts = {
+    mode: 'cli',
+    prepackaged: false
+  };
+  kbox.init(opts, callback);
 };
 
 var initWithApp = function(app) {
@@ -306,41 +269,27 @@ function handleArguments(env) {
         if (appContext) {
           env.app = appContext;
           initWithApp(appContext);
-        }
 
-        // Init global plugins.
-        initPlugins(globalConfig, function(err) {
-          if (err) {
+          // Load app plugins for the app context app.
+          kbox.app.loadPlugins(appContext, function(err) {
+            if (err) {
 
-            handleError(err);
-
-          } else {
-
-            if (appContext) {
-
-              // Load app plugins for the app context app.
-              kbox.app.loadPlugins(appContext, function(err) {
-                if (err) {
-
-                  handleError(err);
-
-                } else {
-
-                  // Run the task.
-                  processTask(appContext);
-
-                }
-              });
+              handleError(err);
 
             } else {
 
               // Run the task.
-              processTask();
+              processTask(appContext);
 
             }
+          });
 
-          }
-        });
+        } else {
+
+          // Run the task.
+          processTask();
+
+        }
 
       });
     });
