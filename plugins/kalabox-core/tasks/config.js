@@ -16,7 +16,7 @@ module.exports = function(kbox) {
     };
   });
 
-  kbox.whenApp(function(app) {
+  kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'config'];
       task.description = 'Display the kbox application\'s configuration.';
