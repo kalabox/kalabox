@@ -151,7 +151,7 @@ module.exports = function(kbox) {
       };
 
       // Add app object to state.
-      kbox.whenApp(function(app) {
+      kbox.ifApp(function(app) {
         state.app = app;
       });
 

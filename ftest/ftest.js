@@ -9,6 +9,7 @@ var Promise = require('bluebird');
 var pp = require('util').inspect;
 var argv = require('yargs').argv;
 var randomstring = require('randomstring');
+var VError = require('verror');
 
 var KBOX_EXE = path.resolve('bin/kbox.js');
 
@@ -154,7 +155,7 @@ t.addCheck(function() {
       .then(function() {
         console.log('waiting...');
       })
-      .delay(60 * 1000)
+      .delay(90 * 1000)
       // Check to make sure the remote file does not exist.
       .then(function() {
         return local
@@ -167,12 +168,15 @@ t.addCheck(function() {
             if (self.state.exists) {
               throw new Error('Expected file to NOT sync.');
             } else {
-              console.log('File did not sync as expected.'); 
+              console.log('File did not sync as expected.');
             }
           })
           .promise();
         })
         .promise();
+      })
+      .catch(function(err) {
+        throw new VError(err, filepath);
       });
     });
 
@@ -236,7 +240,7 @@ t.addCheck(function() {
   return Krun()
   .run([KBOX_EXE, 'version'], 20)
   .ok()
-  .expect('0.9.10\n')
+  .expect('0.9.0\n')
   .promise();
 });
 
@@ -340,7 +344,7 @@ t.addCheck(function() {
       return ice.Local(dir)
       .init()
       .toRemote('kb_' + app + '_appserver')
-      .untilEqual(60)
+      .untilEqual(90)
       .edit()
       .untilEqual(timeout)
       .edit()
@@ -390,7 +394,11 @@ restore()
   return t.run(keepGoing);
 })
 .then(function() {
-  console.log('Finished testing!!!');
+  console.log('#################################');
+  console.log('#################################');
+  console.log(' $$$$$ Finished testing!!! $$$$$');
+  console.log('#################################');
+  console.log('#################################');
 })
 .catch(function(err) {
   throw err;

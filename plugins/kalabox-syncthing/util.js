@@ -21,7 +21,9 @@ module.exports = function(kbox) {
       tmp,
       path.basename(meta.SYNCTHING_CONFIG_URL)
     );
-    fs.renameSync(config, path.join(syncthingDir, path.basename(config)));
+    if (!kbox.core.deps.get('prepackaged')) {
+      fs.renameSync(config, path.join(syncthingDir, path.basename(config)));
+    }
 
     // Install syncthing binary.
     var filename =

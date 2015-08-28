@@ -12,7 +12,7 @@ module.exports = function(kbox) {
   var events = kbox.core.events;
   var deps = kbox.core.deps;
 
-  kbox.whenApp(function(app) {
+  kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'install'];
       task.description = 'Install a kbox application.';

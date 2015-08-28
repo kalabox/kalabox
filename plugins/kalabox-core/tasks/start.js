@@ -6,7 +6,7 @@
 
 module.exports = function(kbox) {
 
-  kbox.whenApp(function(app) {
+  kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'start'];
       task.description = 'Start an installed kbox application.';

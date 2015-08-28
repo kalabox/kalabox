@@ -8,7 +8,7 @@ module.exports = function(kbox) {
 
   var util = require('./../util.js')(kbox);
 
-  kbox.whenApp(function(app) {
+  kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'update'];
       task.description = 'Update an app, its plugins and containers.';

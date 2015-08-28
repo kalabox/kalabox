@@ -10,19 +10,12 @@ var fs = require('fs');
 var path = require('path');
 
 var _ = require('lodash');
-var async = require('async');
 var chalk = require('chalk');
-var Liftoff = require('liftoff');
-var tildify = require('tildify');
-
 var kbox = require('../lib/kbox.js');
 var assert = require('assert');
-var config = kbox.core.config;
 var deps = kbox.core.deps;
-var env = kbox.core.env;
 var tasks = kbox.core.tasks;
-var _util = kbox.util;
-var shell = kbox.util.shell;
+var Promise = kbox.Promise;
 
 // Partition and parse argv.
 var argv = kbox.tasks.partitionArgv(process.argv.slice(2));
@@ -61,156 +54,65 @@ function handleError(err) {
  */
 process.on('uncaughtException', handleError);
 
-var initPlugins = function(globalConfig, callback) {
-  var plugins = globalConfig.globalPlugins;
-  async.eachSeries(plugins, function(plugin, next) {
-    kbox.require(plugin, next);
-  },
-  function(err) {
-    callback(err);
-  });
-};
-
-var init = function(callback) {
-  if (typeof callback !== 'function') {
-    throw new TypeError('Invalid callback function');
-  }
-
-  // globalConfig
-  var globalConfig = config.getGlobalConfig();
-  deps.register('globalConfig', globalConfig);
-  deps.register('config', globalConfig);
-  // argv
-  deps.register('argv', argv);
-  deps.register('verbose', argv.options.verbose);
-  deps.register('buildLocal', argv.options.buildLocal);
-  // require
-  deps.register('kboxRequire', kbox.require);
-  // mode
-  deps.register('mode', kbox.core.mode.set('cli'));
-  // shell
-  deps.register('shell', shell);
-  // kbox
-  deps.register('kbox', kbox);
-  // events
-  deps.register('events', kbox.core.events);
-  kbox.engine.init(globalConfig, function(err) {
-    if (err) {
-      return callback(err);
-    }
-    kbox.services.init(function(err) {
-      if (err) {
-        return callback(err);
-      }
-      deps.register('services', kbox.services);
-      deps.register('engine', kbox.engine);
-      callback(null, globalConfig);
-    });
-  });
-};
-
-var initWithApp = function(app) {
-  // appConfig
-  deps.register('appConfig', app.config);
-  // app
-  deps.register('app', app);
-};
-
 // set env var for ORIGINAL cwd before anything touches it
 process.env.INIT_CWD = process.cwd();
 
-var cli = new Liftoff({
-  name: 'profile',
-  configName: '.kalabox',
-  extensions: {
-    '.json': null
-  },
-  modulePath: path.resolve(__dirname, '../'),
-  modulePackage: path.resolve(__dirname, '../package.json')
-});
-
-// exit with 0 or 1
-var failed = false;
-process.once('exit', function(code) {
-  if (code === 0 && failed) {
-    process.exit(1);
-  }
-});
-
-var cliPackage = require('../package');
-
-function getAppContextFromArgv(apps, callback) {
-  if (typeof callback !== 'function') {
-    throw new TypeError('Invalid callback function: ' + callback);
-  }
-
-  callback(null, _.find(apps, function(app) {
-    return app.name === argv.payload[0];
-  }));
+/*
+ * Try to find app context from command line payload.
+ */
+function getAppContextFromArgv(apps) {
+  return Promise.try(function() {
+    return _.find(apps, function(app) {
+      return app.name === argv.payload[0];
+    });
+  });
 }
 
-function getAppContextFromCwd(apps, callback) {
-  if (typeof callback !== 'function') {
-    throw new TypeError('Invalid callback function: ' + callback);
-  }
+/*
+ * Try to find app context from current working directory.
+ */
+function getAppContextFromCwd(apps) {
+  return Promise.try(function() {
+    var cwd = process.cwd();
+    return _.find(apps, function(app) {
+      var appRoot = app.config.appRoot;
+      if (cwd.replace(appRoot, '') === cwd) {
+        return false;
+      }
+      var diff = cwd.replace(appRoot, '').substring(0, 1);
+      return (!diff || diff === path.sep) ? true : false;
+    });
+  });
+}
 
-  var cwd = process.cwd();
-  callback(null, _.find(apps, function(app) {
-    var appRoot = app.config.appRoot;
-    if (cwd.replace(appRoot, '') === cwd) {
-      return false;
+/*
+ * Try to get app context from config in current working directory.
+ */
+function getAppContextFromCwdConfig(apps) {
+  return Promise.try(function() {
+    var cwd = process.cwd();
+    var configFilepath = path.join(cwd, 'kalabox.json');
+    if (fs.existsSync(configFilepath)) {
+      var config = kbox.core.config.getAppConfig(null, cwd);
+      if (config.appName) {
+        return kbox.app.create(config.appName, config);
+      }
     }
-    var diff = cwd.replace(appRoot, '').substring(0, 1);
-    return (!diff || diff === path.sep) ? true : false;
-  }));
+  });
 }
 
-function getAppContextFromCwdConfig(apps, callback) {
-  if (typeof callback !== 'function') {
-    throw new TypeError('Invalid callback function: ' + callback);
-  }
-
-  var cwd = process.cwd();
-  var configFilepath = path.join(cwd, 'kalabox.json');
-  if (fs.existsSync(configFilepath)) {
-    var config = kbox.core.config.getAppConfig(null, cwd);
-    if (config.appName) {
-      kbox.app.create(config.appName, config, function(err, app) {
-        callback(err, app);
-      });
-    } else {
-      callback(null);
-    }
-  } else {
-    callback(null);
-  }
-}
-
-function getAppContext(apps, callback) {
-  // Find the app context.
+/*
+ * Try to get app context.
+ */
+function getAppContext(apps) {
   var funcs = [
     getAppContextFromArgv,
     getAppContextFromCwd,
     getAppContextFromCwdConfig
   ];
-  async.reduce(funcs, null, function(answer, func, next) {
-    if (answer) {
-      next(null, answer);
-    } else {
-      func(apps, function(err, result) {
-        next(err, result);
-      });
-    }
-
-  },
-  function(err, appContext) {
-    if (err) {
-      callback(err);
-    }
-    else {
-      callback(err, appContext);
-    }
-  });
+  return Promise.reduce(funcs, function(acc, func) {
+    return acc || func(apps);
+  }, null);
 }
 
 /*
@@ -282,84 +184,44 @@ function processTask(app) {
   }
 }
 
-function handleArguments(env) {
+function main() {
 
-  // Init dependencies.
-  init(function(err, globalConfig) {
-    if (err) {
-      return handleError(err);
-    }
+  // Initialization options.
+  var opts = {
+    mode: 'cli',
+    prepackaged: false
+  };
 
-    // Get full list of registered apps.
-    kbox.app.list(function(err, apps) {
-      if (err) {
-        return handleError(err);
-      }
+  // Initialize core library.
+  return kbox.init(opts)
 
-      // Find the app context if there is one.
-      getAppContext(apps, function(err, appContext) {
-        if (err) {
-          return handleError(err);
-        }
-
-        // Register the app context as a dependency.
-        if (appContext) {
-          env.app = appContext;
-          initWithApp(appContext);
-        }
-
-        // Init global plugins.
-        initPlugins(globalConfig, function(err) {
-          if (err) {
-
-            handleError(err);
-
-          } else {
-
-            if (appContext) {
-
-              // Load app plugins for the app context app.
-              kbox.app.loadPlugins(appContext, function(err) {
-                if (err) {
-
-                  handleError(err);
-
-                } else {
-
-                  // Run the task.
-                  processTask(appContext);
-
-                }
-              });
-
-            } else {
-
-              // Run the task.
-              processTask();
-
-            }
-
-          }
+  // Get the app context.
+  .then(function() {
+    // Get list of apps.
+    return kbox.app.list()
+    // Find app context.
+    .then(function(apps) {
+      return getAppContext(apps);
+    })
+    // Register app context.
+    .then(function(appContext) {
+      if (appContext) {
+        return kbox.setAppContext(appContext)
+        .then(function() {
+          return appContext;
         });
-
-      });
+      }
     });
-  });
+  })
+
+  // Process task.
+  .then(function(appContext) {
+    return processTask(appContext);
+  })
+
+  // Handle any errors.
+  .catch(handleError);
 
 }
 
-cli.on('require', function(name) {
-  console.log('Requiring external module', chalk.magenta(name));
-});
-
-cli.on('requireFail', function(name) {
-  console.log(chalk.red('Failed to load external module'), chalk.magenta(name));
-});
-
-cli.launch({
-  cwd: argv.cwd,
-  require: argv.require,
-  completion: argv.completion,
-  verbose: argv.verbose,
-  app: argv.app
-}, handleArguments);
+main();
