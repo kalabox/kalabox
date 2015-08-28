@@ -29,7 +29,7 @@ module.exports = function(kbox) {
     .nodeify(done);
   });
 
-  kbox.ifApp(function(app) {
+  kbox.whenApp(function(app) {
 
     var globalConfig = kbox.core.deps.lookup('globalConfig');
     var engine = kbox.engine;
