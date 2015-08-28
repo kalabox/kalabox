@@ -168,7 +168,7 @@ t.addCheck(function() {
             if (self.state.exists) {
               throw new Error('Expected file to NOT sync.');
             } else {
-              console.log('File did not sync as expected.'); 
+              console.log('File did not sync as expected.');
             }
           })
           .promise();
@@ -240,7 +240,7 @@ t.addCheck(function() {
   return Krun()
   .run([KBOX_EXE, 'version'], 20)
   .ok()
-  .expect('0.10.0\n')
+  .expect('0.9.0\n')
   .promise();
 });
 
