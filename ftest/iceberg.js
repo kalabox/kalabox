@@ -10,6 +10,8 @@ var sha1 = require('sha1');
 var VError = require('verror');
 var pp = require('util').inspect;
 
+var KBOX_EXE = path.resolve('bin/kbox.js');
+
 /*
  * Constructor, works with or without new operator.
  */
@@ -49,7 +51,7 @@ Remote.prototype.exists = function() {
     var self = this;
 
     var cmd = [
-      'kbox',
+      KBOX_EXE,
       'query',
       self.containerName,
       'ls',
@@ -83,7 +85,7 @@ Remote.prototype._hash = function() {
   var self = this;
 
   var cmd = [
-    'kbox',
+    KBOX_EXE,
     'query',
     self.containerName,
     'sha1sum',
@@ -365,7 +367,10 @@ Local.prototype.untilEqual = function(remote, timeout) {
       });
     };
 
-    return rec()
+    return Promise.delay(10 * 1000)
+    .then(function() {
+      return rec();
+    })
     .timeout(timeout)
     .catch(Promise.TimeoutError, function(err) {
       cancel = true;
