@@ -9,7 +9,7 @@
   ],
   "main": "lib/kbox.js",
   "preferGlobal": true,
-  "version": "0.9.15",
+  "version": "0.9.16",
   "version": "0.10.0",
   "repository": {
     "type": "git",
