@@ -10,7 +10,7 @@ module.exports = function(kbox) {
   var Promise = require('bluebird');
   var format = require('util').format;
 
-  kbox.whenApp(function(app) {
+  kbox.whenAppRegistered(function(app) {
 
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'terminal'];

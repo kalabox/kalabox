@@ -18,7 +18,7 @@ module.exports = function(kbox) {
   });
 
   // Display more detailed list in app context
-  kbox.whenApp(function(app) {
+  kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'containers'];
       task.description =

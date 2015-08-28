@@ -16,7 +16,7 @@ module.exports = function(kbox) {
     envs.push('KALABOX=true');
 
     // Add some app opts
-    kbox.whenApp(function(app) {
+    kbox.ifApp(function(app) {
       envs.push('APPNAME=' + app.name);
       envs.push('APPDOMAIN=' + app.domain);
     });
