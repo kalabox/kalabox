@@ -134,6 +134,11 @@ module.exports = function(kbox) {
       events.on('post-start', function(app, done) {
         share.restart(done);
       });
+
+      events.on('post-uninstall', function(app, done) {
+        share.restart(done);
+      });
+
     }
 
   });
