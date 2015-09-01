@@ -47,6 +47,7 @@
     "lodash": "~3.6.0",
     "minimist": "~1.1.0",
     "mkdirp": "^0.5.0",
+    "moment": "^2.10.6",
     "node-getopt": "^0.2.3",
     "npm": "^2.5.1",
     "progress": "^1.1.8",
