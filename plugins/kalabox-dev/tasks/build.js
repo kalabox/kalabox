@@ -15,6 +15,7 @@ module.exports = function(kbox) {
   kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'build'];
+      task.category = 'dev';
       task.description = 'Try to manually install a custom kalabox app.';
       task.options.push({
         name: 'build-local',

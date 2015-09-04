@@ -9,6 +9,7 @@ module.exports = function(kbox) {
   kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'rebuild'];
+      task.category = 'appAction';
       task.description = 'Rebuilds your app while maintaining your app data.';
       task.options.push({
         name: 'build-local',

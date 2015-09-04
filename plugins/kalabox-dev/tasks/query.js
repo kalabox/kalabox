@@ -6,6 +6,7 @@ module.exports = function(kbox) {
 
   kbox.tasks.add(function(task) {
     task.path = ['query'];
+    task.category = 'dev';
     task.description = 'Run a command against a container.';
     task.kind = 'argv*';
     task.func = function(done) {

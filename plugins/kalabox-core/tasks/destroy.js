@@ -16,6 +16,7 @@ module.exports = function(kbox) {
 
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'destroy'];
+      task.category = 'appAction';
       task.description = 'Completely destroys and removes an app.';
       task.func = function(done) {
 
