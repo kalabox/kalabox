@@ -12,6 +12,7 @@ module.exports = function(kbox) {
   kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'inspect'];
+      task.category = 'dev';
       task.description = 'Inspect containers.';
       task.kind = 'argv*';
       task.func = function(done) {

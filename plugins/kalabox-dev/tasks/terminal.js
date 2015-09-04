@@ -14,6 +14,7 @@ module.exports = function(kbox) {
 
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'terminal'];
+      task.category = 'dev';
       task.description = 'Terminal into a container.';
       task.kind = 'argv1';
       task.func = function(done) {

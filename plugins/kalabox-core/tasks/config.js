@@ -19,6 +19,7 @@ module.exports = function(kbox) {
   kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'config'];
+      task.category = 'appAction';
       task.description = 'Display the kbox application\'s configuration.';
       task.func = function() {
         console.log(JSON.stringify(app.config, null, '  '));

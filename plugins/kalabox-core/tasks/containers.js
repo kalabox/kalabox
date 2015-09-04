@@ -21,6 +21,7 @@ module.exports = function(kbox) {
   kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'containers'];
+      task.category = 'appAction';
       task.description =
         'Display list of application\'s installed containers.';
       task.func = function(done) {

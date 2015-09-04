@@ -9,6 +9,7 @@ module.exports = function(kbox) {
   kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'stop'];
+      task.category = 'appAction';
       task.description = 'Stop a running kbox application.';
       task.func = function(done) {
         kbox.app.stop(app, done);
