@@ -77,7 +77,8 @@ module.exports = function(kbox) {
 
   // Turn the engine off if after an app start we don't have any other apps
   // running
-  events.on('post-stop', function(app, done) {
+  // Set a sufficiently high prioirty so that it runs after all other events
+  events.on('post-stop', 9, function(app, done) {
 
     // Keep refernece for later.
     var self = this;
