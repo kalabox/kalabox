@@ -10,5 +10,6 @@ module.exports = function(kbox) {
   require('./tasks/query.js')(kbox);
   require('./tasks/logs.js')(kbox);
   require('./tasks/terminal.js')(kbox);
+  require('./tasks/build.js')(kbox);
 
 };
