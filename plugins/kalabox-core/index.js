@@ -7,6 +7,4 @@ module.exports = function(kbox) {
   require('./install.js')(kbox);
   // Some events!
   require('./events.js')(kbox);
-  // Load some update steps
-  require('./update.js')(kbox);
 };

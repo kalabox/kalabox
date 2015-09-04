@@ -4,28 +4,22 @@
  * This contains all the core commands that kalabox can run on every machine
  */
 
-module.exports = function(kbox, framework) {
+module.exports = function(kbox) {
   var inquirer = require('inquirer');
   var chalk = require('chalk');
 
   // Are you sure?
   // Authorize the update process
-  kbox[framework].registerStep(function(step) {
+  kbox.install.registerStep(function(step) {
     step.name = 'core-auth';
-    step.description = 'Authorizing ' + framework + ' subroutines...';
+    step.description = 'Authorizing trilling subroutines...';
     step.all = function(state, done) {
       if (state.nonInteractive) {
         state.log.info(chalk.grey('Non-interactive mode.'));
         done();
       }
       else {
-        var msg;
-        if (framework === 'install') {
-          msg = 'Are you sure you want to install Kalabox?';
-        }
-        else {
-          msg = 'Are you sure you want to update this app?';
-        }
+        var msg = 'Install all the magic and get this party started?';
         var questions = [
           {
             type: 'confirm',
@@ -47,7 +41,7 @@ module.exports = function(kbox, framework) {
   });
 
   // Firewall.
-  kbox[framework].registerStep(function(step) {
+  kbox.install.registerStep(function(step) {
     step.name = 'core-firewall';
     step.description = 'Checking firewall settings...';
     step.deps = ['core-auth'];
@@ -73,7 +67,7 @@ module.exports = function(kbox, framework) {
   });
 
   // Internet.
-  kbox[framework].registerStep(function(step) {
+  kbox.install.registerStep(function(step) {
     step.name = 'core-internet';
     step.description = 'Checking for Internet access...';
     step.deps = ['core-firewall'];
@@ -87,7 +81,7 @@ module.exports = function(kbox, framework) {
   });
 
   // Disk space.
-  kbox[framework].registerStep(function(step) {
+  kbox.install.registerStep(function(step) {
     step.name = 'core-disk-space';
     step.description = 'Checking for available disk space...';
     step.deps = ['core-auth'];
@@ -112,7 +106,7 @@ module.exports = function(kbox, framework) {
   });
 
   // Downloads.
-  kbox[framework].registerStep(function(step) {
+  kbox.install.registerStep(function(step) {
     step.name = 'core-downloads';
     step.description = 'Downloading files...';
     step.deps = [
