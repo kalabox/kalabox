@@ -11,7 +11,7 @@ module.exports = function(kbox) {
   var provisioned = kbox.core.deps.lookup('globalConfig').provisioned;
 
   // Add common steps
-  require('./steps/common.js')(kbox, 'install');
+  require('./steps/common.js')(kbox);
 
   // Run administator commands.
   kbox.install.registerStep(function(step) {
