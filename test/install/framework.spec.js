@@ -98,18 +98,18 @@ describe('install framework module', function() {
       var install = fw.getInstall('darwin');
       var state = {};
       var preStepLog = '';
-      fw.events.on('pre-step', function(step) {
-        preStepLog += step.name;
+      fw.events.on('pre-step', function(ctx) {
+        preStepLog += ctx.step.name;
       });
       var postStepLog = '';
-      fw.events.on('post-step', function(step) {
-        postStepLog += step.name;
+      fw.events.on('post-step', function(ctx) {
+        postStepLog += ctx.step.name;
       });
       fw.events.on('error', function(err) {
         throw err;
       });
-      fw.events.on('end', function(state) {
-        expect(state.foo).to.equal('badc');
+      fw.events.on('end', function(ctx) {
+        expect(ctx.state.foo).to.equal('badc');
         expect(preStepLog).to.equal('badc');
         expect(postStepLog).to.equal('badc');
         done();
