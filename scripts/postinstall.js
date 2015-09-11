@@ -12,28 +12,6 @@ var _ = require('lodash');
 var config = require('./../lib/core/config.js');
 var npm = require('./../lib/util/npm.js');
 
-/*
- * Replaces the version part of a npm pkg@version string with
- * the master branch tarball from github.
- *
- * If you are using your own external app or plugin it needs to live on github
- * and have a master branch or this is not going to work.
- *
- */
-var pkgToDev = function(pkg) {
-
-  // Split our package so we can reassemble later
-  var parts = pkg.split('@');
-
-  // Get the tarball location
-  return npm.getMasterTarball(parts[0])
-
-  // Reassamble and return
-  .then(function(tarPath) {
-    return [parts[0], tarPath].join('@');
-  });
-};
-
 // Grab our global config
 var globalConfig = config.getGlobalConfig();
 
@@ -46,12 +24,6 @@ pkgs.push(globalConfig.services);
 
 // Grab our apps
 pkgs = pkgs.concat(globalConfig.apps);
-
-// If we are in dev mode we need to grab the master branch of all our
-// packages instead of the version given in config
-if (globalConfig.devMode === true) {
-  pkgs = _.map(pkgs, pkgToDev);
-}
 
 // Npm install our apps and backends
 npm.installPackages(globalConfig.srcRoot, pkgs)
