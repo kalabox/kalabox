@@ -5,24 +5,31 @@
 
 'use strict';
 
+// Npm mods
+var _ = require('lodash');
+
+// Some kbox dependencies
 var config = require('./../lib/core/config.js');
 var npm = require('./../lib/util/npm.js');
 
+// Grab our global config
 var globalConfig = config.getGlobalConfig();
+
+// Kick off an empty array
 var pkgs = [];
 
 // Grab our backends
 pkgs.push(globalConfig.engine);
 pkgs.push(globalConfig.services);
+
 // Grab our apps
 pkgs = pkgs.concat(globalConfig.apps);
-// Could easily add support for external plugins with something like below
-// pkgs.concat(defaultConfig.externalPlugins);
 
-npm.installPackages(globalConfig.srcRoot, pkgs, function(err) {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log('Installed additional backends and plugins.');
-  }
+// Npm install our apps and backends
+npm.installPackages(globalConfig.srcRoot, pkgs)
+
+// Tell the world
+.then(function() {
+  // @todo: should we kenny loggins this?
+  console.log('Installed additional backends and plugins.');
 });
