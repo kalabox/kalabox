@@ -21,3 +21,4 @@ built
 *.tar
 kalabox.json
 string
+*.jxp

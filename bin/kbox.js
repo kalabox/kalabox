@@ -17,6 +17,10 @@ var deps = kbox.core.deps;
 var tasks = kbox.core.tasks;
 var Promise = kbox.Promise;
 
+// If this is a JXP packaged binary we need to shift our args
+if (process.isPackaged || process.IsEmbedded) {
+  process.argv.unshift(process.argv[0]);
+}
 // Partition and parse argv.
 var argv = kbox.tasks.partitionArgv(process.argv.slice(2));
 

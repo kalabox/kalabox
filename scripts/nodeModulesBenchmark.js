@@ -16,7 +16,7 @@ var clearCache = function() {
 };
 
 // Get node modules directory.
-var nodeModulesDir = path.join(__dirname, 'node_modules');
+var nodeModulesDir = path.join(__dirname, '..', 'node_modules');
 
 // Loop through each
 fs.readdir(nodeModulesDir, function(err, dirs) {

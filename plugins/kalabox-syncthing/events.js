@@ -3,7 +3,6 @@
 var fs = require('fs-extra');
 var os = require('os');
 var path = require('path');
-var mkdirp = require('mkdirp');
 var Promise = require('bluebird');
 
 module.exports = function(kbox) {
@@ -85,7 +84,7 @@ module.exports = function(kbox) {
 
         // Make sure code root exists.
         return Promise.fromNode(function(cb) {
-          mkdirp(app.config.codeRoot, cb);
+          fs.mkdirp(app.config.codeRoot, cb);
         })
         // Write synthing ignore file.
         .then(function() {
