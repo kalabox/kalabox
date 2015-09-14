@@ -42,7 +42,6 @@
     "kalabox-metrics-rest": "^0.1.0",
     "lodash": "~3.6.0",
     "moment": "^2.10.6",
-    "npm": "^2.5.1",
     "regex": "^0.1.1",
     "restler": "^3.2.2",
     "rimraf": "~2.2.8",
