@@ -8,9 +8,16 @@ module.exports = function(kbox) {
 
   // NPM modules
   var chalk = require('chalk');
+  var _ = require('lodash');
 
   // Kbox modules
   var util = require('./util.js')(kbox);
+
+  // Helper func for when a step fails
+  var fail = function(state, msg) {
+    state.log.info(chalk.red(msg));
+    state.status = false;
+  };
 
   // Add common steps
   //require('./steps/common.js')(kbox);
@@ -38,15 +45,40 @@ module.exports = function(kbox) {
 
       // Get the users response and exit if they do not confirm
       .then(function(answers) {
-        if (!answers.doit) {
-          state.log.info(chalk.red('Fine!') + ' Be that way!');
-          process.exit(1);
+        if (!_.isEmpty(answers) && !answers.doit) {
+          fail(state, 'Fine! Be that way!');
         }
       })
 
       // Move onto the next step
       .nodeify(done);
 
+    };
+  });
+
+  /*
+   * Make sure our firewall is in a correct state
+   */
+  kbox.install.registerStep(function(step) {
+    step.name = 'core-firewall';
+    step.description = 'Checking firewall settings...';
+    step.deps = ['core-auth'];
+    step.all = function(state, done) {
+
+      // Check if our firewall is ok
+      return kbox.util.firewall.isOkay()
+
+      // If we are OK proceed, if we are not
+      // throw an error
+      .then(function(isOkay) {
+        if (isOkay) {
+          var msg = 'You need to make sure your firewall is not blocking all';
+          fail(state, msg);
+        }
+      })
+
+      // Next step;
+      .nodeify(done);
     };
   });
 
