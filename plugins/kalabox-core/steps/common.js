@@ -9,46 +9,6 @@ module.exports = function(kbox) {
   // Npm modules
   var chalk = require('chalk');
 
-  // Firewall.
-  kbox.install.registerStep(function(step) {
-    step.name = 'core-firewall';
-    step.description = 'Checking firewall settings...';
-    step.deps = ['core-auth'];
-    step.all.darwin = function(state, done) {
-      kbox.util.firewall.isOkay(function(err, isOkay) {
-        if (err) {
-          done(err);
-        } else if (!isOkay) {
-          done(new Error('Invalid firewall setting.'));
-        } else {
-          done();
-        }
-      });
-    };
-    step.all.linux = function(state, done) {
-      // @todo
-      done();
-    };
-    step.all.win32 = function(state, done) {
-      // @todo
-      done();
-    };
-  });
-
-  // Internet.
-  kbox.install.registerStep(function(step) {
-    step.name = 'core-internet';
-    step.description = 'Checking for Internet access...';
-    step.deps = ['core-firewall'];
-    step.all = function(state, done) {
-      var url = 'www.google.com';
-      state.log.debug('Checking: ' + url);
-      kbox.util.internet.check(url, function(err) {
-        done(err);
-      });
-    };
-  });
-
   // Disk space.
   kbox.install.registerStep(function(step) {
     step.name = 'core-disk-space';

@@ -71,7 +71,7 @@ module.exports = function(kbox) {
       // If we are OK proceed, if we are not
       // throw an error
       .then(function(isOkay) {
-        if (isOkay) {
+        if (!isOkay) {
           var msg = 'You need to make sure your firewall is not blocking all';
           fail(state, msg);
         }
@@ -79,6 +79,32 @@ module.exports = function(kbox) {
 
       // Next step;
       .nodeify(done);
+    };
+  });
+
+  /*
+   * Make sure we can establish a connection to the internet
+   */
+  kbox.install.registerStep(function(step) {
+    step.name = 'core-internet';
+    step.description = 'Checking for Internet access...';
+    step.deps = ['core-firewall'];
+    step.all = function(state, done) {
+
+      var url = 'www.google.com';
+      state.log.debug('Checking: ' + url);
+
+      return kbox.util.internet.check(url)
+
+      .then(function(connected) {
+        if (!connected) {
+          var msg = 'You are not currently connected to the internet!';
+          fail(state, msg);
+        }
+      })
+
+      .nodeify(done);
+
     };
   });
 
