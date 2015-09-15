@@ -91,11 +91,14 @@ module.exports = function(kbox) {
     step.deps = ['core-firewall'];
     step.all = function(state, done) {
 
+      // Places to go
       var url = 'www.google.com';
       state.log.debug('Checking: ' + url);
 
+      // Attempt to connect
       return kbox.util.internet.check(url)
 
+      // If connect fails then so does this step!
       .then(function(connected) {
         if (!connected) {
           var msg = 'You are not currently connected to the internet!';
@@ -103,6 +106,7 @@ module.exports = function(kbox) {
         }
       })
 
+      // Next step
       .nodeify(done);
 
     };
@@ -129,6 +133,7 @@ module.exports = function(kbox) {
           fail(state, 'Disk not ready!');
         }
 
+        // Now check to see if we have enough free space
         return kbox.util.disk.getDiskFreeSpace()
 
         .then(function(freeSpace) {
@@ -147,7 +152,50 @@ module.exports = function(kbox) {
           }
 
         });
+      })
 
+      // Next step
+      .nodeify(done);
+
+    };
+  });
+
+  /*
+   * Download all the files that are in state.download
+   */
+  kbox.install.registerStep(function(step) {
+    step.name = 'core-downloads';
+    step.description = 'Downloading files...';
+    step.deps = [
+      'core-disk-space',
+      'core-internet'
+    ];
+    step.all = function(state, done) {
+
+      // Get our download helpers
+      var helpers = require('./steps/downloads.js')(kbox);
+
+      // Grab downloads from state.
+      var downloads = state.downloads;
+
+      // Validate our downloads and fail if they
+      // dont check out
+      if (helpers.validate(downloads) !== true) {
+        fail(state, helpers.validate(downloads));
+      }
+
+      // Get our temp dir
+      var downloadDir = kbox.util.disk.getTempDir();
+
+      // Log the downloads
+      downloads.forEach(function(url) {
+        state.log.debug([url, downloadDir].join(' -> '));
+      });
+
+      return kbox.util.download.downloadFiles(downloads, downloadDir)
+
+      .then(function(files) {
+        // Do want to validate anything here?
       })
 
       .nodeify(done);
