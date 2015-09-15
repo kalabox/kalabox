@@ -22,6 +22,5 @@ built
 kalabox.json
 string
 *.jxp
-kbox
-kbox.exe
-bin/*
+bin/kbox
+bin/kbox.exe
