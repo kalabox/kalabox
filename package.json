@@ -1,6 +1,7 @@
 {
   "name": "kalabox",
   "description": "A framework to build reusable, super fast, highly customizable, extensible integrated workflow solutions for all kinds of apps.",
+  "license": "MIT",
   "keywords": [
     "docker",
     "kalabox",
