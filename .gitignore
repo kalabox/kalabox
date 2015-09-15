@@ -21,3 +21,6 @@ built
 *.tar
 kalabox.json
 string
+*.jxp
+bin/kbox
+bin/kbox.exe
