@@ -108,6 +108,53 @@ module.exports = function(kbox) {
     };
   });
 
+  /*
+   * Check to see whether we have enough free disk space to install
+   */
+  kbox.install.registerStep(function(step) {
+    step.name = 'core-disk-space';
+    step.description = 'Checking for available disk space...';
+    step.deps = ['core-auth'];
+    step.all = function(state, done) {
+
+      // Make sure our disc is G2G
+      return kbox.util.disk.getDiskStatus()
+
+      // Calculate whether we have enough free space to install
+      // if not fail and alert the user
+      .then(function(status) {
+
+        // Fail step if our disk is not ready
+        if (status !== 'READY') {
+          fail(state, 'Disk not ready!');
+        }
+
+        return kbox.util.disk.getDiskFreeSpace()
+
+        .then(function(freeSpace) {
+
+          // Calculate free space in MB
+          var freeMB = freeSpace / 1024 / 1024;
+
+          // Space required in MB
+          var neededMB = 2000;
+          var enoughFreeSpace = freeMB > neededMB;
+
+          // Fail the step if we need more space
+          if (!enoughFreeSpace) {
+            var msg = ['You need at least', neededMB, 'MB to install!'];
+            fail(state, msg.join(' '));
+          }
+
+        });
+
+      })
+
+      .nodeify(done);
+
+    };
+  });
+
   // Run administator commands
   /*
   kbox.install.registerStep(function(step) {

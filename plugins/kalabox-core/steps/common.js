@@ -9,31 +9,6 @@ module.exports = function(kbox) {
   // Npm modules
   var chalk = require('chalk');
 
-  // Disk space.
-  kbox.install.registerStep(function(step) {
-    step.name = 'core-disk-space';
-    step.description = 'Checking for available disk space...';
-    step.deps = ['core-auth'];
-    step.all.darwin = function(state, done) {
-      kbox.util.disk.getFreeSpace(function(err, freeMbs) {
-        if (err) {
-          done(err);
-        } else {
-          var enoughFreeSpace = freeMbs > (1 * 1000);
-          if (!enoughFreeSpace) {
-            err = new Error('Not enough disk space for install!');
-          }
-          done(err);
-        }
-      });
-    };
-    step.all.linux = step.all.darwin;
-    step.all.win32 = function(state, done) {
-      // @todo
-      done();
-    };
-  });
-
   // Downloads.
   kbox.install.registerStep(function(step) {
     step.name = 'core-downloads';
