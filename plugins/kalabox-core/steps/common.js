@@ -5,40 +5,9 @@
  */
 
 module.exports = function(kbox) {
-  var inquirer = require('inquirer');
-  var chalk = require('chalk');
 
-  // Are you sure?
-  // Authorize the update process
-  kbox.install.registerStep(function(step) {
-    step.name = 'core-auth';
-    step.description = 'Authorizing trilling subroutines...';
-    step.all = function(state, done) {
-      if (state.nonInteractive) {
-        state.log.info(chalk.grey('Non-interactive mode.'));
-        done();
-      }
-      else {
-        var msg = 'Install all the magic and get this party started?';
-        var questions = [
-          {
-            type: 'confirm',
-            name: 'doit',
-            message: msg,
-          },
-        ];
-        inquirer.prompt(questions, function(answers) {
-          if (answers.doit) {
-            done();
-          }
-          else {
-            state.log.info(chalk.red('Fine!') + ' Be that way!');
-            process.exit(1);
-          }
-        });
-      }
-    };
-  });
+  // Npm modules
+  var chalk = require('chalk');
 
   // Firewall.
   kbox.install.registerStep(function(step) {

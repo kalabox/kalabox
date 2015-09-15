@@ -149,70 +149,12 @@ module.exports = function(kbox) {
     }
   };
 
-  var prepareImages = function(sContainers, callback) {
-    kbox.engine.list(function(err, containers) {
-      if (err) {
-        callback(err);
-      }
-      else {
-        helpers.mapAsync(
-          containers,
-          function(container, done) {
-            if (_.include(sContainers, container.name)) {
-              kbox.engine.info(container.id, function(err, info) {
-                if (info.running) {
-                  kbox.engine.stop(container.id, function(err) {
-                    if (err) {
-                      done(err);
-                    }
-                    else {
-                      kbox.engine.remove(container.id, function(err) {
-                        if (err) {
-                          done(err);
-                        }
-                        else {
-                          done();
-                        }
-                      });
-                    }
-                  });
-                }
-                else {
-                  kbox.engine.remove(container.id, function(err) {
-                    if (err) {
-                      done(err);
-                    }
-                    else {
-                      done();
-                    }
-                  });
-                }
-              });
-            }
-            else {
-              done();
-            }
-          },
-          function(errs) {
-            if (err) {
-              callback(err);
-            }
-            else {
-              callback();
-            }
-          }
-        );
-      }
-    });
-  };
-
   return {
     getAppStats: getAppStats,
     getAppContainers: getAppContainers,
     getAppNames: getAppNames,
     outputContainers: outputContainers,
-    runAdminCmds: runAdminCmds,
-    prepareImages: prepareImages
+    runAdminCmds: runAdminCmds
   };
 
 };

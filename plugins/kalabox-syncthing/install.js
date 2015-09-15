@@ -1,16 +1,20 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var meta = require('./meta.js');
-var _ = require('lodash');
-
 module.exports = function(kbox) {
 
+  // Native modules
+  var fs = require('fs');
+  var path = require('path');
+
+  // NPM modules
+  var _ = require('lodash');
+
+  // Kalabox modules
+  var meta = require('./meta.js');
   var util = require('./util.js')(kbox);
-  var provisioned = kbox.core.deps.lookup('globalConfig').provisioned;
   var share = kbox.share;
 
+/*
   kbox.install.registerStep(function(step) {
     step.name = 'syncthing-downloads';
     step.description = 'Queuing up syncthing downloads...';
@@ -33,10 +37,9 @@ module.exports = function(kbox) {
     };
   });
 
-  var engineDep = (provisioned) ? 'engine-docker-prepared' : 'engine-up';
   kbox.install.registerStep(function(step) {
     step.name = 'syncthing-image';
-    step.deps = [engineDep];
+    step.deps = ['engine-up'];
     step.description = 'Installing your Syncthing image...';
     step.all = function(state, done) {
       kbox.engine.build({name: 'syncthing'}, function(err) {
@@ -84,20 +87,6 @@ module.exports = function(kbox) {
       });
     };
   });
-
-  if (provisioned) {
-
-    kbox.install.registerStep(function(step) {
-      step.name = 'syncthing-image-prepare';
-      step.subscribes = ['core-image-prepare'];
-      step.deps = ['core-auth'];
-      step.description = 'Submitting syncthing image for update...';
-      step.all = function(state, done) {
-        state.containers.push('kalabox_syncthing');
-        done();
-      };
-    });
-
-  }
+*/
 
 };

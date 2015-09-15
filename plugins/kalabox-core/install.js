@@ -1,25 +1,61 @@
 'use strict';
 
-var chalk = require('chalk');
-var fs = require('fs');
-var path = require('path');
-
 module.exports = function(kbox) {
 
+  // Native modules
+  var fs = require('fs');
+  var path = require('path');
+
+  // NPM modules
+  var chalk = require('chalk');
+
+  // Kbox modules
   var util = require('./util.js')(kbox);
-  var helpers = kbox.util.helpers;
-  var provisioned = kbox.core.deps.lookup('globalConfig').provisioned;
 
   // Add common steps
-  require('./steps/common.js')(kbox);
+  //require('./steps/common.js')(kbox);
 
-  // Run administator commands.
+  /*
+   * This step attempts to get authorization from the user that we can
+   * proceed with the installer or updater as long as non-interactive has not
+   * been specificed
+   */
+  kbox.install.registerStep(function(step) {
+    step.name = 'core-auth';
+    step.description = 'Authorizing trilling subroutines...';
+    step.all = function(state, done) {
+
+      // If we are in non-interactive mode report that
+      if (state.nonInteractive) {
+        state.log.info(chalk.grey('Non-interactive mode.'));
+      }
+
+      // Get our authorize code
+      var authorize = require('./steps/authorize.js')(kbox);
+
+      // Kick off the auth chain
+      return authorize(state)
+
+      // Get the users response and exit if they do not confirm
+      .then(function(answers) {
+        if (!answers.doit) {
+          state.log.info(chalk.red('Fine!') + ' Be that way!');
+          process.exit(1);
+        }
+      })
+
+      // Move onto the next step
+      .nodeify(done);
+
+    };
+  });
+
+  // Run administator commands
+  /*
   kbox.install.registerStep(function(step) {
     step.name = 'core-run-admin-commands';
-    if (provisioned) {
-      step.deps = ['core-auth'];
-    }
-    if (!provisioned && process.platform === 'win32') {
+    step.deps = ['core-auth'];
+    if (process.platform === 'win32') {
       // @todo: this should be a core dep
       step.deps.push('engine-docker-provider-profile');
     }
@@ -30,132 +66,34 @@ module.exports = function(kbox) {
     };
   });
 
-  if (!provisioned) {
-    kbox.install.registerStep(function(step) {
-      step.name = 'core-prepare-usr-bin';
-      step.description  = 'Preparing /usr/local/bin...';
-      step.subscribes = ['core-run-admin-commands'];
-      step.deps = ['core-auth'];
-      step.all.linux = function(state, done) {
-        var owner = [process.env.USER, process.env.USER].join(':');
-        state.adminCommands.unshift('chown ' + owner + ' /usr/local/bin');
-        if (!fs.existsSync('/usr/local/bin')) {
-          state.adminCommands.unshift('mkdir -p /usr/local/bin');
-        }
-        done();
-      };
-    });
+  kbox.install.registerStep(function(step) {
+    step.name = 'core-prepare-usr-bin';
+    step.description  = 'Preparing /usr/local/bin...';
+    step.subscribes = ['core-run-admin-commands'];
+    step.deps = ['core-auth'];
+    step.all.linux = function(state, done) {
+      var owner = [process.env.USER, process.env.USER].join(':');
+      state.adminCommands.unshift('chown ' + owner + ' /usr/local/bin');
+      if (!fs.existsSync('/usr/local/bin')) {
+        state.adminCommands.unshift('mkdir -p /usr/local/bin');
+      }
+      done();
+    };
+  });
 
-    kbox.install.registerStep(function(step) {
-      step.name = 'core-finish';
-      step.description = 'Finishing install...';
-      // @todo: need core dep
-      step.deps = ['services-kalabox-finalize'];
-      step.all = function(state, done) {
-        fs.writeFileSync(
-          path.join(state.config.sysConfRoot, 'provisioned'),
-          'true'
-        );
-        done();
-      };
-    });
-  }
+  kbox.install.registerStep(function(step) {
+    step.name = 'core-finish';
+    step.description = 'Finishing install...';
+    // @todo: need core dep
+    step.deps = ['services-kalabox-finalize'];
+    step.all = function(state, done) {
+      fs.writeFileSync(
+        path.join(state.config.sysConfRoot, 'provisioned'),
+        'true'
+      );
+      done();
+    };
+  });
+*/
 
-  if (provisioned) {
-
-    kbox.install.registerStep(function(step) {
-      step.name = 'core-backends';
-      step.deps = ['core-auth'];
-      step.description = 'Updating your Kalabox apps and backends...';
-      step.all = function(state, done) {
-        kbox.util.npm.updateBackends(function(err) {
-          if (err) {
-            done(err);
-          }
-          else {
-            state.log.debug('Updated kalabox backends!');
-            kbox.util.npm.updateApps(function(err) {
-              if (err) {
-                done(err);
-              }
-              else {
-                state.log.debug('Updated kalabox apps!');
-                done();
-              }
-            });
-          }
-        });
-      };
-    });
-
-    kbox.install.registerStep(function(step) {
-      step.name = 'core-image-prepare';
-      step.deps = ['core-apps-prepare'];
-      step.description = 'Preparing images for updates...';
-      step.all = function(state, done) {
-        util.prepareImages(state.containers, done);
-      };
-    });
-
-    kbox.install.registerStep(function(step) {
-      step.name = 'core-apps-prepare';
-      step.deps = ['engine-up'];
-      step.description = 'Preparing apps for updates...';
-      step.all = function(state, done) {
-        kbox.engine.list(function(err, containers) {
-          if (err) {
-            done(err);
-          }
-          else {
-            helpers.mapAsync(
-              containers,
-              function(container, done) {
-                kbox.engine.info(container.id, function(err, info) {
-                  if (err) {
-                    done(err);
-                  }
-                  else {
-                    if (info.app !== null) {
-                      kbox.app.get(info.app, function(err, app) {
-                        if (err) {
-                          done(err);
-                        }
-                        else {
-                          if (info.running) {
-                            kbox.app.stop(app, function(errs) {
-                              if (errs) {
-                                done(errs);
-                              }
-                              else {
-                                state.log.info('Stopped ' + app.name);
-                                done();
-                              }
-                            });
-                          }
-                          else {
-                            done();
-                          }
-                        }
-                      });
-                    }
-                    else {
-                      done();
-                    }
-                  }
-                });
-              },
-              function(errs) {
-                if (err) {
-                  done(err);
-                }
-                else {
-                  done();
-                }
-              }
-            );
-          }
-        });
-      };
-    });
-  }
 };
