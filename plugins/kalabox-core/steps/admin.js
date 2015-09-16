@@ -50,10 +50,10 @@ module.exports = function(kbox) {
     child.stdout.on('end', function() {
       callback();
     });
-    // Print errors
-    child.stderr.on('data', function(data) {
-      // If we callback() here it fails on linux
-      console.log.info(data);
+    // Fail the installer if we get an error
+    child.stderr.on('data', function(err) {
+      // Fail the install on error
+      state.fail(state, err);
     });
 
   };
