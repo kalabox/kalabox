@@ -252,20 +252,4 @@ module.exports = function(kbox) {
     };
   });
 
-  /*
-  kbox.install.registerStep(function(step) {
-    step.name = 'core-finish';
-    step.description = 'Finishing install...';
-    // @todo: need core dep
-    step.deps = ['services-kalabox-finalize'];
-    step.all = function(state, done) {
-      fs.writeFileSync(
-        path.join(state.config.sysConfRoot, 'provisioned'),
-        'true'
-      );
-      done();
-    };
-  });
-*/
-
 };
