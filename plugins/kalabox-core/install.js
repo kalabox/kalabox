@@ -194,22 +194,30 @@ module.exports = function(kbox) {
     };
   });
 
-  // Run administator commands
   /*
+   * Runs a prebuilt list of admin commands if there are any
+   */
   kbox.install.registerStep(function(step) {
     step.name = 'core-run-admin-commands';
-    step.deps = ['core-auth'];
-    if (process.platform === 'win32') {
-      // @todo: this should be a core dep
-      step.deps.push('engine-docker-provider-profile');
-    }
+    step.deps = ['core-downloads'];
     step.description = 'Running admin install commands...';
     step.all = function(state, done) {
-      var adminCommands = state.adminCommands;
-      util.runAdminCmds(adminCommands, state, done);
+
+      // Grab our admin helpers
+      var admin = require('./steps/admin.js')(kbox);
+
+      // Run the admin commands if we have any
+      if (_.isEmpty(state.adminCommands)) {
+        admin.run(state.adminCommands, state, done);
+      }
+      else {
+        done();
+      }
+
     };
   });
 
+/*
   kbox.install.registerStep(function(step) {
     step.name = 'core-prepare-usr-bin';
     step.description  = 'Preparing /usr/local/bin...';
