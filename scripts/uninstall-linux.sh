@@ -74,6 +74,7 @@ if ([ "$my_answer" == "1" ]); then
     append kala_files "$HOME/.kalabox/syncthing"
     append kala_files "$HOME/.kalabox/bin/syncthing"
     append kala_files "$HOME/.kalabox/appRegistry.json"
+    append kala_files "$HOME/.kalabox/installed.json"
 
     # Print the files and directories that are to be removed and verify
     # with the user that that is what he/she really wants to do.
@@ -97,6 +98,7 @@ if ([ "$my_answer" == "1" ]); then
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin/syncthing
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/appRegistry.json
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/installed.json
         /usr/bin/sudo /bin/sed -i '/nameserver 10.13.37/d' /etc/resolvconf/resolv.conf.d/head
         /usr/bin/sudo /sbin/resolvconf -u
     fi
