@@ -43,7 +43,7 @@ module.exports = function(kbox) {
     var currentInstall = getCurrentInstall();
 
     // This is the first time we've installed so we def need
-    if (_.isEmpty(currentInstall)) {
+    if (_.isEmpty(currentInstall) || !currentInstall[prop]) {
       return true;
     }
 
