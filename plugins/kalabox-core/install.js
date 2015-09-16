@@ -12,6 +12,7 @@ module.exports = function(kbox) {
 
   // Kbox modules
   var util = require('./util.js')(kbox);
+  var Promise = kbox.Promise;
 
   /*
    * This step attempts to get authorization from the user that we can
@@ -213,6 +214,40 @@ module.exports = function(kbox) {
       else {
         done();
       }
+
+    };
+  });
+
+  /*
+   * Grab any containers that need to be installed
+   * @todo: This assumes a step called engine-up exists somewhere?
+   */
+  kbox.install.registerStep(function(step) {
+    step.name = 'core-image-build';
+    step.deps = ['engine-up'];
+    step.description = 'Pulling images...';
+    step.all = function(state, done) {
+
+      // Skip through if we don't have any images to grab
+      if (_.isEmpty(state.images)) {
+        done();
+      }
+
+      // Otherwise dedupe our images and install each
+      var images = _.uniq(state.images, 'name');
+
+      // Cycle through images and build each
+      return Promise.each(images, function(image) {
+        return kbox.engine.build(image)
+
+        // If this errors then fail the step
+        .catch(function(err) {
+          state.fail(state, err);
+        });
+      })
+
+      // Next step
+      .nodeify(done);
 
     };
   });

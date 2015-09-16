@@ -97,30 +97,36 @@ module.exports = function(kbox) {
   }
 
   /*
-   * Install the new syncthing image if we need to
+   * Add the new syncthing image to be pulled
    */
   if (util.needsImgUp()) {
     kbox.install.registerStep(function(step) {
       step.name = 'syncthing-image';
-      step.deps = ['engine-up'];
-      step.description = 'Installing your Syncthing image...';
-      step.all = function(state, done) {
+      step.subscribes = ['core-image-build'];
+      step.deps = ['core-auth'];
+      step.description = 'Adding syncthing image to build list...';
+      step.all = function(state) {
 
-        // Build the new syncthing image
-        return kbox.engine.build({name: 'syncthing'})
+        // Adds in the images we need for syncthing
+        state.images.push({name: 'syncthing'});
+        state.images.push({name: 'data'});
 
-        // If this errors then fail the step
-        .catch(function(err) {
-          state.fail(state, err);
-        })
+      };
+    });
+  }
 
-        // If not update our image
-        .then(function() {
-          state.updateCurrentInstall({SYNCTHING_IMAGE: '0.11.22'});
-        })
+  /*
+   * If we've got this far we can assume the syncthing image has been updated
+   */
+  if (util.needsImgUp()) {
+    kbox.install.registerStep(function(step) {
+      step.name = 'syncthing-image-verify';
+      step.deps = ['core-image-build'];
+      step.description = 'Updating install info...';
+      step.all = function(state) {
 
-        // Next step
-        .nodeify(done);
+        // Update the current install
+        state.updateCurrentInstall({SYNCTHING_IMAGE: '0.11.22'});
 
       };
     });
