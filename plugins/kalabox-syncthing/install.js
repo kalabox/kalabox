@@ -52,7 +52,7 @@ module.exports = function(kbox) {
    * If we need to do updates or install syncthing for the first time
    * then run this step FOR SURE
    */
-  if ((!packed && !provisioned) && (util.needsBinUp() || util.needsImgUp())) {
+  if ((!packed && !provisioned) && util.needsDownloads()) {
     kbox.install.registerStep(function(step) {
       step.name = 'syncthing-downloads';
       step.description = 'Queuing up syncthing downloads...';
@@ -65,8 +65,10 @@ module.exports = function(kbox) {
           state.downloads.push(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
         }
 
-        // We need this regardless
-        state.downloads.push(meta.SYNCTHING_CONFIG_URL);
+        // Grab new config if we need it
+        if (util.needsConfig()) {
+          state.downloads.push(meta.SYNCTHING_CONFIG_URL);
+        }
 
       };
     });
@@ -88,27 +90,40 @@ module.exports = function(kbox) {
 
         // Update our current install to reflect that
         state.updateCurrentInstall({SYNCTHING_BINARY: '0.11.22'});
+        state.updateCurrentInstall({SYNCTHING_CONFIG: '0.10.0'});
 
       };
     });
   }
 
-/*
-  kbox.install.registerStep(function(step) {
-    step.name = 'syncthing-image';
-    step.deps = ['engine-up'];
-    step.description = 'Installing your Syncthing image...';
-    step.all = function(state, done) {
-      kbox.engine.build({name: 'syncthing'}, function(err) {
-        if (err) {
-          state.status = false;
-          done(err);
-        } else {
-          done();
-        }
-      });
-    };
-  });
-*/
+  /*
+   * Install the new syncthing image if we need to
+   */
+  if (util.needsImgUp()) {
+    kbox.install.registerStep(function(step) {
+      step.name = 'syncthing-image';
+      step.deps = ['engine-up'];
+      step.description = 'Installing your Syncthing image...';
+      step.all = function(state, done) {
+
+        // Build the new syncthing image
+        return kbox.engine.build({name: 'syncthing'})
+
+        // If this errors then fail the step
+        .catch(function(err) {
+          state.fail(state, err);
+        })
+
+        // If not update our image
+        .then(function() {
+          state.updateCurrentInstall({SYNCTHING_IMAGE: '0.11.22'});
+        })
+
+        // Next step
+        .nodeify(done);
+
+      };
+    });
+  }
 
 };

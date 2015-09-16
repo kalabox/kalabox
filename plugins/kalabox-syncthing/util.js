@@ -74,6 +74,20 @@ module.exports = function(kbox) {
   };
 
   /*
+   * Helper function to assess whether we need to grab new syncthing config
+   */
+  var needsConfig = function() {
+    return getProUp('SYNCTHING_CONFIG');
+  };
+
+  /*
+   * Helper fucntion to assesss whether we need to grab downloads
+   */
+  var needsDownloads = function() {
+    return this.needsBinUp() || this.needsImgUp();
+  };
+
+  /*
    * Helper function to install the syncthing binary
    */
   var installSyncthing = function(sysConfRoot) {
@@ -87,7 +101,7 @@ module.exports = function(kbox) {
 
     // Move config from download location to the correct location if this
     // is a valid update move
-    if ((!packed && !provisioned) && (this.needsBinUp || this.needsImgUp)) {
+    if ((!packed && !provisioned) && this.needsDownloads()) {
       var config = path.join(tmp, path.basename(meta.SYNCTHING_CONFIG_URL));
       fs.renameSync(config, path.join(syncthingDir, path.basename(config)));
     }
@@ -108,7 +122,7 @@ module.exports = function(kbox) {
     // Move the binary over
     fs.renameSync(binaryPath, path.join(binDir, bin));
 
-    // Give the binary the correct permissions
+    // Give the binary the correct x permissions
     fs.chmodSync(path.join(binDir, bin), '0755');
 
   };
@@ -116,6 +130,8 @@ module.exports = function(kbox) {
   return {
     needsBinUp: needsBinUp,
     needsImgUp: needsImgUp,
+    needsConfig: needsConfig,
+    needsDownloads: needsDownloads,
     installSyncthing: installSyncthing
   };
 
