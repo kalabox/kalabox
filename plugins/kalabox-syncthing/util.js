@@ -120,6 +120,8 @@ module.exports = function(kbox) {
     fs.mkdirpSync(binDir);
 
     // Move the binary over
+    kbox.core.log.debug('MOVING BINARY FROM => ' + binaryPath);
+    kbox.core.log.debug('MOVING BINARY TO => ' + path.join(binDir, bin));
     fs.renameSync(binaryPath, path.join(binDir, bin));
 
     // Give the binary the correct x permissions

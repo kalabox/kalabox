@@ -184,12 +184,19 @@ module.exports = function(kbox) {
         state.log.debug([url, downloadDir].join(' -> '));
       });
 
+      // Download the filezz
       return kbox.util.download.downloadFiles(downloads, downloadDir)
 
-      .then(function(files) {
-        // Do want to validate anything here?
+      // Fail the step if we catch an error
+      .catch(function(err) {
+        state.fail(state, err);
       })
 
+      .then(function(files) {
+        // @todo: Do want to validate anything here?
+      })
+
+      // Next step
       .nodeify(done);
 
     };
@@ -209,6 +216,7 @@ module.exports = function(kbox) {
 
       // Run the admin commands if we have any
       if (!_.isEmpty(state.adminCommands)) {
+        state.log.debug('COMMANDS => ' + JSON.stringify(state.adminCommands));
         admin.run(state.adminCommands, state, done);
       }
       else {
@@ -228,13 +236,9 @@ module.exports = function(kbox) {
     step.description = 'Pulling images...';
     step.all = function(state, done) {
 
-      // Skip through if we don't have any images to grab
-      if (_.isEmpty(state.images)) {
-        done();
-      }
-
-      // Otherwise dedupe our images and install each
+      // Dedupe images
       var images = _.uniq(state.images, 'name');
+      state.log.debug('PULLING IMAGES => ' + JSON.stringify(images));
 
       // Cycle through images and build each
       return Promise.each(images, function(image) {
@@ -276,6 +280,11 @@ module.exports = function(kbox) {
         // Check it we actually need to update
         if (helpers.needsUpdates(appVersion, app.config.appType)) {
 
+          // Debug log some things
+          state.log.debug('UPDATING APP TYPE => ' + app.config.appType);
+          state.log.debug('UPDATING VERSION => ' + appVersion);
+          state.log.debug('UPDATING APP => ' + app.name);
+
           // Update the apps code
           return helpers.updateAppCode(app)
 
@@ -286,6 +295,12 @@ module.exports = function(kbox) {
         }
       })
 
+      // If error then fail the step
+      .catch(function(err) {
+        state.fail(state, err);
+      })
+
+      // next step
       .nodeify(done);
 
     };
