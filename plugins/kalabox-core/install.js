@@ -252,4 +252,43 @@ module.exports = function(kbox) {
     };
   });
 
+  /*
+   * Update our app code and rebuild our apps
+   */
+  kbox.install.registerStep(function(step) {
+    step.name = 'core-app-update';
+    step.deps = ['engine-up'];
+    step.description = 'Updating apps...';
+    step.all = function(state, done) {
+
+      // Grab some helpers
+      var helpers = require('./steps/app.js')(kbox);
+
+      // List all known apps
+      return kbox.app.list()
+
+      // Go through and update each app if needed
+      .each(function(app) {
+
+        // Grab the app version
+        var appVersion = helpers.getAppVersion(app);
+
+        // Check it we actually need to update
+        if (helpers.needsUpdates(appVersion, app.config.appType)) {
+
+          // Update the apps code
+          return helpers.updateAppCode(app)
+
+          // Rebuild the apps containers
+          .then(function() {
+            return kbox.app.rebuild(app);
+          });
+        }
+      })
+
+      .nodeify(done);
+
+    };
+  });
+
 };
