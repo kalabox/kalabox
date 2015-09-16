@@ -207,7 +207,7 @@ module.exports = function(kbox) {
       var admin = require('./steps/admin.js')(kbox);
 
       // Run the admin commands if we have any
-      if (_.isEmpty(state.adminCommands)) {
+      if (!_.isEmpty(state.adminCommands)) {
         admin.run(state.adminCommands, state, done);
       }
       else {
@@ -217,22 +217,7 @@ module.exports = function(kbox) {
     };
   });
 
-/*
-  kbox.install.registerStep(function(step) {
-    step.name = 'core-prepare-usr-bin';
-    step.description  = 'Preparing /usr/local/bin...';
-    step.subscribes = ['core-run-admin-commands'];
-    step.deps = ['core-auth'];
-    step.all.linux = function(state, done) {
-      var owner = [process.env.USER, process.env.USER].join(':');
-      state.adminCommands.unshift('chown ' + owner + ' /usr/local/bin');
-      if (!fs.existsSync('/usr/local/bin')) {
-        state.adminCommands.unshift('mkdir -p /usr/local/bin');
-      }
-      done();
-    };
-  });
-
+  /*
   kbox.install.registerStep(function(step) {
     step.name = 'core-finish';
     step.description = 'Finishing install...';

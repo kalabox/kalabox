@@ -17,6 +17,38 @@ module.exports = function(kbox) {
   var provisioned = kbox.core.deps.get('globalConfig').provisioned;
 
   /*
+   * We only need to turn syncthing off if we plan on updateing it
+   */
+  if (util.needsBinUp()) {
+    kbox.install.registerStep(function(step) {
+      step.name = 'syncthing-off';
+      step.deps = ['core-auth'];
+      step.description = 'Making sure syncthing is not running...';
+      step.all = function(state, done) {
+
+        // Get the local syncthing instanced
+        share.getLocalSync()
+
+        // Check to see if it is running
+        .then(function(localSync) {
+          return localSync.isUp()
+
+          // If it is then SHUT IT DOWNWWWW
+          .then(function(isUp) {
+            if (isUp) {
+              return localSync.shutdown();
+            }
+          });
+        })
+
+        // Next step
+        .nodeify(done);
+
+      };
+    });
+  }
+
+  /*
    * If we need to do updates or install syncthing for the first time
    * then run this step FOR SURE
    */
@@ -78,33 +110,5 @@ module.exports = function(kbox) {
     };
   });
 */
-  // We only need to turn syncthing off if we plan on updateing it
-  if (util.needsBinUp()) {
-    kbox.install.registerStep(function(step) {
-      step.name = 'syncthing-off';
-      step.deps = ['core-auth'];
-      step.description = 'Making sure syncthing is not running...';
-      step.all = function(state, done) {
 
-        // Get the local syncthing instanced
-        share.getLocalSync()
-
-        // Check to see if it is running
-        .then(function(localSync) {
-          return localSync.isUp()
-
-          // If it is then SHUT IT DOWNWWWW
-          .then(function(isUp) {
-            if (isUp) {
-              return localSync.shutdown();
-            }
-          });
-        })
-
-        // Next step
-        .nodeify(done);
-
-      };
-    });
-  }
 };
