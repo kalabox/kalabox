@@ -13,15 +13,6 @@ module.exports = function(kbox) {
   // Kbox modules
   var util = require('./util.js')(kbox);
 
-  // Helper func for when a step fails
-  var fail = function(state, msg) {
-    state.log.info(chalk.red(msg));
-    state.status = false;
-  };
-
-  // Add common steps
-  //require('./steps/common.js')(kbox);
-
   /*
    * This step attempts to get authorization from the user that we can
    * proceed with the installer or updater as long as non-interactive has not
@@ -46,7 +37,7 @@ module.exports = function(kbox) {
       // Get the users response and exit if they do not confirm
       .then(function(answers) {
         if (!_.isEmpty(answers) && !answers.doit) {
-          fail(state, 'Fine! Be that way!');
+          state.fail(state, 'Fine! Be that way!');
         }
       })
 
@@ -73,7 +64,7 @@ module.exports = function(kbox) {
       .then(function(isOkay) {
         if (!isOkay) {
           var msg = 'You need to make sure your firewall is not blocking all';
-          fail(state, msg);
+          state.fail(state, msg);
         }
       })
 
@@ -102,7 +93,7 @@ module.exports = function(kbox) {
       .then(function(connected) {
         if (!connected) {
           var msg = 'You are not currently connected to the internet!';
-          fail(state, msg);
+          state.fail(state, msg);
         }
       })
 
@@ -130,7 +121,7 @@ module.exports = function(kbox) {
 
         // Fail step if our disk is not ready
         if (status !== 'READY') {
-          fail(state, 'Disk not ready!');
+          state.fail(state, 'Disk not ready!');
         }
 
         // Now check to see if we have enough free space
@@ -148,7 +139,7 @@ module.exports = function(kbox) {
           // Fail the step if we need more space
           if (!enoughFreeSpace) {
             var msg = ['You need at least', neededMB, 'MB to install!'];
-            fail(state, msg.join(' '));
+            state.fail(state, msg.join(' '));
           }
 
         });
@@ -181,7 +172,7 @@ module.exports = function(kbox) {
       // Validate our downloads and fail if they
       // dont check out
       if (helpers.validate(downloads) !== true) {
-        fail(state, helpers.validate(downloads));
+        state.fail(state, helpers.validate(downloads));
       }
 
       // Get our temp dir

@@ -14,7 +14,6 @@ module.exports = function(kbox) {
   var util = require('./util.js')(kbox);
   var share = kbox.share;
 
-/*
   kbox.install.registerStep(function(step) {
     step.name = 'syncthing-downloads';
     step.description = 'Queuing up syncthing downloads...';
@@ -27,6 +26,7 @@ module.exports = function(kbox) {
       }
     };
   });
+  /*
 
   kbox.install.registerStep(function(step) {
     step.name = 'syncthing-setup';
