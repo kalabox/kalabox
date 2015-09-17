@@ -21,6 +21,7 @@ module.exports = function(kbox) {
    */
   kbox.install.registerStep(function(step) {
     step.name = 'core-auth';
+    step.first = true;
     step.description = 'Authorizing trilling subroutines...';
     step.all = function(state, done) {
 
@@ -302,6 +303,26 @@ module.exports = function(kbox) {
 
       // next step
       .nodeify(done);
+
+    };
+  });
+
+  /*
+   * A final step so we can update our version stuff
+   */
+  kbox.install.registerStep(function(step) {
+    step.name = 'core-done';
+    step.last = true;
+    step.description = 'Finishing install';
+    step.all = function(state) {
+
+      // Write the provisioned file
+      var proFile = path.join(state.config.sysConfRoot, 'provisioned');
+      fs.writeFileSync(proFile, 'true');
+
+      // Update our current install file
+      var kVersion = state.config.version;
+      state.updateCurrentInstall({KALABOX_VERSION: kVersion});
 
     };
   });
