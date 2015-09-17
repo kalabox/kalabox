@@ -21,7 +21,7 @@ describe('install framework module', function() {
       step.description = 'step b';
       step.deps = [];
       step.all = function(state) {
-        state.foo = step.name;
+        state.foo += step.name;
       };
     });
     fw.registerStep(function(step, done) {
@@ -65,6 +65,28 @@ describe('install framework module', function() {
         next();
       };
       done();
+    });
+    fw.registerStep(function(step, done) {
+      step.name = 'x';
+      step.description = 'step x';
+      step.deps = [];
+      step.first = true;
+      step.all = function(state, next) {
+        state.foo = step.name;
+        next();
+      };
+      done();
+    });
+    fw.registerStep(function(step, done) {
+      step.name = 'y';
+      step.description = 'step y';
+      step.deps = [];
+      step.last = true;
+      step.all = function(state, next) {
+        state.foo += step.name;
+        next();
+      };
+      done();
       beforeDone();
     });
   });
@@ -73,21 +95,25 @@ describe('install framework module', function() {
 
     it('should sort steps based upon dependencies.', function() {
       var steps = fw.getSteps('darwin');
-      expect(steps.length).to.equal(4);
-      expect(steps[0].name).to.equal('b');
-      expect(steps[1].name).to.equal('a');
-      expect(steps[2].name).to.equal('d');
-      expect(steps[3].name).to.equal('c');
-    });
-
-    it('should handle win32 correctly.', function() {
-      var steps = fw.getSteps('win32');
-      expect(steps.length).to.equal(5);
-      expect(steps[0].name).to.equal('e');
+      expect(steps.length).to.equal(6);
+      expect(steps[0].name).to.equal('x');
       expect(steps[1].name).to.equal('b');
       expect(steps[2].name).to.equal('a');
       expect(steps[3].name).to.equal('d');
       expect(steps[4].name).to.equal('c');
+      expect(steps[5].name).to.equal('y');
+    });
+
+    it('should handle win32 correctly.', function() {
+      var steps = fw.getSteps('win32');
+      expect(steps.length).to.equal(7);
+      expect(steps[0].name).to.equal('x');
+      expect(steps[1].name).to.equal('e');
+      expect(steps[2].name).to.equal('b');
+      expect(steps[3].name).to.equal('a');
+      expect(steps[4].name).to.equal('d');
+      expect(steps[5].name).to.equal('c');
+      expect(steps[6].name).to.equal('y');
     });
 
   });
@@ -109,9 +135,9 @@ describe('install framework module', function() {
         throw err;
       });
       fw.events.on('end', function(ctx) {
-        expect(ctx.state.foo).to.equal('badc');
-        expect(preStepLog).to.equal('badc');
-        expect(postStepLog).to.equal('badc');
+        expect(ctx.state.foo).to.equal('xbadcy');
+        expect(preStepLog).to.equal('xbadcy');
+        expect(postStepLog).to.equal('xbadcy');
         done();
       });
       install(state);
