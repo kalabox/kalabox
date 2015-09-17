@@ -22,7 +22,7 @@ module.exports = function(kbox) {
   if (util.needsBinUp()) {
     kbox.install.registerStep(function(step) {
       step.name = 'syncthing-off';
-      step.deps = ['core-auth'];
+      step.deps = ['syncthing-setup'];
       step.description = 'Making sure syncthing is not running...';
       step.all = function(state, done) {
 
@@ -57,7 +57,6 @@ module.exports = function(kbox) {
       step.name = 'syncthing-downloads';
       step.description = 'Queuing up syncthing downloads...';
       step.subscribes = ['core-downloads'];
-      step.deps = ['core-auth'];
       step.all = function(state) {
 
         // We only need this if we need to update the local binary
@@ -103,7 +102,6 @@ module.exports = function(kbox) {
     kbox.install.registerStep(function(step) {
       step.name = 'syncthing-image';
       step.subscribes = ['core-image-build'];
-      step.deps = ['core-auth'];
       step.description = 'Adding syncthing image to build list...';
       step.all = function(state) {
 

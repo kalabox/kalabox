@@ -55,7 +55,6 @@ module.exports = function(kbox) {
   kbox.install.registerStep(function(step) {
     step.name = 'core-firewall';
     step.description = 'Checking firewall settings...';
-    step.deps = ['core-auth'];
     step.all = function(state, done) {
 
       // Check if our firewall is ok
@@ -111,7 +110,6 @@ module.exports = function(kbox) {
   kbox.install.registerStep(function(step) {
     step.name = 'core-disk-space';
     step.description = 'Checking for available disk space...';
-    step.deps = ['core-auth'];
     step.all = function(state, done) {
 
       // Make sure our disc is G2G
