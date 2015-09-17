@@ -140,8 +140,12 @@ if ([ "$my_answer" == "1" ]); then
         fi
         echo ""
         if ([ "$ID" == "debian" ] || [ "$ID_LIKE" == "debian" ] ); then
-            /usr/bin/sudo -p "Please enter %u's password:" dpkg -P virtualbox-4.3
+            VBPACKAGE=$(dpkg-query -f '${binary:Package}\n' -W | grep virtualbox-)
+            echo "You have the following VB package installed"
+            echo $VBPACKAGE
+            /usr/bin/sudo -p "Please enter %u's password:" dpkg -P $VBPACKAGE
         else
+            #TODO: handle multiple VB versions
             /usr/bin/sudo -p "Please enter %u's password:" rpm -e virtualbox-4.3
         fi
     fi
