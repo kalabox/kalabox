@@ -62,7 +62,8 @@ if ([ "$my_answer" == "1" ]); then
     /usr/bin/sudo -p "Please enter %u's password:" echo "Let's get it started"
 
     # Gather some data on the things
-    B2D=$(which boot2docker)
+    # B2D may be in a dfferent spot for some people who change their profiles
+    B2D=$HOME/.kalabox/bin/boot2docker
     VBOX=$(which VBoxManage)
     BOOT2DOCKER_PROFILE=$HOME/.kalabox/.provider/profile
     kala_files=()
