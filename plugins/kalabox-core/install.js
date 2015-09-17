@@ -287,6 +287,11 @@ module.exports = function(kbox) {
           // Update the apps code
           return helpers.updateAppCode(app)
 
+          // Register the new app object so we can
+          // correctly detech an app context
+          .then(function() {
+            return kbox.setAppContext(app);
+          })
           // Rebuild the apps containers
           .then(function() {
             return kbox.app.rebuild(app);
