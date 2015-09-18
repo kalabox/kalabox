@@ -22,7 +22,7 @@ module.exports = function(kbox) {
   if (util.needsBinUp()) {
     kbox.install.registerStep(function(step) {
       step.name = 'syncthing-off';
-      step.deps = ['syncthing-setup'];
+      step.subscribes = ['syncthing-setup'];
       step.description = 'Making sure syncthing is not running...';
       step.all = function(state, done) {
 
