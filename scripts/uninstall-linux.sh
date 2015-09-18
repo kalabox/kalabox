@@ -62,7 +62,8 @@ if ([ "$my_answer" == "1" ]); then
     /usr/bin/sudo -p "Please enter %u's password:" echo "Let's get it started"
 
     # Gather some data on the things
-    B2D=$(which boot2docker)
+    # B2D may be in a dfferent spot for some people who change their profiles
+    B2D=$HOME/.kalabox/bin/boot2docker
     VBOX=$(which VBoxManage)
     BOOT2DOCKER_PROFILE=$HOME/.kalabox/.provider/profile
     kala_files=()
@@ -74,6 +75,7 @@ if ([ "$my_answer" == "1" ]); then
     append kala_files "$HOME/.kalabox/syncthing"
     append kala_files "$HOME/.kalabox/bin/syncthing"
     append kala_files "$HOME/.kalabox/appRegistry.json"
+    append kala_files "$HOME/.kalabox/installed.json"
 
     # Print the files and directories that are to be removed and verify
     # with the user that that is what he/she really wants to do.
@@ -97,6 +99,7 @@ if ([ "$my_answer" == "1" ]); then
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin/syncthing
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/appRegistry.json
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/installed.json
         /usr/bin/sudo /bin/sed -i '/nameserver 10.13.37/d' /etc/resolvconf/resolv.conf.d/head
         /usr/bin/sudo /sbin/resolvconf -u
     fi
@@ -138,8 +141,12 @@ if ([ "$my_answer" == "1" ]); then
         fi
         echo ""
         if ([ "$ID" == "debian" ] || [ "$ID_LIKE" == "debian" ] ); then
-            /usr/bin/sudo -p "Please enter %u's password:" dpkg -P virtualbox-4.3
+            VBPACKAGE=$(dpkg-query -f '${binary:Package}\n' -W | grep virtualbox-)
+            echo "You have the following VB package installed"
+            echo $VBPACKAGE
+            /usr/bin/sudo -p "Please enter %u's password:" dpkg -P $VBPACKAGE
         else
+            #TODO: handle multiple VB versions
             /usr/bin/sudo -p "Please enter %u's password:" rpm -e virtualbox-4.3
         fi
     fi

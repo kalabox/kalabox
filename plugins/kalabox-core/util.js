@@ -118,101 +118,11 @@ module.exports = function(kbox) {
     });
   };
 
-  var runAdminCmds = function(adminCommands, state, callback) {
-    // Validation.
-    if (!Array.isArray(adminCommands)) {
-      return callback(new TypeError('Invalid adminCommands: ' + adminCommands));
-    }
-
-    adminCommands.forEach(function(adminCommand, index) {
-      if (typeof adminCommand !== 'string' || adminCommand.length < 1) {
-        callback(new TypeError('Invalid adminCommand index: ' + index +
-          ' cmd: ' + adminCommand));
-      }
-    });
-
-    // Process admin commands.
-    if (adminCommands.length > 0) {
-      var child = kbox.install.cmd.runCmdsAsync(adminCommands, state);
-      child.stdout.on('data', function(data) {
-        console.log(data);
-      });
-      child.stdout.on('end', function() {
-        callback();
-      });
-      child.stderr.on('data', function(data) {
-        // If we callback() here it fails on linux
-        console.log(data);
-      });
-    } else {
-      callback();
-    }
-  };
-
-  var prepareImages = function(sContainers, callback) {
-    kbox.engine.list(function(err, containers) {
-      if (err) {
-        callback(err);
-      }
-      else {
-        helpers.mapAsync(
-          containers,
-          function(container, done) {
-            if (_.include(sContainers, container.name)) {
-              kbox.engine.info(container.id, function(err, info) {
-                if (info.running) {
-                  kbox.engine.stop(container.id, function(err) {
-                    if (err) {
-                      done(err);
-                    }
-                    else {
-                      kbox.engine.remove(container.id, function(err) {
-                        if (err) {
-                          done(err);
-                        }
-                        else {
-                          done();
-                        }
-                      });
-                    }
-                  });
-                }
-                else {
-                  kbox.engine.remove(container.id, function(err) {
-                    if (err) {
-                      done(err);
-                    }
-                    else {
-                      done();
-                    }
-                  });
-                }
-              });
-            }
-            else {
-              done();
-            }
-          },
-          function(errs) {
-            if (err) {
-              callback(err);
-            }
-            else {
-              callback();
-            }
-          }
-        );
-      }
-    });
-  };
-
   return {
     getAppStats: getAppStats,
     getAppContainers: getAppContainers,
     getAppNames: getAppNames,
-    outputContainers: outputContainers,
-    runAdminCmds: runAdminCmds,
-    prepareImages: prepareImages
+    outputContainers: outputContainers
   };
 
 };

@@ -11,20 +11,15 @@ describe('internet.js', function() {
 
   describe('#check()', function() {
 
-    it('should NOT return an error when a site is reachable.', function(done) {
+    it('should return true when a site is reachable.', function(done) {
       this.timeout(10 * 1000);
-      internet.check('www.google.com', function(err) {
-        expect(err).to.equal(null);
-        done();
-      });
-    });
+      return internet.check('www.google.com')
 
-    it('should return an error when a site in unreachable.', function(done) {
-      this.timeout(10 * 1000);
-      internet.check('www.fake-sites-are-not-reachable.com', function(err) {
-        expect(err).to.not.equal(null);
-        done();
-      });
+      .then(function(connected) {
+        expect(connected).to.equal(true);
+      })
+
+      .nodeify(done);
     });
 
   });

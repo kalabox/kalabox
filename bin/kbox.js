@@ -191,6 +191,20 @@ function main() {
   // Initialize core library.
   return kbox.init(opts)
 
+  // Warn users about updates if needed
+  .then(function() {
+
+    // Grab the global config
+    var config = kbox.core.deps.get('globalConfig');
+
+    // If we need updates print out a nice message
+    // Do not let the user run anything but the update task
+    if (config.needsUpdates && !_.includes(argv.payload, 'update')) {
+      console.log(kbox.art.needsUpdates());
+      process.exit(1);
+    }
+  })
+
   // Get the app context.
   .then(function() {
     // Get list of apps.
