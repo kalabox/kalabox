@@ -30,9 +30,9 @@ npm install kalabox -g
 
 Just download them, make sure they are executable (`chmod +x` on osx/nix) and then put them into your PATH somewhere.
 
-1.
-2.
-3.
+1. [kbox-macosx-amd64-v0.10.1](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-macosx-amd64-v0.10.1)
+2. [kbox-windows-amd64-v0.10.1](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-windows-amd64-v0.10.1.exe)
+3. [kbox-debian-amd64-v0.10.1](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-debian-amd64-v0.10.1)
 
 ## Getting started
 
