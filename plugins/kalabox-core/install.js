@@ -189,12 +189,12 @@ module.exports = function(kbox) {
 
         // We only need this if we need to update the local binary
         if (helpers.needsInvis()) {
-          var dsUrl = {
+          var invisUrl = {
             protocol: 'https:',
             host: 'raw.githubusercontent.com',
             pathname: 'kalabox/windosu/master/invisible.vbs'
           };
-          state.downloads.push(url.format(dsUrl));
+          state.downloads.push(url.format(invisUrl));
         }
 
       };
