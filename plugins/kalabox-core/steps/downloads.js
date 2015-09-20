@@ -39,8 +39,17 @@ module.exports = function(kbox) {
     return !fs.existsSync(path.join(sysRoot, 'downloads', 'drivespace.exe'));
   }
 
+  /*
+   * Quick check that we need the invis.vbs
+   */
+  var needsInvis = function() {
+    var sysRoot = kbox.core.deps.get('globalConfig').sysConfRoot;
+    return !fs.existsSync(path.join(sysRoot, 'downloads', 'invisible.vbs'));
+  }
+
   return {
     needsDiskspace: needsDiskspace,
+    needsInvis: needsInvis,
     validate: validateDownloads
   };
 
