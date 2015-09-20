@@ -6,6 +6,9 @@
 
 module.exports = function(kbox) {
 
+  var fs = require('fs');
+  var path = require('path');
+
   /*
    * Validate that our downloads are all good and proper
    */
@@ -28,7 +31,16 @@ module.exports = function(kbox) {
 
   };
 
+  /*
+   * Quick check that we need the diskspace exe
+   */
+  var needsDiskspace = function() {
+    var sysRoot = kbox.core.deps.get('globalConfig').sysConfRoot;
+    return !fs.existsSync(path.join(sysRoot, 'downloads', 'drivespace.exe'));
+  }
+
   return {
+    needsDiskspace: needsDiskspace,
     validate: validateDownloads
   };
 

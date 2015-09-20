@@ -5,6 +5,7 @@ module.exports = function(kbox) {
   // Native modules
   var fs = require('fs');
   var path = require('path');
+  var url = require('url');
 
   // NPM modules
   var chalk = require('chalk');
@@ -13,6 +14,9 @@ module.exports = function(kbox) {
   // Kbox modules
   var util = require('./util.js')(kbox);
   var Promise = kbox.Promise;
+
+  // Bin status
+  var inBin = process.isPackaged || process.IsEmbedded;
 
   /*
    * This step attempts to get authorization from the user that we can
@@ -109,6 +113,14 @@ module.exports = function(kbox) {
    */
   kbox.install.registerStep(function(step) {
     step.name = 'core-disk-space';
+
+    // On windows in binary we need to run this after downloads to ensure
+    // we have diskspace.exe
+    // @todo: add inBin conditional
+    if (process.platform === 'win32' && inBin) {
+      step.deps = ['core-downloads'];
+    }
+    step.subscribes = ['engine-up'];
     step.description = 'Checking for available disk space...';
     step.all = function(state, done) {
 
@@ -152,15 +164,48 @@ module.exports = function(kbox) {
   });
 
   /*
+   * We need this to download some support files to run the windows binary
+   * @todo: only run on binary
+   */
+  if (process.platform === 'win32' && inBin) {
+    kbox.install.registerStep(function(step) {
+      step.name = 'core-downloads-win32';
+      step.description = 'Queuing up support files...';
+      step.subscribes = ['core-downloads'];
+      step.all.win32 = function(state) {
+
+        // Helpers
+        var helpers = require('./steps/downloads.js')(kbox);
+
+        // We only need this if we need to update the local binary
+        if (helpers.needsDiskspace()) {
+          var dsUrl = {
+            protocol: 'https:',
+            host: 'raw.githubusercontent.com',
+            pathname: 'kalabox/diskspace.js/master/drivespace.exe'
+          };
+          state.downloads.push(url.format(dsUrl));
+        }
+
+      };
+    });
+  }
+
+  /*
    * Download all the files that are in state.download
    */
   kbox.install.registerStep(function(step) {
     step.name = 'core-downloads';
     step.description = 'Downloading files...';
     step.deps = [
-      'core-disk-space',
       'core-internet'
     ];
+
+    // Add another dep on non-windows binary
+    if (process.platform !== 'win32') {
+      step.deps.push('core-disk-space');
+    }
+
     step.all = function(state, done) {
 
       // Get our download helpers
