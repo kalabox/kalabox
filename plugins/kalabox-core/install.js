@@ -14,9 +14,7 @@ module.exports = function(kbox) {
   // Kbox modules
   var util = require('./util.js')(kbox);
   var Promise = kbox.Promise;
-
-  // Bin status
-  var inBin = process.isPackaged || process.IsEmbedded;
+  var inBin = kbox.core.deps.get('globalConfig').isBinary;
 
   /*
    * This step attempts to get authorization from the user that we can
