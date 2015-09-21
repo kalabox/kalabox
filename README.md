@@ -13,10 +13,27 @@ For more info on how you can do some of the above check out the [wiki](https://g
 
 ## Installation
 
-You can install Kalabox using `npm` or download one of our pre-built (and still experimental!) binaries. You can also install the development version of Kalabox by following the [Developer Guide](https://github.com/kalabox/kalabox/wiki/Contribution-Guide).
+You can install Kalabox using `npm` or download one of our pre-built binaries. **Using a pre-built binary is the recommended way to install**. You can also install the development version of Kalabox by following the [Developer Guide](https://github.com/kalabox/kalabox/wiki/Contribution-Guide).
 
-*If you've already installed Kalabox and it's pre-version 0.10.0 you should
-[uninstalling](https://github.com/kalabox/kalabox/wiki/Uninstalling-Kalabox/) first.*
+**If you've already installed Kalabox and it's pre-version 0.10.0 you should
+[uninstall](https://github.com/kalabox/kalabox/wiki/Uninstalling-Kalabox/) first.**
+
+### Installing with a pre-built binary
+
+Download one of the the below.
+
+1. [kbox-macosx-amd64-v0.10.1](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-macosx-amd64-v0.10.1)
+2. [kbox-windows-amd64-v0.10.1](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-windows-amd64-v0.10.1.exe)
+3. [kbox-debian-amd64-v0.10.1](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-debian-amd64-v0.10.1)
+
+Put it in a directory that exists in your `$PATH` environmental variable and on `OSX/LINUX` make sure it is executable. 
+
+On OSX
+```bash
+mv ~/Downloads/kbox-macosx-amd64-v0.10.1 /usr/local/bin/kbox
+chmod +x /usr/local/bin/kbox
+cd ~/Desktop && kbox create pantheon
+```
 
 ### Installing with NPM
 
