@@ -104,6 +104,12 @@ if ([ "$my_answer" == "1" ]); then
         /usr/bin/sudo /sbin/resolvconf -u
     fi
 
+    # Inform the user that you are done!
+    echo "Kalabox2 has been successfully uninstalled!"
+    echo ""
+    echo "We will now prompt you to uninstall VirtualBox. "
+    echo "THIS STEP IS OPTIONAL!"
+
     #!/bin/sh
     #
     # VirtualBox Uninstaller Script.

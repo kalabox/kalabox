@@ -165,6 +165,9 @@ var installPackages = function(pkgs) {
       pkg = pkgToDev(pkg, version);
     }
 
+    // Debug log the package
+    console.log(pkg);
+
     // Install our packages
     return Promise.fromNode(function(callback) {
       shell.exec(['npm', 'install', pkg].join(' '), callback);
@@ -190,7 +193,6 @@ pkgs.push(globalConfig.services);
 pkgs = pkgs.concat(globalConfig.apps);
 
 // Npm install our apps and backends
-console.log(pkgs);
 installPackages(pkgs)
 
 .then(function() {
