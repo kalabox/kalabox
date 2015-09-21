@@ -112,6 +112,12 @@ if [ "$my_answer" == "1" ]; then
     # Delete the B2D application
     /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -Rf /Applications/boot2docker.app
 
+    # Inform the user that you are done!
+    echo "Kalabox2 has been successfully uninstalled!"
+    echo ""
+    echo "We will now prompt you to uninstall VirtualBox. "
+    echo "THIS STEP IS OPTIONAL!"
+
     #!/bin/sh
     #
     # VirtualBox Uninstaller Script.
