@@ -36,6 +36,7 @@ notifications:
     on_success: always
 env:
   global:
+  - KALABOX_DEV=true
   - secure: PL3L4KbkfxEwH24D/eVwYMeucjpYwtKifVE8nQRJBzXWGI5U6clG96WAO8GZjsde/e9Mw3WTfrRbNXyDPalPU+Bn3T/esRNhHedjXO6ZLODNSJsavesXNOZ/To5NjnARg8KjmBz8/A31F11F5oOUxPKhq0Lw3OGcQqkK3CkqFNo=
   - secure: N+6OhnQY9QEDkXkKSZ6/gvhlmX/2I0yKA3GexgXbIW3sHuRczoJw/5gva18z6/KxaWzyNZOgnmxi+tFDz64s0APa1xdtqYgJ6S2RgCASQ8sXrSzpXTFtIzQ81EahPtIiAZsm50W1sUpKPR0MZJG8jZhN6+NE9MqjNcnAUvjzhrE=
   - secure: bJGGxFBQPXCR5Z0T0Bcx3XfNSGQ+uLHyFHa3HOsngN074B2He1yLvQZTAjCXCpG7125+Nmtcb9FEs2NFhrBl7vfCI6a+jhec9pQe7zmdNTRyARt9a20Kbm6qBuzPbypRPPJVRauFGLjpJksDdAxeVZPJRhOauq3Wl40O3ft0UoU=
