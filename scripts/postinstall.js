@@ -80,9 +80,10 @@ var getDevMode = function() {
  */
 var getProjectVersion = function(project) {
 
-  // If we are in dev mode then grab master
+  // If we are in dev mode then grab
   if (getDevMode() === true || getDevMode() === 'true') {
-    return 'master';
+    var vParts = globalConfig.version.split('.');
+    return 'v' + [vParts[0], vParts[1]].join('.');
   }
   // If not we just return the version we already have
   else {
@@ -98,14 +99,14 @@ var getProjectVersion = function(project) {
  * field in its pacakge.json. It must also have a master branch that is
  * considered the development branch on github.
  */
-var getMasterTarball = function(pkg) {
+var getTarball = function(pkg, version) {
 
   // Build our tarball URL
   // https://github.com/kalabox/kalabox-plugin-dbenv/tarball/master
   var tarUrl = {
     protocol: 'https:',
     host: 'github.com',
-    pathname: ['kalabox', pkg, 'tarball', 'master'].join('/')
+    pathname: ['kalabox', pkg, 'tarball', version].join('/')
   };
 
   // Return the formatted tar URL
@@ -122,7 +123,7 @@ var getMasterTarball = function(pkg) {
  * and have a master branch or this is not going to work.
  *
  */
-var pkgToDev = function(pkg) {
+var pkgToDev = function(pkg, version) {
 
   // Split our package so we can reassemble later
   var parts = pkg.split('@');
@@ -131,8 +132,8 @@ var pkgToDev = function(pkg) {
   if (_.includes(pkg, 'kalabox-')) {
 
     // Get the tarball location
-    var masterTar = getMasterTarball(parts[0]);
-    return [parts[0], masterTar].join('@');
+    var tar = getTarball(parts[0], version);
+    return [parts[0], tar].join('@');
 
   }
   // Otherwise just return what we have
@@ -159,9 +160,9 @@ var installPackages = function(pkgs) {
     // Figure out which version we should be trying to install
     var version = getProjectVersion(pkg);
 
-    // If we need the master branch do the transform
-    if (version === 'master') {
-      pkg = pkgToDev(pkg);
+    // If we need the dev branch do the transform
+    if (version.charAt(0) === 'v') {
+      pkg = pkgToDev(pkg, version);
     }
 
     // Install our packages
@@ -189,6 +190,7 @@ pkgs.push(globalConfig.services);
 pkgs = pkgs.concat(globalConfig.apps);
 
 // Npm install our apps and backends
+console.log(pkgs);
 installPackages(pkgs)
 
 .then(function() {
