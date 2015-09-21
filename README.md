@@ -43,14 +43,6 @@ Please make sure that you have installed [nodejs](http://nodejs.org/) first and 
 npm install kalabox -g
 ```
 
-### Installing with a pre-built binary
-
-Just download them, make sure they are executable (`chmod +x` on osx/nix) and then put them into your PATH somewhere.
-
-1. [kbox-macosx-amd64-v0.10.1](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-macosx-amd64-v0.10.1)
-2. [kbox-windows-amd64-v0.10.1](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-windows-amd64-v0.10.1.exe)
-3. [kbox-debian-amd64-v0.10.1](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-debian-amd64-v0.10.1)
-
 ## Getting started
 
 Kalabox is all about quickly setting up repeatable sets of infrastructure so you can start developing the next best thing. While you can [manually create your own apps and profiles](https://github.com/kalabox/kalabox/wiki/Creating-custom-apps) to use in your own Kalabox we've put some basic integrations together for so you can easily connect to your hosting provider and pull down your site and its environments.
