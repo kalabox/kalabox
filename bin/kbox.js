@@ -37,12 +37,17 @@ function handleError(err) {
   // Print stack trace.
   console.log(chalk.red(kbox.getStackTrace(err)));
 
-  // Log error.
-  kbox.core.log.error(err, function() {
-
-    // Exit the process with a failure.
+  // Log error to local log.
+  return Promise.fromNode(function(cb) {
+    kbox.core.log.error(err, cb);
+  })
+  // Report error to stats server.
+  .then(function() {
+    return kbox.metrics.reportError(err);
+  })
+  // Exit the process with a failure.
+  .finally(function() {
     process.exit(1);
-
   });
 
 }
