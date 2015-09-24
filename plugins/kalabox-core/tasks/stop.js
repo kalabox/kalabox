@@ -6,6 +6,11 @@
 
 module.exports = function(kbox) {
 
+  // Instrinsic modules
+  var fs = require('fs');
+  var path = require('path');
+
+  // Kalabox mods
   var util = require('./../util.js')(kbox);
   var Promise = kbox.Promise;
 
@@ -44,7 +49,11 @@ module.exports = function(kbox) {
           .then(function(result) {
             // Turn off the engine if we dont have any running apps
             if (result === undefined || result.running < 0) {
-              return kbox.engine.down();
+              // check for lock engine lock file
+              var sysRoot = kbox.core.deps.get('globalConfig').sysConfRoot;
+              if (!fs.existsSync(path.join(sysRoot, 'engine.lock'))) {
+                return kbox.engine.down();
+              }
             }
           })
 
