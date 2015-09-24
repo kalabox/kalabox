@@ -3,8 +3,8 @@ FROM kalabox/debian:stable
 RUN apt-get update && \
     apt-get install -y supervisor && \
     cd /tmp && \
-    curl -L "https://github.com/syncthing/syncthing/releases/download/v0.11.22/syncthing-linux-amd64-v0.11.22.tar.gz" -O && \
-    tar -zvxf "syncthing-linux-amd64-v0.11.22.tar.gz" && \
+    curl -L "https://github.com/syncthing/syncthing/releases/download/v0.11.25/syncthing-linux-amd64-v0.11.25.tar.gz" -O && \
+    tar -zvxf "syncthing-linux-amd64-v0.11.25.tar.gz" && \
     mv syncthing-linux-amd64-v0.11.22/syncthing /usr/local/bin/syncthing && \
     mkdir -p /etc/syncthing/ && \
     mkdir -p /sync/ && \
