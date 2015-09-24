@@ -52,7 +52,7 @@ module.exports = function(kbox) {
    * If we need to do updates or install syncthing for the first time
    * then run this step FOR SURE
    */
-  if ((!packed && !provisioned) && util.needsDownloads()) {
+  if ((!packed || !provisioned) && util.needsDownloads()) {
     kbox.install.registerStep(function(step) {
       step.name = 'syncthing-downloads';
       step.description = 'Queuing up syncthing downloads...';
@@ -88,7 +88,7 @@ module.exports = function(kbox) {
         util.installSyncthing(state.config.sysConfRoot);
 
         // Update our current install to reflect that
-        state.updateCurrentInstall({SYNCTHING_BINARY: '0.11.22'});
+        state.updateCurrentInstall({SYNCTHING_BINARY: '0.11.25'});
         state.updateCurrentInstall({SYNCTHING_CONFIG: '0.10.0'});
 
       };
@@ -124,7 +124,7 @@ module.exports = function(kbox) {
       step.all = function(state) {
 
         // Update the current install
-        state.updateCurrentInstall({SYNCTHING_IMAGE: '0.11.22'});
+        state.updateCurrentInstall({SYNCTHING_IMAGE: '0.11.25'});
 
       };
     });
