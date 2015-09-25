@@ -25,12 +25,19 @@ module.exports = function(kbox) {
       return _.includes(app, type);
     });
 
-    // Parse the string
-    var parts = pkgString.split('@');
-    var typeVersion = parts[1];
+    // Parse the string if we can
+    var typeVersion;
+    if (pkgString) {
+      var parts = pkgString.split('@');
+      typeVersion = parts[1];
+    }
+    else {
+      typeVersion = '0';
+    }
 
-    // If they are different than we need to update
-    return appVersion !== typeVersion;
+    // If they are different or version has not yet been set
+    // then we need to update
+    return appVersion === undefined || appVersion !== typeVersion;
   };
 
   /*
