@@ -20,6 +20,10 @@ You can install Kalabox using `npm` or download one of our pre-built binaries. *
 
 ### Installing with a pre-built binary
 
+**PLEASE READ THIS FOR WINDOWS BINARY INSTALL**
+
+There is currently an [issue](https://github.com/kalabox/kalabox/issues/524) on Windows binary install that causes the installer to hang in possibly two places. Instead of starting by running `kbox create` run `kbox update -- -v`. This may hang up to two times. It seems to hang right after `ADAPTER SET CORRECTLY => false` and on 
+
 Download one of the the below.
 
 1. [kbox-macosx-amd64-v0.10.2](https://github.com/kalabox/kalabox/releases/download/v0.10.2/kbox-macosx-amd64-v0.10.2)
