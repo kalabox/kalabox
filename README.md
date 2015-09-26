@@ -22,7 +22,8 @@ You can install Kalabox using `npm` or download one of our pre-built binaries. *
 
 **PLEASE READ THIS FOR WINDOWS BINARY INSTALL**
 
-There is currently an [issue](https://github.com/kalabox/kalabox/issues/524) on Windows binary install that causes the installer to hang in possibly two places. Instead of starting by running `kbox create` run `kbox update -- -v`. This may hang up to two times. It seems to hang right after `ADAPTER SET CORRECTLY => false` and on 
+There is currently an [issue](https://github.com/kalabox/kalabox/issues/524) on Windows binary install that causes the installer to hang in possibly two places. Instead of starting by running `kbox create` run `kbox update -- -v`. This may hang up to two times. It seems to hang right after `ADAPTER SET CORRECTLY => false` and after `DNS SET CORRECTLY => false`. Once it hangs cancel/kill the process until `update` completes. 
+Once this completes with a `Huzzah!` you can run `kbox create` normally.
 
 Download one of the the below.
 
