@@ -22,9 +22,9 @@ You can install Kalabox using `npm` or download one of our pre-built binaries. *
 
 Download one of the the below.
 
-1. [kbox-macosx-amd64-v0.10.2](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-macosx-amd64-v0.10.2)
-2. [kbox-windows-amd64-v0.10.2](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-windows-amd64-v0.10.2.exe)
-3. [kbox-debian-amd64-v0.10.2](https://github.com/kalabox/kalabox/releases/download/v0.10.1/kbox-debian-amd64-v0.10.2)
+1. [kbox-macosx-amd64-v0.10.2](https://github.com/kalabox/kalabox/releases/download/v0.10.2/kbox-macosx-amd64-v0.10.2)
+2. [kbox-windows-amd64-v0.10.2](https://github.com/kalabox/kalabox/releases/download/v0.10.2/kbox-windows-amd64-v0.10.2.exe)
+3. [kbox-debian-amd64-v0.10.2](https://github.com/kalabox/kalabox/releases/download/v0.10.2/kbox-debian-amd64-v0.10.2)
 
 Put it in a directory that exists in your `$PATH` environmental variable and on `OSX/LINUX` make sure it is executable. 
 
