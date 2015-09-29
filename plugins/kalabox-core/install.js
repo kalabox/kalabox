@@ -186,13 +186,17 @@ module.exports = function(kbox) {
         }
 
         // We only need this if we need to update the local binary
-        if (helpers.needsInvis()) {
-          var invisUrl = {
+        if (helpers.needsElevate()) {
+          // This is going to be basically the same for two files
+          var elevateBaseUrl = {
             protocol: 'https:',
             host: 'raw.githubusercontent.com',
-            pathname: 'kalabox/windosu/master/invisible.vbs'
+            pathname: 'kalabox/node-windows/master/bin/elevate/elevate'
           };
-          state.downloads.push(url.format(invisUrl));
+
+          // Build and add elevate.cmd/vbs
+          state.downloads.push(url.format(elevateBaseUrl) + '.vbs');
+          state.downloads.push(url.format(elevateBaseUrl) + '.cmd');
         }
 
       };

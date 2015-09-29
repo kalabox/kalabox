@@ -78,6 +78,8 @@ if [ "$my_answer" == "1" ]; then
     append kala_files "$HOME/.kalabox/bin/syncthing"
     append kala_files "$HOME/.kalabox/appRegistry.json"
     append kala_files "$HOME/.kalabox/installed.json"
+    append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa"
+    append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa.pub"
 
     # Print the files and directories that are to be removed and verify
     # with the user that that is what he/she really wants to do.
@@ -103,6 +105,8 @@ if [ "$my_answer" == "1" ]; then
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin/syncthing
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/appRegistry.json
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/installed.json
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.ssh/boot2docker.kalabox.id_rsa.pub
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.ssh/boot2docker.kalabox.id_rsa
     fi
 
     if [ "$DOCKER" ]; then

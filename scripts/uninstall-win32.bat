@@ -38,6 +38,8 @@ IF %id% == 1 (
     ECHO Removing Kalabox directories
     RMDIR %HOMEPATH%\.kalabox /S /Q
     RMDIR "%HOMEPATH%\VirtualBox VMs\Kalabox2" /S /Q
+    DEL %HOMEPATH%\.ssh\boot2docker.kalabox.id_rsa.pub /S /Q
+    DEL %HOMEPATH%\.ssh\boot2docker.kalabox.id_rsa /S /Q
     ECHO REMOVED!
     ECHO.
   )

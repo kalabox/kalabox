@@ -42,14 +42,15 @@ module.exports = function(kbox) {
   /*
    * Quick check that we need the invis.vbs
    */
-  var needsInvis = function() {
+  var needsElevate = function() {
     var sysRoot = kbox.core.deps.get('globalConfig').sysConfRoot;
-    return !fs.existsSync(path.join(sysRoot, 'downloads', 'invisible.vbs'));
+    var elRoot = path.join(sysRoot, 'downloads', 'elevate');
+    return !fs.existsSync(elRoot + '.cmd') || !fs.existsSync(elRoot + '.vbs');
   };
 
   return {
     needsDiskspace: needsDiskspace,
-    needsInvis: needsInvis,
+    needsElevate: needsElevate,
     validate: validateDownloads
   };
 

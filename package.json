@@ -42,6 +42,7 @@
     "kalabox-metrics-rest": "^0.1.0",
     "lodash": "~3.6.0",
     "moment": "^2.10.6",
+    "node-windows": "https://github.com/kalabox/node-windows/tarball/master",
     "regex": "^0.1.1",
     "restler": "^3.2.2",
     "rimraf": "~2.2.8",
@@ -50,7 +51,6 @@
     "tsort": "0.0.1",
     "uuid": "^2.0.1",
     "verror": "1.6.x",
-    "windosu": "https://github.com/kalabox/windosu/tarball/master",
     "winston": "^0.9.0",
     "yargs": "^3.7.0"
   },
