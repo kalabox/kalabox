@@ -39,6 +39,41 @@ describe('events module', function() {
       }
     );
 
+    it('should call prioritized handlers in the correct order.',
+      function(done) {
+        var state = '';
+        events.on('test', 0, function(next) {
+          setTimeout(function() {
+            state += 'a';
+            next();
+          }, 50);
+        });
+        events.on('test', 1, function(next) {
+          setTimeout(function() {
+            state += 'b';
+            next();
+          }, 50);
+        });
+        events.on('test', 9, function(next) {
+          setTimeout(function() {
+            state += 'd';
+            next();
+          }, 50);
+        });
+        events.on('test', function(next) {
+          setTimeout(function() {
+            state += 'c';
+            next();
+          }, 50);
+        });
+        events.emit('test', function(err) {
+          expect(err).to.equal(null);
+          expect(state).to.equal('abcd');
+          done();
+        });
+      }
+    );
+
     it('should pass the context correctly.', function(done) {
       var alpha = false;
       var bravo = false;
