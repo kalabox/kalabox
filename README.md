@@ -1,6 +1,6 @@
 # Kalabox
 
-*KALABOX HAS REACHED MVP FEATURE COMPLETION BUT SHOULD STILL BE CONSIDERED AN ALPHA VERSION ERGO YMMV AND USE AT YOUR OWN RISK*
+**KALABOX HAS REACHED MVP FEATURE COMPLETION BUT SHOULD STILL BE CONSIDERED AN ALPHA VERSION ERGO YMMV AND USE AT YOUR OWN RISK**
 
 A framework to build reusable, super fast, highly customizable, extensible and local integrated workflow solutions for all kinds of apps. **You can think about Kalabox as a super-fast, highly-customizable Vagrant for containers.**
 
