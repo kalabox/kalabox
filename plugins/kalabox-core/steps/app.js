@@ -8,10 +8,14 @@ module.exports = function(kbox) {
 
   // Native modules
   var path = require('path');
-  var fs = require('fs');
 
   // Npm modules
   var _ = require('lodash');
+  var fs = require('fs-extra');
+  var rmdir = require('rimraf');
+
+  // Kalabox modules
+  var Promise = kbox.Promise;
 
   /*
    * Check whether we need an appUpdate or not
@@ -110,10 +114,45 @@ module.exports = function(kbox) {
 
   };
 
+  /*
+   * In version 0.10.3 and above we've moved the app CIDS into sysConfRoot
+   * so we can better manage maintenance of "orphaned" apps. This function
+   * attempts to update pre 0.10.3 apps so their CIDS are in the new canonical
+   * location
+   */
+  var updateAppCids = function(app) {
+
+    // If no old app CID folder then continue
+    var oldCidDir = path.join(app.root, '.cids');
+    if (!fs.existsSync(oldCidDir)) {
+      return Promise.resolve();
+    }
+
+    // Get old CID dir contents
+    return Promise.each(fs.readdirSync(oldCidDir), function(cid) {
+      // Define old and new CIDS
+      var oldCidPath = path.join(oldCidDir, cid);
+      var newCid = ['kb', app.name, cid].join('_');
+      var newCidPath = path.join(app.config.appCidsRoot, newCid);
+
+      // Copy the old to the new
+      fs.copySync(oldCidPath, newCidPath, {clobber: true});
+    })
+
+    // Remove the old CID directory
+    .then(function() {
+      return Promise.fromNode(function(cb) {
+        rmdir(oldCidDir, cb);
+      });
+    });
+
+  };
+
   return {
     getAppVersion: getAppVersion,
     needsUpdates: needsUpdates,
-    updateAppCode: updateAppCode
+    updateAppCode: updateAppCode,
+    updateAppCids: updateAppCids
   };
 
 };
