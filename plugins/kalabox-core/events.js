@@ -56,7 +56,7 @@ module.exports = function(kbox) {
           return container.name === containerName;
         });
         if (_.isEmpty(hasData)) {
-          var containerIdFile = path.join(app.config.appCidsRoot, 'data');
+          var cidFile = path.join(app.config.appCidsRoot, containerName);
           app.components.push({
             image: {
               name: 'data',
@@ -66,7 +66,7 @@ module.exports = function(kbox) {
             appDomain: app.domain,
             dataContainerName: null,
             containerName: containerName,
-            containerIdFile: containerIdFile,
+            containerIdFile: cidFile,
             containerId: containerName
           });
         }
