@@ -324,8 +324,13 @@ module.exports = function(kbox) {
       // Grab some helpers
       var helpers = require('./steps/app.js')(kbox);
 
+      // Start by trying getting us in a clean space
+      return kbox.app.cleanup()
+
       // List all known apps
-      return kbox.app.list()
+      .then(function() {
+        return kbox.app.list();
+      })
 
       // Go through and update each app if needed
       .each(function(app) {
@@ -343,9 +348,6 @@ module.exports = function(kbox) {
 
           // Move older app CIDS into sysConfRoot
           return helpers.updateAppCids(app)
-
-          // @todo: perform general app cleanup and maintenance to make
-          // sure state is correct before we update
 
           // Update the apps code
           .then(function() {
