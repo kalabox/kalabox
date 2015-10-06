@@ -45,20 +45,38 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Get app package json
+   * Helper function to get app json data
+   * cant use require because require caches
    */
-  var getAppPkgJSON = function(app) {
-
-    // Gen the apps pj path
-    var pkgJsonPath = path.join(app.root, 'package.json');
+  var readFileJSON = function(file) {
 
     // If its real return the version
-    if (fs.existsSync(pkgJsonPath)) {
-      return require(pkgJsonPath);
+    if (fs.existsSync(file)) {
+      return JSON.parse(fs.readFileSync(file, 'utf8'));
     }
 
     // Otherwise fail
     return false;
+
+  };
+
+  /*
+   * Get app package json
+   */
+  var getAppPkgJSON = function(app) {
+
+    var pkgJsonPath = path.join(app.root, 'package.json');
+    return readFileJSON(pkgJsonPath);
+
+  };
+
+  /*
+   * Get app kalabox json
+   */
+  var getAppKboxJSON = function(app) {
+
+    var pkgJsonPath = path.join(app.root, 'kalabox.json');
+    return readFileJSON(pkgJsonPath);
 
   };
 
@@ -85,7 +103,7 @@ module.exports = function(kbox) {
     };
 
     // Save old copies of things so we can mix stuff back in
-    var oldKj = require(path.join(app.root, 'kalabox.json'));
+    var oldKj = getAppKboxJSON(app);
     var oldPj = getAppPkgJSON(app);
 
     return kbox.create.copyAppSkeleton(appSpoof, app.root)
@@ -94,7 +112,7 @@ module.exports = function(kbox) {
     .then(function() {
 
       // Get current versions of things
-      var newKj = require(path.join(app.root, 'kalabox.json'));
+      var newKj = getAppKboxJSON(app);
       var newPj = getAppPkgJSON(app);
 
       // Reset the names
