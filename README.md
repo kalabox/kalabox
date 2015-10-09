@@ -30,7 +30,7 @@ Put it in a directory that exists in your `$PATH` environmental variable and on 
 
 On OSX
 ```bash
-mv ~/Downloads/kbox-macosx-amd64-v0.10.1 /usr/local/bin/kbox
+mv ~/Downloads/kbox-macosx-amd64-v0.10.3-alpha3 /usr/local/bin/kbox
 chmod +x /usr/local/bin/kbox
 cd ~/Desktop && kbox create pantheon
 ```
