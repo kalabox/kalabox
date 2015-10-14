@@ -1,5 +1,7 @@
 # Kalabox
 
+**KALABOX HAS REACHED MVP FEATURE COMPLETION BUT SHOULD STILL BE CONSIDERED AN ALPHA VERSION ERGO YMMV AND USE AT YOUR OWN RISK**
+
 A framework to build reusable, super fast, highly customizable, extensible and local integrated workflow solutions for all kinds of apps. **You can think about Kalabox as a super-fast, highly-customizable Vagrant for containers.**
 
 With Kalabox you can
@@ -13,39 +15,24 @@ For more info on how you can do some of the above check out the [wiki](https://g
 
 ## Installation
 
-You can install Kalabox using `npm` or download one of our pre-built binaries. **Using a pre-built binary is the recommended way to install**. You can also install the development version of Kalabox by following the [Developer Guide](https://github.com/kalabox/kalabox/wiki/Contribution-Guide).
+If you want to install kalabox in developer mode please check out our [Developer Guide](https://github.com/kalabox/kalabox/wiki/Contribution-Guide).
 
 **If you've already installed Kalabox and it's pre-version 0.10.0 you should
 [uninstall](https://github.com/kalabox/kalabox/wiki/Uninstalling-Kalabox/) first.**
 
-### Installing with a pre-built binary
-
-**PLEASE READ THIS FOR WINDOWS BINARY INSTALL**
-
-There is currently an [issue](https://github.com/kalabox/kalabox/issues/524) on Windows binary install that causes the installer to hang in possibly two places. Instead of starting by running `kbox create` run `kbox update -- -v`. This may hang up to two times. It seems to hang right after `ADAPTER SET CORRECTLY => false` and after `DNS SET CORRECTLY => false`. Once it hangs cancel/kill the process until `update` completes. 
-Once this completes with a `Huzzah!` you can run `kbox create` normally.
-
 Download one of the the below.
 
-1. [kbox-macosx-amd64-v0.10.2](https://github.com/kalabox/kalabox/releases/download/v0.10.2/kbox-macosx-amd64-v0.10.2)
-2. [kbox-windows-amd64-v0.10.2](https://github.com/kalabox/kalabox/releases/download/v0.10.2/kbox-windows-amd64-v0.10.2.exe)
-3. [kbox-debian-amd64-v0.10.2](https://github.com/kalabox/kalabox/releases/download/v0.10.2/kbox-debian-amd64-v0.10.2)
+1. [kbox-macosx-amd64-v0.10.3-alpha3](https://github.com/kalabox/kalabox/releases/download/v0.10.3/kbox-macosx-amd64-v0.10.3-alpha3)
+2. [kbox-windows-amd64-v0.10.3-alpha3](https://github.com/kalabox/kalabox/releases/download/v0.10.3/kbox-win-amd64-v0.10.3-alpha3.exe)
+3. [kbox-debian-amd64-v0.10.3-alpha3](https://github.com/kalabox/kalabox/releases/download/v0.10.3/kbox-debian-amd64-v0.10.3-alpha3)
 
 Put it in a directory that exists in your `$PATH` environmental variable and on `OSX/LINUX` make sure it is executable. 
 
 On OSX
 ```bash
-mv ~/Downloads/kbox-macosx-amd64-v0.10.1 /usr/local/bin/kbox
+mv ~/Downloads/kbox-macosx-amd64-v0.10.3-alpha3 /usr/local/bin/kbox
 chmod +x /usr/local/bin/kbox
 cd ~/Desktop && kbox create pantheon
-```
-
-### Installing with NPM
-
-Please make sure that you have installed [nodejs](http://nodejs.org/) first and that it has the [correct permissions](https://docs.npmjs.com/getting-started/fixing-npm-permissions). If you get `EACCESS` errors on `npm install` then schedule an appointment with the [Doc](https://github.com/mattgrill/NPM-Doctor).
-
-```bash
-npm install kalabox -g
 ```
 
 ## Getting started

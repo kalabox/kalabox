@@ -89,7 +89,7 @@ module.exports = function(kbox) {
 
         // Update our current install to reflect that
         state.updateCurrentInstall({SYNCTHING_BINARY: '0.11.25'});
-        state.updateCurrentInstall({SYNCTHING_CONFIG: '0.10.0'});
+        state.updateCurrentInstall({SYNCTHING_CONFIG: '0.10.3'});
 
       };
     });

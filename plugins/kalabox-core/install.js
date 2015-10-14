@@ -3,13 +3,13 @@
 module.exports = function(kbox) {
 
   // Native modules
-  var fs = require('fs');
   var path = require('path');
   var url = require('url');
 
   // NPM modules
   var chalk = require('chalk');
   var _ = require('lodash');
+  var fs = require('fs-extra');
 
   // Kbox modules
   var util = require('./util.js')(kbox);
@@ -324,8 +324,13 @@ module.exports = function(kbox) {
       // Grab some helpers
       var helpers = require('./steps/app.js')(kbox);
 
+      // Start by trying getting us in a clean space
+      return kbox.app.cleanup()
+
       // List all known apps
-      return kbox.app.list()
+      .then(function() {
+        return kbox.app.list();
+      })
 
       // Go through and update each app if needed
       .each(function(app) {
@@ -341,11 +346,16 @@ module.exports = function(kbox) {
           state.log.debug('UPDATING VERSION => ' + appVersion);
           state.log.debug('UPDATING APP => ' + app.name);
 
-          // Update the apps code
-          return helpers.updateAppCode(app)
+          // Move older app CIDS into sysConfRoot
+          return helpers.updateAppCids(app)
 
-          // Register the new app object so we can
-          // correctly detech an app context
+          // Update the apps code
+          .then(function() {
+            return helpers.updateAppCode(app);
+          })
+
+          // Register the new app object so we can correctly detect an app
+          // context
           .then(function() {
             return kbox.setAppContext(app);
           })
