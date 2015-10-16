@@ -12,6 +12,13 @@ module.exports = function(kbox) {
       task.category = 'appAction';
       task.description = 'Start an installed kbox application.';
       task.func = function(done) {
+
+        // Print helpful stuff to the user after their app has started
+        kbox.core.events.on('post-start', 9, function(app, done) {
+          console.log(kbox.art.appStart(app));
+          done();
+        });
+
         kbox.app.start(app, done);
       };
     });
