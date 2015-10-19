@@ -18,7 +18,8 @@ module.exports = function(kbox) {
       description: 'Build images locally instead of pulling them remotely.'
     });
     task.func = function(done) {
-      return installer.run({nonInteractive: true});
+      return installer.run({nonInteractive: true})
+      .nodeify(done);
     };
   });
 
