@@ -10,7 +10,7 @@ With Kalabox you can
 * Setup, develop, pull and deploy your sites super fast.
 * Standardize your teams dev environments and tools on OSX, Windows and Linux.
 * Easily customize or extend tooling, deployment options and basically any other functionality.
-* Free yourself from teh tyranny of inferior local development products
+* Free yourself from the tyranny of inferior local development products.
 
 For more info on how you can do some of the above check out the [wiki](https://github.com/kalabox/kalabox/wiki).
 
