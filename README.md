@@ -10,93 +10,34 @@ With Kalabox you can
 * Setup, develop, pull and deploy your sites super fast.
 * Standardize your teams dev environments and tools on OSX, Windows and Linux.
 * Easily customize or extend tooling, deployment options and basically any other functionality.
+* Free yourself from the tyranny of inferior local development products.
 
 For more info on how you can do some of the above check out the [wiki](https://github.com/kalabox/kalabox/wiki).
 
 ## Installation
 
-If you want to install kalabox in developer mode please check out our [Developer Guide](https://github.com/kalabox/kalabox/wiki/Contribution-Guide).
+If you want to contribute to Kalabox development check out our [Developer Guide](https://github.com/kalabox/kalabox/wiki/Contribution-Guide). If you want to help test Kalabox so we can make it the best thing ever then check out our [Testing Guide](https://github.com/kalabox/kalabox/wiki/Circle-of-Trust-Testing-Guide).
 
 **If you've already installed Kalabox and it's pre-version 0.10.0 you should
 [uninstall](https://github.com/kalabox/kalabox/wiki/Uninstalling-Kalabox/) first.**
 
 Download one of the the below.
 
-1. [kbox-macosx-amd64-v0.10.3-alpha3](https://github.com/kalabox/kalabox/releases/download/v0.10.3/kbox-macosx-amd64-v0.10.3-alpha3)
-2. [kbox-windows-amd64-v0.10.3-alpha3](https://github.com/kalabox/kalabox/releases/download/v0.10.3/kbox-win-amd64-v0.10.3-alpha3.exe)
-3. [kbox-debian-amd64-v0.10.3-alpha3](https://github.com/kalabox/kalabox/releases/download/v0.10.3/kbox-debian-amd64-v0.10.3-alpha3)
+1. [kbox-macosx-amd64-v0.10.4-alpha4](https://github.com/kalabox/kalabox/releases/download/v0.10.4/kbox-macosx-amd64-v0.10.4-alpha4)
+2. [kbox-windows-amd64-v0.10.4-alpha4](https://github.com/kalabox/kalabox/releases/download/v0.10.4/kbox-win-amd64-v0.10.4-alpha4.exe)
+3. [kbox-debian-amd64-v0.10.4-alpha4](https://github.com/kalabox/kalabox/releases/download/v0.10.4/kbox-debian-amd64-v0.10.4-alpha4)
 
-Put it in a directory that exists in your `$PATH` environmental variable and on `OSX/LINUX` make sure it is executable. 
-
-On OSX
-```bash
-mv ~/Downloads/kbox-macosx-amd64-v0.10.3-alpha3 /usr/local/bin/kbox
-chmod +x /usr/local/bin/kbox
-cd ~/Desktop && kbox create pantheon
-```
+If you are unsure about what to do with the above then [click here](https://github.com/kalabox/kalabox/wiki/Normal-Installation).
 
 ## Getting started
 
-Kalabox is all about quickly setting up repeatable sets of infrastructure so you can start developing the next best thing. While you can [manually create your own apps and profiles](https://github.com/kalabox/kalabox/wiki/Creating-custom-apps) to use in your own Kalabox we've put some basic integrations together for so you can easily connect to your hosting provider and pull down your site and its environments.
+Kalabox is all about quickly setting up repeatable sets of infrastructure so you can start developing the next best thing. While you can [manually create your own apps and profiles](https://github.com/kalabox/kalabox/wiki/Creating-custom-apps), [create custom plugins](https://github.com/kalabox/kalabox/wiki/Plugin-System), or [customize preexisting apps](https://github.com/kalabox/kalabox/wiki/Customizing-apps) to use in your own Kalabox we've put some basic integrations together for so you can easily connect to your hosting provider and pull down your site and its environments. Check out the startup guides below to get started:
 
-Here is how you would pull down a site from Pantheon. For more info about Pantheon integration check out our [Pantheon Guide.](https://github.com/kalabox/kalabox/wiki/Pantheon-Guide)
+ * [Pantheon](https://github.com/kalabox/kalabox-app-pantheon)
 
-```
-cd /dir/i/want/my/app/to/live
-kbox create pantheon
-cd my-app
-kbox start
-kbox # This will list all the fun commands you get in your app
-cd code # This is where your code lives by default.
-# Site is available at http(s)://my-app.kbox
-```
+## More info
 
-Please also note that you can pass in a bunch of options to `kbox create` so make sure to check out the options for each create task by running it with `-- -h` first. Here is an example of what is possible for a Pantheon app.
-
-```
-kbox create pantheon -- -h
-Options:
-  -h, --help     Display help message.                                 [boolean]
-  -v, --verbose  Use verbose output.                                   [boolean]
-  --email        Pantheon dashboard email.                              [string]
-  --password     Pantheon dashboard password.                           [string]
-  --uuid         Pantheon site machine name.                            [string]
-  --env          Pantheon site environment.                             [string]
-  --name         The name of your app.                                  [string]
-  --build-local  Build images locally instead of pulling them remotely.
-                                                                       [boolean]
-  --dir          Creates the app in this directory. Defaults to CWD.    [string]
-```
-
-## Kbox commands
-
-You can run `kbox` at any point to see the usage, commands and options available to you. You will also get additional commands when you are in an app folder.
-
-Here is an example of `kbox` from a non-app directory. We keep things simple.
-
-```
-kbox
-
-Usage: kbox.js <command> [-- <options>]
-
-Global commands that can be run from anywhere
-  apps             Display list of apps.
-  config           Display the kbox configuration.
-  containers       Display list of all installed kbox containers.
-  create       
-      pantheon     Creates a Pantheon app.
-  update           Run this after you update your Kalabox code.
-  version          Display the kbox version.
-
-Options:
-  -h, --help     Display help message.                                 [boolean]
-  -v, --verbose  Use verbose output.                                   [boolean]
-```
-
-## Sharing
-
-Kalabox uses syncthing to share your files between the container and your OS.
-Syncthing is also still in development so if you are experiencing trouble check out our [syncthing guide](https://github.com/kalabox/kalabox/wiki/Syncthing-Guide).
+Check out the [Kalabox wiki](https://github.com/kalabox/kalabox/wiki) for more info on various things.
 
 ## Other Resources
 
