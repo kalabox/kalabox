@@ -30,7 +30,7 @@ If you are unsure about what to do with the above then [click here](https://gith
 
 ## Getting started
 
-Kalabox is all about quickly setting up repeatable sets of infrastructure so you can start developing the next best thing. While you can [manually create your own apps and profiles](https://github.com/kalabox/kalabox/wiki/Creating-custom-apps) to use in your own Kalabox we've put some basic integrations together for so you can easily connect to your hosting provider and pull down your site and its environments. Check out the startup guides below to get started:
+Kalabox is all about quickly setting up repeatable sets of infrastructure so you can start developing the next best thing. While you can [manually create your own apps and profiles](https://github.com/kalabox/kalabox/wiki/Creating-custom-apps), [create custom plugins](https://github.com/kalabox/kalabox/wiki/Plugin-System), or [customize preexisting apps](https://github.com/kalabox/kalabox/wiki/Customizing-apps) to use in your own Kalabox we've put some basic integrations together for so you can easily connect to your hosting provider and pull down your site and its environments. Check out the startup guides below to get started:
 
  * [Pantheon](https://github.com/kalabox/kalabox-app-pantheon)
 
