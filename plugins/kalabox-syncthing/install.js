@@ -88,7 +88,7 @@ module.exports = function(kbox) {
         util.installSyncthing(state.config.sysConfRoot);
 
         // Update our current install to reflect that
-        state.updateCurrentInstall({SYNCTHING_BINARY: '0.11.25'});
+        state.updateCurrentInstall({SYNCTHING_BINARY: '0.11.26'});
         state.updateCurrentInstall({SYNCTHING_CONFIG: '0.10.3'});
 
       };
@@ -124,7 +124,7 @@ module.exports = function(kbox) {
       step.all = function(state) {
 
         // Update the current install
-        state.updateCurrentInstall({SYNCTHING_IMAGE: '0.11.25'});
+        state.updateCurrentInstall({SYNCTHING_IMAGE: '0.11.26'});
 
       };
     });
