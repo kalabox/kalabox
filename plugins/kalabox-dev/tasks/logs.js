@@ -12,7 +12,7 @@ module.exports = function(kbox) {
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'logs'];
       task.category = 'dev';
-      task.description = 'Start an installed kbox application.';
+      task.description = 'Grab a containers logs.';
       task.kind = 'argv1';
       task.func = function(done) {
 
