@@ -140,6 +140,7 @@ module.exports = function(kbox) {
         .then(function(freeSpace) {
 
           // Calculate free space in MB
+          state.log.debug('FREE SPACE => ' + freeSpace);
           var freeMB = _.round(freeSpace / 1024 / 1024);
 
           // Space required in MB
