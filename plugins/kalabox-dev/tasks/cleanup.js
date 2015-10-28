@@ -9,7 +9,7 @@ module.exports = function(kbox) {
   kbox.tasks.add(function(task) {
     task.path = ['cleanup'];
     task.category = 'dev';
-    task.description = 'CLEANUP TEST';
+    task.description = 'Attempt to clean up botched creates.';
     task.func = function(done) {
       return kbox.app.cleanup(done);
     };

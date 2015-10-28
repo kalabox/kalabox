@@ -50,14 +50,13 @@ module.exports = function(kbox) {
     child.stdout.on('end', function() {
       callback();
     });
+    // Output stderr data.
+    child.stderr.on('data', function(data) {
+      state.log.info(data);
+    });
     // Fail the installer if we get an error
-    child.stderr.on('data', function(err) {
-      // Fail the install on error on non-linux
-      // @todo: VB install on linux often reports non errors on stderr
-      // so we need another way to report admin install failure on linux
-      if (process.platform !== 'linux') {
-        state.fail(state, err);
-      }
+    child.stderr.on('error', function(err) {
+      state.fail(state, err);
     });
 
   };

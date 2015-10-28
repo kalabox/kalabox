@@ -17,7 +17,7 @@
   },
   "bugs": {
     "email": "mike@kalamuna.com",
-    "url": "http://github.com/kalabox/kalabox-issues"
+    "url": "https://github.com/kalabox/kalabox/issues"
   },
   "directories": {
     "lib": "./lib",
@@ -40,7 +40,7 @@
     "fs-extra": "^0.18.2",
     "inquirer": "^0.8.3",
     "kalabox-metrics-rest": "^0.1.0",
-    "lodash": "~3.6.0",
+    "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "node-windows": "https://github.com/kalabox/node-windows/tarball/master",
     "regex": "^0.1.1",
