@@ -6,6 +6,9 @@
 
 module.exports = function(kbox) {
 
+  // NPM Modules
+  var _ = require('lodash');
+
   /*
    * Validate admin commands
    */
@@ -25,6 +28,23 @@ module.exports = function(kbox) {
 
     // Looks like we good!
     return true;
+
+  };
+
+  /*
+   * Check for various errors being reported on stderr.data but not stderr.err
+   */
+  var hasError = function(data) {
+
+    // Potential errors to check for
+    var errors = [
+      'Error - The installer has detected that VirtualBox is still running.'
+    ];
+
+    // Return whether our data contains an error that should kill the thing
+    return _.reduce(errors, function(ultimateTruth, error) {
+      return ultimateTruth || _.includes(data, error);
+    }, false);
 
   };
 
@@ -52,7 +72,14 @@ module.exports = function(kbox) {
     });
     // Output stderr data.
     child.stderr.on('data', function(data) {
-      state.log.info(data);
+      // Check to see if we should fail this even
+      // if its not being reported as an actual error
+      if (hasError(data)) {
+        state.fail(state, data);
+      }
+      else {
+        state.log.info(data);
+      }
     });
     // Fail the installer if we get an error
     child.stderr.on('error', function(err) {
