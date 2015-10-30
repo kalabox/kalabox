@@ -39,7 +39,7 @@
     "download-status": "^2.1.0",
     "fs-extra": "^0.18.2",
     "inquirer": "^0.8.3",
-    "kalabox-metrics-rest": "^0.1.0",
+    "kalabox-stats-client": "^0.1.0",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "node-windows": "https://github.com/kalabox/node-windows/tarball/master",
