@@ -131,7 +131,7 @@ function processTask(app) {
       return null;
     } else {
       var appPayload = argv.payload.slice(0);
-      if (!_.contains(appPayload, app.name)) {
+      if (appPayload[0] !== app.name) {
         appPayload.unshift(app.name);
       }
       return kbox.tasks.find({
@@ -144,9 +144,6 @@ function processTask(app) {
 
   // Search for a task without the app name.
   var globalResult = kbox.tasks.find(argv);
-
-  // Is there a conflict between an app task and a global task?
-  var conflict = !!appResult && !!globalResult;
 
   // For now just use the app result if it exists.
   var result = (function() {
