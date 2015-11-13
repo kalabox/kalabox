@@ -7,7 +7,8 @@ var Promise = require('bluebird');
 
 module.exports = function(kbox) {
 
-  var events = kbox.core.events;
+  // Create new event context.
+  var events = kbox.core.events.context();
   var share = kbox.share;
   var deps = kbox.core.deps;
 
@@ -28,11 +29,10 @@ module.exports = function(kbox) {
     .nodeify(done);
   });
 
-  kbox.whenApp(function(app) {
+  kbox.whenAppRegistered(function(app) {
 
     var globalConfig = kbox.core.deps.lookup('globalConfig');
     var engine = kbox.engine;
-    var events = kbox.core.events;
     var tasks = kbox.core.tasks;
     var share = kbox.share;
 
