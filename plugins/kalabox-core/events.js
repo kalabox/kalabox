@@ -9,7 +9,7 @@ module.exports = function(kbox) {
   var _ = require('lodash');
 
   // Kalabox modules
-  var events = kbox.core.events;
+  var events = kbox.core.events.context();
   var deps = kbox.core.deps;
   var app = kbox.apps;
   var util = require('./util.js')(kbox);
