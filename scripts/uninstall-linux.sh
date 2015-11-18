@@ -72,12 +72,15 @@ if ([ "$my_answer" == "1" ]); then
     append kala_files "$HOME/VirtualBox\ VMs/Kalabox2"
     append kala_files "$B2D"
     append kala_files "$BOOT2DOCKER_PROFILE"
+    append kala_files "/etc/resolver/kbox"
     append kala_files "$HOME/.kalabox/syncthing"
     append kala_files "$HOME/.kalabox/bin/syncthing"
     append kala_files "$HOME/.kalabox/appRegistry.json"
     append kala_files "$HOME/.kalabox/installed.json"
     append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa"
     append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa.pub"
+    append kala_files "/etc/apt/sources.list.d/kalabox.list"
+    append kala_files "/etc/yum.d/kalabox.repo"
 
     # Print the files and directories that are to be removed and verify
     # with the user that that is what he/she really wants to do.
@@ -98,6 +101,9 @@ if ([ "$my_answer" == "1" ]); then
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/VirtualBox\ VMs/Kalabox2
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $B2D
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $BOOT2DOCKER_PROFILE
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/resolver/kbox
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/apt/sources.list.d/kalabox.list
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/yum.d/kalabox.repo
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin/syncthing
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/appRegistry.json
@@ -106,6 +112,8 @@ if ([ "$my_answer" == "1" ]); then
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.ssh/boot2docker.kalabox.id_rsa
         /usr/bin/sudo /bin/sed -i '/nameserver 10.13.37/d' /etc/resolvconf/resolv.conf.d/head
         /usr/bin/sudo /sbin/resolvconf -u
+        /usr/bin/sudo apt-get remove libnss-resolver --purge
+        # Fedora version of above?
     fi
 
     # Inform the user that you are done!

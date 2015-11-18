@@ -13,6 +13,7 @@ module.exports = function(kbox) {
   // Kalabox mods
   var util = require('./../util.js')(kbox);
   var Promise = kbox.Promise;
+  var events = kbox.core.events.context();
 
   kbox.whenAppRegistered(function(app) {
     kbox.tasks.add(function(task) {
@@ -26,7 +27,7 @@ module.exports = function(kbox) {
         // runs after all other events. We want this even to fire only
         // when you run the kbox stop command so it doesnt mess with other
         // commands like kbox restart or kbox destroy.
-        kbox.core.events.on('post-stop', 9, function(app, done) {
+        events.on('post-stop', 9, function(app, done) {
 
           // Keep refernece for later.
           var self = this;

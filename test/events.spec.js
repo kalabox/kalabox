@@ -127,6 +127,49 @@ describe('events module', function() {
 
     });
 
+    it('should handle the default context correctly', function(done) {
+      var state = '1';
+      events.on('test4', function() {
+        state += '2';
+      });
+      events.on('test4', function() {
+        state += '3';
+      });
+      events.on('test4', function() {
+        state += '4';
+      });
+      events.on('test4', function() {
+        state += '5';
+      });
+      events.emit('test4')
+      .then(function() {
+        expect(state).to.equal('12345');
+        done();
+      });
+    });
+
+    it('should handle an event context correctly', function(done) {
+      var state = '1';
+      var context = events.context();
+      context.on('test5', function() {
+        state += '2';
+      });
+      context.on('test5', function() {
+        state += '3';
+      });
+      context.on('test5', function() {
+        state += '4';
+      });
+      context.on('test5', function() {
+        state += '5';
+      });
+      events.emit('test5')
+      .then(function() {
+        expect(state).to.equal('15');
+        done();
+      });
+    });
+
   });
 
 });

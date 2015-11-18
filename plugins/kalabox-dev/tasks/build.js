@@ -9,7 +9,6 @@ var _ = require('lodash');
 
 module.exports = function(kbox) {
 
-  var events = kbox.core.events;
   var deps = kbox.core.deps;
 
   kbox.whenAppRegistered(function(app) {
