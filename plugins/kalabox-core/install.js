@@ -85,20 +85,8 @@ module.exports = function(kbox) {
     step.deps = ['core-firewall'];
     step.all = function(state, done) {
 
-      // Places to go
-      var url = 'www.google.com';
-      state.log.debug('Checking: ' + url);
-
       // Attempt to connect
-      return kbox.util.internet.check(url)
-
-      // If connect fails then so does this step!
-      .then(function(connected) {
-        if (!connected) {
-          var msg = 'You are not currently connected to the internet!';
-          state.fail(state, msg);
-        }
-      })
+      return kbox.util.internet.check()
 
       // Next step
       .nodeify(done);
