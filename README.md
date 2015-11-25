@@ -23,9 +23,9 @@ If you want to contribute to Kalabox development check out our [Developer Guide]
 
 Download one of the the below.
 
-1. [kbox-macosx-amd64-v0.10.5-alpha5](https://github.com/kalabox/kalabox/releases/download/v0.10.5/kbox-macosx-amd64-v0.10.5-alpha5)
-2. [kbox-windows-amd64-v0.10.5-alpha5](https://github.com/kalabox/kalabox/releases/download/v0.10.5/kbox-win-amd64-v0.10.5-alpha5.exe)
-3. [kbox-debian-amd64-v0.10.5-alpha5](https://github.com/kalabox/kalabox/releases/download/v0.10.5/kbox-debian-amd64-v0.10.5-alpha5)
+1. [kbox-macosx-amd64-v0.10.6-alpha6](https://github.com/kalabox/kalabox/releases/download/v0.10.6/kbox-macosx-amd64-v0.10.6-alpha6)
+2. [kbox-windows-amd64-v0.10.6-alpha6](https://github.com/kalabox/kalabox/releases/download/v0.10.6/kbox-win-amd64-v0.10.6-alpha6.exe)
+3. [kbox-linux-amd64-v0.10.6-alpha6](https://github.com/kalabox/kalabox/releases/download/v0.10.6/kbox-linux-amd64-v0.10.6-alpha6)
 
 If you are unsure about what to do with the above then [click here](https://github.com/kalabox/kalabox/wiki/Normal-Installation).
 
