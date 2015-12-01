@@ -31,7 +31,6 @@
     "postinstall": "node ./scripts/postinstall.js"
   },
   "dependencies": {
-    "async": "^0.9.0",
     "bluebird": "^2.9.3",
     "chalk": "~0.5.1",
     "diskspace": "https://github.com/kalabox/diskspace.js/tarball/master",

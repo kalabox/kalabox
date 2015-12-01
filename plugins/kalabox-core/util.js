@@ -4,7 +4,6 @@
  * This contains all the core commands that kalabox can run on every machine
  */
 
-var async = require('async');
 var _ = require('lodash');
 
 module.exports = function(kbox) {
@@ -76,43 +75,50 @@ module.exports = function(kbox) {
 
   };
 
+  /*
+   * Output a list of all our containers
+   * if in an app we print out more data and only the apps containers
+   * if we are not in an app we print out a summary of all containers
+   */
   var outputContainers = function(app, done) {
+
+    // Rejig the sig
     if (typeof app === 'function' && !done) {
       done = app;
       app = null;
     }
 
+    // Set an app name if appropriate
     var appName = null;
     if (app) {
       appName = app.name;
     }
 
-    kbox.engine.list(appName, function(err, containers) {
-      if (err) {
-        done(err);
-      } else {
-        async.each(containers,
-        function(container, next) {
-          kbox.engine.info(container.id, function(err, info) {
-            if (err) {
-              next(err);
-            } else {
-              if (info) {
-                var split = info.name.split('_');
-                var isData = (split[2] === 'data') ? true : false;
-                if (!isData) {
-                  console.log(JSON.stringify(info, null, '  '));
-                }
-              }
-              next();
-            }
-          });
-        },
-        function(err) {
-          done(err);
-        });
-      }
-    });
+    // Get a list of all our things
+    return kbox.engine.list(appName)
+
+    // Iterate through each container
+    .each(function(container) {
+
+      // Get more info about each container
+      return kbox.engine.info(container.id)
+
+      // Take the info and print it out nicely
+      .then(function(info) {
+        if (info) {
+          var split = info.name.split('_');
+          var isData = (split[2] === 'data') ? true : false;
+          if (!isData) {
+            console.log(JSON.stringify(info, null, '  '));
+          }
+        }
+      });
+
+    })
+
+    // You complete me
+    .nodeify(done);
+
   };
 
   return {
