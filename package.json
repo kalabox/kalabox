@@ -43,7 +43,6 @@
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "node-windows": "https://github.com/kalabox/node-windows/tarball/master",
-    "regex": "^0.1.1",
     "restler": "^3.2.2",
     "rimraf": "~2.2.8",
     "sha1": "^1.1.0",
