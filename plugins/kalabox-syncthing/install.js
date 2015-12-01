@@ -2,13 +2,6 @@
 
 module.exports = function(kbox) {
 
-  // Native modules
-  var fs = require('fs');
-  var path = require('path');
-
-  // NPM modules
-  var _ = require('lodash');
-
   // Kalabox modules
   var meta = require('./meta.js');
   var util = require('./util.js')(kbox);

@@ -12,8 +12,6 @@ module.exports = function(kbox) {
     task.func = function(done) {
       var target = _.head(this.payload);
       var cmd = _.tail(this.payload);
-      var stdout = process.stdout;
-      var stderr = process.stderr;
       kbox.engine.query(target, cmd)
       .then(function(res) {
         res.stdout.pipe(process.stdout);

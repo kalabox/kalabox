@@ -1,8 +1,6 @@
 'use strict';
 
-var assert = require('chai').assert;
 var expect = require('chai').expect;
-var sinon = require('sinon');
 var rewire = require('rewire');
 var firewall = rewire('../lib/util/firewall.js');
 var platformSpec = require('./platform.spec.js');

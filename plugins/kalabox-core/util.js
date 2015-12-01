@@ -5,12 +5,9 @@
  */
 
 var async = require('async');
-var chalk = require('chalk');
 var _ = require('lodash');
 
 module.exports = function(kbox) {
-
-  var helpers = kbox.util.helpers;
 
   /*
    * Return a list of all the names of apps kbox knows about.

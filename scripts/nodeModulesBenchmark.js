@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('lodash');
-var async = require('async');
 var ben = require('ben');
 var fs = require('fs');
 var path = require('path');
@@ -49,7 +48,7 @@ fs.readdir(nodeModulesDir, function(err, dirs) {
     clearCache();
 
     var ms = ben(1, function() {
-      var x = require(dir);
+      require(dir);
     });
 
     results.push({

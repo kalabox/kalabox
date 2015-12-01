@@ -13,8 +13,6 @@ var _ = require('lodash');
 var chalk = require('chalk');
 var kbox = require('../lib/kbox.js');
 var assert = require('assert');
-var deps = kbox.core.deps;
-var tasks = kbox.core.tasks;
 var Promise = kbox.Promise;
 
 // If this is a JXP packaged binary we need to shift our args
@@ -91,7 +89,7 @@ function getAppContextFromCwd(apps) {
 /*
  * Try to get app context from config in current working directory.
  */
-function getAppContextFromCwdConfig(apps) {
+function getAppContextFromCwdConfig(/*apps*/) {
   return Promise.try(function() {
     var cwd = process.cwd();
     var configFilepath = path.join(cwd, 'kalabox.json');

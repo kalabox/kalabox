@@ -12,7 +12,6 @@ module.exports = function(kbox) {
   var fs = require('fs-extra');
 
   // Kbox modules
-  var util = require('./util.js')(kbox);
   var Promise = kbox.Promise;
   var inBin = kbox.core.deps.get('globalConfig').isBinary;
 
@@ -235,10 +234,6 @@ module.exports = function(kbox) {
       // Fail the step if we catch an error
       .catch(function(err) {
         state.fail(state, err);
-      })
-
-      .then(function(files) {
-        // @todo: Do want to validate anything here?
       })
 
       // Next step

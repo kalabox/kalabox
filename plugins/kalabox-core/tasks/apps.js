@@ -6,8 +6,6 @@
 
 module.exports = function(kbox) {
 
-  var _ = require('lodash');
-  var async = require('async');
   var Promise = kbox.Promise;
   var util = require('../util.js')(kbox);
 

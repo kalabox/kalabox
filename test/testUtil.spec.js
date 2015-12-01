@@ -1,6 +1,5 @@
 'use strict';
 
-var assert = require('chai').assert;
 var expect = require('chai').expect;
 var testUtil = require('../lib/testUtil.js');
 var fs = require('fs');

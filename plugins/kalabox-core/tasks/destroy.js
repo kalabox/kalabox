@@ -38,7 +38,7 @@ module.exports = function(kbox) {
           type: 'confirm',
           name: 'doit',
           message: 'So, are you still prepared to DESTROY?',
-          when: function(answers) {
+          when: function(/*answers*/) {
             return confirmPrompt;
           }
         };

@@ -29,9 +29,6 @@ module.exports = function(kbox) {
         // commands like kbox restart or kbox destroy.
         events.on('post-stop', 9, function(app, done) {
 
-          // Keep refernece for later.
-          var self = this;
-
           // Get list of app names.
           util.getAppNames()
           // Map app names to an object.
