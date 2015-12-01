@@ -33,13 +33,13 @@ module.exports = function(kbox) {
 
     var globalConfig = kbox.core.deps.lookup('globalConfig');
     var engine = kbox.engine;
-    var tasks = kbox.core.tasks;
     var share = kbox.share;
 
     var shareIgnores = app.config.shareIgnores.join(os.EOL);
     var stignoreFile = path.join(app.config.codeRoot, '.stignore');
     var sharing = globalConfig.sharing;
 
+    /*
     var prettyPrint = function(obj) {
       console.log(JSON.stringify(obj, null, '  '));
     };
@@ -70,6 +70,7 @@ module.exports = function(kbox) {
         };
       });
     };
+    */
 
     if (sharing) {
 

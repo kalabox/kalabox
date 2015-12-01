@@ -4,7 +4,6 @@ var kbox = require('../lib/kbox.js');
 var core = kbox.core;
 var chai = require('chai');
 var expect = chai.expect;
-var assert = chai.assert;
 var testUtil = require('../lib/testUtil.js');
 
 describe('config module', function() {

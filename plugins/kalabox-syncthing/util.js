@@ -22,7 +22,7 @@ module.exports = function(kbox) {
   /*
    * Return some info about the current state of the kalabox installation
    */
-  var getCurrentInstall = function(installDetails) {
+  var getCurrentInstall = function() {
 
     // This is where our current install file should live
     var cIF = path.join(config.sysConfRoot, 'installed.json');

@@ -4,13 +4,7 @@
  * This contains all the core commands that kalabox can run on every machine
  */
 
-var async = require('async');
-var chalk = require('chalk');
-var _ = require('lodash');
-
 module.exports = function(kbox) {
-
-  var helpers = kbox.util.helpers;
 
   /*
    * Return true if container matches query.

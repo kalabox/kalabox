@@ -11,9 +11,6 @@ module.exports = function(kbox) {
   // Kalabox modules
   var events = kbox.core.events.context();
   var deps = kbox.core.deps;
-  var app = kbox.apps;
-  var util = require('./util.js')(kbox);
-  var Promise = kbox.Promise;
 
   // EVENTS
   // Add some helpful vars to our containers

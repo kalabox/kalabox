@@ -10,7 +10,7 @@ module.exports = function(kbox) {
   var inquirer = require('inquirer');
 
   // Kbox modules
-  var Promise = require('bluebird');
+  var Promise = kbox.Promise;
 
   /*
    * Make sure the user wants to proceed with the install/update
@@ -22,7 +22,7 @@ module.exports = function(kbox) {
       type: 'confirm',
       name: 'doit',
       message: 'Install all the magic and get this party started?',
-      when: function(answers) {
+      when: function(/*answers*/) {
         return !state.nonInteractive;
       }
     };

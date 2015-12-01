@@ -3,7 +3,6 @@
 var kbox = require('../lib/kbox.js');
 var shell = kbox.util.shell;
 var chai = require('chai');
-var assert = chai.assert;
 var expect = chai.expect;
 var sinon = require('sinon');
 var platformSpec = require('./platform.spec.js');
@@ -25,7 +24,7 @@ describe('#shell module', function() {
       var cmd = 'not_a_real_program';
       var regex =
       /code: 127, msg: \/bin\/sh: [1: ]*not_a_real_program: [a-z ]*not found\n/;
-      shell.exec(cmd, function(err, output) {
+      shell.exec(cmd, function(err) {
         expect(err).to.not.equal(null);
         expect(err.message).to.match(regex);
         done();
@@ -49,7 +48,7 @@ describe('#shell module', function() {
         code: 1,
         data: expectedData
       });
-      shell.exec(cmd, function(err, output) {
+      shell.exec(cmd, function(err) {
         expect(err).to.not.equal(null);
         expect(err.code).to.equal(expectedError.code);
         expect(err.data).to.equal(expectedError.data);
@@ -82,7 +81,6 @@ describe('#shell module', function() {
     platformSpec.ifOsx(function() {
       it('should call the correct child.stderr callbacks.', function(done) {
         var cmd = 'not-a-real-command';
-        var expectedOutput = '/bin/sh: not-a-real-command: command not found\n';
         var child = shell.execAsync(cmd);
         var onData = sinon.spy();
         child.stderr.on('data', onData);

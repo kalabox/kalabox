@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('lodash');
 var kbox = require('../lib/kbox.js');
 var deps = kbox.core.deps;
 var chai = require('chai');
@@ -45,7 +46,7 @@ describe('#deps module', function() {
     it('should throw error when dependency is NOT found.', function() {
       var key = 'mydependency';
       var fn = function() {
-        var result = deps.lookup(key);
+        deps.lookup(key);
         assert.fail('This should never be reachable!');
       };
       expect(fn).to.throw(Error, 'The dependency "' + key + '" was NOT found!');
@@ -108,7 +109,9 @@ describe('#deps module', function() {
     it(
       'should return an array of dependencies required by a function.',
       function() {
-        var fn = function(alpha, bravo, charlie, delta) {};
+        var fn = function(alpha, bravo, charlie, delta) {
+          _.noop(alpha, bravo, charlie, delta);
+        };
         var result = deps.inspect(fn);
         var expected = ['alpha', 'bravo', 'charlie', 'delta'];
         expect(result).to.deep.equal(expected);
@@ -192,6 +195,7 @@ describe('#deps module', function() {
     it('should throw an error when a dependency is NOT found.', function() {
       var fn = function() {
         deps.call(function(dbCooper) {
+          _.noop(dbCooper);
           assert.fail('Should be unreachable.');
         });
       };

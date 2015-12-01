@@ -1,6 +1,5 @@
 'use strict';
 
-var assert = require('chai').assert;
 var expect = require('chai').expect;
 var kbox = require('../lib/kbox.js');
 var events = kbox.core.events;

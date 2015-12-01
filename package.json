@@ -31,7 +31,6 @@
     "postinstall": "node ./scripts/postinstall.js"
   },
   "dependencies": {
-    "async": "^0.9.0",
     "bluebird": "^2.9.3",
     "chalk": "~0.5.1",
     "diskspace": "https://github.com/kalabox/diskspace.js/tarball/master",
@@ -43,7 +42,6 @@
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "node-windows": "https://github.com/kalabox/node-windows/tarball/master",
-    "regex": "^0.1.1",
     "restler": "^3.2.2",
     "rimraf": "~2.2.8",
     "sha1": "^1.1.0",

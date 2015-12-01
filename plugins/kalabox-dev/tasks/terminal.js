@@ -7,7 +7,6 @@
 module.exports = function(kbox) {
 
   var _ = require('lodash');
-  var Promise = require('bluebird');
   var format = require('util').format;
 
   kbox.whenAppRegistered(function(app) {

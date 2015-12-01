@@ -1,9 +1,5 @@
 'use strict';
 
-var chai = require('chai');
-var assert = chai.assert;
-var expect = chai.expect;
-var sinon = require('sinon');
 var kbox = require('../lib/kbox.js');
 var internet = kbox.util.internet;
 
