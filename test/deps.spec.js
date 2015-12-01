@@ -46,6 +46,7 @@ describe('#deps module', function() {
     it('should throw error when dependency is NOT found.', function() {
       var key = 'mydependency';
       var fn = function() {
+        deps.lookup(key);
         assert.fail('This should never be reachable!');
       };
       expect(fn).to.throw(Error, 'The dependency "' + key + '" was NOT found!');
