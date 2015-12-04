@@ -19,7 +19,5 @@ cids
 .boot2docker
 built
 *.tar
-kalabox.json
-string
 *.jxp
 bin/kbox*
