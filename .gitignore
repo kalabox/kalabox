@@ -20,6 +20,7 @@ cids
 built
 *.tar
 kalabox.json
+development.json
 string
 *.jxp
 bin/kbox*
