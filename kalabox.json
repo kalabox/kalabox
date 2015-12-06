@@ -4,5 +4,6 @@
   "apps": [
     "kalabox-app-pantheon@0.10.8"
   ],
-  "logLevelConsole": "info"
+  "logLevelConsole": "info",
+  "provider": "machine"
 }
