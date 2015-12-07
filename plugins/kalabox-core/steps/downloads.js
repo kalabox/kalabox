@@ -32,14 +32,6 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Quick check that we need the diskspace exe
-   */
-  var needsDiskspace = function() {
-    var sysRoot = kbox.core.deps.get('globalConfig').sysConfRoot;
-    return !fs.existsSync(path.join(sysRoot, 'downloads', 'drivespace.exe'));
-  };
-
-  /*
    * Quick check that we need the invis.vbs
    */
   var needsElevate = function() {
@@ -49,7 +41,6 @@ module.exports = function(kbox) {
   };
 
   return {
-    needsDiskspace: needsDiskspace,
     needsElevate: needsElevate,
     validate: validateDownloads
   };
