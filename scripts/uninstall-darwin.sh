@@ -9,7 +9,7 @@
 #
 
 # Override any funny stuff from the user.
-export PATH="/bin:/usr/bin:/sbin:/usr/sbin:$PATH"
+export PATH="$HOME/.kalabox/bin:/bin:/usr/bin:/sbin:/usr/sbin:$PATH"
 
 ## @param [Integer] $1 exit code.
 function key_exit() {
@@ -62,24 +62,34 @@ if [ "$my_answer" == "1" ]; then
 
     # Gather some data on the things
     B2D=$(which boot2docker)
-    DOCKER=$(which docker)
+    MACHINE=$(which docker-machine)
     VBOX=$(which VBoxManage)
-    BOOT2DOCKER_PROFILE=$HOME/.kalabox/.provider/profile
+
+    # Start a collector
     kala_files=()
-    append kala_files "/Applications/boot2docker.app"
-    append kala_files "$HOME/.kalabox/.provider"
+
+    # Add B2D specific files
+    if [ "$B2D" ]; then
+        DOCKER=$(which docker)
+        BOOT2DOCKER_PROFILE=$HOME/.kalabox/.provider/profile
+        append kala_files "/Applications/boot2docker.app"
+        append kala_files "$HOME/.kalabox/.provider"
+        append kala_files "$B2D"
+        append kala_files "$DOCKER"
+        append kala_files "$BOOT2DOCKER_PROFILE"
+
+        append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa"
+        append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa.pub"
+    fi
+
+    # Add some universal files
     append kala_files "$HOME/.kalabox/provisioned"
     append kala_files "$HOME/'VirtualBox VMs'/Kalabox2"
-    append kala_files "$B2D"
-    append kala_files "$DOCKER"
-    append kala_files "$BOOT2DOCKER_PROFILE"
     append kala_files "/etc/resolver/kbox"
     append kala_files "$HOME/.kalabox/syncthing"
-    append kala_files "$HOME/.kalabox/bin/syncthing"
+    append kala_files "$HOME/.kalabox/bin"
     append kala_files "$HOME/.kalabox/appRegistry.json"
     append kala_files "$HOME/.kalabox/installed.json"
-    append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa"
-    append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa.pub"
 
     # Print the files and directories that are to be removed and verify
     # with the user that that is what he/she really wants to do.
@@ -88,33 +98,43 @@ if [ "$my_answer" == "1" ]; then
         echo "    $file"
     done
 
-    if [ "$B2D" ]; then
-        if [ "$VBOX" ]; then
+    # Remove our VM first
+    if [ "$VBOX" ]; then
+        if [ "$B2D" ]; then
             export BOOT2DOCKER_PROFILE=$HOME/.kalabox/.provider/profile
             $B2D poweroff
             $B2D destroy
         fi
-        sleep 10s
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/.provider
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/provisioned
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf "$HOME/VirtualBox VMs/Kalabox2"
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $B2D
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $BOOT2DOCKER_PROFILE
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/resolver/kbox
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin/syncthing
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/appRegistry.json
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/installed.json
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.ssh/boot2docker.kalabox.id_rsa.pub
-        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.ssh/boot2docker.kalabox.id_rsa
+        if [ "$MACHINE" ]; then
+            $MACHINE rm Kalabox2
+        fi
     fi
 
     if [ "$DOCKER" ]; then
         /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f $DOCKER
     fi
 
-    # Delete the B2D application
-    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -Rf /Applications/boot2docker.app
+    # Give it a sec before we purge more
+    sleep 5s
+
+    # Purge B2D specific things
+    if [ "$B2D" ]; then
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/.provider
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $B2D
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $BOOT2DOCKER_PROFILE
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.ssh/boot2docker.kalabox.id_rsa.pub
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.ssh/boot2docker.kalabox.id_rsa
+        /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -Rf /Applications/boot2docker.app
+    fi
+
+    # Purge general things
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/provisioned
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf "$HOME/VirtualBox VMs/Kalabox2"
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/resolver/kbox
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/appRegistry.json
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/installed.json
 
     # Inform the user that you are done!
     echo "Kalabox2 has been successfully uninstalled!"
