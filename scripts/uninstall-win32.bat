@@ -29,17 +29,32 @@ ECHO 2. Forget this ever happened.
 ECHO.
 SET /p id=Choose your destiny:
 
+SET PATH=%PATH%;%HOMEPATH%\.kalabox\bin
+
 IF %id% == 1 (
-  ECHO Stopping and removing Kalabox2
-  "C:\Program Files\Boot2Docker for Windows\boot2docker.exe" --vm="Kalabox2" destroy
-  ECHO DESTROYED!
-  ECHO.
+
+  REM REMOVE BOOT2DOCKER AND KB2 VM IF ITS AROUND
+  IF EXIST "C:\Program Files (x86)\Git\unins000.exe" (
+    ECHO Stopping and removing Kalabox2
+    "C:\Program Files\Boot2Docker for Windows\boot2docker.exe" --vm="Kalabox2" destroy
+    ECHO DESTROYED!
+    DEL %HOMEPATH%\.ssh\boot2docker.kalabox.id_rsa.pub /S /Q
+    DEL %HOMEPATH%\.ssh\boot2docker.kalabox.id_rsa /S /Q
+    ECHO.
+  )
+
+  REM REMOVE DOCKER MACHINE AND KB2 VM IF ITS AROUND
+  IF EXIST "%HOMEPATH%\.kalabox\bin\docker-machine.exe" (
+    ECHO Stopping and removing Kalabox2
+    "%HOMEPATH%\.kalabox\bin\docker-machine.exe" rm Kalabox2
+    ECHO DESTROYED!
+    ECHO.
+  )
+
   IF EXIST "%HOMEPATH%\.kalabox" (
     ECHO Removing Kalabox directories
     RMDIR %HOMEPATH%\.kalabox /S /Q
     RMDIR "%HOMEPATH%\VirtualBox VMs\Kalabox2" /S /Q
-    DEL %HOMEPATH%\.ssh\boot2docker.kalabox.id_rsa.pub /S /Q
-    DEL %HOMEPATH%\.ssh\boot2docker.kalabox.id_rsa /S /Q
     ECHO REMOVED!
     ECHO.
   )
