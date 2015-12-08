@@ -164,16 +164,6 @@ module.exports = function(kbox) {
         var helpers = require('./steps/downloads.js')(kbox);
 
         // We only need this if we need to update the local binary
-        if (helpers.needsDiskspace()) {
-          var dsUrl = {
-            protocol: 'https:',
-            host: 'raw.githubusercontent.com',
-            pathname: 'kalabox/diskspace.js/master/drivespace.exe'
-          };
-          state.downloads.push(url.format(dsUrl));
-        }
-
-        // We only need this if we need to update the local binary
         if (helpers.needsElevate()) {
           // This is going to be basically the same for two files
           var elevateBaseUrl = {
@@ -200,12 +190,6 @@ module.exports = function(kbox) {
     step.deps = [
       'core-internet'
     ];
-
-    // Add another dep on non-windows binary
-    if (process.platform !== 'win32') {
-      step.deps.push('core-disk-space');
-    }
-
     step.all = function(state, done) {
 
       // Get our download helpers
