@@ -9,7 +9,7 @@
 #
 
 # Override any funny stuff from the user.
-export PATH="/bin:/usr/bin:/sbin:/usr/sbin:$PATH"
+export PATH="$HOME/.kalabox/bin:/bin:/usr/bin:/sbin:/usr/sbin:$PATH"
 source /etc/os-release
 
 ## @param [Integer] $1 exit code.
@@ -63,32 +63,43 @@ if ([ "$my_answer" == "1" ]); then
 
   # Gather some data on the things
   # B2D may be in a dfferent spot for some people who change their profiles
-  B2D=$HOME/.kalabox/bin/boot2docker
+  B2D=$(which boot2docker)
+  MACHINE=$(which docker-machine)
   VBOX=$(which VBoxManage)
-  BOOT2DOCKER_PROFILE=$HOME/.kalabox/.provider/profile
   DISTRO=$(lsb_release -is)
   VERSION=$(lsb_release -rs)
 
+  # Start a collector
   kala_files=()
-  append kala_files "$HOME/.kalabox/.provider"
-  append kala_files "$HOME/.kalabox/.provisioned"
-  append kala_files "$HOME/VirtualBox\ VMs/Kalabox2"
-  append kala_files "$B2D"
-  append kala_files "$BOOT2DOCKER_PROFILE"
+
+  # Add B2D specific files
+  if [ "$B2D" ]; then
+    DOCKER=$(which docker)
+    BOOT2DOCKER_PROFILE=$HOME/.kalabox/.provider/profile
+    append kala_files "/Applications/boot2docker.app"
+    append kala_files "$HOME/.kalabox/.provider"
+    append kala_files "$B2D"
+    append kala_files "$DOCKER"
+    append kala_files "$BOOT2DOCKER_PROFILE"
+    append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa"
+    append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa.pub"
+  fi
+
+  # Add some universal files
+  append kala_files "$HOME/.kalabox/provisioned"
+  append kala_files "$HOME/'VirtualBox VMs'/Kalabox2"
   append kala_files "/etc/resolver/kbox"
   append kala_files "$HOME/.kalabox/syncthing"
-  append kala_files "$HOME/.kalabox/bin/syncthing"
+  append kala_files "$HOME/.kalabox/bin"
   append kala_files "$HOME/.kalabox/appRegistry.json"
   append kala_files "$HOME/.kalabox/installed.json"
-  append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa"
-  append kala_files "$HOME/.ssh/boot2docker.kalabox.id_rsa.pub"
 
   # Basic fedora sort
   if [ "$DISTRO" == "Fedora" ]; then
     append kala_files "/etc/yum.d/kalabox.repo"
-  else    
+  else
     append kala_files "/etc/apt/sources.list.d/kalabox.list"
-  fi 
+  fi
 
   # Print the files and directories that are to be removed and verify
   # with the user that that is what he/she really wants to do.
@@ -97,101 +108,114 @@ if ([ "$my_answer" == "1" ]); then
     echo "    $file"
   done
 
-  # Install all the the B2D things
-  if [ "$B2D" ]; then
-    if [ "$VBOX" ]; then
+  # Fedora/debian specific
+  if [ "$DISTRO" == "Fedora" ]; then
+    if [ $VERSION < 22 ]; then
+      /usr/bin/sudo yum remove libnss-resolver -y
+    else
+      /usr/bin/sudo dnf remove libnss-resolver -y
+    fi
+  else
+    /usr/bin/sudo /bin/sed -i '/nameserver 10.13.37/d' /etc/resolvconf/resolv.conf.d/head
+    /usr/bin/sudo /sbin/resolvconf -u
+    /usr/bin/sudo apt-get remove libnss-resolver --purge
+  fi
+
+  # Remove our VM first
+  if [ "$VBOX" ]; then
+    if [ "$B2D" ]; then
       export BOOT2DOCKER_PROFILE=$HOME/.kalabox/.provider/profile
       $B2D poweroff
       $B2D destroy
     fi
-      sleep 10s
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/.provider
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/provisioned
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/VirtualBox\ VMs/Kalabox2
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $B2D
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $BOOT2DOCKER_PROFILE
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/resolver/kbox
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/apt/sources.list.d/kalabox.list
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/yum.d/kalabox.repo
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin/syncthing
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/appRegistry.json
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/installed.json
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.ssh/boot2docker.kalabox.id_rsa.pub
-      /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.ssh/boot2docker.kalabox.id_rsa
-
-      # Fedora/debian specific
-      if [ "$DISTRO" == "Fedora" ]; then
-        if [ $VERSION < 22 ]; then
-          /usr/bin/sudo yum remove libnss-resolver -y
-        else
-          /usr/bin/sudo dnf remove libnss-resolver -y
-        fi
-      else
-        /usr/bin/sudo /bin/sed -i '/nameserver 10.13.37/d' /etc/resolvconf/resolv.conf.d/head
-        /usr/bin/sudo /sbin/resolvconf -u
-        /usr/bin/sudo apt-get remove libnss-resolver --purge
-      fi
-
+    if [ "$MACHINE" ]; then
+      $MACHINE rm Kalabox2
     fi
+  fi
 
-    # Inform the user that you are done!
-    echo "Kalabox2 has been successfully uninstalled!"
+  if [ "$DOCKER" ]; then
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -f $DOCKER
+  fi
+
+  # Give it a sec before we purge more
+  sleep 5s
+
+  # Purge B2D specific things
+  if [ "$B2D" ]; then
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/.provider
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $B2D
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $BOOT2DOCKER_PROFILE
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.ssh/boot2docker.kalabox.id_rsa.pub
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.ssh/boot2docker.kalabox.id_rsa
+    /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -Rf /Applications/boot2docker.app
+  fi
+
+  # Purge general things
+  /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/provisioned
+  /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf "$HOME/VirtualBox VMs/Kalabox2"
+  /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf /etc/resolver/kbox
+  /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/syncthing
+  /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/bin
+  /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/appRegistry.json
+  /usr/bin/sudo -p "Please enter %u's password:" /bin/rm -rf $HOME/.kalabox/installed.json
+
+
+  # Inform the user that you are done!
+  echo "Kalabox2 has been successfully uninstalled!"
+  echo ""
+  echo "We will now prompt you to uninstall VirtualBox. "
+  echo "THIS STEP IS OPTIONAL!"
+
+  #!/bin/sh
+  #
+  # VirtualBox Uninstaller Script.
+  #
+  # Copyright (C) 2007-2010 Oracle Corporation
+  #
+  # This file is part of VirtualBox Open Source Edition (OSE), as
+  # available from http://www.virtualbox.org. This file is free software;
+  # you can redistribute it and/or modify it under the terms of the GNU
+  # General Public License (GPL) as published by the Free Software
+  # Foundation, in version 2 as it comes in the "COPYING" file of the
+  # VirtualBox OSE distribution. VirtualBox OSE is distributed in the
+  # hope that it will be useful, but WITHOUT ANY WARRANTY of any kind.
+  #
+
+  #
+  # Display a simple welcome message first.
+  #
+  echo ""
+  echo "Preparing to uninstall VirtualBox"
+  echo ""
+
+  if test "$my_default_prompt" != "Yes"; then
+    echo "Do you wish to uninstall VirtualBox (Yes/No)?"
+    read my_answer
+    # Display the sudo usage instructions and execute the command.
+    #
+    echo "The uninstallation processes requires administrative privileges"
+    echo "because some of the installed files cannot be removed by a normal"
+    echo "user. You may be prompted for your password now..."
     echo ""
-    echo "We will now prompt you to uninstall VirtualBox. "
-    echo "THIS STEP IS OPTIONAL!"
-
-    #!/bin/sh
-    #
-    # VirtualBox Uninstaller Script.
-    #
-    # Copyright (C) 2007-2010 Oracle Corporation
-    #
-    # This file is part of VirtualBox Open Source Edition (OSE), as
-    # available from http://www.virtualbox.org. This file is free software;
-    # you can redistribute it and/or modify it under the terms of the GNU
-    # General Public License (GPL) as published by the Free Software
-    # Foundation, in version 2 as it comes in the "COPYING" file of the
-    # VirtualBox OSE distribution. VirtualBox OSE is distributed in the
-    # hope that it will be useful, but WITHOUT ANY WARRANTY of any kind.
-    #
-
-    #
-    # Display a simple welcome message first.
-    #
-    echo ""
-    echo "Preparing to uninstall VirtualBox"
-    echo ""
-
-    if test "$my_default_prompt" != "Yes"; then
-      echo "Do you wish to uninstall VirtualBox (Yes/No)?"
-      read my_answer
-      # Display the sudo usage instructions and execute the command.
-      #
-      echo "The uninstallation processes requires administrative privileges"
-      echo "because some of the installed files cannot be removed by a normal"
-      echo "user. You may be prompted for your password now..."
-      echo ""
-      if test "$my_answer" != "Yes"  -a  "$my_answer" != "YES"  -a  "$my_answer" != "yes"; then
-        echo "Aborting uninstall. (answer: '$my_answer')".
-        exit 2;
-      fi
-      echo ""
-
-      # Fedora/debian specific
-      if [ "$DISTRO" == "Fedora" ]; then
-        VBPACKAGE=$(rpm -qa | grep VirtualBox-)
-        echo "You have the following VB package installed"
-        echo $VBPACKAGE
-        /usr/bin/sudo -p "Please enter %u's password:" rpm -e $VBPACKAGE
-      else
-        VBPACKAGE=$(dpkg-query -f '${binary:Package}\n' -W | grep virtualbox-)
-        echo "You have the following VB package installed"
-        echo $VBPACKAGE
-        /usr/bin/sudo -p "Please enter %u's password:" dpkg -P $VBPACKAGE
-      fi
+    if test "$my_answer" != "Yes"  -a  "$my_answer" != "YES"  -a  "$my_answer" != "yes"; then
+      echo "Aborting uninstall. (answer: '$my_answer')".
+      exit 2;
     fi
+    echo ""
 
+    # Fedora/debian specific
+    if [ "$DISTRO" == "Fedora" ]; then
+      VBPACKAGE=$(rpm -qa | grep VirtualBox-)
+      echo "You have the following VB package installed"
+      echo $VBPACKAGE
+      /usr/bin/sudo -p "Please enter %u's password:" rpm -e $VBPACKAGE
+    else
+      VBPACKAGE=$(dpkg-query -f '${binary:Package}\n' -W | grep virtualbox-)
+      echo "You have the following VB package installed"
+      echo $VBPACKAGE
+      /usr/bin/sudo -p "Please enter %u's password:" dpkg -P $VBPACKAGE
+    fi
+  fi
 fi
 
 echo "Done."
