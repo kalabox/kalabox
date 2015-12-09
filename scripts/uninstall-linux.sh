@@ -61,13 +61,39 @@ if ([ "$my_answer" == "1" ]); then
   # Just start the sudo party
   /usr/bin/sudo -p "Please enter %u's password:" echo "Let's get it started"
 
+  #
+  # Gather information about the system and state
+  #
+  # Let's first try to get our system
+  if [ -f /etc/os-release ]; then
+    source /etc/os-release
+    : ${DISTRO:=$ID_LIKE}
+    : ${DISTRO:=$ID}
+    : ${DISTRO_VERSION:=$VERSION_ID}
+  # Some OS do not implement /etc/os-release yet so lets do this in case
+  # they dont
+  elif [ -f /etc/arch-release ]; then
+    DISTRO="arch"
+  elif [ -f /etc/gentoo-release ]; then
+    DISTRO="gentoo"
+  elif [ -f /etc/fedora-release ]; then
+    DISTRO="fedora"
+  elif [ -f /etc/redhat-release ]; then
+    DISTRO="redhat"
+  elif [ -f /etc/debian_version ]; then
+    DISTRO="debian"
+  else
+    DISTRO="wtf?!?!"
+  fi
+
+  # Tell the user what the deal is
+  echo "Looks like you be on ${DISTRO} ${DISTRO_VERSION}"
+
   # Gather some data on the things
   # B2D may be in a dfferent spot for some people who change their profiles
   B2D=$(which boot2docker)
   MACHINE=$(which docker-machine)
   VBOX=$(which VBoxManage)
-  DISTRO=$(lsb_release -is)
-  VERSION=$(lsb_release -rs)
 
   # Start a collector
   kala_files=()
@@ -109,8 +135,8 @@ if ([ "$my_answer" == "1" ]); then
   done
 
   # Fedora/debian specific
-  if [ "$DISTRO" == "Fedora" ]; then
-    if [ $VERSION < 22 ]; then
+  if [ "$DISTRO" == "fedora" ]; then
+    if [ $DISTRO_VERSION < 22 ]; then
       /usr/bin/sudo yum remove libnss-resolver -y
     else
       /usr/bin/sudo dnf remove libnss-resolver -y
@@ -204,7 +230,7 @@ if ([ "$my_answer" == "1" ]); then
     echo ""
 
     # Fedora/debian specific
-    if [ "$DISTRO" == "Fedora" ]; then
+    if [ "$DISTRO" == "fedora" ]; then
       VBPACKAGE=$(rpm -qa | grep VirtualBox-)
       echo "You have the following VB package installed"
       echo $VBPACKAGE
