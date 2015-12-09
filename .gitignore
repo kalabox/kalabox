@@ -18,7 +18,9 @@ node_modules
 cids
 .boot2docker
 built
+build
 *.tar
 *.jxp
 bin/kbox*
 *.sublime-*
+dist

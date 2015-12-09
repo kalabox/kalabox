@@ -6,6 +6,44 @@ module.exports = function(grunt) {
   // SETUP CONFIG
   //--------------------------------------------------------------------------
 
+  // Helpful vars
+  var platform = process.platform;
+
+  // Figure out what our compiled binary will be called
+  var binName = (platform === 'win32') ? 'kbox.exe' : 'kbox';
+
+  // Build commands
+  var jxAddPatterns = [
+    '*.js',
+    '*.json',
+    '*.cmd',
+    '*.vbs'
+  ];
+  var jxSlimPatterns = [
+    '*.spec',
+    '*test/*',
+    '.git/*'
+  ];
+  var jxCmd = [
+    'jx package',
+    'bin/kbox.js',
+    'dist/kbox',
+    '--add "' + jxAddPatterns.join(',') + '"',
+    '--slime "' + jxSlimPatterns.join(',') + '"',
+    '--native'
+  ];
+  var buildCmds = [
+    'npm install --production',
+    'mkdir dist',
+    jxCmd.join(' ')
+  ];
+
+  // Add additional build cmd for POSIX
+  if (platform !== 'win32') {
+    buildCmds.push('chmod +x dist/kbox');
+    buildCmds.push('sleep 2');
+  }
+
   // setup task config
   var config = {
 
@@ -20,11 +58,38 @@ module.exports = function(grunt) {
           'bin/kbox.js',
           'scripts/*.js'
         ]
+      },
+      build: {
+        src: [
+          'bin/kbox.*',
+          'lib/**',
+          'plugins/**',
+          'scripts/postinstall.js',
+          '*.json'
+        ],
       }
     },
 
+    // Copy
+    copy: {
+      build: {
+        src: '<%= files.build.src %>',
+        dest: 'build/'
+      },
+      dist: {
+        src: 'build/dist/' + binName,
+        dest: 'dist/' + binName,
+        options: {
+          mode: true
+        }
+      }
+    },
+
+    // Clean paths
     clean: {
-      coverage: ['coverage']
+      coverage: ['coverage'],
+      build: ['build'],
+      dist: ['dist']
     },
 
     shell: {
@@ -53,6 +118,14 @@ module.exports = function(grunt) {
       },
       functionalTest: {
         command: 'time node ftest/ftest.js'
+      },
+      build: {
+        options: {
+          execOptions: {
+            cwd: 'build'
+          }
+        },
+        command: buildCmds.join(' && ')
       }
     },
 
@@ -152,13 +225,24 @@ module.exports = function(grunt) {
     'shell:testCheckCoverage'
   ]);
 
+  // Bump our patch version
   grunt.registerTask('bump-patch', [
     'bump-only:patch'
   ]);
 
+  // Run all the tests
   grunt.registerTask('test', [
     'unit',
     'coverage'
+  ]);
+
+  // Build a binary
+  grunt.registerTask('build', [
+    'clean:build',
+    'clean:dist',
+    'copy:build',
+    'shell:build',
+    'copy:dist'
   ]);
 
   // large functional testing
@@ -166,6 +250,7 @@ module.exports = function(grunt) {
     'shell:testLarge'
   ]);
 
+  // Lint and code styles
   grunt.registerTask('test:code', [
     'jshint',
     'jscs'
