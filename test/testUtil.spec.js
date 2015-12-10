@@ -7,7 +7,7 @@ var path = require('path');
 
 describe('test util', function() {
 
-  describe('#mockFs', function() {
+  describe.skip('#mockFs', function() {
 
     var iterFilesAndVerify = function(files, shouldExist) {
       files.forEach(function(file) {

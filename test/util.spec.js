@@ -227,7 +227,7 @@ describe('util', function() {
 
   });
 
-  describe('searchForPath', function() {
+  describe.skip('searchForPath', function() {
 
     var fakeFs = null;
 

@@ -44,11 +44,12 @@ module.exports = function(grunt) {
     buildCmds.push('sleep 2');
   }
 
-  // setup task config
+  // Setup task config
   var config = {
 
-    // Arrays of relevant code classified by type
+    // Some helpful file groups
     files: {
+      // All JS files
       js: {
         src: [
           'lib/**/*.js',
@@ -56,9 +57,11 @@ module.exports = function(grunt) {
           'plugins/**/**/*.js',
           'test/**/*.js',
           'bin/kbox.js',
-          'scripts/*.js'
+          'scripts/*.js',
+          'Gruntfile.js'
         ]
       },
+      // Relevant build files
       build: {
         src: [
           'bin/kbox.*',
@@ -70,12 +73,14 @@ module.exports = function(grunt) {
       }
     },
 
-    // Copy
+    // Copy tasks
     copy: {
+      // Copy build files to build directory
       build: {
         src: '<%= files.build.src %>',
         dest: 'build/'
       },
+      // Copy build artifacts to dist directory
       dist: {
         src: 'build/dist/' + binName,
         dest: 'dist/' + binName,
@@ -85,40 +90,51 @@ module.exports = function(grunt) {
       }
     },
 
-    // Clean paths
+    // Clean pathzzz
     clean: {
       coverage: ['coverage'],
       build: ['build'],
       dist: ['dist']
     },
 
+    // Run unit tests
+    mochacli: {
+      options: {
+        bail: true,
+        reporter: 'nyan',
+        recursive: true,
+        env: {
+          WINSTON_SHUTUP: true
+        }
+      },
+      unit: ['./test/*.spec.js', './test/**/*.spec.js']
+    },
+
+    // Chech coverage and things
+    /* jshint ignore:start */
+    // jscs:disable
+    mocha_istanbul: {
+      coverage: {
+        src: './test',
+        options: {
+          mask: '*.spec.js',
+          coverage:true,
+          check: {
+            lines: 10,
+            statements: 10,
+            branches: 10,
+            functions: 10
+          },
+          root: './lib',
+          reportFormats: ['lcov','html']
+        }
+      }
+    },
+    /* jshint ignore:end */
+    // jscs:enable
+
+    // Shell tasks for building
     shell: {
-      // @todo: Maybe remove the .istanbul.yml file and put config here
-      testUnit: {
-        command:
-            'node_modules/istanbul/lib/cli.js ' +
-            'test ' +
-            'node_modules/mocha/bin/_mocha ' +
-            './test/'
-        },
-      testLarge: {
-        command: 'node_modules/mocha/bin/_mocha --bail test_large'},
-      testCoverage: {
-        command:
-        'node_modules/istanbul/lib/cli.js ' +
-        'cover node_modules/mocha/bin/_mocha ./test/'},
-      testCheckCoverage: {
-        command:
-          'node_modules/istanbul/lib/cli.js ' +
-          'check-coverage coverage/coverage.json ' +
-          '--statements ' + 0 +
-          ' --branches ' + 0 +
-          ' --functions ' + 0 +
-          ' --lines ' + 0
-      },
-      functionalTest: {
-        command: 'time node ftest/ftest.js'
-      },
       build: {
         options: {
           execOptions: {
@@ -144,7 +160,7 @@ module.exports = function(grunt) {
       }
     },
 
-    // Some linting and code standards
+    // Some linting
     jshint: {
       options: {
         jshintrc: '.jshintrc',
@@ -152,12 +168,16 @@ module.exports = function(grunt) {
       },
       all: ['Gruntfile.js', '<%= files.js.src %>']
     },
+
+    // Some code standards
     jscs: {
       src: ['Gruntfile.js', '<%= files.js.src %>'],
       options: {
         config: '.jscsrc'
       }
     },
+
+    // Some pretty shitty api docs
     jsdoc: {
       safe: {
         src: [
@@ -179,14 +199,6 @@ module.exports = function(grunt) {
           configure : '.jsdoc.conf.json'
         }
       }
-    },
-
-    watch: {
-      // bcauldwell: I'm just using this to make developing unit tests easier.
-      unit: {
-        files: ['**/*.js'],
-        tasks: ['unit']
-      }
     }
 
   };
@@ -198,9 +210,6 @@ module.exports = function(grunt) {
   // load task config
   grunt.initConfig(config);
 
-  // load external tasks
-  //grunt.loadTasks('tasks');
-
   // load grunt-* tasks from package.json dependencies
   require('matchdep').filterAll('grunt-*').forEach(grunt.loadNpmTasks);
 
@@ -208,32 +217,32 @@ module.exports = function(grunt) {
   // SETUP WORKFLOWS
   //--------------------------------------------------------------------------
 
-  // unit testing
-  grunt.registerTask('unit', [
-    'shell:testUnit'
+  // Run just unit tests
+  grunt.registerTask('test:unit', [
+    'mochacli:unit'
   ]);
 
-  // functional testing
-  grunt.registerTask('ftest', [
-    'shell:functionalTest'
+  // Run just coverage reports
+  grunt.registerTask('test:coverage', [
+    'mocha_istanbul:coverage'
   ]);
 
-  // testing code coverage
-  grunt.registerTask('coverage', [
-    'clean:coverage',
-    'shell:testCoverage',
-    'shell:testCheckCoverage'
+  // Run just code styles
+  grunt.registerTask('test:code', [
+    'jshint',
+    'jscs'
+  ]);
+
+  // Run all the tests
+  grunt.registerTask('test', [
+    'test:code',
+    'test:unit',
+    'test:coverage'
   ]);
 
   // Bump our patch version
   grunt.registerTask('bump-patch', [
     'bump-only:patch'
-  ]);
-
-  // Run all the tests
-  grunt.registerTask('test', [
-    'unit',
-    'coverage'
   ]);
 
   // Build a binary
@@ -243,17 +252,6 @@ module.exports = function(grunt) {
     'copy:build',
     'shell:build',
     'copy:dist'
-  ]);
-
-  // large functional testing
-  grunt.registerTask('test:large', [
-    'shell:testLarge'
-  ]);
-
-  // Lint and code styles
-  grunt.registerTask('test:code', [
-    'jshint',
-    'jscs'
   ]);
 
 };

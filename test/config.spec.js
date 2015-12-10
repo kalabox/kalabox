@@ -97,7 +97,7 @@ describe('config module', function() {
     });
   });
 
-  describe('#getGlobalConfig()', function() {
+  describe.skip('#getGlobalConfig()', function() {
     it('should return an expected global config object.', function() {
       var mockFs = testUtil.mockFs.create();
       var globalConfig = core.config.getGlobalConfig();
@@ -108,7 +108,7 @@ describe('config module', function() {
     });
   });
 
-  describe('#getAppConfig()', function() {
+  describe.skip('#getAppConfig()', function() {
     it('should return an expected app config object.', function() {
       var mockFs = testUtil.mockFs.create();
       var fakeApp = {
