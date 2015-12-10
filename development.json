@@ -5,5 +5,6 @@
     "kalabox-app-pantheon@https://github.com/kalabox/kalabox-app-pantheon/tarball/v0.10"
   ],
   "logLevelConsole": "debug",
-  "provider": "machine"
+  "provider": "machine",
+  "devMode": true
 }
