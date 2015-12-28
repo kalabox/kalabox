@@ -49,12 +49,8 @@ var installPackages = function(pkgs) {
 // Kick off an empty array
 var pkgs = [];
 
-// Grab our backends
-pkgs.push(globalConfig.engine);
-pkgs.push(globalConfig.services);
-
-// Grab our apps
-pkgs = pkgs.concat(globalConfig.apps);
+// Grab any external plugins
+pkgs.push(globalConfig.externalPlugins);
 
 // Npm install our apps and backends
 installPackages(pkgs)
