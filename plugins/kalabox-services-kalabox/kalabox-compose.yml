@@ -10,7 +10,7 @@ proxy:
   volumes:
     - /certs/hipache:/certs:rw
   volumes_from:
-    - data
+    - kalabox_data
 dns:
   container_name: kalabox_dns
   image: kalabox/dns:$KALABOX_IMG_VERSION
@@ -19,6 +19,3 @@ dns:
     DOMAIN: $KALABOX_DOMAIN
   ports:
     - "$KALABOX_ENGINE_IP:53:53/udp"
-data:
-  container_name: kalabox_data
-  image: kalabox/data:$KALABOX_IMG_VERSION

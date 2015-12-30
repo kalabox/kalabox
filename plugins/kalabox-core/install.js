@@ -275,6 +275,12 @@ module.exports = function(kbox) {
         state.fail(state, err);
       })
 
+      // Create our data container
+      // Do this here so its available before other things
+      .then(function() {
+        return kbox.engine.create({dirs: [path.resolve(__dirname)]});
+      })
+
       // Next step
       .nodeify(done);
 
