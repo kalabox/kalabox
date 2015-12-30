@@ -2,10 +2,15 @@
 
 module.exports = function(kbox) {
 
+  // Native modules
+  var path = require('path');
+
+  // Kbox modules
   var deps = kbox.core.deps;
 
   return {
-    SERVICE_IMAGES_VERSION: '0.10.6',
+    SERVICE_IMAGES_VERSION: '0.11.0',
+    SERVICE_IMAGE_COMPOSE: path.resolve(__dirname, '..'),
     resolverPkg: {
       debian: {
         'default': 'debian8-0-libnss-resolver_0.3.0_amd64.deb',

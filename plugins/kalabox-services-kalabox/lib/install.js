@@ -2,12 +2,12 @@
 
 module.exports = function(kbox) {
 
-  // NPM modules
-  var _ = require('lodash');
-
   // Kalabox modules
   var util = require('./util.js')(kbox);
-  var serviceInfo = require('./services.js')(kbox);
+  var meta = require('./meta.js')(kbox);
+
+  // Constants
+  var SERVICE_IMAGES_VERSION = meta.SERVICE_IMAGES_VERSION;
 
   /*
    * Submit core images for install
@@ -18,16 +18,11 @@ module.exports = function(kbox) {
       step.subscribes = ['core-image-build'];
       step.description = 'Adding services images to build list...';
       step.all = function(state) {
-
-        // Grab the core services
-        var images = serviceInfo.getCoreImages();
-
-        // Cycle through and add each image to our list
-        _.forEach(images, function(image) {
-          state.images.push(image);
-        });
-
+        state.images.push({id: 'proxy', name: 'hipache'});
+        state.images.push({id: 'data', name: 'data'});
+        state.images.push({id: 'dns', name: 'dnsmasq'});
       };
+
     });
   }
 
@@ -54,7 +49,9 @@ module.exports = function(kbox) {
 
           // Update our current install if no errors have been thrown
           if (state.status) {
-            state.updateCurrentInstall({SERVICE_IMAGES_VERSION: '0.10.6'});
+            state.updateCurrentInstall({
+              SERVICE_IMAGES_VERSION: SERVICE_IMAGES_VERSION
+            });
           }
 
         })
@@ -113,11 +110,6 @@ module.exports = function(kbox) {
         if (!exists) {
           state.adminCommands.push(util.getResolverPkgInstall());
         }
-      })
-
-      // Clean up old DNS if needed
-      .then(function() {
-        return util.cleanLinuxOldDnsClean(state);
       })
 
       // Next step

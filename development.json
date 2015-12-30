@@ -12,7 +12,6 @@
   ],
   "logLevelConsole": "debug",
   "engine": "kalabox-engine-docker",
-  "provider": "machine",
   "services": "kalabox-services-kalabox",
   "devMode": true
 }

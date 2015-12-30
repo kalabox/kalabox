@@ -55,6 +55,7 @@ module.exports = function(grunt) {
           'lib/**/*.js',
           'plugins/**/*.js',
           'plugins/**/**/*.js',
+          'plugins/**/**/**/*.js',
           'test/**/*.js',
           'bin/kbox.js',
           'scripts/*.js',

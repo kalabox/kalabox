@@ -11,78 +11,46 @@ module.exports = function(kbox) {
 
   // Npm modules
   var fs = require('fs-extra');
-  var _ = require('lodash');
 
   // Kalabox modules
-  var meta = require('./meta.js');
-  var config = kbox.core.deps.get('globalConfig');
+  var install = kbox.install;
 
-  /*
-   * Return some info about the current state of the kalabox installation
-   */
-  var getCurrentInstall = function() {
+  // Provider config
+  var providerConfigFile = path.resolve(__dirname, 'config.yml');
+  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
 
-    // This is where our current install file should live
-    var cIF = path.join(config.sysConfRoot, 'installed.json');
-
-    // If the file exists use that if not empty object
-    var currentInstall = (fs.existsSync(cIF)) ? require(cIF) : {};
-
-    return currentInstall;
-
-  };
-
-  /*
-   * Helper function to grab and compare a meta prop
-   */
-  var getProUp = function(prop) {
-
-    // Get details about the state of the current installation
-    var currentInstall = getCurrentInstall();
-
-    // This is the first time we've installed so we def need
-    if (_.isEmpty(currentInstall) || !currentInstall[prop]) {
-      return true;
-    }
-
-    // We have a syncversion to compare
-    // @todo: is diffence a strong enough check?
-    var nV = meta[prop];
-    if (currentInstall[prop] && (currentInstall[prop] !== nV)) {
-      return true;
-    }
-
-    // Hohum i guess we're ok
-    return false;
-
-  };
+  // Configs
+  var VIRTUALBOX_CONFIG = providerConfig.virtualbox;
+  var MACHINE_CONFIG = providerConfig.machine;
+  var COMPOSE_CONFIG = providerConfig.compose;
+  var MSYSGIT_CONFIG = providerConfig.mysysgit;
 
   /*
    * Helper function to assess whether we need a new B2D
    */
   var needsMachine = function() {
-    return getProUp('PROVIDER_MACHINE_VERSION');
+    return install.getProUp('PROVIDER_MACHINE_VERSION', MACHINE_CONFIG.version);
   };
 
   /*
    * Helper function to assess whether we need a new B2D
    */
   var needsCompose = function() {
-    return getProUp('PROVIDER_COMPOSE_VERSION');
+    return install.getProUp('PROVIDER_COMPOSE_VERSION', COMPOSE_CONFIG.version);
   };
 
   /*
    * Helper function to assess whether we need to grab a new vb
    */
   var needsVB = function() {
-    return getProUp('PROVIDER_VB_VERSION');
+    return install.getProUp('PROVIDER_VB_VERSION', VIRTUALBOX_CONFIG.version);
   };
 
   /*
    * Helper function to assess whether we need to grab a new vb
    */
   var needsMsysgit = function() {
-    return getProUp('PROVIDER_MSYSGIT_VERSION');
+    return install.getProUp('PROVIDER_MSYSGIT_VERSION', MSYSGIT_CONFIG.version);
   };
 
   /*
@@ -105,8 +73,9 @@ module.exports = function(kbox) {
   var needsKalaboxIsoUpdate = function() {
 
     // Get some state info
-    var neverUpdated = getCurrentInstall().PROVIDER_KALABOX_ISO === undefined;
-    var hasMachine = getCurrentInstall().PROVIDER_MACHINE_VERSION !== undefined;
+    var currentInstall = install.getCurrentInstall();
+    var neverUpdated = currentInstall.PROVIDER_KALABOX_ISO === undefined;
+    var hasMachine = currentInstall.PROVIDER_MACHINE_VERSION !== undefined;
 
     if (!hasMachine) {
       // Return false if this is our first provision.
@@ -117,7 +86,7 @@ module.exports = function(kbox) {
     }
 
     // Otherwise return our normal compare
-    return getProUp('PROVIDER_KALABOX_ISO') ;
+    return install.getProUp('PROVIDER_KALABOX_ISO', MACHINE_CONFIG.isoversion);
 
   };
 
@@ -128,7 +97,7 @@ module.exports = function(kbox) {
 
     // Source path
     var downloadDir = kbox.util.disk.getTempDir();
-    var srcFile = meta.PROVIDER_DOWNLOAD_URL[process.platform].machine;
+    var srcFile = MACHINE_CONFIG.pkg[process.platform];
 
     // Destination path
     var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;
@@ -156,7 +125,7 @@ module.exports = function(kbox) {
 
     // Source path
     var downloadDir = kbox.util.disk.getTempDir();
-    var srcFile = meta.PROVIDER_DOWNLOAD_URL[process.platform].compose;
+    var srcFile = COMPOSE_CONFIG.pkg[process.platform];
 
     // Destination path
     var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;

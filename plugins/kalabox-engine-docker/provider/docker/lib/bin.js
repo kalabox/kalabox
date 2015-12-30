@@ -15,12 +15,18 @@ module.exports = function(kbox) {
 
   // Kalabox modules
   var Promise = kbox.Promise;
-  var meta = require('./../meta.js');
+
+  // Provider config
+  var providerConfigFile = path.resolve(__dirname, '..', 'config.yml');
+  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
+
+  // Get VB config
+  var VIRTUALBOX_CONFIG = providerConfig.virtualbox;
 
   /*
-   * Get directory for machine executable.
+   * Get directory for docker executables.
    */
-  var getMachineBinPath = function() {
+  var getBinPath = function() {
 
     // Get sysconf
     var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;
@@ -34,7 +40,7 @@ module.exports = function(kbox) {
   var getMachineExecutable = function() {
 
     // Get machine bin path
-    var machinePath = getMachineBinPath();
+    var machinePath = getBinPath();
     var machineBin = path.join(machinePath, 'docker-machine');
 
     // Return exec based on path
@@ -46,8 +52,26 @@ module.exports = function(kbox) {
 
   };
 
+  /*
+   * Return the machine executable location
+   */
+  var getComposeExecutable = function() {
+
+    // Get compose bin path
+    var composePath = getBinPath();
+    var composeBin = path.join(composePath, 'docker-compose');
+
+    // Return exec based on path
+    switch (process.platform) {
+      case 'win32': return '"' + composeBin + '.exe"';
+      case 'darwin': return composeBin;
+      case 'linux': return composeBin;
+    }
+
+  };
+
   // Set of logging functions.
-  var log = kbox.core.log.make('MACHINE');
+  var log = kbox.core.log.make('DOCKER EXECUTABLE');
 
   /*
    * Base shell command.
@@ -64,7 +88,7 @@ module.exports = function(kbox) {
 
     // Run shell command.
     return Promise.fromNode(function(cb) {
-      _sh.exec(cmd, cb);
+      _sh.exec(cmd, {silent:false}, cb);
     })
 
     // Log results.
@@ -116,7 +140,8 @@ module.exports = function(kbox) {
   var bringVBModulesUp = function() {
     var _sh = kbox.core.deps.get('shell');
     var flavor = kbox.install.linuxOsInfo.getFlavor();
-    var cmd = meta.PROVIDER_DOWNLOAD_URL.linux.vb[flavor].recompile;
+    var packager = (flavor === 'debian') ? 'apt' : 'dnf';
+    var cmd = VIRTUALBOX_CONFIG[packager].recompile;
 
     log.info('VBox\'s kernel modules seem to be down. Attempting recompile...');
 
@@ -142,8 +167,9 @@ module.exports = function(kbox) {
     checkVBModules: checkVBModules,
     bringVBModulesUp: bringVBModulesUp,
     sh: sh,
-    getMachineBinPath: getMachineBinPath,
-    getMachineExecutable: getMachineExecutable
+    getBinPath: getBinPath,
+    getMachineExecutable: getMachineExecutable,
+    getComposeExecutable: getComposeExecutable
   };
 
 };

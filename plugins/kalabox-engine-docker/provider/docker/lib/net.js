@@ -1,22 +1,27 @@
 /**
  * Contains network handling suff
- * @module b2d.net
+ * @module machine.net
  */
 
 'use strict';
 
 module.exports = function(kbox) {
 
+  // Native
+  var path = require('path');
+
   // NPM modules
   var _ = require('lodash');
-  var VError = require('verror');
 
   // Kalabox modules
   var Promise = kbox.Promise;
 
-  // Define some ip constants
-  var KALABOX_HOST_ONLY = '10.13.37.1';
-  var KALABOX_DEFAULT_IP = '10.13.37.42';
+  // Provider config
+  var providerConfigFile = path.resolve(__dirname, '..', 'config.yml');
+  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
+
+  // Set some machine things
+  var MACHINE_CONFIG = providerConfig.machine;
 
   /*
    * Promisified shell
@@ -137,7 +142,7 @@ module.exports = function(kbox) {
   var isHostOnlySet = function() {
 
     // Grab the default HOA
-    var ip = KALABOX_HOST_ONLY;
+    var ip = MACHINE_CONFIG.host;
 
     // Grab the host only adapter so we can be SUPER PRECISE!
     return getKalaboxAdapter()
@@ -206,7 +211,7 @@ module.exports = function(kbox) {
     .then(function(adapter) {
 
       // @todo: Dont hardcode this
-      var ip = KALABOX_HOST_ONLY;
+      var ip = MACHINE_CONFIG.host;
       var winAdapter = adapterToWin(adapter);
       // Command to run
       var cmd = 'netsh interface ipv4 set address name="' + winAdapter + '" ' +
@@ -222,41 +227,6 @@ module.exports = function(kbox) {
 
     // Set a reasonable timeout to make sure this takes effect
     .delay(10 * 1000);
-
-  };
-
-  /*
-   * Set up sharing on Linux
-   */
-  var linuxSharing = function() {
-
-    // Retry the linxu sharing a few times
-    return Promise.retry(function(counter) {
-
-      // VBOXMANAGE sharing command
-      // @todo: less hardcoding?
-      // @todo: VBoxManage in path?
-      var cmd = [
-        getVboxExec(),
-        'sharedfolder add "Kalabox2"',
-        ' --name "Users" --hostpath "/home" --automount'];
-
-      // Run the command
-      return shell(cmd.join(' '))
-
-      // Catch the error
-      .catch(function(err) {
-        kbox.core.log.info('Sharing folder failed, retrying.', err);
-        throw new VError(err, 'Error sharing folders.');
-      })
-
-      // Log success
-      .then(function() {
-        // Log result
-        kbox.core.log.info(kbox.util.format('Sharing folders [%s].', counter));
-      });
-
-    });
 
   };
 
@@ -291,7 +261,7 @@ module.exports = function(kbox) {
     // Grab the adapter that has our host ip
     .then(function(adapters) {
       return _.find(adapters, function(adapter) {
-        return adapter.ipaddress === KALABOX_HOST_ONLY;
+        return adapter.ipaddress === MACHINE_CONFIG.host;
       });
     });
   };
@@ -374,11 +344,8 @@ module.exports = function(kbox) {
 
   // Build module function.
   return {
-    defaultIp: KALABOX_DEFAULT_IP,
-    hostOnlyIp: KALABOX_HOST_ONLY,
     isHostOnlySet: isHostOnlySet,
     setHostOnly: setHostOnly,
-    linuxSharing: linuxSharing,
     verifyWindowsNetworking: verifyWindowsNetworking,
     setHostDnsResolver: setHostDnsResolver
   };

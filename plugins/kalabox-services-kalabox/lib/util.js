@@ -18,57 +18,18 @@ module.exports = function(kbox) {
   var meta = require('./meta.js')(kbox);
   var provider = kbox.engine.provider;
   var Promise = kbox.Promise;
-  var config = kbox.core.deps.get('globalConfig');
+  var install = kbox.install;
 
   // Set Kalabox DNS constantsz
   // @todo: stronger test
   var KALABOX_WIN32_DNS = '10.13.37.42';
-
-  /*
-   * Return some info about the current state of the kalabox installation
-   */
-  var getCurrentInstall = function() {
-
-    // This is where our current install file should live
-    var cIF = path.join(config.sysConfRoot, 'installed.json');
-
-    // If the file exists use that if not empty object
-    var currentInstall = (fs.existsSync(cIF)) ? require(cIF) : {};
-
-    return currentInstall;
-
-  };
-
-  /*
-   * Helper function to grab and compare a meta prop
-   */
-  var getProUp = function(prop) {
-
-    // Get details about the state of the current installation
-    var currentInstall = getCurrentInstall();
-
-    // This is the first time we've installed so we def need
-    if (_.isEmpty(currentInstall) || !currentInstall[prop]) {
-      return true;
-    }
-
-    // We have a syncversion to compare
-    // @todo: is diffence a strong enough check?
-    var nV = meta[prop];
-    if (currentInstall[prop] && (currentInstall[prop] !== nV)) {
-      return true;
-    }
-
-    // Hohum i guess we're ok
-    return false;
-
-  };
+  var SERVICE_IMAGES_VERSION = meta.SERVICE_IMAGES_VERSION;
 
   /*
    * Helper function to assess whether we need new service images
    */
   var needsImages = function() {
-    return getProUp('SERVICE_IMAGES_VERSION');
+    return install.getProUp('SERVICE_IMAGES_VERSION', SERVICE_IMAGES_VERSION);
   };
 
   /*
@@ -91,46 +52,6 @@ module.exports = function(kbox) {
     var dnsFile = path.join(meta.dns.linux[flavor].file);
     var dnsPath = path.join(dnsDir, dnsFile);
     return !fs.existsSync(dnsPath);
-
-  };
-
-  /*
-   * Helper function to determine whether we need to run linux DNS commands
-   */
-  var needsLinuxOldDnsClean = function() {
-    return getCurrentInstall().SERVICE_LIBNSS_RESOLVER !== true;
-  };
-
-  /*
-   * Helper function to clean out old resolvconf dns
-   */
-  var cleanLinuxOldDnsClean = function(state) {
-
-    if (needsLinuxOldDnsClean()) {
-
-      // Check to see if we have resolvconf
-      return kbox.util.pkg.exists('resolvconf')
-
-      // If we have resolvconf and user has old DNS
-      // then try to do the cleanup
-      .then(function(exists) {
-        if (exists) {
-
-          // Construct the command to remove the old dns
-          var rmCmd = [
-            '/bin/sed -i',
-            '"/nameserver 10.13.37/d"',
-            '/etc/resolvconf/resolv.conf.d/head'
-          ];
-
-          // Add the remove command
-          state.adminCommands.push(rmCmd.join(' '));
-
-          // Add the refresh command
-          state.adminCommands.push('/sbin/resolvconf -u');
-        }
-      });
-    }
 
   };
 
@@ -501,7 +422,6 @@ module.exports = function(kbox) {
     setupDarwinDNS: setupDarwinDNS,
     setupWindowsDNS: setupWindowsDNS,
     setupLinuxDNS: setupLinuxDNS,
-    cleanLinuxOldDnsClean: cleanLinuxOldDnsClean,
     getResolverPkgInstall: getResolverPkgInstall,
     getResolverPkgUrl: getResolverPkgUrl
   };

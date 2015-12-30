@@ -82,7 +82,7 @@ module.exports = function(kbox) {
 
         // Update our current install to reflect that
         state.updateCurrentInstall({SYNCTHING_BINARY: '0.11.26'});
-        state.updateCurrentInstall({SYNCTHING_CONFIG: '0.10.3'});
+        state.updateCurrentInstall({SYNCTHING_CONFIG: '0.11.0'});
 
       };
     });
@@ -99,8 +99,8 @@ module.exports = function(kbox) {
       step.all = function(state) {
 
         // Adds in the images we need for syncthing
-        state.images.push({name: 'syncthing'});
-        state.images.push({name: 'data'});
+        state.images.push({id: 'syncthing', name: 'syncthing'});
+        state.images.push({id: 'data', name: 'data'});
 
       };
     });

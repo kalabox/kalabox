@@ -3,7 +3,7 @@
 module.exports = {
   SYNCTHING_BINARY: '0.11.26',
   SYNCTHING_IMAGE: '0.11.26',
-  SYNCTHING_CONFIG: '0.10.3',
+  SYNCTHING_CONFIG: '0.11.0',
   SYNCTHING_DOWNLOAD_URL: {
     darwin: 'https://github.com/syncthing/syncthing/releases/download/' +
       'v0.11.26/syncthing-macosx-amd64-v0.11.26.tar.gz',

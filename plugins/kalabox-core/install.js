@@ -12,7 +12,6 @@ module.exports = function(kbox) {
   var fs = require('fs-extra');
 
   // Kbox modules
-  var Promise = kbox.Promise;
   var inBin = kbox.core.deps.get('globalConfig').isBinary;
 
   /*
@@ -261,17 +260,15 @@ module.exports = function(kbox) {
     step.all = function(state, done) {
 
       // Dedupe images
-      var images = _.uniq(state.images, 'name');
+      var images = _.uniq(state.images, 'id');
       state.log.debug('PULLING IMAGES => ' + JSON.stringify(images));
 
-      // Cycle through images and build each
-      return Promise.each(images, function(image) {
-        return kbox.engine.build(image)
+      // Build all teh submitted images
+      return kbox.engine.build(images)
 
-        // If this errors then fail the step
-        .catch(function(err) {
-          state.fail(state, err);
-        });
+      // If this errors then fail the step
+      .catch(function(err) {
+        state.fail(state, err);
       })
 
       // Next step

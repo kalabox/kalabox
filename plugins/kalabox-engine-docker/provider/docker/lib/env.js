@@ -18,9 +18,9 @@ module.exports = function(kbox) {
   var bin = require('./bin.js')(kbox);
 
   /*
-   * Set Machine Env
+   * Set Provider Env
    */
-  var setMachineEnv = function() {
+  var setDockerEnv = function() {
 
     // Set Path environmental variable if we are on windows so we get access
     // to things like ssh.exe
@@ -48,9 +48,9 @@ module.exports = function(kbox) {
     // the user may not have machine in their path
     var pathString = (process.platform === 'win32') ? 'Path' : 'PATH';
     var pathSep = (process.platform === 'win32') ? ';' : ':';
-    var machinePath = bin.getMachineBinPath();
-    if (!_.startsWith(process.env.path, machinePath)) {
-      var newPath = [machinePath, process.env[pathString]].join(pathSep);
+    var dockerPath = bin.getBinPath();
+    if (!_.startsWith(process.env[pathString], dockerPath)) {
+      var newPath = [dockerPath, process.env[pathString]].join(pathSep);
       kbox.core.env.setEnv(pathString, newPath);
     }
 
@@ -58,7 +58,7 @@ module.exports = function(kbox) {
 
   // Build module function.
   return {
-    setMachineEnv: setMachineEnv
+    setDockerEnv: setDockerEnv
   };
 
 };

@@ -1,6 +1,6 @@
 /**
  * Module to wrap and abstract access to docker machine.
- * @module machine
+ * @module docker
  */
 
 'use strict';
@@ -15,6 +15,7 @@ module.exports = function(kbox) {
   var VError = require('verror');
   var _ = require('lodash');
   var shellParser = require('node-shell-parser');
+  var fs = require('fs-extra');
 
   // Kalabox modules
   var Promise = kbox.Promise;
@@ -22,17 +23,13 @@ module.exports = function(kbox) {
   var env = require('./lib/env.js')(kbox);
   var net = require('./lib/net.js')(kbox);
 
-  // Set some machine things
-  var MACHINE_EXECUTABLE = bin.getMachineExecutable();
-  var MACHINE_NAME = 'Kalabox2';
-  var MACHINE_IP = '10.13.37.42';
+    // Provider config
+  var providerConfigFile = path.resolve(__dirname, 'config.yml');
+  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
 
-  // Kalabox default machine options
-  var DEFAULT_DRIVER = 'virtualbox';
-  var DEFAULT_ISO = 'https://api.github.com/repos/kalabox/kalabox-iso/releases';
-  var DEFAULT_HOST_CIDR = '10.13.37.1/24';
-  var DEFAULT_DOCKER_DNS = ['172.17.0.1', '208.67.222.222', '208.67.220.220'];
-  var DEFAULT_MEMORY = '2048';
+  // Set some machine things
+  var MACHINE_CONFIG = providerConfig.machine;
+  var MACHINE_EXECUTABLE = bin.getMachineExecutable();
 
   // Set of logging functions.
   var log = kbox.core.log.make('MACHINE');
@@ -42,7 +39,7 @@ module.exports = function(kbox) {
    * @todo: get this to handle multiple machine names?
    */
   var useMachine = function() {
-    return MACHINE_NAME;
+    return MACHINE_CONFIG.name;
   };
 
   /*
@@ -56,7 +53,7 @@ module.exports = function(kbox) {
     }
 
     // This is ok too
-    if (_.includes(msg, 'Host does not exist: "' + MACHINE_NAME + '"')) {
+    if (_.includes(msg, 'Host does not exist: "' + useMachine() + '"')) {
       return false;
     }
 
@@ -71,7 +68,7 @@ module.exports = function(kbox) {
   var shProvider = function(cmd) {
 
     // Set the machine env
-    env.setMachineEnv();
+    env.setDockerEnv();
 
     // Run a provider command in a shell.
     return bin.sh([MACHINE_EXECUTABLE].concat(cmd).concat(useMachine()))
@@ -125,7 +122,7 @@ module.exports = function(kbox) {
       .then(function(data) {
 
         // Correct if not set
-        if (!_.includes(data, MACHINE_IP)) {
+        if (!_.includes(data, MACHINE_CONFIG.ip)) {
 
           // Run the corrector command
           var ssh = [MACHINE_EXECUTABLE, 'ssh'].concat(useMachine());
@@ -140,7 +137,7 @@ module.exports = function(kbox) {
 
         // Say we are good
         else {
-          log.info('Static IP set correctly at ' + MACHINE_IP);
+          log.info('Static IP set correctly at ' + MACHINE_CONFIG.ip);
         }
 
       });
@@ -164,19 +161,19 @@ module.exports = function(kbox) {
       // Core create command
       var initCmd = [
         'create',
-        '--driver ' + DEFAULT_DRIVER,
+        '--driver ' + MACHINE_CONFIG.driver,
       ];
 
       // Basic options
       var initOptions = [
-        '--virtualbox-boot2docker-url ' + DEFAULT_ISO,
-        '--virtualbox-memory ' + DEFAULT_MEMORY,
-        '--virtualbox-hostonly-cidr ' + DEFAULT_HOST_CIDR,
+        '--virtualbox-boot2docker-url ' + MACHINE_CONFIG.iso,
+        '--virtualbox-memory ' + MACHINE_CONFIG.memory,
+        '--virtualbox-hostonly-cidr ' + MACHINE_CONFIG.hostcidr,
         '--virtualbox-host-dns-resolver'
       ];
 
       // Add DNS
-      _.forEach(DEFAULT_DOCKER_DNS, function(dns) {
+      _.forEach(MACHINE_CONFIG.dns, function(dns) {
         initOptions.push('--engine-opt dns=' + dns);
       });
 
@@ -289,7 +286,7 @@ module.exports = function(kbox) {
 
     // Set the machine ENV explicitly for this one because we arent
     // routing through shProvider
-    env.setMachineEnv();
+    env.setDockerEnv();
 
     // Get status.
     return Promise.retry(function(counter) {
@@ -301,11 +298,11 @@ module.exports = function(kbox) {
 
       // Find the status of our machine in a parsed result
       var status = _.result(_.find(shellParser(result), function(machine) {
-        return machine.NAME === MACHINE_NAME;
+        return machine.NAME === MACHINE_CONFIG.name;
       }), 'STATE');
 
       // Tell us WTFIGO
-      log.info(MACHINE_NAME + ' is ' + status);
+      log.info(MACHINE_CONFIG.name + ' is ' + status);
 
       return status.toLowerCase();
     });
@@ -371,7 +368,7 @@ module.exports = function(kbox) {
    * Return machine's IP address.
    */
   var getIp = function() {
-    return Promise.resolve(MACHINE_IP);
+    return Promise.resolve(MACHINE_CONFIG.ip);
   };
 
   /*
@@ -427,7 +424,7 @@ module.exports = function(kbox) {
   var isInstalled = function() {
 
     // set the machine env
-    env.setMachineEnv();
+    env.setDockerEnv();
 
     // Grab correct path checking tool
     var which = (process.platform === 'win32') ? 'where' : 'which';
@@ -457,39 +454,37 @@ module.exports = function(kbox) {
 
     opts = opts || {};
 
-    // Get ip address of machine.
-    return getIp()
-    .then(function(ip) {
+    // Inspect our machine so we can get certificates
+    return shProvider(['inspect'])
 
-      // Build docker config.
-      var config = {
-        protocol: 'http',
-        host: ip,
-        port: '2375'
+    // Build our config
+    .then(function(data) {
+      var auth = JSON.parse(data).HostOptions.AuthOptions;
+      return {
+        protocol: 'https',
+        host: MACHINE_CONFIG.ip,
+        machine: MACHINE_CONFIG.name,
+        port: '2376',
+        certDir: auth.CertDir,
+        ca: fs.readFileSync(auth.CaCertPath),
+        cert: fs.readFileSync(auth.ClientCertPath),
+        key: fs.readFileSync(auth.ClientKeyPath)
       };
+    })
 
+    // Mix in options and return
+    .then(function(config) {
       _.extend(config, opts);
-
       return config;
-
     });
 
-  };
-
-  /*
-   * @todo: @pirog - What is this for?
-   * @todo: @bcauldwell - I think we can remove this, need to remove from
-   * core provider.js as well
-   */
-  var hasTasks = function() {
-    return Promise.resolve(true);
   };
 
   /*
    * Get list of server IP addresses.
    */
   var getServerIps = function() {
-    return [MACHINE_IP];
+    return [MACHINE_CONFIG.ip];
   };
 
   /*
@@ -513,11 +508,10 @@ module.exports = function(kbox) {
     getIp: getIp,
     getServerIps: getServerIps,
     getIso: getIso,
-    hasTasks: hasTasks,
     isDown: isDown,
     isInstalled: isInstalled,
     isUp: isUp,
-    name: 'machine',
+    name: 'docker',
     path2Bind4U: path2Bind4U,
     up: up
   };

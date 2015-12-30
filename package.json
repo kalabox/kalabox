@@ -10,7 +10,7 @@
   ],
   "main": "lib/kbox.js",
   "preferGlobal": true,
-  "version": "0.10.6",
+  "version": "0.11.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/kalabox/kalabox"
@@ -40,6 +40,7 @@
     "download-status": "^2.1.0",
     "fs-extra": "^0.18.2",
     "inquirer": "^0.8.3",
+    "js-yaml": "^3.4.6",
     "kalabox-stats-client": "^0.1.0",
     "lodash": "^3.10.1",
     "memorystream": "^0.3.1",

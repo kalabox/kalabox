@@ -6,19 +6,21 @@ module.exports = function(kbox) {
   var path = require('path');
 
   // Kalabox modules
-  var meta = require('./meta.js');
   var util = require('./util.js')(kbox);
   var Promise = kbox.Promise;
 
   // npm modules
   var _ = require('lodash');
 
-  // Constants
-  var PROVIDER_VB_VERSION = meta.PROVIDER_VB_VERSION;
-  var PROVIDER_KALABOX_ISO = meta.PROVIDER_KALABOX_ISO;
-  var PROVIDER_MACHINE_VERSION = meta.PROVIDER_MACHINE_VERSION;
-  var PROVIDER_COMPOSE_VERSION = meta.PROVIDER_COMPOSE_VERSION;
-  var PROVIDER_MSYSGIT_VERSION = meta.PROVIDER_MSYSGIT_VERSION;
+  // Provider config
+  var providerConfigFile = path.resolve(__dirname, 'config.yml');
+  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
+
+  // Configs
+  var VIRTUALBOX_CONFIG = providerConfig.virtualbox;
+  var MACHINE_CONFIG = providerConfig.machine;
+  var COMPOSE_CONFIG = providerConfig.compose;
+  var MSYSGIT_CONFIG = providerConfig.mysysgit;
 
   /*
    * Adds the appropriate downloads to our list
@@ -35,23 +37,23 @@ module.exports = function(kbox) {
 
         // Only grab docker machine if needed
         if (util.needsMachine()) {
-          state.downloads.push(meta.PROVIDER_DOWNLOAD_URL[platform].machine);
+          state.downloads.push(MACHINE_CONFIG.pkg[platform]);
         }
 
         // Only grab docker compose if needed
         if (util.needsCompose()) {
-          state.downloads.push(meta.PROVIDER_DOWNLOAD_URL[platform].compose);
+          state.downloads.push(COMPOSE_CONFIG.pkg[platform]);
         }
 
         // Only grab VirtualBox if needed
         // @todo: On linux we install with normal package manager
         if (process.platform !== 'linux' && util.needsVB()) {
-          state.downloads.push(meta.PROVIDER_DOWNLOAD_URL[platform].vb);
+          state.downloads.push(VIRTUALBOX_CONFIG.pkg[platform]);
         }
 
         // Only grab msysgit on windows if needed
         if (process.platform === 'win32' && util.needsMsysgit()) {
-          state.downloads.push(meta.PROVIDER_DOWNLOAD_URL.win32.msysgit);
+          state.downloads.push(MSYSGIT_CONFIG.pkg[platform]);
         }
 
       };
@@ -138,11 +140,11 @@ module.exports = function(kbox) {
 
           // Get the metas
           var flavor = kbox.install.linuxOsInfo.getFlavor();
-          var vb = meta.PROVIDER_DOWNLOAD_URL.linux.vb;
-          var deps = vb[flavor].deps.join(' ');
-          var pkgs = vb[flavor].packages.join(' ');
-          var source = vb[flavor].source;
-          var key = vb[flavor].key;
+          var packager = (flavor === 'debian') ? 'apt' : 'dnf';
+          var deps = VIRTUALBOX_CONFIG[packager].deps.join(' ');
+          var pkg = VIRTUALBOX_CONFIG.pkg[flavor];
+          var source = VIRTUALBOX_CONFIG[packager].source;
+          var key = VIRTUALBOX_CONFIG[packager].key;
 
           // Add and refresh sources
           state.adminCommands.push(kbox.util.pkg.addSourceCmd(source, key));
@@ -154,7 +156,7 @@ module.exports = function(kbox) {
           }
 
           // Install VB
-          state.adminCommands.push(kbox.util.pkg.installCmd(pkgs));
+          state.adminCommands.push(kbox.util.pkg.installCmd(pkg));
 
         }
 
@@ -168,7 +170,7 @@ module.exports = function(kbox) {
         if (util.needsVB()) {
 
           // Get info about where the things are
-          var vb = path.basename(meta.PROVIDER_DOWNLOAD_URL.win32.vb);
+          var vb = path.basename(VIRTUALBOX_CONFIG.pkg.win32);
           var vbPkg = path.join(tmp, vb);
           var extractDir = path.join(tmp, 'vbox');
 
@@ -196,7 +198,7 @@ module.exports = function(kbox) {
         if (util.needsMsysgit()) {
 
           // Get info about where the things are
-          var mGit = path.basename(meta.PROVIDER_DOWNLOAD_URL.win32.msysgit);
+          var mGit = path.basename(MSYSGIT_CONFIG.pkg.win32);
           var mGitPkg = path.join(tmp, mGit);
 
           // Build the extraction command
@@ -231,28 +233,28 @@ module.exports = function(kbox) {
       // Update our current install to reflect Machine installed
       if (util.needsMachine()) {
         state.updateCurrentInstall({
-          PROVIDER_MACHINE_VERSION: PROVIDER_MACHINE_VERSION
+          PROVIDER_MACHINE_VERSION: MACHINE_CONFIG.version
         });
       }
 
       // Update our current install to reflect compose installed
       if (util.needsCompose()) {
         state.updateCurrentInstall({
-          PROVIDER_COMPOSE_VERSION: PROVIDER_COMPOSE_VERSION
+          PROVIDER_COMPOSE_VERSION: COMPOSE_CONFIG.version
         });
       }
 
       // Update our current install to reflect VB installed
       if (util.needsVB()) {
         state.updateCurrentInstall({
-          PROVIDER_VB_VERSION: PROVIDER_VB_VERSION
+          PROVIDER_VB_VERSION: VIRTUALBOX_CONFIG.version
         });
       }
 
       // Update our current install to reflect msysgit installed
       if (process.platform === 'win32' && util.needsMsysgit()) {
         state.updateCurrentInstall({
-          PROVIDER_MSYSGIT_VERSION: PROVIDER_MSYSGIT_VERSION
+          PROVIDER_MSYSGIT_VERSION: MSYSGIT_CONFIG.version
         });
       }
 
@@ -282,7 +284,7 @@ module.exports = function(kbox) {
             // Update the install state
             .then(function() {
               state.updateCurrentInstall({
-                PROVIDER_KALABOX_ISO: PROVIDER_KALABOX_ISO
+                PROVIDER_KALABOX_ISO: MACHINE_CONFIG.isoversion
               });
             });
           }
