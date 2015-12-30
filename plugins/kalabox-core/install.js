@@ -259,6 +259,10 @@ module.exports = function(kbox) {
     step.description = 'Pulling images...';
     step.all = function(state, done) {
 
+      // Adds in the images we need for core
+      var src = path.resolve(__dirname);
+      state.images.push({id: 'data', name: 'data', srcRoot: src});
+
       // Dedupe images
       var images = _.uniq(state.images, 'id');
       state.log.debug('PULLING IMAGES => ' + JSON.stringify(images));

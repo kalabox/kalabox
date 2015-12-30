@@ -2,6 +2,9 @@
 
 module.exports = function(kbox) {
 
+  // Native
+  var path = require('path');
+
   // Kalabox modules
   var meta = require('./meta.js');
   var util = require('./util.js')(kbox);
@@ -99,8 +102,8 @@ module.exports = function(kbox) {
       step.all = function(state) {
 
         // Adds in the images we need for syncthing
-        state.images.push({id: 'syncthing', name: 'syncthing'});
-        state.images.push({id: 'data', name: 'data'});
+        var src = path.resolve(__dirname);
+        state.images.push({id: 'syncthing', name: 'syncthing', srcRoot: src});
 
       };
     });
