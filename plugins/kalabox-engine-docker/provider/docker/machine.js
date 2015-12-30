@@ -64,13 +64,14 @@ module.exports = function(kbox) {
   /*
    * Run a provider command in a shell.
    */
-  var shProvider = function(cmd) {
+  var shProvider = function(cmd, opts) {
 
     // Set the machine env
     env.setDockerEnv();
 
     // Run a provider command in a shell.
-    return bin.sh([MACHINE_EXECUTABLE].concat(cmd).concat(useMachine()))
+    var run = [MACHINE_EXECUTABLE].concat(cmd).concat(useMachine());
+    return bin.sh(run, opts)
 
     // See if we need to recompile our kernel mod
     // on linux also we assume a few select errors
@@ -282,7 +283,7 @@ module.exports = function(kbox) {
     // Get status.
     return Promise.retry(function(counter) {
       log.debug(format('Checking status [%s].', counter));
-      return shProvider(['ls']);
+      return shProvider(['ls'], {silent:true});
     })
     // Do some lodash fu to get the status
     .then(function(result) {
@@ -386,7 +387,7 @@ module.exports = function(kbox) {
   var vmExists = function() {
 
     // See if there is any info
-    return shProvider(['inspect'])
+    return shProvider(['inspect'], {silent:true})
 
     // if there is output then we are probably good
     // @todo: we can do a stronger check here
@@ -440,7 +441,7 @@ module.exports = function(kbox) {
     opts = opts || {};
 
     // Inspect our machine so we can get certificates
-    return shProvider(['inspect'])
+    return shProvider(['inspect'], {silent:true})
 
     // Build our config
     .then(function(data) {

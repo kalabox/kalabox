@@ -80,14 +80,17 @@ module.exports = function(kbox) {
   /*
    * Run a shell command.
    */
-  var sh = function(cmd) {
+  var sh = function(cmd, opts) {
 
     // Log start.
     log.debug('Executing command.', cmd);
 
+    // pass in options
+    var options = opts || {silent:false};
+
     // Run shell command.
     return Promise.fromNode(function(cb) {
-      _sh.exec(cmd, {silent:false}, cb);
+      _sh.exec(cmd, options, cb);
     })
 
     // Log results.
