@@ -2,7 +2,8 @@
   "globalPlugins": [
     "kalabox-core",
     "kalabox-dev",
-    "kalabox-syncthing"
+    "kalabox-syncthing",
+    "kalabox-app-pantheon"
   ],
   "externalPlugins": [
     "kalabox-app-pantheon@0.10.8"
