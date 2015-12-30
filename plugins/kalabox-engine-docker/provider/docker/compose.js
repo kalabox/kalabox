@@ -90,7 +90,7 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Run docker compose pull
+   * Run docker compose up and stop
    */
   var create = function(dirs, opts) {
 
@@ -139,10 +139,30 @@ module.exports = function(kbox) {
 
   };
 
+  /*
+   * Run docker compose pull
+   */
+  var start = function(dirs) {
+
+    // Get our compose files and build the command
+    var cmd = getFiles(dirs);
+    cmd.push('start');
+
+    // Log
+    log.debug('Starting images from ' + dirs);
+
+    // Run command
+    return Promise.retry(function() {
+      return shCompose(cmd);
+    });
+
+  };
+
   // Build module function.
   return {
     pull: pull,
-    create: create
+    create: create,
+    start: start
   };
 
 };

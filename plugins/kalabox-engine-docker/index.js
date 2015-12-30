@@ -132,7 +132,16 @@ module.exports = function(kbox) {
    * Start a container.
    */
   var start = function(data) {
-    return docker.start(data.cid, data.opts);
+
+    return Promise.each(normalizer(data), function(datum) {
+      if (datum.cid) {
+        return docker.start(data.cid, data.opts);
+      }
+      else if (datum.dirs) {
+        return compose.start(datum.dirs, datum.opts);
+      }
+    });
+
   };
 
   /*

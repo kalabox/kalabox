@@ -7,6 +7,9 @@
 
 module.exports = function(kbox) {
 
+  // Native
+  var path = require('path');
+
   // Npm modules
   var _ = require('lodash');
   var VError = require('verror');
@@ -14,6 +17,8 @@ module.exports = function(kbox) {
   // Kbox modules
   var Promise = kbox.Promise;
   var meta = require('./lib/meta.js')(kbox);
+  var servicesDir = meta.SERVICE_IMAGE_COMPOSE;
+  var servicesFile = path.join(servicesDir, 'kalabox-compose.yml');
 
   /*
    * Logging functions.
@@ -40,14 +45,11 @@ module.exports = function(kbox) {
    */
   var install = function() {
 
-    // Grab our services
-    var services = meta.SERVICE_IMAGE_COMPOSE;
-
     // Log action
-    log.debug('Creating services from ' + services);
+    log.debug('Creating services from ' + servicesFile);
 
     // Get service info and bind to this.
-    return kbox.engine.create({dirs: [services]});
+    return kbox.engine.create({dirs: [servicesDir]});
 
   };
 
@@ -56,14 +58,11 @@ module.exports = function(kbox) {
    */
   var rebuild = function() {
 
-    // Grab our services
-    var services = meta.SERVICE_IMAGE_COMPOSE;
-
     // Log action
-    log.debug('Rebuilding services from ' + services);
+    log.debug('Rebuilding services from ' + servicesFile);
 
     // Get service info and bind to this.
-    return kbox.engine.create({dirs: [services], opts: {recreate:true}});
+    return kbox.engine.create({dirs: [servicesDir], opts: {recreate:true}});
 
   };
 
@@ -72,27 +71,31 @@ module.exports = function(kbox) {
    */
   var verify = function() {
 
-    // Get service info.
-    /*
-    return serviceInfo()
-    // Get startable services.
-    .then(function(serviceInfo) {
-      return serviceInfo.getStartableServices();
-    })
-    // Filter out services that are running.
-    .filter(function(service) {
-      return isServiceRunning(service)
-      .then(function(isRunning) {
-        return !isRunning && service.name !== 'data';
-      });
-    }, {concurrency: 1})
-    // If there are any services not running, restart them all.
-    .then(function(notRunningServices) {
-      if (notRunningServices.length > 0) {
-        return rebootServices();
+    log.debug('Verifying services are up');
+
+    // Get an array of our services container names
+    var services = _.map(kbox.util.yaml.toJson(servicesFile), function(s) {
+      // Stupid thing to tric codestylez
+      s = s;
+      // jscs:disable
+      /* jshint ignore:start */
+      return s.container_name;
+      /* jshint ignore:end */
+      // jscs:enable
+    });
+
+    // Discover if we need to boot up our services
+    return Promise.reduce(services, function(running, service) {
+      return kbox.engine.isRunning(service);
+    }, false)
+
+    // Restart our services if needed
+    .then(function(running) {
+      if (!running) {
+        log.debug('Services are not running. Restarting...');
+        return kbox.engine.start({dirs: [servicesDir]});
       }
     });
-    */
 
   };
 
