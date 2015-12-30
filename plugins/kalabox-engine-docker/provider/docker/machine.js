@@ -240,11 +240,8 @@ module.exports = function(kbox) {
     // Log start.
     log.info('Starting up.', opts);
 
-    // Emit pre-up event.
-    return Promise.try(kbox.core.events.emit, 'pre-up')
-
     // Check to see if we need to create a machine or not
-    .then(function() {
+    return Promise.try(function() {
       return vmExists();
     })
 
@@ -268,11 +265,6 @@ module.exports = function(kbox) {
     // Log success.
     .then(function() {
       log.info('Machine is up.');
-    })
-
-    // Emit post-up event.
-    .then(function() {
-      return kbox.core.events.emit('post-up');
     });
 
   };
@@ -318,10 +310,8 @@ module.exports = function(kbox) {
     // Shut provider down if its status is running.
     .then(function(status) {
       if (status === 'running') {
-        // Emit pre down event.
-        return Promise.try(kbox.core.events.emit, 'pre-down')
         // Retry to shutdown if an error occurs.
-        .then(function() {
+        return Promise.try(function() {
           return Promise.retry(function(counter) {
             log.info(format('Shutting down [%s].', counter));
             return shProvider(['stop']);
@@ -330,10 +320,6 @@ module.exports = function(kbox) {
         // Log success.
         .then(function() {
           log.info('Shutdown successful.');
-        })
-        // Emit post down event.
-        .then(function() {
-          return kbox.core.events.emit('post-down');
         });
       } else {
         log.info('Already shutdown.');

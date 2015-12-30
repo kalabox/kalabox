@@ -47,12 +47,12 @@ module.exports = function(kbox) {
   });
 
   // Events
-  events.on('post-up', function(done) {
+  events.on('post-engine-up', function(done) {
     console.log(chalk.green('Kalabox engine has been activated.'));
     done();
   });
 
-  events.on('post-down', function(done) {
+  events.on('post-engine-down', function(done) {
     console.log(chalk.red('Kalabox engine has been deactivated.'));
     done();
   });

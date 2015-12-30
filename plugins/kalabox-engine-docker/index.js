@@ -77,7 +77,18 @@ module.exports = function(kbox) {
    * Query docker for a list of containers.
    */
   var list = function(appName) {
-    return docker.list(appName);
+
+    // Validate inputs.
+    return Promise.try(function() {
+      if (appName && typeof appName !== 'string') {
+        throw new TypeError('Invalid appName: ' + appName);
+      }
+    })
+
+    .then(function() {
+      return docker.list(appName);
+    });
+
   };
 
   /*
@@ -120,15 +131,40 @@ module.exports = function(kbox) {
   /*
    * Start a container.
    */
-  var start = function(cid, opts) {
-    return docker.start(cid, opts);
+  var start = function(data) {
+    return docker.start(data.cid, data.opts);
   };
 
   /*
    * Do a docker exec into a container.
    */
-  var exec = function(cid, opts) {
-    return docker.exec(cid, opts);
+  var exec = function(data) {
+    return docker.exec(data.cid, data.opts);
+  };
+
+  /*
+   * Check if container exists
+   */
+  var exists = function(cid) {
+
+    // Get list of containers.
+    return list(null)
+    .then(function(containers) {
+      // Build set of all valid container ids.
+      var idSet =
+        _(containers)
+        .chain()
+        .map(function(container) {
+          return [container.id, container.name];
+        })
+        .flatten()
+        .uniq()
+        .object()
+        .value();
+      // Search set of valid containers for data.
+      return _.has(idSet, cid);
+    });
+
   };
 
   /*
@@ -162,15 +198,15 @@ module.exports = function(kbox) {
   /*
    * Run a query against a container.
    */
-  var query = function(cid, cmd, opts) {
-    return docker.query(cid, cmd, opts);
+  var query = function(data) {
+    return docker.query(data.cid, data.cmd, data.opts);
   };
 
   /*
    * Run a query against a container, return data.
    */
-  var queryData = function(cid, cmd) {
-    return docker.queryData(cid, cmd);
+  var queryData = function(data) {
+    return docker.queryData(data.cid, data.cmd);
   };
 
   /*
@@ -182,14 +218,30 @@ module.exports = function(kbox) {
    * THIS.
    *
    */
-  var use = function(rawImage, createOpts, startOpts, fn) {
+  var use = function(data) {
+
+    // Extract our data
+    // @todo: better checks
+    var rawImage = data.rawImage;
+    var createOpts = data.createOpts;
+    var startOpts = data.startOpts;
+    var fn = data.fn;
+
     return docker.use(rawImage, createOpts, startOpts, fn);
   };
 
   /*
    * Create and run a command inside of a container.
    */
-  var run = function(rawImage, cmd, createOpts, startOpts) {
+  var run = function(data) {
+
+    // Extract our data
+    // @todo: better checks
+    var rawImage = data.rawImage;
+    var cmd = data.cmd;
+    var createOpts = data.createOpts;
+    var startOpts = data.startOpts;
+
     return docker.run(rawImage, cmd, createOpts, startOpts);
   };
 
@@ -203,20 +255,34 @@ module.exports = function(kbox) {
   /*
    * Remove a container.
    */
-  var remove = function(cid, opts) {
-    return docker.remove(cid, opts);
+  var remove = function(data) {
+    return docker.remove(data.cid, data.opts);
   };
 
   /*
    * Read the contents of the containers logs.
    */
-  var logs = function(cid, opts) {
-    return docker.logs(cid, opts);
+  var logs = function(data) {
+    return docker.logs(data.cid, data.opts);
   };
 
   /*
    * Builds or pulls a docker image
-   * It's better to route all builds through docker instead of compose
+   * NOTE: It's better to route all builds through docker instead of
+   * compose
+   *
+   * Data can be either an image object or array of image object
+   * Image objects have the following properties
+   *
+   *  'id'          => Arbitraty identified
+   *  'build'       => Boolean to determine whether we should build or pull by default
+   *  'createOpts'  => Array of remote docker API create opts
+   *  'forcePull'   => Always pull from hub
+   *  'name'        => Image name can be: imagename|repo/imagename|repo/imagename:tag
+   *  'src'         => Path to a dockerfile
+   *  'srcRoot'     => Path to a die that contains a dockerfile at dockerfiles/name/Dockerfil
+   *  'startOpts'   => Array of remote docker API start options - Pending deprecation
+   *
    */
   var build = function(data) {
     return Promise.each(normalizer(data), function(datum) {
@@ -228,6 +294,7 @@ module.exports = function(kbox) {
     build: build,
     create: create,
     exec: exec,
+    exists: exists,
     get: findContainer,
     getEnsure: findContainerThrows,
     getProvider: getProvider,
