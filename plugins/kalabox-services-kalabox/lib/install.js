@@ -2,6 +2,9 @@
 
 module.exports = function(kbox) {
 
+  // Native modules
+  var path = require('path');
+
   // Kalabox modules
   var util = require('./util.js')(kbox);
   var meta = require('./meta.js')(kbox);
@@ -18,9 +21,10 @@ module.exports = function(kbox) {
       step.subscribes = ['core-image-build'];
       step.description = 'Adding services images to build list...';
       step.all = function(state) {
-        state.images.push({id: 'proxy', name: 'hipache'});
-        state.images.push({id: 'data', name: 'data'});
-        state.images.push({id: 'dns', name: 'dnsmasq'});
+        var srcRoot = path.resolve(__dirname, '..');
+        state.images.push({id: 'proxy', name: 'proxy', srcRoot: srcRoot});
+        state.images.push({id: 'data', name: 'data', forcePull: true});
+        state.images.push({id: 'dns', name: 'dns', srcRoot: srcRoot});
       };
 
     });

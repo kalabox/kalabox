@@ -1,4 +1,4 @@
-# docker build -t kalabox/hipache .
+# docker build -t kalabox/proxy .
 
 FROM kalabox/debian:stable
 

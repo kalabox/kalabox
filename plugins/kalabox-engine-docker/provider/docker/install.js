@@ -13,14 +13,13 @@ module.exports = function(kbox) {
   var _ = require('lodash');
 
   // Provider config
-  var providerConfigFile = path.resolve(__dirname, 'config.yml');
-  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
+  var providerConfig = kbox.core.deps.get('providerConfig');
 
   // Configs
   var VIRTUALBOX_CONFIG = providerConfig.virtualbox;
   var MACHINE_CONFIG = providerConfig.machine;
   var COMPOSE_CONFIG = providerConfig.compose;
-  var MSYSGIT_CONFIG = providerConfig.mysysgit;
+  var MSYSGIT_CONFIG = providerConfig.msysgit;
 
   /*
    * Adds the appropriate downloads to our list

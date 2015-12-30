@@ -24,8 +24,7 @@ module.exports = function(kbox) {
   var net = require('./lib/net.js')(kbox);
 
     // Provider config
-  var providerConfigFile = path.resolve(__dirname, 'config.yml');
-  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
+  var providerConfig = kbox.core.deps.get('providerConfig');
 
   // Set some machine things
   var MACHINE_CONFIG = providerConfig.machine;

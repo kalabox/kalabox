@@ -1123,11 +1123,11 @@ module.exports = function(kbox) {
 
     // Validate raw image's keys.
     var validKeys = [
+      'id',
       'build',
       'createOpts',
       'forcePull',
       'name',
-      'postProviderOpts',
       'src',
       'srcRoot',
       'startOpts'
@@ -1155,8 +1155,7 @@ module.exports = function(kbox) {
       name: kbox.util.docker.imageName.expand(rawImage.name),
       build: shouldBuild,
       createOpts: rawImage.createOpts,
-      startOpts: rawImage.startOpts,
-      postProviderOpts: rawImage.postProviderOpts
+      startOpts: rawImage.startOpts
     };
 
     if (shouldBuild) {

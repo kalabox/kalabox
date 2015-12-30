@@ -1,11 +1,8 @@
 proxy:
   container_name: kalabox_proxy
   build: ../dockerfiles/hipache
-  # not sure about below yet
-  # might be needed on all containers
-  # net: "bridge"
   environment:
-    DOMAIN: kbox
+    DOMAIN: $KALABOX_DOMAIN
   ports:
     - "80:80"
     - "443:443"
@@ -18,10 +15,10 @@ dns:
   container_name: kalabox_dns
   build: ../dockerfiles/dnsmasq
   environment:
-    KALABOX_DOMAIN: kbox
-    KALABOX_IP: 10.13.37.42
+    IP: $KALABOX_ENGINE_IP
+    DOMAIN: $KALABOX_DOMAIN
   ports:
-    - "53:53"
+    - "$KALABOX_ENGINE_IP:53:53/udp"
 data:
   container_name: kalabox_data
   image: kalabox/data:dev

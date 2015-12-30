@@ -1,11 +1,8 @@
 proxy:
   container_name: kalabox_proxy
-  image: kalabox/hipache:dev
-  # not sure about below yet
-  # might be needed on all containers
-  # net: "bridge"
+  image: kalabox/proxy:$KALABOX_IMG_VERSION
   environment:
-    DOMAIN: kbox
+    DOMAIN: $KALABOX_DOMAIN
   ports:
     - "80:80"
     - "443:443"
@@ -16,12 +13,12 @@ proxy:
     - data
 dns:
   container_name: kalabox_dns
-  image: kalabox/dnsmasq:dev
+  image: kalabox/dns:$KALABOX_IMG_VERSION
   environment:
-    KALABOX_DOMAIN: kbox
-    KALABOX_IP: 10.13.37.42
+    IP: $KALABOX_ENGINE_IP
+    DOMAIN: $KALABOX_DOMAIN
   ports:
-    - "53:53"
+    - "$KALABOX_ENGINE_IP:53:53/udp"
 data:
   container_name: kalabox_data
-  image: kalabox/data:dev
+  image: kalabox/data:$KALABOX_IMG_VERSION

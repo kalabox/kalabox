@@ -7,9 +7,6 @@
 
 module.exports = function(kbox) {
 
-  // Native
-  var path = require('path');
-
   // NPM modules
   var _ = require('lodash');
 
@@ -17,8 +14,7 @@ module.exports = function(kbox) {
   var Promise = kbox.Promise;
 
   // Provider config
-  var providerConfigFile = path.resolve(__dirname, '..', 'config.yml');
-  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
+  var providerConfig = kbox.core.deps.get('providerConfig');
 
   // Set some machine things
   var MACHINE_CONFIG = providerConfig.machine;

@@ -16,14 +16,13 @@ module.exports = function(kbox) {
   var install = kbox.install;
 
   // Provider config
-  var providerConfigFile = path.resolve(__dirname, 'config.yml');
-  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
+  var providerConfig = kbox.core.deps.get('providerConfig');
 
   // Configs
   var VIRTUALBOX_CONFIG = providerConfig.virtualbox;
   var MACHINE_CONFIG = providerConfig.machine;
   var COMPOSE_CONFIG = providerConfig.compose;
-  var MSYSGIT_CONFIG = providerConfig.mysysgit;
+  var MSYSGIT_CONFIG = providerConfig.msysgit;
 
   /*
    * Helper function to assess whether we need a new B2D

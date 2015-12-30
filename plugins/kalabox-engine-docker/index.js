@@ -16,6 +16,14 @@ module.exports = function(kbox) {
   // Constants
   var PROVIDER_PATH = path.join(__dirname, 'provider', 'docker');
 
+  // Get and load the provider config
+  var providerConfigFile = path.resolve(PROVIDER_PATH, 'config.yml');
+  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
+  kbox.core.deps.register('providerConfig', providerConfig);
+
+  // Set some useful envars
+  kbox.core.env.setEnv('KALABOX_ENGINE_IP', providerConfig.machine.ip);
+
   /*
    * NPM modules.
    */
@@ -207,19 +215,13 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Delegate to either compose or docker
+   * Builds or pulls a docker image
+   * It's better to route all builds through docker instead of compose
    */
-  var build = function(data, opts) {
-
+  var build = function(data) {
     return Promise.each(normalizer(data), function(datum) {
-      if (datum.name) {
-        return docker.build({name: datum.name});
-      }
-      else if (datum.dirs) {
-        return compose.pull(datum.dirs, opts);
-      }
+      return docker.build(datum);
     });
-
   };
 
   return {

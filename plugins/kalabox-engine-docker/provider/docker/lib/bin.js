@@ -17,8 +17,7 @@ module.exports = function(kbox) {
   var Promise = kbox.Promise;
 
   // Provider config
-  var providerConfigFile = path.resolve(__dirname, '..', 'config.yml');
-  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
+  var providerConfig = kbox.core.deps.get('providerConfig');
 
   // Get VB config
   var VIRTUALBOX_CONFIG = providerConfig.virtualbox;
