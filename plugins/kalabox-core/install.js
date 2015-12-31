@@ -278,7 +278,7 @@ module.exports = function(kbox) {
       // Create our data container
       // Do this here so its available before other things
       .then(function() {
-        return kbox.engine.create({dirs: [path.resolve(__dirname)]});
+        return kbox.engine.create({compose: [path.resolve(__dirname)]});
       })
 
       // Next step

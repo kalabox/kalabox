@@ -121,8 +121,8 @@ module.exports = function(kbox) {
       if (datum.name) {
         return docker.create(datum);
       }
-      else if (datum.dirs) {
-        return compose.create(datum.dirs, datum.opts);
+      else if (datum.compose) {
+        return compose.create(datum.compose, datum.opts);
       }
     });
 
@@ -137,8 +137,8 @@ module.exports = function(kbox) {
       if (datum.cid) {
         return docker.start(data.cid, data.opts);
       }
-      else if (datum.dirs) {
-        return compose.start(datum.dirs, datum.opts);
+      else if (datum.compose) {
+        return compose.start(datum.compose, datum.opts);
       }
     });
 
@@ -257,8 +257,17 @@ module.exports = function(kbox) {
   /*
    * Stop a container.
    */
-  var stop = function(cid) {
-    return docker.stop(cid);
+  var stop = function(data) {
+
+    return Promise.each(normalizer(data), function(datum) {
+      if (datum.cid) {
+        return docker.stop(data.cid);
+      }
+      else if (datum.compose) {
+        return compose.stop(datum.compose, datum.opts);
+      }
+    });
+
   };
 
   /*

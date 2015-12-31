@@ -13,6 +13,7 @@ module.exports = function(kbox) {
 
   // NPM modules
   var _ = require('lodash');
+  var fs = require('fs-extra');
 
   // Kalabox modules
   var bin = require('./lib/bin.js')(kbox);
@@ -62,25 +63,37 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Expand dirs to an array of kalabox-compose files
+   * Expand dirs/files to an array of kalabox-compose files options
    */
-  var getFiles = function(dirs) {
-    return _.map(dirs, function(dir) {
-      return ['--file', path.join(dir, 'kalabox-compose.yml')].join(' ');
+  var getFiles = function(compose) {
+
+    // Only add files if they exist
+    return _.map(compose, function(loc) {
+
+      // If we dont have a yaml file then assume its a dir
+      var yamls = ['.yaml', '.yml'];
+      var isDir = !_.includes(yamls, path.extname(loc));
+      var file = (isDir) ? path.join(loc, 'kalabox-compose.yml') : loc;
+
+      // Only add yaml files that exist
+      if (fs.existsSync(file)) {
+        return ['--file', file].join(' ');
+      }
+
     });
   };
 
   /*
    * Run docker compose pull
    */
-  var pull = function(dirs) {
+  var pull = function(compose) {
 
     // Get our compose files and build the command
-    var cmd = getFiles(dirs);
+    var cmd = getFiles(compose);
     cmd.push('pull');
 
     // Log
-    log.debug('Pulling images from ' + dirs);
+    log.debug('Pulling images from ' + compose);
 
     // Run command
     return Promise.retry(function() {
@@ -90,24 +103,44 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Run docker compose up and stop
+   * Run docker compose stop
    */
-  var create = function(dirs, opts) {
+  var stop = function(compose) {
+
+    // Get our compose files and build the command
+    var cmd = getFiles(compose);
+    cmd.push('stop');
+
+    // Log
+    log.debug('Stopping images from ' + compose);
+
+    // Run command
+    return Promise.retry(function() {
+      return shCompose(cmd);
+    });
+
+  };
+
+  /*
+   * You can do a create, rebuild and start with variants of this
+   */
+  var up = function(compose, opts) {
 
     // Default options
     var defaults = {
       background: true,
       recreate: false,
+      stop: false
     };
 
     // Merge in defaults
     opts = _.merge(defaults, opts);
 
     // Get our compose files
-    var files = getFiles(dirs);
+    var files = getFiles(compose);
 
     // Log
-    log.debug('Creating containers from ' + dirs);
+    log.debug('Creating containers from ' + compose);
 
     // Run up command
     return Promise.retry(function() {
@@ -124,6 +157,9 @@ module.exports = function(kbox) {
       if (opts.recreate) {
         options.push('--force-recreate');
       }
+      else {
+        options.push('--no-recreate');
+      }
 
       // Up us
       return shCompose(files.concat(['up']).concat(options));
@@ -132,9 +168,9 @@ module.exports = function(kbox) {
     // Then we want to stop the containers so this works the same as
     // docker.create
     .then(function() {
-      return Promise.retry(function() {
-        return shCompose(files.concat(['stop']));
-      });
+      if (opts.stop) {
+        return stop(compose);
+      }
     });
 
   };
@@ -142,18 +178,41 @@ module.exports = function(kbox) {
   /*
    * Run docker compose pull
    */
-  var start = function(dirs) {
-
-    // Get our compose files and build the command
-    var cmd = getFiles(dirs);
-    cmd.push('start');
+  var start = function(compose) {
 
     // Log
-    log.debug('Starting images from ' + dirs);
+    log.debug('Starting images from ' + compose);
+
+    // Specify correct options for starting via compose up
+    var startOptions = {
+      recreate: false,
+      stop: false
+    };
 
     // Run command
     return Promise.retry(function() {
-      return shCompose(cmd);
+      return up(compose, startOptions);
+    });
+
+  };
+
+  /*
+   * Run docker compose pull
+   */
+  var create = function(compose) {
+
+    // Log
+    log.debug('Starting images from ' + compose);
+
+    // Specify correct options for starting via compose up
+    var startOptions = {
+      recreate: false,
+      stop: true
+    };
+
+    // Run command
+    return Promise.retry(function() {
+      return up(compose, startOptions);
     });
 
   };
@@ -162,7 +221,8 @@ module.exports = function(kbox) {
   return {
     pull: pull,
     create: create,
-    start: start
+    start: start,
+    stop: stop
   };
 
 };

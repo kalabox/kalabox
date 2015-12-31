@@ -49,7 +49,7 @@ module.exports = function(kbox) {
     log.debug('Creating services from ' + servicesFile);
 
     // Get service info and bind to this.
-    return kbox.engine.create({dirs: [servicesDir]});
+    return kbox.engine.create({compose: [servicesDir]});
 
   };
 
@@ -62,7 +62,7 @@ module.exports = function(kbox) {
     log.debug('Rebuilding services from ' + servicesFile);
 
     // Get service info and bind to this.
-    return kbox.engine.create({dirs: [servicesDir], opts: {recreate:true}});
+    return kbox.engine.create({compose: [servicesDir], opts: {recreate:true}});
 
   };
 
@@ -93,7 +93,7 @@ module.exports = function(kbox) {
     .then(function(running) {
       if (!running) {
         log.debug('Services are not running. Restarting...');
-        return kbox.engine.start({dirs: [servicesDir]});
+        return kbox.engine.start({compose: [servicesDir]});
       }
     });
 

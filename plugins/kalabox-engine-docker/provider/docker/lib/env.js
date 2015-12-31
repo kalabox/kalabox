@@ -47,10 +47,9 @@ module.exports = function(kbox) {
     // Add docker executables path to path to handle weird situations where
     // the user may not have machine in their path
     var pathString = (process.platform === 'win32') ? 'Path' : 'PATH';
-    var pathSep = (process.platform === 'win32') ? ';' : ':';
     var dockerPath = bin.getBinPath();
     if (!_.startsWith(process.env[pathString], dockerPath)) {
-      var newPath = [dockerPath, process.env[pathString]].join(pathSep);
+      var newPath = [dockerPath, process.env[pathString]].join(path.delimiter);
       kbox.core.env.setEnv(pathString, newPath);
     }
 
