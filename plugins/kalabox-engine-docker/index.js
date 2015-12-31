@@ -260,14 +260,14 @@ module.exports = function(kbox) {
   var stop = function(data) {
 
     return Promise.each(normalizer(data), function(datum) {
-      if (datum.cid) {
-        return docker.stop(data.cid);
+      if (datum.cid || datum.name || datum.cid) {
+        var stopper = datum.cid || datum.name || datum.cid;
+        return docker.stop(stopper);
       }
       else if (datum.compose) {
         return compose.stop(datum.compose, datum.opts);
       }
     });
-
   };
 
   /*
@@ -275,7 +275,8 @@ module.exports = function(kbox) {
    */
   var remove = function(data) {
     return Promise.each(normalizer(data), function(datum) {
-      return docker.remove(datum.containerName);
+      var id = datum.containerName || datum.containerID || datum.name;
+      return docker.remove(id);
     });
   };
 
