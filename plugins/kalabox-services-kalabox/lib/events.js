@@ -50,7 +50,7 @@ module.exports = function(kbox) {
 
             // Should this proxy mapping be just the domain, or should
             // it have a subdomain.
-            var hostname = proxy.default ? cmp.appDomain : cmp.hostname;
+            var hostname = proxy.default ? app.hostname : cmp.hostname;
             var protocol = proxy.secure ? 'https' : 'http';
             var url = [protocol, hostname].join('://');
             // Build redis key for this proxy.

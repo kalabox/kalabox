@@ -1,3 +1,0 @@
-data:
-  container_name: $KALABOX_DATA_CONTAINER_NAME
-  image: kalabox/data:$KALABOX_IMG_VERSION

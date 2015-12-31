@@ -142,37 +142,38 @@ module.exports = function(kbox) {
     // Log
     log.debug('Creating containers from ' + compose);
 
-    // Run up command
-    return Promise.retry(function() {
+    // Run up command if we have compose files
+    if (!_.isEmpty(files)) {
+      return Promise.retry(function() {
 
-      // Up options
-      var options = [];
+        // Up options
+        var options = [];
 
-      // Run in background
-      if (opts.background) {
-        options.push('-d');
-      }
+        // Run in background
+        if (opts.background) {
+          options.push('-d');
+        }
 
-      // Auto recreate
-      if (opts.recreate) {
-        options.push('--force-recreate');
-      }
-      else {
-        options.push('--no-recreate');
-      }
+        // Auto recreate
+        if (opts.recreate) {
+          options.push('--force-recreate');
+        }
+        else {
+          options.push('--no-recreate');
+        }
 
-      // Up us
-      return shCompose(files.concat(['up']).concat(options));
-    })
+        // Up us
+        return shCompose(files.concat(['up']).concat(options));
+      })
 
-    // Then we want to stop the containers so this works the same as
-    // docker.create
-    .then(function() {
-      if (opts.stop) {
-        return stop(compose);
-      }
-    });
-
+      // Then we want to stop the containers so this works the same as
+      // docker.create
+      .then(function() {
+        if (opts.stop) {
+          return stop(compose);
+        }
+      });
+    }
   };
 
   /*
