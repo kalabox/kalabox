@@ -294,7 +294,7 @@ module.exports = function(kbox) {
       }), 'STATE');
 
       // Tell us WTFIGO
-      log.info(MACHINE_CONFIG.name + ' is ' + status);
+      log.debug(MACHINE_CONFIG.name + ' is ' + status);
 
       return status.toLowerCase();
     });
@@ -415,7 +415,7 @@ module.exports = function(kbox) {
     // Grab correct path checking tool
     var which = (process.platform === 'win32') ? 'where' : 'which';
     // Run command to find location of machine.
-    return bin.sh([which, path.basename(MACHINE_EXECUTABLE)])
+    return bin.sh([which, path.basename(MACHINE_EXECUTABLE)], {silent:true})
     .then(function(output) {
       if (output) {
         return vmExists();

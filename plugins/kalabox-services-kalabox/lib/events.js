@@ -70,7 +70,7 @@ module.exports = function(kbox) {
 
               // Log each DNS record being added.
               _.each([cmp.containerName, destination], function(address) {
-                log.info(kbox.util.format(
+                log.debug(kbox.util.format(
                   'Setting DNS record. %s => %s',
                   redisKey,
                   address
@@ -138,8 +138,6 @@ module.exports = function(kbox) {
         // Loop through each proxy.
         .then(function() {
           return Promise.map(cmp.proxy, function(proxy) {
-
-            console.log(proxy);
 
             // Should this proxy mapping be just the domain, or should
             // it have a subdomain.

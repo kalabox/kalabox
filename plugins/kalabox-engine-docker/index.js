@@ -274,7 +274,9 @@ module.exports = function(kbox) {
    * Remove a container.
    */
   var remove = function(data) {
-    return docker.remove(data.cid, data.opts);
+    return Promise.each(normalizer(data), function(datum) {
+      return docker.remove(datum.containerName);
+    });
   };
 
   /*
