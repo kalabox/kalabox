@@ -162,7 +162,7 @@ module.exports = function(kbox) {
         return Promise.fromNode(function(cb) {
           dockerInstance.listContainers({all: 1}, cb);
         });
-      });
+      }, {max: 50});
     })
     // Make sure we have a timeout.
     .timeout(30 * 1000)
@@ -262,7 +262,7 @@ module.exports = function(kbox) {
         return Promise.fromNode(function(cb) {
           container.inspect(cb);
         });
-      });
+      }, {max: 50});
     })
     // Wrap errors.
     .catch(function(err) {

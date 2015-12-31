@@ -55,12 +55,12 @@ module.exports = function(kbox) {
         })
         .then(function() {
 
-          // Get remote code directory.
+          // Get local code directory.
           var codeDir = app.config.codeDir;
           // Image to create container from.
           var image = 'syncthing';
           // Command to make query.
-          var cmd = [
+          var cpCmd = [
             'cp',
             '/src/' + codeDir + '/.stignore',
             '/code/.stignore'
@@ -82,7 +82,7 @@ module.exports = function(kbox) {
             createOpts: createOpts,
             startOpts: startOpts,
             fn: function(container) {
-              return engine.queryData({cid: container.id, cmd: cmd});
+              return engine.queryData({cid: container.id, cmd: cpCmd});
             }
           };
           return engine.use(data);

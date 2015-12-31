@@ -74,6 +74,13 @@ module.exports = function(kbox) {
   };
 
   /*
+   * Helper to return a valid id from app data
+   */
+  var getId = function(c) {
+    return c.cid || c.containerName || c.containerID || c.name;
+  };
+
+  /*
    * Query docker for a list of containers.
    */
   var list = function(appName) {
@@ -118,7 +125,7 @@ module.exports = function(kbox) {
   var create = function(data) {
 
     return Promise.each(normalizer(data), function(datum) {
-      if (datum.name) {
+      if (getId(datum)) {
         return docker.create(datum);
       }
       else if (datum.compose) {
@@ -134,8 +141,8 @@ module.exports = function(kbox) {
   var start = function(data) {
 
     return Promise.each(normalizer(data), function(datum) {
-      if (datum.cid) {
-        return docker.start(data.cid, data.opts);
+      if (getId(datum)) {
+        return docker.start(getId(datum), data.opts);
       }
       else if (datum.compose) {
         return compose.start(datum.compose, datum.opts);
@@ -148,7 +155,7 @@ module.exports = function(kbox) {
    * Do a docker exec into a container.
    */
   var exec = function(data) {
-    return docker.exec(data.cid, data.opts);
+    return docker.exec(getId(data), data.opts);
   };
 
   /*
@@ -208,14 +215,14 @@ module.exports = function(kbox) {
    * Run a query against a container.
    */
   var query = function(data) {
-    return docker.query(data.cid, data.cmd, data.opts);
+    return docker.query(getId(data), data.cmd, data.opts);
   };
 
   /*
    * Run a query against a container, return data.
    */
   var queryData = function(data) {
-    return docker.queryData(data.cid, data.cmd);
+    return docker.queryData(getId(data), data.cmd);
   };
 
   /*
@@ -260,9 +267,8 @@ module.exports = function(kbox) {
   var stop = function(data) {
 
     return Promise.each(normalizer(data), function(datum) {
-      if (datum.cid || datum.name || datum.cid) {
-        var stopper = datum.cid || datum.name || datum.cid;
-        return docker.stop(stopper);
+      if (getId(datum)) {
+        return docker.stop(getId(datum));
       }
       else if (datum.compose) {
         return compose.stop(datum.compose, datum.opts);
@@ -275,8 +281,7 @@ module.exports = function(kbox) {
    */
   var remove = function(data) {
     return Promise.each(normalizer(data), function(datum) {
-      var id = datum.containerName || datum.containerID || datum.name;
-      return docker.remove(id);
+      return docker.remove(getId(datum), datum.opts);
     });
   };
 
@@ -284,7 +289,7 @@ module.exports = function(kbox) {
    * Read the contents of the containers logs.
    */
   var logs = function(data) {
-    return docker.logs(data.cid, data.opts);
+    return docker.logs(getId(data), data.opts);
   };
 
   /*
