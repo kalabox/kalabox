@@ -10,10 +10,9 @@ module.exports = function(kbox) {
   // Create new event context.
   var events = kbox.core.events.context();
   var share = kbox.share;
-  var deps = kbox.core.deps;
 
   // EVENT: pre-down
-  events.on('pre-down', function(done) {
+  events.on('pre-app-down', function(done) {
     // Get local sync instance
     share.getLocalSync()
     .then(function(localSync) {
@@ -39,49 +38,10 @@ module.exports = function(kbox) {
     var stignoreFile = path.join(app.config.codeRoot, '.stignore');
     var sharing = globalConfig.sharing;
 
-    /*
-    var prettyPrint = function(obj) {
-      console.log(JSON.stringify(obj, null, '  '));
-    };
-
-    var printConfig = function(which) {
-      kbox.tasks.add(function(task) {
-        task.path = ['sync', which, 'config'];
-        task.description = 'Display syncthing instance config.';
-        task.func = function(done) {
-          var instance;
-          if (which === 'local') {
-            instance = share.getLocalSync;
-          } else if (which === 'remote') {
-            instance = share.getRemoteSync;
-          } else {
-            var msg = 'The option [' + which + '] is invalid, please choose ' +
-              'either local or remote.';
-            done(new Error(msg));
-          }
-          instance()
-          .then(function(sync) {
-            sync.getConfig()
-            .then(function(config) {
-              prettyPrint(config);
-            });
-          })
-          .nodeify(done);
-        };
-      });
-    };
-    */
-
     if (sharing) {
-
-      // @todo: bcauldwell - Commenting these two out for now, until we
-      // need them, and find a good place for them.
-      //printConfig('local');
-      //printConfig('remote');
-
       // APP EVENT: pre-start
       // Set up an ignore file if needed
-      events.on('pre-start', function(app, done) {
+      events.on('pre-app-start', function(app, done) {
 
         // Make sure code root exists.
         return Promise.fromNode(function(cb) {
@@ -96,14 +56,14 @@ module.exports = function(kbox) {
         .then(function() {
 
           // Get remote code directory.
-          var codeDir = deps.get('globalConfig').codeDir;
+          var codeDir = app.config.codeDir;
           // Image to create container from.
-          var image = 'kalabox/debian:stable';
+          var image = 'syncthing';
           // Command to make query.
           var cmd = [
             'cp',
             '/src/' + codeDir + '/.stignore',
-            '/' + codeDir + '/.stignore'
+            '/code/.stignore'
           ];
           // Options for creating container.
           var createOpts = {
@@ -117,25 +77,30 @@ module.exports = function(kbox) {
             Binds: [app.rootBind + ':/src:rw']
           };
           // Create one use container, then query it.
-          return engine.use(image, createOpts, startOpts, function(container) {
-            return engine.queryData(container.id, cmd);
-          });
-
+          var data = {
+            rawImage: image,
+            createOpts: createOpts,
+            startOpts: startOpts,
+            fn: function(container) {
+              return engine.queryData({cid: container.id, cmd: cmd});
+            }
+          };
+          return engine.use(data);
         })
         // Return.
         .nodeify(done);
 
       });
 
-      events.on('post-stop', function(app, done) {
+      events.on('post-app-stop', function(app, done) {
         share.restart(done);
       });
 
-      events.on('post-start', function(app, done) {
+      events.on('post-app-start', function(app, done) {
         share.restart(done);
       });
 
-      events.on('post-uninstall', function(app, done) {
+      events.on('post-app-uninstall', function(app, done) {
         share.restart(done);
       });
 

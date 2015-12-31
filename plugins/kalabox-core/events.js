@@ -12,7 +12,7 @@ module.exports = function(kbox) {
   var events = kbox.core.events.context();
 
   // Start a data container on all apps
-  events.on('pre-app-start', function(app) {
+  events.on('pre-app-start-before', function(app) {
 
     var composeData = {
       data: {

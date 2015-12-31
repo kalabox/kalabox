@@ -16,7 +16,7 @@ module.exports = function(kbox) {
       task.func = function(done) {
 
         // Print helpful stuff to the user after their app has started
-        events.on('post-start', 9, function(app, done) {
+        events.on('post-app-start', 9, function(app, done) {
           console.log(kbox.art.appStart(app));
           done();
         });

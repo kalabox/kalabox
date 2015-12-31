@@ -27,7 +27,7 @@ module.exports = function(kbox) {
         // runs after all other events. We want this even to fire only
         // when you run the kbox stop command so it doesnt mess with other
         // commands like kbox restart or kbox destroy.
-        events.on('post-stop', 9, function(app, done) {
+        events.on('post-app-stop', 9, function(app, done) {
 
           // Get list of app names.
           util.getAppNames()
