@@ -30,7 +30,7 @@ module.exports = function(kbox) {
   /*
    * Run a provider command in a shell.
    */
-  var shCompose = function(cmd) {
+  var shCompose = function(cmd, opts) {
 
     // Set the machine env
     env.setDockerEnv();
@@ -56,7 +56,7 @@ module.exports = function(kbox) {
       kbox.core.env.setEnv('DOCKER_CERT_PATH', config.certDir);
 
       // Run a provider command in a shell.
-      return bin.sh([COMPOSE_EXECUTABLE].concat(cmd));
+      return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
 
     });
 
@@ -212,7 +212,7 @@ module.exports = function(kbox) {
 
     // Run command
     return Promise.retry(function() {
-      return shCompose(cmd);
+      return shCompose(cmd, {silent:true});
     });
 
   };

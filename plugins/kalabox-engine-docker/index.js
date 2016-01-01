@@ -107,9 +107,11 @@ module.exports = function(kbox) {
       return docker.inspect(getId(datum));
     }
     else if (datum.files && datum.service) {
-      return compose.getId(datum.files, datum.services)
+      return compose.getId(datum.files, datum.service)
       .then(function(id) {
-        return docker.inspect(_.trim(id));
+        if (!_.isEmpty(id)) {
+          return docker.inspect(_.trim(id));
+        }
       });
     }
 

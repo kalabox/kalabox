@@ -55,7 +55,7 @@ module.exports = function(kbox) {
 
   // Add a datacontainer for each app and then volumes from that container
   // on all the apps containers
-  events.on('pre-app-start-before', function(app) {
+  events.on('pre-app-start', function(app) {
 
     // Create dir to store this stuff
     var tmpDir = path.join(kbox.util.disk.getTempDir(), app.name);
@@ -79,20 +79,18 @@ module.exports = function(kbox) {
     var dataYmlFile = path.join(tmpDir, 'data.yml');
     kbox.util.yaml.toYamlFile(composeData, dataYmlFile);
 
-    // Add the data yml to the create
-    app.composeBefore.push(dataYmlFile);
-
     // Add the volumes from to the core and after compose
-    _.forEach([app.composeCore, app.composeAfter], function(compose) {
-      var volumesYaml = addDataVolumes(compose);
-      if (!_.isEmpty(volumesYaml)) {
-        var seed = Date.now().toString() + Math.random().toString();
-        var fileName = crypto.createHash('sha1').update(seed).digest('hex');
-        var dataYmlFile = path.join(tmpDir, fileName + '.yml');
-        kbox.util.yaml.toYamlFile(volumesYaml, dataYmlFile);
-        compose.push(dataYmlFile);
-      }
-    });
+    var volumesYaml = addDataVolumes(app.composeCore);
+    if (!_.isEmpty(volumesYaml)) {
+      var seed = Date.now().toString() + Math.random().toString();
+      var fileName = crypto.createHash('sha1').update(seed).digest('hex');
+      var volsYmlFile = path.join(tmpDir, fileName + '.yml');
+      kbox.util.yaml.toYamlFile(volumesYaml, volsYmlFile);
+      app.composeCore.push(volsYmlFile);
+    }
+
+    // Start the data container
+    return kbox.engine.start({compose: [dataYmlFile]});
 
   });
 
