@@ -36,7 +36,8 @@ module.exports = function(kbox) {
         var redisClient = redis.createClient(REDIS_PORT, redisIp);
 
         // Query engine for component container's information.
-        kbox.engine.inspect(cmp.containerId)
+        // @todo: check for other ids besides cid?
+        kbox.engine.inspect(cmp)
         .then(function(data) {
 
           // Get port information from container query.

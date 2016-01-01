@@ -57,7 +57,7 @@ module.exports = function(kbox) {
         .each(function(inspect) {
 
           // Grab more data for the target container
-          return kbox.engine.inspect(inspect.id)
+          return kbox.engine.inspect(inspect)
 
           // And then print that data
           .then(function(data) {

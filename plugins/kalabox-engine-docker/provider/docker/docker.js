@@ -135,8 +135,6 @@ module.exports = function(kbox) {
     }
 
     // Build generic container.
-    // @todo: @bcauldwell - What defines a generic container should
-    // go in a kbox library module.
     if (!name) {
       return null;
     } else {

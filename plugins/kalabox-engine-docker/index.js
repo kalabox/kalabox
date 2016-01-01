@@ -101,8 +101,18 @@ module.exports = function(kbox) {
   /*
    * Inspect a container.
    */
-  var inspect = function(cid) {
-    return docker.inspect(cid);
+  var inspect = function(datum) {
+
+    if (getId(datum)) {
+      return docker.inspect(getId(datum));
+    }
+    else if (datum.files && datum.service) {
+      return compose.getId(datum.files, datum.services)
+      .then(function(id) {
+        return docker.inspect(_.trim(id));
+      });
+    }
+
   };
 
   /*

@@ -200,6 +200,26 @@ module.exports = function(kbox) {
   /*
    * Run docker compose pull
    */
+  var getId = function(files, service) {
+
+    // Get our compose files and build the command
+    var cmd = getFiles(files);
+    cmd.push('ps -q');
+    cmd.push(service);
+
+    // Log
+    log.debug('Trying to discover container id...');
+
+    // Run command
+    return Promise.retry(function() {
+      return shCompose(cmd);
+    });
+
+  };
+
+  /*
+   * Run docker compose pull
+   */
   var create = function(compose) {
 
     // Log
@@ -220,6 +240,7 @@ module.exports = function(kbox) {
 
   // Build module function.
   return {
+    getId: getId,
     pull: pull,
     create: create,
     start: start,
