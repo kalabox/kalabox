@@ -17,7 +17,7 @@ module.exports = function(kbox) {
   var providerConfig = kbox.core.deps.get('providerConfig');
 
   // Set some machine things
-  var MACHINE_CONFIG = providerConfig.machine;
+  var MACHINE_CONFIG = providerConfig.machine.kalabox;
 
   /*
    * Promisified shell

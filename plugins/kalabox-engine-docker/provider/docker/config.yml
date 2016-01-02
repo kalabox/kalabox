@@ -34,18 +34,21 @@ machine:
     darwin: https://github.com/docker/machine/releases/download/v0.5.4/docker-machine_darwin-amd64
     win32: https://github.com/docker/machine/releases/download/v0.5.4/docker-machine_windows-amd64.exe
     linux: https://github.com/docker/machine/releases/download/v0.5.4/docker-machine_linux-amd64
-  ip: 10.13.37.100
-  host: 10.13.37.1
-  hostcidr: 10.13.37.1/24
-  name: Kalabox2
-  driver: virtualbox
-  iso: https://api.github.com/repos/kalabox/kalabox-iso/releases
-  isoversion: 0.11.0
-  memory: 2048
-  dns:
-    - 172.17.0.1
-    - 208.67.222.222
-    - 208.67.220.220
+  kalabox:
+    ip: 10.13.37.100
+    host: 10.13.37.1
+    isoversion: 0.11.0
+    name: Kalabox2
+    driver: virtualbox
+    driveropts:
+      - --virtualbox-boot2docker-url https://api.github.com/repos/kalabox/kalabox-iso/releases
+      - --virtualbox-memory 2048
+      - --virtualbox-hostonly-cidr 10.13.37.1/24
+      - --virtualbox-host-dns-resolver
+    otheropts:
+      - --engine-opt dns=172.17.0.1
+      - --engine-opt dns=208.67.222.222
+      - --engine-opt dns=208.67.220.220
 compose:
   version: 1.5.2
   pkg:

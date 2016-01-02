@@ -22,7 +22,7 @@ module.exports = function(kbox) {
   kbox.core.deps.register('providerConfig', providerConfig);
 
   // Set some useful envars
-  kbox.core.env.setEnv('KALABOX_ENGINE_IP', providerConfig.machine.ip);
+  kbox.core.env.setEnv('KALABOX_ENGINE_IP', providerConfig.machine.kalabox.ip);
 
   /*
    * NPM modules.
@@ -33,6 +33,18 @@ module.exports = function(kbox) {
   var Promise = kbox.Promise;
   var compose = require(path.join(PROVIDER_PATH, 'compose.js'))(kbox);
   var docker = require(path.join(PROVIDER_PATH, 'docker.js'))(kbox);
+
+  // Add some task options
+  /*
+  kbox.core.events.on('pre-task-add', function(task, done) {
+    _.forEach([task], function(value) {
+      if (value.path && value.path.length === 2) {
+        console.log(value)
+      }
+    });
+    done();
+  });
+  */
 
   /*
    * Init.

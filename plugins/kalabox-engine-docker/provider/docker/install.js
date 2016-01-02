@@ -283,7 +283,7 @@ module.exports = function(kbox) {
             // Update the install state
             .then(function() {
               state.updateCurrentInstall({
-                PROVIDER_KALABOX_ISO: MACHINE_CONFIG.isoversion
+                PROVIDER_KALABOX_ISO: MACHINE_CONFIG.kalabox.isoversion
               });
             });
           }

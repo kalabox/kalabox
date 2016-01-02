@@ -23,23 +23,18 @@ module.exports = function(kbox) {
   var env = require('./lib/env.js')(kbox);
   var net = require('./lib/net.js')(kbox);
 
-    // Provider config
-  var providerConfig = kbox.core.deps.get('providerConfig');
-
-  // Set some machine things
-  var MACHINE_CONFIG = providerConfig.machine;
   var MACHINE_EXECUTABLE = bin.getMachineExecutable();
 
   // Set of logging functions.
   var log = kbox.core.log.make('MACHINE');
 
   /*
-   * Return machine name
-   * @todo: get this to handle multiple machine names?
+   * Return machine config
+   * @todo: get this to handle multiple machines?
    */
-  var useMachine = function() {
-    return MACHINE_CONFIG.name;
-  };
+  var getMachine = _.once(function() {
+    return kbox.core.deps.get('providerConfig').machine.kalabox;
+  });
 
   /*
    * Helper to parse errors better
@@ -52,7 +47,7 @@ module.exports = function(kbox) {
     }
 
     // This is ok too
-    if (_.includes(msg, 'Host does not exist: "' + useMachine() + '"')) {
+    if (_.includes(msg, 'Host does not exist: "' + getMachine().name + '"')) {
       return false;
     }
 
@@ -70,7 +65,7 @@ module.exports = function(kbox) {
     env.setDockerEnv();
 
     // Run a provider command in a shell.
-    var run = [MACHINE_EXECUTABLE].concat(cmd).concat(useMachine());
+    var run = [MACHINE_EXECUTABLE].concat(cmd).concat(getMachine().name);
     return bin.sh(run, opts)
 
     // See if we need to recompile our kernel mod
@@ -122,10 +117,10 @@ module.exports = function(kbox) {
       .then(function(data) {
 
         // Correct if not set
-        if (!_.includes(data, MACHINE_CONFIG.ip)) {
+        if (!_.includes(data, getMachine().ip)) {
 
           // Run the corrector command
-          var ssh = [MACHINE_EXECUTABLE, 'ssh'].concat(useMachine());
+          var ssh = [MACHINE_EXECUTABLE, 'ssh'].concat(getMachine().name);
           var cmd = ['sudo', '/opt/bootsync.sh'];
           return bin.sh(ssh.concat(cmd))
 
@@ -137,7 +132,7 @@ module.exports = function(kbox) {
 
         // Say we are good
         else {
-          log.info('Static IP set correctly at ' + MACHINE_CONFIG.ip);
+          log.info('Static IP set correctly at ' + getMachine().ip);
         }
 
       });
@@ -146,9 +141,9 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Init machine
+   * Create a machine
    */
-  var init = function(opts) {
+  var create = function(opts) {
 
     return Promise.retry(function(counter) {
 
@@ -156,34 +151,27 @@ module.exports = function(kbox) {
       log.info(kbox.util.format('Initializing docker machine [%s].', counter));
 
       // Build command and options with defaults
-      // @todo: handle other drivers?
-      // @todo: allow overrides from opts?
       // Core create command
-      var initCmd = [
+      var createCmd = [
         'create',
-        '--driver ' + MACHINE_CONFIG.driver,
+        '--driver ' + getMachine().driver,
       ];
 
-      // Basic options
-      var initOptions = [
-        '--virtualbox-boot2docker-url ' + MACHINE_CONFIG.iso,
-        '--virtualbox-memory ' + MACHINE_CONFIG.memory,
-        '--virtualbox-hostonly-cidr ' + MACHINE_CONFIG.hostcidr,
-        '--virtualbox-host-dns-resolver'
-      ];
+      // Get driver options
+      var createOptions = getMachine().driveropts || [];
 
-      // Add DNS
-      _.forEach(MACHINE_CONFIG.dns, function(dns) {
-        initOptions.push('--engine-opt dns=' + dns);
+      // Add otherOpts
+      _.forEach(getMachine().otherops, function(option) {
+        createOptions.push(option);
       });
 
-      // Add disksize option.
-      if (opts.disksize) {
-        initOptions.unshift('--virtualbox-disk-size ' + opts.disksize);
+      // Add some more dynamic options
+      if (opts.disksize && getMachine().driver === 'virtualbox') {
+        createOptions.unshift('--virtualbox-disk-size ' + opts.disksize);
       }
 
       // Run provider command.
-      var run = initCmd.concat(initOptions);
+      var run = createCmd.concat(createOptions);
       return shProvider(run)
 
       // Handle relevant create errors
@@ -249,7 +237,7 @@ module.exports = function(kbox) {
     // Create the machine if needed.
     .then(function(exists) {
       if (!exists) {
-        return init(opts);
+        return create(opts);
       }
     })
 
@@ -290,11 +278,11 @@ module.exports = function(kbox) {
 
       // Find the status of our machine in a parsed result
       var status = _.result(_.find(shellParser(result), function(machine) {
-        return machine.NAME === MACHINE_CONFIG.name;
+        return machine.NAME === getMachine().name;
       }), 'STATE');
 
       // Tell us WTFIGO
-      log.debug(MACHINE_CONFIG.name + ' is ' + status);
+      log.debug(getMachine().name + ' is ' + status);
 
       return status.toLowerCase();
     });
@@ -354,7 +342,7 @@ module.exports = function(kbox) {
    * Return machine's IP address.
    */
   var getIp = function() {
-    return Promise.resolve(MACHINE_CONFIG.ip);
+    return Promise.resolve(getMachine().ip);
   };
 
   /*
@@ -448,8 +436,8 @@ module.exports = function(kbox) {
       var auth = JSON.parse(data).HostOptions.AuthOptions;
       return {
         protocol: 'https',
-        host: MACHINE_CONFIG.ip,
-        machine: MACHINE_CONFIG.name,
+        host: getMachine().ip,
+        machine: getMachine().name,
         port: '2376',
         certDir: auth.CertDir,
         ca: fs.readFileSync(auth.CaCertPath),
@@ -470,7 +458,7 @@ module.exports = function(kbox) {
    * Get list of server IP addresses.
    */
   var getServerIps = function() {
-    return [MACHINE_CONFIG.ip];
+    return [getMachine().ip];
   };
 
   /*
