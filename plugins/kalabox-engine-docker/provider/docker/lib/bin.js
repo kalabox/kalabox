@@ -86,7 +86,7 @@ module.exports = function(kbox) {
     log.debug('Executing command.', cmd);
 
     // pass in options
-    var options = opts || {silent:false};
+    var options = _.extend({silent: false}, opts);
 
     // Run shell command.
     return Promise.fromNode(function(cb) {

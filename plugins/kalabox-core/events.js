@@ -14,89 +14,62 @@ module.exports = function(kbox) {
   var events = kbox.core.events.context();
 
   /*
-   * Helper functon to add data volume to all our containers
+   * Helper functon to add data volume to all our apps
    */
-  var addDataVolumes = function(files) {
+  var addDataVolumes = function(app) {
 
-    files = files;
-
-    // App datacontainer
-    // jscs:disable
-    /* jshint ignore:start */
-    var dataContainer = '$KALABOX_APP_DATA_CONTAINER_NAME';
+    // Create dir to store this stuff
+    var tmpDir = path.join(kbox.util.disk.getTempDir(), app.name);
+    fs.mkdirpSync(tmpDir);
 
     // Start them up
     var currentCompose = {};
     var newCompose = {};
 
     // Get our composed things
-    _.forEach(files, function(file)  {
+    _.forEach(app.composeCore, function(file)  {
       _.extend(currentCompose, kbox.util.yaml.toJson(file));
     });
 
+    // jscs:disable
+    /* jshint ignore:start */
     // Add datavolumes
     _.forEach(currentCompose, function(value, key)  {
       if (Array.isArray(value.volumes_from)) {
-        value.volumes_from.push(dataContainer);
+        value.volumes_from.push('kalaboxdata');
       }
       else {
-        value.volumes_from = [dataContainer];
+        value.volumes_from = ['kalaboxdata'];
       }
       var obj = {};
-      obj[key] = {volumes_from: value.volumes_from};
+      obj[key] = {volumes_from: _.uniq(value.volumes_from)};
       _.extend(newCompose, obj);
     });
-
-    return newCompose;
     // jscs:enable
     /* jshint ignore:end */
+
+    // Add data container itself
+    newCompose.kalaboxdata = {
+      image: 'kalabox/data:$KALABOX_IMG_VERSION'
+    };
+
+    if (!_.isEmpty(newCompose)) {
+      var seed = Date.now().toString() + Math.random().toString();
+      var fileName = crypto.createHash('sha1').update(seed).digest('hex');
+      var newComposeFile = path.join(tmpDir, fileName + '.yml');
+      kbox.util.yaml.toYamlFile(newCompose, newComposeFile);
+      app.composeCore.push(newComposeFile);
+    }
 
   };
 
   // Add a datacontainer for each app and then volumes from that container
   // on all the apps containers
-  events.on('pre-app-start', function(app) {
-
-    // Create dir to store this stuff
-    var tmpDir = path.join(kbox.util.disk.getTempDir(), app.name);
-    fs.mkdirpSync(tmpDir);
-
-    // Add teh data container
-    var composeData = {
-      data: {
-        image: 'kalabox/data:$KALABOX_IMG_VERSION'
-      }
-    };
-
-    // Data yaml def
-    // jscs:disable
-    /* jshint ignore:start */
-    composeData.data.container_name = '$KALABOX_APP_DATA_CONTAINER_NAME';
-    /* jshint ignore:end */
-    // jscs:enable
-
-    // Create data yml
-    var dataYmlFile = path.join(tmpDir, 'data.yml');
-    kbox.util.yaml.toYamlFile(composeData, dataYmlFile);
-
-    // Add the volumes from to the core and after compose
-    var volumesYaml = addDataVolumes(app.composeCore);
-    if (!_.isEmpty(volumesYaml)) {
-      var seed = Date.now().toString() + Math.random().toString();
-      var fileName = crypto.createHash('sha1').update(seed).digest('hex');
-      var volsYmlFile = path.join(tmpDir, fileName + '.yml');
-      kbox.util.yaml.toYamlFile(volumesYaml, volsYmlFile);
-      app.composeCore.push(volsYmlFile);
-    }
-
-    // Start the data container
-    return kbox.engine.start({compose: [dataYmlFile]});
-
+  events.on('pre-app-start', 1, function(app) {
+    addDataVolumes(app);
   });
-
-  // Destroy data contanier
-  events.on('pre-app-destroy', function(app) {
-    app.components.push({containerName: app.dataContainerName});
+  events.on('pre-app-destroy', 1, function(app) {
+    addDataVolumes(app);
   });
 
 };

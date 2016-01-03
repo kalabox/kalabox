@@ -152,16 +152,13 @@ module.exports = function(kbox) {
 
       // Build command and options with defaults
       // Core create command
-      var createCmd = [
-        'create',
-        '--driver ' + getMachine().driver,
-      ];
+      var createCmd = ['create', '--driver ' + getMachine().driver];
 
       // Get driver options
       var createOptions = getMachine().driveropts || [];
 
       // Add otherOpts
-      _.forEach(getMachine().otherops, function(option) {
+      _.forEach(getMachine().otheropts, function(option) {
         createOptions.push(option);
       });
 

@@ -41,7 +41,7 @@ module.exports = function(kbox) {
     if (sharing) {
       // APP EVENT: pre-start
       // Set up an ignore file if needed
-      events.on('pre-app-start', function(app, done) {
+      events.on('post-app-start', 2, function(app, done) {
 
         // Make sure code root exists.
         return Promise.fromNode(function(cb) {
@@ -69,7 +69,7 @@ module.exports = function(kbox) {
           var createOpts = {
             'Env': ['APPDOMAIN=' + app.domain],
             HostConfig: {
-              VolumesFrom: [app.dataContainerName]
+              VolumesFrom: ['kalaboxdata']
             }
           };
           // Options for starting container.
@@ -92,7 +92,7 @@ module.exports = function(kbox) {
 
       });
 
-      events.on('post-app-stop', function(app, done) {
+      events.on('post-app-stop', 2, function(app, done) {
         share.restart(done);
       });
 

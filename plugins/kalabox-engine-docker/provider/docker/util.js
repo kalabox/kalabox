@@ -85,7 +85,8 @@ module.exports = function(kbox) {
     }
 
     // Otherwise return our normal compare
-    return install.getProUp('PROVIDER_KALABOX_ISO', MACHINE_CONFIG.isoversion);
+    var isoVersion = MACHINE_CONFIG.kalabox.isoversion;
+    return install.getProUp('PROVIDER_KALABOX_ISO', isoVersion);
 
   };
 

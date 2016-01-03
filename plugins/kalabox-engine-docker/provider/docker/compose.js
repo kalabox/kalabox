@@ -27,6 +27,17 @@ module.exports = function(kbox) {
   // Set of logging functions.
   var log = kbox.core.log.make('COMPOSE');
 
+  // Set our project compose on app events
+  kbox.core.events.on('pre-app-start', 1, function(app) {
+    kbox.core.env.setEnv('COMPOSE_PROJECT_NAME', app.name);
+  });
+  kbox.core.events.on('pre-app-stop', 1, function(app) {
+    kbox.core.env.setEnv('COMPOSE_PROJECT_NAME', app.name);
+  });
+  kbox.core.events.on('pre-app-uninstall', 1, function(app) {
+    kbox.core.env.setEnv('COMPOSE_PROJECT_NAME', app.name);
+  });
+
   /*
    * Run a provider command in a shell.
    */
@@ -163,7 +174,7 @@ module.exports = function(kbox) {
         }
 
         // Up us
-        return shCompose(files.concat(['up']).concat(options));
+        return shCompose(files.concat(['up']).concat(options), opts);
       })
 
       // Then we want to stop the containers so this works the same as

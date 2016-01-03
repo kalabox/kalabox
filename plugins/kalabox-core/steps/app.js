@@ -98,7 +98,7 @@ module.exports = function(kbox) {
     // Build data we need
     var appSpoof = {
       task: {
-        module: app.config.appType
+        module: app.config.type
       }
     };
 

@@ -260,6 +260,7 @@ module.exports = function(kbox) {
     step.all = function(state, done) {
 
       // Adds in the images we need for core
+      // @todo: only want to do this when needed?
       var src = path.resolve(__dirname);
       state.images.push({id: 'data', name: 'data', srcRoot: src});
 

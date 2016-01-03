@@ -95,8 +95,8 @@ function getAppContextFromCwdConfig(/*apps*/) {
     var configFilepath = path.join(cwd, 'kalabox.yml');
     if (fs.existsSync(configFilepath)) {
       var config = kbox.core.config.getAppConfig(null, cwd);
-      if (config.appName) {
-        return kbox.app.create(config.appName, config);
+      if (config.name) {
+        return kbox.app.create(config.name, config);
       }
     }
   });

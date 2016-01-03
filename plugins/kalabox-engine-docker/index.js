@@ -37,14 +37,16 @@ module.exports = function(kbox) {
   // Add some task options
   /*
   kbox.core.events.on('pre-task-add', function(task, done) {
-    _.forEach([task], function(value) {
-      if (value.path && value.path.length === 2) {
-        console.log(value)
+    var inCat = ['appAction', 'dev'];
+    var needsEnvOpt = [''];
+    _.forEach([task], function(t) {
+      if (t.path && t.path.length === 2 && _.includes(inCat, t.category)) {
+        console.log(t.path);
       }
     });
     done();
   });
-  */
+*/
 
   /*
    * Init.
@@ -89,7 +91,7 @@ module.exports = function(kbox) {
    * Helper to return a valid id from app data
    */
   var getId = function(c) {
-    return c.cid || c.containerName || c.containerID || c.name;
+    return c.cid || c.id || c.containerName || c.containerID || c.name;
   };
 
   /*
@@ -169,7 +171,7 @@ module.exports = function(kbox) {
         return docker.start(getId(datum), data.opts);
       }
       else if (datum.compose) {
-        return compose.start(datum.compose, datum.opts);
+        return compose.start(datum.compose);
       }
     });
 
