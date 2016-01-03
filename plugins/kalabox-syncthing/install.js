@@ -8,7 +8,7 @@ module.exports = function(kbox) {
   // Kalabox modules
   var meta = require('./meta.js');
   var util = require('./util.js')(kbox);
-  var share = kbox.share;
+  var share = require('./share.js')(kbox);
   var packed = kbox.core.deps.get('prepackaged');
   var provisioned = kbox.core.deps.get('globalConfig').provisioned;
 

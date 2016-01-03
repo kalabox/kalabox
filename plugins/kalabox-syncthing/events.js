@@ -1,15 +1,18 @@
 'use strict';
 
-var fs = require('fs-extra');
-var os = require('os');
-var path = require('path');
-var Promise = require('bluebird');
-
 module.exports = function(kbox) {
+
+  var fs = require('fs-extra');
+  var os = require('os');
+  var path = require('path');
+
+  var Promise = kbox.Promise;
 
   // Create new event context.
   var events = kbox.core.events.context();
-  var share = kbox.share;
+
+  // Get our share libraries
+  var share = require('./share.js')(kbox);
 
   // EVENT: pre-down
   events.on('pre-app-down', function(done) {
@@ -32,7 +35,6 @@ module.exports = function(kbox) {
 
     var globalConfig = kbox.core.deps.lookup('globalConfig');
     var engine = kbox.engine;
-    var share = kbox.share;
 
     var shareIgnores = app.config.shareIgnores.join(os.EOL);
     var stignoreFile = path.join(app.config.codeRoot, '.stignore');
