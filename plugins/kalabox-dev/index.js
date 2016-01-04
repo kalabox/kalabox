@@ -2,5 +2,5 @@
 
 module.exports = function(kbox) {
   // Load CLI tasks for this plugin.
-  require('./tasks.js')(kbox);
+  require('./lib/tasks.js')(kbox);
 };

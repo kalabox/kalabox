@@ -11,73 +11,34 @@ module.exports = function(kbox) {
 
   // Npm modules
   var fs = require('fs-extra');
-  var _ = require('lodash');
 
   // Kalabox modules
-  var meta = require('./meta.js');
   var packed = kbox.core.deps.get('prepackaged');
-  var config = kbox.core.deps.get('globalConfig');
-  var provisioned = config.provisioned;
+  var provisioned = kbox.core.deps.get('globalConfig').provisioned;
+  var install = kbox.install;
 
-  /*
-   * Return some info about the current state of the kalabox installation
-   */
-  var getCurrentInstall = function() {
-
-    // This is where our current install file should live
-    var cIF = path.join(config.sysConfRoot, 'installed.json');
-
-    // If the file exists use that if not empty object
-    var currentInstall = (fs.existsSync(cIF)) ? require(cIF) : {};
-
-    return currentInstall;
-
-  };
-
-  /*
-   * Helper function to grab and compare a meta prop
-   */
-  var getProUp = function(prop) {
-
-    // Get details about the state of the current installation
-    var currentInstall = getCurrentInstall();
-
-    // This is the first time we've installed so we def need
-    if (_.isEmpty(currentInstall) || !currentInstall[prop]) {
-      return true;
-    }
-
-    // We have a syncversion to compare
-    // @todo: is diffence a strong enough check?
-    var nV = meta[prop];
-    if (currentInstall[prop] && (currentInstall[prop] !== nV)) {
-      return true;
-    }
-
-    // Hohum i guess we're ok
-    return false;
-
-  };
+  // Get and load the install config
+  var config = kbox.util.yaml.toJson(path.join(__dirname, 'config.yml'));
 
   /*
    * Helper function to assess whether we need to grab a new syncthing image
    */
   var needsImgUp = function() {
-    return getProUp('SYNCTHING_IMAGE');
+    return install.getProUp('SYNCTHING_IMAGE', config.image);
   };
 
   /*
    * Helper function to assess whether we need to grab a new syncthing image
    */
   var needsBinUp = function() {
-    return getProUp('SYNCTHING_BINARY');
+    return install.getProUp('SYNCTHING_BINARY', config.binary);
   };
 
   /*
    * Helper function to assess whether we need to grab new syncthing config
    */
   var needsConfig = function() {
-    return getProUp('SYNCTHING_CONFIG');
+    return install.getProUp('SYNCTHING_CONFIG', config.config);
   };
 
   /*
@@ -102,12 +63,13 @@ module.exports = function(kbox) {
     // Move config from download location to the correct location if this
     // is a valid update move
     if ((!packed && !provisioned) && this.needsDownloads()) {
-      var config = path.join(tmp, path.basename(meta.SYNCTHING_CONFIG_URL));
-      fs.renameSync(config, path.join(syncthingDir, path.basename(config)));
+      var configFile = path.basename(config.configfile);
+      var src = path.join(tmp, configFile);
+      fs.renameSync(src, path.join(syncthingDir, configFile));
     }
 
     // Get OS specific extracted folder
-    var downloadURL = meta.SYNCTHING_DOWNLOAD_URL[process.platform];
+    var downloadURL = config.pkg[process.platform];
     var ext = (process.platform === 'win32') ? '.zip' : '.tar.gz';
     var extractedDir = path.join(tmp, path.basename(downloadURL, ext));
 

@@ -15,44 +15,40 @@ module.exports = function(kbox) {
   var _ = require('lodash');
 
   // Kalabox modules
-  var meta = require('./meta.js')(kbox);
   var provider = kbox.engine.provider;
   var Promise = kbox.Promise;
   var install = kbox.install;
 
+  // Services config
+  var config = kbox.util.yaml.toJson(path.join(__dirname, 'config.yml'));
+  var posixDnsFile = kbox.core.deps.lookup('globalConfig').domain;
+
   // Set Kalabox DNS constantsz
-  // @todo: stronger test
-  var KALABOX_WIN32_DNS = '10.13.37.42';
-  var SERVICE_IMAGES_VERSION = meta.SERVICE_IMAGES_VERSION;
+  // @todo: get this from engine somehow?
+  var KALABOX_WIN32_DNS = '10.13.37.100';
 
   /*
    * Helper function to assess whether we need new service images
    */
   var needsImages = function() {
-    return install.getProUp('SERVICE_IMAGES_VERSION', SERVICE_IMAGES_VERSION);
+    return install.getProUp('SERVICE_IMAGES_VERSION', config.version);
   };
 
   /*
    * Helper function to determine whether we need to run darwin DNS commands
    */
   var needsDarwinDNS = function() {
-    var dnsPath = path.join(meta.dns.darwin.path, meta.dns.darwin.file);
-    return !fs.existsSync(dnsPath);
+    var dnsFile = path.join(config.dns.files.darwin.path, posixDnsFile);
+    return !fs.existsSync(dnsFile);
   };
 
   /*
    * Helper function to determine whether we need to run linux DNS commands
    */
   var needsLinuxDNS = function() {
-
-    // Get linux flavor
     var flavor = kbox.install.linuxOsInfo.getFlavor();
-
-    var dnsDir = path.join(meta.dns.linux[flavor].path);
-    var dnsFile = path.join(meta.dns.linux[flavor].file);
-    var dnsPath = path.join(dnsDir, dnsFile);
-    return !fs.existsSync(dnsPath);
-
+    var dnsDir = config.dns.files.linux[flavor].path;
+    return !fs.existsSync(path.join(dnsDir, posixDnsFile));
   };
 
   /*
@@ -234,7 +230,7 @@ module.exports = function(kbox) {
 
       // Build DNS command
       if (needsDarwinDNS()) {
-        var dnsFile = [meta.dns.darwin.path, meta.dns.darwin.file];
+        var dnsFile = [config.dns.files.darwin.path, posixDnsFile];
         var ipCmds = kbox.util.dns.dnsCmd(ips, dnsFile);
         var cmd = ipCmds.join(' && ');
         dnsCmds.push(cmd);
@@ -319,11 +315,10 @@ module.exports = function(kbox) {
         // Get linux flavor
         var flavor = kbox.install.linuxOsInfo.getFlavor();
 
-        var dnsDir = path.join(meta.dns.linux[flavor].path);
-        var dnsFile = path.join(meta.dns.linux[flavor].file);
-        var dnsArray = [dnsDir, dnsFile];
+        var dnsDir = path.join(config.dns.pkg.linux[flavor].path);
+        var dnsFile = [dnsDir, posixDnsFile];
 
-        var ipCmds = kbox.util.dns.dnsCmd(ips, dnsArray);
+        var ipCmds = kbox.util.dns.dnsCmd(ips, dnsFile);
         var cmd = ipCmds.join(' && ');
         dnsCmds.push(cmd);
       }
@@ -351,11 +346,12 @@ module.exports = function(kbox) {
   var getResolverPkgName = function() {
 
     // Get the linux flavor and version
+    // VERSION_ID="14.04"
     var flavor = kbox.install.linuxOsInfo.getFlavor();
-    var version = kbox.install.linuxOsInfo.get().VERSION_ID;
+    var version = kbox.install.linuxOsInfo.get().VERSION_ID.replace('.', '_');
 
     // Determine whether we need to use a generic version or not
-    var flavorPkgs = meta.resolverPkg[flavor];
+    var flavorPkgs = config.dns.pkg[flavor];
     var hasPkg = _.includes(Object.keys(flavorPkgs), version);
     var pkgName = (hasPkg) ? flavorPkgs[version] : flavorPkgs.default;
 

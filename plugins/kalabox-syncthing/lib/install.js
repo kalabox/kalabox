@@ -6,11 +6,13 @@ module.exports = function(kbox) {
   var path = require('path');
 
   // Kalabox modules
-  var meta = require('./meta.js');
   var util = require('./util.js')(kbox);
   var share = require('./share.js')(kbox);
   var packed = kbox.core.deps.get('prepackaged');
   var provisioned = kbox.core.deps.get('globalConfig').provisioned;
+
+  // Get and load the install config
+  var config = kbox.util.yaml.toJson(path.join(__dirname, 'config.yml'));
 
   /*
    * We only need to turn syncthing off if we plan on updateing it
@@ -57,12 +59,12 @@ module.exports = function(kbox) {
 
         // We only need this if we need to update the local binary
         if (util.needsBinUp()) {
-          state.downloads.push(meta.SYNCTHING_DOWNLOAD_URL[process.platform]);
+          state.downloads.push(config.pkg[process.platform]);
         }
 
         // Grab new config if we need it
         if (util.needsConfig()) {
-          state.downloads.push(meta.SYNCTHING_CONFIG_URL);
+          state.downloads.push(config.configfile);
         }
 
       };
@@ -84,8 +86,8 @@ module.exports = function(kbox) {
         util.installSyncthing(state.config.sysConfRoot);
 
         // Update our current install to reflect that
-        state.updateCurrentInstall({SYNCTHING_BINARY: '0.11.26'});
-        state.updateCurrentInstall({SYNCTHING_CONFIG: '0.11.0'});
+        state.updateCurrentInstall({SYNCTHING_BINARY: config.binary});
+        state.updateCurrentInstall({SYNCTHING_CONFIG: config.config});
 
       };
     });
@@ -120,7 +122,7 @@ module.exports = function(kbox) {
       step.all = function(state) {
 
         // Update the current install
-        state.updateCurrentInstall({SYNCTHING_IMAGE: '0.11.26'});
+        state.updateCurrentInstall({SYNCTHING_IMAGE: config.image});
 
       };
     });

@@ -141,7 +141,8 @@ module.exports = function(kbox) {
       return {
         id: dockerContainer.Id,
         name: containerNameString,
-        app: name.app
+        app: name.app,
+        kind: name.kind
       };
     }
 

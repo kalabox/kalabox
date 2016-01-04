@@ -9,7 +9,7 @@ module.exports = function(kbox) {
    * Constants.
    */
   var IMAGE_NAME = 'syncthing';
-  var CONTAINER_NAME = 'kalabox_syncthing';
+  var CONTAINER_NAME = 'kalabox_syncthing_1';
 
   // Query engine to see if syncthing container exists.
   var isInstalled = function() {
@@ -43,7 +43,7 @@ module.exports = function(kbox) {
           '21025/udp': [{'HostIp': '', 'HostPort': '21025'}],
           '21026/udp': [{'HostIp': '', 'HostPort': '21026'}]
         },
-        VolumesFrom: ['kalabox_data']
+        VolumesFrom: ['kalabox_data_1']
       }
     };
 

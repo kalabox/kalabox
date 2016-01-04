@@ -97,13 +97,6 @@ module.exports = function(kbox) {
    */
   kbox.install.registerStep(function(step) {
     step.name = 'core-disk-space';
-
-    // On windows in binary we need to run this after downloads to ensure
-    // we have diskspace.exe
-    // @todo: add inBin conditional
-    if (process.platform === 'win32' && inBin) {
-      step.deps = ['core-downloads'];
-    }
     step.subscribes = ['engine-up'];
     step.description = 'Checking for available disk space...';
     step.all = function(state, done) {
@@ -186,9 +179,7 @@ module.exports = function(kbox) {
   kbox.install.registerStep(function(step) {
     step.name = 'core-downloads';
     step.description = 'Downloading files...';
-    step.deps = [
-      'core-internet'
-    ];
+    step.deps = ['core-internet'];
     step.all = function(state, done) {
 
       // Get our download helpers
@@ -259,11 +250,6 @@ module.exports = function(kbox) {
     step.description = 'Pulling images...';
     step.all = function(state, done) {
 
-      // Adds in the images we need for core
-      // @todo: only want to do this when needed?
-      var src = path.resolve(__dirname);
-      state.images.push({id: 'data', name: 'data', srcRoot: src});
-
       // Dedupe images
       var images = _.uniq(state.images, 'id');
       state.log.debug('PULLING IMAGES => ' + JSON.stringify(images));
@@ -274,12 +260,6 @@ module.exports = function(kbox) {
       // If this errors then fail the step
       .catch(function(err) {
         state.fail(state, err);
-      })
-
-      // Create our data container
-      // Do this here so its available before other things
-      .then(function() {
-        return kbox.engine.create({compose: [path.resolve(__dirname)]});
       })
 
       // Next step

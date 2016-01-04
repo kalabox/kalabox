@@ -12,8 +12,8 @@ module.exports = function(kbox) {
   var sha1 = require('sha1');
 
   // Sync modules
-  var Sync = require('./lib/sync.js')(kbox);
-  var container = require('./lib/syncContainer.js')(kbox);
+  var Sync = require('./share/sync.js')(kbox);
+  var container = require('./share/syncContainer.js')(kbox);
 
   // Kalabox modules
   var engine = kbox.engine;

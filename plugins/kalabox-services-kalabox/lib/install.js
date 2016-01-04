@@ -7,10 +7,9 @@ module.exports = function(kbox) {
 
   // Kalabox modules
   var util = require('./util.js')(kbox);
-  var meta = require('./meta.js')(kbox);
 
-  // Constants
-  var SERVICE_IMAGES_VERSION = meta.SERVICE_IMAGES_VERSION;
+  // Services config
+  var config = kbox.util.yaml.toJson(path.join(__dirname, 'config.yml'));
 
   /*
    * Submit core images for install
@@ -21,9 +20,8 @@ module.exports = function(kbox) {
       step.subscribes = ['core-image-build'];
       step.description = 'Adding services images to build list...';
       step.all = function(state) {
-        var srcRoot = path.resolve(__dirname, '..');
+        var srcRoot = path.resolve(__dirname, '..', '..');
         state.images.push({id: 'proxy', name: 'proxy', srcRoot: srcRoot});
-        state.images.push({id: 'data', name: 'data', forcePull: true});
         state.images.push({id: 'dns', name: 'dns', srcRoot: srcRoot});
       };
 
@@ -54,7 +52,7 @@ module.exports = function(kbox) {
           // Update our current install if no errors have been thrown
           if (state.status) {
             state.updateCurrentInstall({
-              SERVICE_IMAGES_VERSION: SERVICE_IMAGES_VERSION
+              SERVICE_IMAGES_VERSION: config.version
             });
           }
 

@@ -57,11 +57,6 @@ module.exports = function(kbox) {
 
     // Get app containers.
     return getAppContainers(appName)
-    // Filter out data container.
-    .filter(function(containerInfo) {
-      var o = kbox.util.docker.containerName.parse(containerInfo.name);
-      return o.name !== 'kalaboxdata';
-    })
     // Reduce list of containers to a app stats object.
     .reduce(function(obj, containerInfo) {
       // Increment running.
@@ -106,11 +101,7 @@ module.exports = function(kbox) {
       // Take the info and print it out nicely
       .then(function(info) {
         if (info) {
-          var split = info.name.split('_');
-          var isData = (split[2] === 'kalaboxdata') ? true : false;
-          if (!isData) {
-            console.log(JSON.stringify(info, null, '  '));
-          }
+          console.log(JSON.stringify(info, null, '  '));
         }
       });
 

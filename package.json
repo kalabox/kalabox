@@ -33,7 +33,7 @@
   "dependencies": {
     "bluebird": "^2.9.3",
     "chalk": "~0.5.1",
-    "diskspace": "https://github.com/kalabox/diskspace.js/tarball/master",
+    "diskspace": "^1.0.2",
     "dmg": "^0.1.0",
     "dockerode": "^2.2.7",
     "download": "^3.3.0",
