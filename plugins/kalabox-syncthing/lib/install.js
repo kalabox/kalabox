@@ -104,7 +104,7 @@ module.exports = function(kbox) {
       step.all = function(state) {
 
         // Adds in the images we need for syncthing
-        var src = path.resolve(__dirname);
+        var src = path.resolve(__dirname, '..');
         state.images.push({id: 'syncthing', name: 'syncthing', srcRoot: src});
 
       };

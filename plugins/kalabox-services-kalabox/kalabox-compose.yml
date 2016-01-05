@@ -6,6 +6,7 @@ proxy:
     - "80:80"
     - "443:443"
     - "8160:8160"
+  restart: always
 dns:
   image: kalabox/dns:$KALABOX_IMG_VERSION
   environment:
@@ -13,3 +14,4 @@ dns:
     DOMAIN: $KALABOX_DOMAIN
   ports:
     - "$KALABOX_ENGINE_IP:53:53/udp"
+  restart: always

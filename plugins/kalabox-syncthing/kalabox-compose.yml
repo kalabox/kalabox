@@ -1,0 +1,10 @@
+syncthing:
+  image: kalabox/syncthing:$KALABOX_IMG_VERSION
+  restart: always
+  volumes:
+    - /etc/syncthing
+  ports:
+    - "60008:60008/tcp"
+    - "22000:22000/tcp"
+    - "21025:21025/udp"
+    - "21026:21026/udp"

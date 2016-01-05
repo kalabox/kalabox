@@ -277,6 +277,7 @@ module.exports = function(kbox) {
     step.description = 'Updating apps...';
     step.all = function(state, done) {
 
+/*
       // Grab some helpers
       var helpers = require('./steps/app.js')(kbox);
 
@@ -329,7 +330,8 @@ module.exports = function(kbox) {
 
       // next step
       .nodeify(done);
-
+      */
+      done();
     };
   });
 

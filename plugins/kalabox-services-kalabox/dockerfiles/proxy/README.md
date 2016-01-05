@@ -1,46 +1,38 @@
-Kalabox Hipache
+Kalabox Proxy
 ===================
 
-Hipache rebased on kalabox/debian
+A proxy server based on hipache
 
 ```
 
+# Reverse proxy container for Kalabox
 # docker build -t kalabox/proxy .
+# docker run -d kalabox/proxy
 
-FROM kalabox/debian:stable
+FROM alpine:3.2
+
+ENV S6_OVERLAY_VERSION v1.16.0.1
+ENV NODE_ENV production
 
 RUN \
-  apt-get update -y && \
-  curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
-  apt-get install -y supervisor nodejs npm && \
+  apk add --update bind-tools curl && \
+  curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xvfz - -C / && \
+  apk del curl && \
+  apk add --update nodejs redis openssl && \
   npm install --prefix=/usr/local -g https://github.com/kalabox/hipache/tarball/0.4.2-kbox --production && \
   mkdir -p /var/log/hipache && \
-  apt-get -y install build-essential tcl8.5 && \
-  cd /tmp && curl -O http://download.redis.io/releases/redis-2.8.18.tar.gz && \
-  tar xzf redis-2.8.18.tar.gz && cd redis-2.8.18 && \
-  make && make install && \
-  apt-get -y purge --auto-remove build-essential tcl8.5 && \
-  apt-get -y clean && \
-  apt-get -y autoclean && \
-  apt-get -y autoremove && \
-  rm -rf /var/lib/apt/* && rm -rf && rm -rf /var/lib/cache/* && rm -rf /var/lib/log/* && rm -rf /tmp/*
+  mkdir -p /certs && \
+  rm -rf /var/cache/apk/*
 
-COPY ./config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY ./config/redis.conf /src/redis/redis.conf
-COPY ./config/hipache.json /src/hipache/config.json
-COPY ./config/keys.sh /src/keys/keys.sh
+ADD root /
 
-RUN \
-  mkdir /certs && chmod +x /src/keys/keys.sh
-
-ENV NODE_ENV production
+VOLUME ["/var/lib/redis"]
 
 EXPOSE 80
 EXPOSE 443
 EXPOSE 8160
 
-VOLUME ["/var/lib/redis"]
-
-CMD ["supervisord", "-n"]
+ENTRYPOINT ["/init"]
+CMD []
 
 ```

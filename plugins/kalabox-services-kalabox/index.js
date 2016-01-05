@@ -18,7 +18,10 @@ module.exports = function(kbox) {
   var Promise = kbox.Promise;
 
   // Path to our compose file
-  var servicesFile = path.join(__dirname, 'kalabox-compose.yml');
+  var coreServices = {
+    compose: [path.join(__dirname, 'kalabox-compose.yml')],
+    opts: {project: 'kalabox'}
+  };
 
   /*
    * Logging functions.
@@ -46,13 +49,10 @@ module.exports = function(kbox) {
   var install = function() {
 
     // Log action
-    log.debug('Creating services from ' + servicesFile);
-
-    // Set our compose env so our containers get appropriate names
-    kbox.core.env.setEnv('COMPOSE_PROJECT_NAME', 'kalabox_');
+    log.debug('Creating services from ' + coreServices);
 
     // Get service info and bind to this.
-    return kbox.engine.create({compose: [servicesFile]});
+    return kbox.engine.create(coreServices);
 
   };
 
@@ -61,14 +61,14 @@ module.exports = function(kbox) {
    */
   var rebuild = function() {
 
-    // Log action
-    log.debug('Rebuilding services from ' + servicesFile);
-
-    // Set our compose env so our containers get appropriate names
-    kbox.core.env.setEnv('COMPOSE_PROJECT_NAME', 'kalabox_');
-
     // Get service info and bind to this.
-    return kbox.engine.create({compose: [servicesFile], opts: {recreate:true}});
+    var rebuildServices = coreServices;
+    rebuildServices.opts.recreate = true;
+
+    // Log action
+    log.debug('Rebuilding services from ' + rebuildServices);
+
+    return kbox.engine.create(rebuildServices);
 
   };
 
@@ -79,29 +79,37 @@ module.exports = function(kbox) {
 
     log.debug('Verifying services are up');
 
+    // Start component collector
+    var components = {};
+
+    // Load our core kalabox-compose.yml
+    _.forEach(coreServices.compose, function(file) {
+      _.extend(components, kbox.util.yaml.toJson(file));
+    });
+
     // Get our containers
-    return kbox.engine.list()
+    return Promise.resolve(_.keys(components))
 
     // Filter out services
-    .filter(function(container) {
-      return container.kind === 'service';
+    .map(function(service) {
+      var check = coreServices;
+      check.opts.service = service;
+      return kbox.engine.inspect(check);
     })
 
     // Discover if we need to boot up our services
     .reduce(function(running, service) {
-      return kbox.engine.isRunning(service.id);
+      return kbox.engine.isRunning(service.Id);
     }, false)
 
     // Restart our services if needed
     .then(function(running) {
       if (!running) {
 
-        log.debug('Services are not running. Restarting...');
+        log.info('Services are not running. Restarting...');
 
-        // Set our compose env so our containers get appropriate names
-        kbox.core.env.setEnv('COMPOSE_PROJECT_NAME', 'kalabox_');
         // Start up our services again
-        return kbox.engine.start({compose: [servicesFile]});
+        return kbox.engine.start(coreServices);
       }
     });
 

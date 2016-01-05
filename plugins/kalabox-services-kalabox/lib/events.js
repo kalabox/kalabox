@@ -21,7 +21,7 @@ module.exports = function(kbox) {
    * Listens for post-start-component
    * - Creates a proxy record via redis for components with proxy definitions.
    */
-  events.on('post-app-start', function(app) {
+  events.on('post-app-start', 1, function(app) {
 
     // Go through our components
     return Promise.each(app.components, function(cmp) {

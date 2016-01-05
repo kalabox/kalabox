@@ -27,17 +27,6 @@ module.exports = function(kbox) {
   // Set of logging functions.
   var log = kbox.core.log.make('COMPOSE');
 
-  // Set our project compose on app events
-  kbox.core.events.on('pre-app-start', 1, function(app) {
-    kbox.core.env.setEnv('COMPOSE_PROJECT_NAME', app.name);
-  });
-  kbox.core.events.on('pre-app-stop', 1, function(app) {
-    kbox.core.env.setEnv('COMPOSE_PROJECT_NAME', app.name);
-  });
-  kbox.core.events.on('pre-app-uninstall', 1, function(app) {
-    kbox.core.env.setEnv('COMPOSE_PROJECT_NAME', app.name);
-  });
-
   /*
    * Run a provider command in a shell.
    */
@@ -95,31 +84,22 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Run docker compose pull
-   */
-  var pull = function(compose) {
-
-    // Get our compose files and build the command
-    var cmd = getFiles(compose);
-    cmd.push('pull');
-
-    // Log
-    log.debug('Pulling images from ' + compose);
-
-    // Run command
-    return Promise.retry(function() {
-      return shCompose(cmd);
-    });
-
-  };
-
-  /*
    * Run docker compose stop
    */
-  var stop = function(compose) {
+  var stop = function(compose, opts) {
+
+    // Get options
+    var options = opts || {};
 
     // Get our compose files and build the command
     var cmd = getFiles(compose);
+
+    // Add project if we have one
+    if (options.project) {
+      cmd.push('--project-name ' + options.project);
+    }
+
+    // Main command
     cmd.push('stop');
 
     // Log
@@ -144,44 +124,52 @@ module.exports = function(kbox) {
       stop: false
     };
 
+    // Get opts
+    var options = opts || {};
+
     // Merge in defaults
-    opts = _.merge(defaults, opts);
+    options = _.merge(defaults, options);
 
     // Get our compose files
-    var files = getFiles(compose);
+    var preFlags = getFiles(compose);
+
+    // Add in a project if we have one
+    if (options.project) {
+      preFlags.push('--project-name ' + options.project);
+    }
 
     // Log
     log.debug('Creating containers from ' + compose);
 
     // Run up command if we have compose files
-    if (!_.isEmpty(files)) {
+    if (!_.isEmpty(getFiles(compose))) {
       return Promise.retry(function() {
 
         // Up options
-        var options = [];
+        var flags = [];
 
         // Run in background
-        if (opts.background) {
-          options.push('-d');
+        if (options.background) {
+          flags.push('-d');
         }
 
         // Auto recreate
-        if (opts.recreate) {
-          options.push('--force-recreate');
+        if (options.recreate) {
+          flags.push('--force-recreate');
         }
         else {
-          options.push('--no-recreate');
+          flags.push('--no-recreate');
         }
 
         // Up us
-        return shCompose(files.concat(['up']).concat(options), opts);
+        return shCompose(preFlags.concat(['up']).concat(flags));
       })
 
       // Then we want to stop the containers so this works the same as
       // docker.create
       .then(function() {
-        if (opts.stop) {
-          return stop(compose);
+        if (options.stop) {
+          return stop(compose, options);
         }
       });
     }
@@ -190,7 +178,7 @@ module.exports = function(kbox) {
   /*
    * Run docker compose pull
    */
-  var start = function(compose) {
+  var start = function(compose, opts) {
 
     // Log
     log.debug('Starting images from ' + compose);
@@ -201,9 +189,12 @@ module.exports = function(kbox) {
       stop: false
     };
 
+    // Get our other options
+    var options = opts || {};
+
     // Run command
     return Promise.retry(function() {
-      return up(compose, startOptions);
+      return up(compose, _.extend(startOptions, options));
     });
 
   };
@@ -211,12 +202,26 @@ module.exports = function(kbox) {
   /*
    * Run docker compose pull
    */
-  var getId = function(files, service) {
+  var getId = function(compose, opts) {
 
     // Get our compose files and build the command
-    var cmd = getFiles(files);
+    var cmd = getFiles(compose);
+
+    // Get options
+    var options = opts || {};
+
+    // Push a project if we have one
+    if (options.project) {
+      cmd.push('--project-name ' + options.project);
+    }
+
+    // Add the search
     cmd.push('ps -q');
-    cmd.push(service);
+
+    // Specify a service if we have one
+    if (options.service) {
+      cmd.push(options.service);
+    }
 
     // Log
     log.debug('Trying to discover container id...');
@@ -231,20 +236,23 @@ module.exports = function(kbox) {
   /*
    * Run docker compose pull
    */
-  var create = function(compose) {
+  var create = function(compose, opts) {
 
     // Log
     log.debug('Starting images from ' + compose);
 
     // Specify correct options for starting via compose up
-    var startOptions = {
+    var createOptions = {
       recreate: false,
       stop: true
     };
 
+    // Get our other options
+    var options = opts || {};
+
     // Run command
     return Promise.retry(function() {
-      return up(compose, startOptions);
+      return up(compose, _.extend(createOptions, options));
     });
 
   };
@@ -252,7 +260,6 @@ module.exports = function(kbox) {
   // Build module function.
   return {
     getId: getId,
-    pull: pull,
     create: create,
     start: start,
     stop: stop

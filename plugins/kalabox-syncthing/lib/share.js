@@ -21,7 +21,7 @@ module.exports = function(kbox) {
   var app = kbox.app;
   var events = core.events.context();
   var Promise = kbox.Promise;
-  var logDebug = core.log.debug;
+  var logDebug = core.log.info;
 
   /*
    * Given an app return true if the app has any containers running.
@@ -261,12 +261,14 @@ module.exports = function(kbox) {
   /*
    * Create the remote sync container.
    */
+  /*
   var createContainer = function(volumes) {
     var binds = _.map(volumes, function(x) {
       return [x.volume, '/' + x.app].join(':');
     });
     return container.create(binds);
   };
+  */
 
   /*
    * Start the remote sync container.
@@ -570,30 +572,7 @@ module.exports = function(kbox) {
             self.localSync.restartWait(),
             self.remoteSync.restartWait()
           ]);
-        })
-        .then(function() {
-          /*
-           * @todo: Maybe we should only teardown and recreate container if
-           * there are new volumes to add.
-           */
-          return self.remoteSync.shutdown()
-          .then(function() {
-            return container.stop();
-          })
-          .then(function() {
-            return container.remove();
-          })
-          .then(function() {
-            return createContainer(self.volumes);
-          })
-          .then(function() {
-            return container.start();
-          })
-          .then(function() {
-            return self.remoteSync.wait();
-          });
         });
-
       }
 
     })

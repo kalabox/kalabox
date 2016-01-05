@@ -2,11 +2,9 @@
 
 module.exports = function(kbox) {
 
-  var fs = require('fs-extra');
-  var os = require('os');
-  var path = require('path');
-
-  var Promise = kbox.Promise;
+  // Check if sharing is turned on or not
+  var globalConfig = kbox.core.deps.lookup('globalConfig');
+  var sharing = globalConfig.sharing;
 
   // Create new event context.
   var events = kbox.core.events.context();
@@ -33,12 +31,7 @@ module.exports = function(kbox) {
 
   kbox.whenAppRegistered(function(app) {
 
-    var globalConfig = kbox.core.deps.lookup('globalConfig');
-    var engine = kbox.engine;
-
-    var shareIgnores = app.config.shareIgnores.join(os.EOL);
-    var stignoreFile = path.join(app.config.codeRoot, '.stignore');
-    var sharing = globalConfig.sharing;
+    app = app;
 
     if (sharing) {
       // APP EVENT: pre-start
@@ -46,6 +39,19 @@ module.exports = function(kbox) {
       events.on('post-app-start', 2, function(app, done) {
 
         // Make sure code root exists.
+        /*
+
+        var fs = require('fs-extra');
+        var os = require('os');
+        var path = require('path');
+
+        var Promise = kbox.Promise;
+
+        var engine = kbox.engine;
+
+        var shareIgnores = app.config.shareIgnores.join(os.EOL);
+        var stignoreFile = path.join(app.config.codeRoot, '.stignore');
+
         return Promise.fromNode(function(cb) {
           fs.mkdirp(app.config.codeRoot, cb);
         })
@@ -62,16 +68,16 @@ module.exports = function(kbox) {
           // Image to create container from.
           var image = 'syncthing';
           // Command to make query.
+          /*
           var cpCmd = [
             'cp',
             '/src/' + codeDir + '/.stignore',
-            '/code/.stignore'
+            '/' + app.name + '/.stignore'
           ];
           // Options for creating container.
           var createOpts = {
-            'Env': ['APPDOMAIN=' + app.domain],
             HostConfig: {
-              VolumesFrom: ['kalaboxdata']
+              VolumesFrom: ['kalabox_syncthing_1']
             }
           };
           // Options for starting container.
@@ -91,18 +97,19 @@ module.exports = function(kbox) {
         })
         // Return.
         .nodeify(done);
-
+        */
+        done();
       });
 
-      events.on('post-app-stop', 2, function(app, done) {
+      events.on('pre-app-stop', function(app, done) {
         share.restart(done);
       });
 
-      events.on('post-app-start', function(app, done) {
+      events.on('pre-app-start', function(app, done) {
         share.restart(done);
       });
 
-      events.on('post-app-uninstall', function(app, done) {
+      events.on('pre-app-uninstall', function(app, done) {
         share.restart(done);
       });
 

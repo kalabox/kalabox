@@ -13,9 +13,6 @@ RUN apt-get update && \
     curl -L "https://github.com/syncthing/syncthing/releases/download/v0.11.26/syncthing-linux-amd64-v0.11.26.tar.gz" -O && \
     tar -zvxf "syncthing-linux-amd64-v0.11.26.tar.gz" && \
     mv syncthing-linux-amd64-v0.11.26/syncthing /usr/local/bin/syncthing && \
-    mkdir -p /etc/syncthing/ && \
-    mkdir -p /sync/ && \
-    mkdir -p /sync/code/ && \
     apt-get -y clean && \
     apt-get -y autoclean && \
     apt-get -y autoremove && \
@@ -23,10 +20,11 @@ RUN apt-get update && \
 
 ADD ./config.xml /etc/syncthing/config.xml
 ADD ./syncthing-supervisor.conf /etc/supervisor/conf.d/syncthing-supervisor.conf
-ADD ./start.sh /start.sh
 
 EXPOSE 60008 22000 21025/udp 21026/udp
 
-CMD ["/bin/bash", "/start.sh"]
+ENTRYPOINT ["/usr/bin/supervisord"]
+
+CMD ["-n"]
 
 ```

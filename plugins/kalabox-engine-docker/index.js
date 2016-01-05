@@ -120,8 +120,8 @@ module.exports = function(kbox) {
     if (getId(datum)) {
       return docker.inspect(getId(datum));
     }
-    else if (datum.files && datum.service) {
-      return compose.getId(datum.files, datum.service)
+    else if (datum.compose && datum.opts) {
+      return compose.getId(datum.compose, datum.opts)
       .then(function(id) {
         if (!_.isEmpty(id)) {
           return docker.inspect(_.trim(id));
@@ -171,7 +171,7 @@ module.exports = function(kbox) {
         return docker.start(getId(datum), data.opts);
       }
       else if (datum.compose) {
-        return compose.start(datum.compose);
+        return compose.start(datum.compose, datum.opts);
       }
     });
 
@@ -187,25 +187,33 @@ module.exports = function(kbox) {
   /*
    * Check if container exists
    */
-  var exists = function(cid) {
+  var exists = function(datum) {
 
-    // Get list of containers.
-    return list(null)
-    .then(function(containers) {
-      // Build set of all valid container ids.
-      var idSet =
-        _(containers)
-        .chain()
-        .map(function(container) {
-          return [container.id, container.name];
-        })
-        .flatten()
-        .uniq()
-        .object()
-        .value();
-      // Search set of valid containers for data.
-      return _.has(idSet, cid);
-    });
+    if (getId(datum)) {
+        // Get list of containers.
+      return list(null)
+      .then(function(containers) {
+        // Build set of all valid container ids.
+        var idSet =
+          _(containers)
+          .chain()
+          .map(function(container) {
+            return [container.id, container.name];
+          })
+          .flatten()
+          .uniq()
+          .object()
+          .value();
+        // Search set of valid containers for data.
+        return _.has(idSet, getId(datum));
+      });
+    }
+    else if (datum.compose && datum.opts) {
+      return compose.getId(datum.compose, datum.opts)
+      .then(function(id) {
+        return !_.isEmpty(id);
+      });
+    }
 
   };
 
