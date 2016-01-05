@@ -2,7 +2,9 @@ syncthing:
   image: kalabox/syncthing:$KALABOX_IMG_VERSION
   restart: always
   volumes:
-    - /etc/syncthing
+    - /config
+    - /code
+    - $KALABOX_ENGINE_HOME:/src
   ports:
     - "60008:60008/tcp"
     - "22000:22000/tcp"

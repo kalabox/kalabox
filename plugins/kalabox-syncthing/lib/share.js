@@ -16,20 +16,29 @@ module.exports = function(kbox) {
   var container = require('./share/syncContainer.js')(kbox);
 
   // Kalabox modules
-  var engine = kbox.engine;
   var core = kbox.core;
+  var engine = kbox.engine;
   var app = kbox.app;
-  var events = core.events.context();
   var Promise = kbox.Promise;
   var logDebug = core.log.info;
 
   /*
    * Given an app return true if the app has any containers running.
    */
-  var isAppRunning = function(appName) {
+  var isAppActive = function(app) {
 
-    // Get list of app's containers.
-    return engine.list(appName)
+    // First check to see if this app is the currently
+    // registered app and return that regardless
+    // NOTE: We do this for the case where we are trying to
+    // set up an app for the first time before any of its
+    // containers are on or off
+    if (core.deps.contains('app')) {
+      var regName = core.deps.get('app').name;
+      return app.config.syncthing.share && regName === app.name;
+    }
+
+    // Otherwise get a list of app's containers.
+    return engine.list(app.name)
     // Map container to container's is running value.
     .map(function(container) {
       return engine.inspect(container)
@@ -64,7 +73,7 @@ module.exports = function(kbox) {
     // Filter out non app and data containers.
     .filter(function(container) {
       var name = kbox.util.docker.containerName.parse(container.name);
-      return name.kind === 'app' && name.name !== 'kalaboxdata';
+      return name.kind === 'app';
     })
     // Reduce list of containers to an object that maps app name to minutes
     // since last time the app was stopped.
@@ -133,75 +142,21 @@ module.exports = function(kbox) {
 
   };
 
-  /*
-   * Get list of data containers that are part of apps that are running.
-   */
-  var getDataContainers = function() {
-
-    // Get list of all installed containers.
-    return engine.list(null)
-    // Filter out non data containers, and containers that are part of
-    // apps that are not running.
-    .filter(function(container) {
-      var parts = container.name.split('_');
-      var isDataContainer =
-        parts.length === 3 &&
-        parts[1] === 'kalaboxdata';
-      if (!isDataContainer) {
-        return false;
-      } else {
-        return isAppRunning(parts[0]);
-      }
-    })
-    // Return.
-    .tap(function(dataContainers) {
-      logDebug('SHARE => Data containers with an app running.', dataContainers);
-    });
-
-  };
-
-  /*
-   * Get the data container volume path.
-   */
-  var getDataContainerVolume = function(dataContainer) {
-
-    // Inspect data container.
-    return engine.inspect(dataContainer)
-    // Return the data containres data volume.
-    .then(function(data) {
-      var codeDir = '/' + core.deps.lookup('globalConfig').codeDir;
-      /*
-       * Starting in remote api 1.8 the volume data shows up in data->Mounts,
-       * rather than data->Volumes. We need to be able to handle both here.
-       */
-      if (data.Mounts) {
-        return _.result(_.find(data.Mounts, function(mount) {
-          return mount.Destination === codeDir;
-        }), 'Source');
-      } else {
-        return data.Volumes[codeDir];
-      }
-    });
-
-  };
-
-  /*
-   * Get list of volumes.
+  /*a
+   * Get list of active volumes.
    */
   var getVolumes = function() {
 
-    // Get list of data containers.
-    return getDataContainers()
+    // Get list of data app.
+    return app.list()
     // Map list to volume objects.
-    .map(function(dataContainer) {
-      return getDataContainerVolume(dataContainer)
-      .then(function(volume) {
-        if (volume) {
-          return {app: dataContainer.app, volume: volume};
-        } else {
-          return null;
-        }
-      });
+    .filter(isAppActive)
+    .map(function(app) {
+      if (app.name) {
+        return {app: app.name};
+      } else {
+        return null;
+      }
     })
     // Filter out nulls.
     .filter(_.identity);
@@ -240,7 +195,7 @@ module.exports = function(kbox) {
       // Build map of app name to code root.
       var codeRootMap = {};
       _.each(apps, function(app) {
-        codeRootMap[app.name] = app.config.codeRoot;
+        codeRootMap[app.name] = app.config.syncthing.codeRoot;
       });
 
       // Build map function.
@@ -257,18 +212,6 @@ module.exports = function(kbox) {
     });
 
   };
-
-  /*
-   * Create the remote sync container.
-   */
-  /*
-  var createContainer = function(volumes) {
-    var binds = _.map(volumes, function(x) {
-      return [x.volume, '/' + x.app].join(':');
-    });
-    return container.create(binds);
-  };
-  */
 
   /*
    * Start the remote sync container.
@@ -297,20 +240,6 @@ module.exports = function(kbox) {
       })
       .then(function() {
         return localSync;
-      });
-    });
-
-  };
-
-  var getRemoteSyncIfStarted = function() {
-
-    return getRemoteSync()
-    .then(function(remoteSync) {
-      return remoteSync.isUp()
-      .then(function(isUp) {
-        if (isUp) {
-          return remoteSync;
-        }
       });
     });
 
@@ -351,43 +280,9 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Clear folders when kalabox goes down.
-   */
-  events.on('pre-down', function(done) {
-
-    getRemoteSyncIfStarted()
-    .then(function(remoteSync) {
-      if (remoteSync) {
-        return remoteSync.clear()
-        .then(function() {
-          return remoteSync.shutdown();
-        });
-      }
-    })
-    .nodeify(done);
-
-  });
-
-  /*
-   * Clear app folder when the app is uninstalled.
-   */
-  events.on('pre-uninstall', function(app, done) {
-
-    getStartedRemoteSync()
-    .then(function(remoteSync) {
-      return remoteSync.clearFolder(app.name)
-      .then(function() {
-        return remoteSync.restartWait();
-      });
-    })
-    .nodeify(done);
-
-  });
-
-  /*
    * Restart the sync instances.
    */
-  var restart = function(cb) {
+  var restart = function() {
 
     // Get list of volumes.
     var volumes = getVolumes();
@@ -402,7 +297,7 @@ module.exports = function(kbox) {
     var remoteSync = getStartedRemoteSync();
 
     // Build list of dependencies.
-    Promise.all([volumes, codeRootMap, localSync, remoteSync])
+    return Promise.all([volumes, codeRootMap, localSync, remoteSync])
     .bind({})
     .spread(function(volumes, codeRootMap, localSync, remoteSync) {
 
@@ -497,7 +392,7 @@ module.exports = function(kbox) {
         var app = volume.app;
         var codeRoot = self.codeRootMap(app);
         self.localSync.addFolder(self.localConfig, app, codeRoot);
-        self.remoteSync.addFolder(self.remoteConfig, app, '/' + app);
+        self.remoteSync.addFolder(self.remoteConfig, app, '/code/' + app);
         // Make sure the syncthing folder identified exists.
         return Promise.fromNode(function(cb) {
           var filepath = path.join(codeRoot, '.stfolder');
@@ -575,9 +470,7 @@ module.exports = function(kbox) {
         });
       }
 
-    })
-    // Return.
-    .nodeify(cb);
+    });
 
   };
 

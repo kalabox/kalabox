@@ -21,6 +21,7 @@ RUN \
 ADD ./config.xml /config/config.xml
 
 VOLUME /config
+VOLUME /code
 
 EXPOSE 60008 22000 21025/udp 21026/udp
 

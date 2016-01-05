@@ -5,6 +5,4 @@ module.exports = function(kbox) {
   require('./lib/tasks.js')(kbox);
   // Load the install steps for this plugin.
   require('./lib/install.js')(kbox);
-  // Load the events for this plugin.
-  require('./lib/events.js')(kbox);
 };

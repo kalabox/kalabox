@@ -50,7 +50,7 @@ module.exports = function(kbox) {
               // check for lock engine lock file
               var sysRoot = kbox.core.deps.get('globalConfig').sysConfRoot;
               if (!fs.existsSync(path.join(sysRoot, 'engine.lock'))) {
-                return kbox.engine.down();
+                //return kbox.engine.down();
               }
             }
           })

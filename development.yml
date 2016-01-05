@@ -3,7 +3,6 @@ globalPlugins:
   - kalabox-dev
   - kalabox-syncthing
   - kalabox-app-pantheon
-sharing: true
 externalPlugins:
   - kalabox-app-pantheon@https://github.com/kalabox/kalabox-app-pantheon/tarball/v0.10
 apps:

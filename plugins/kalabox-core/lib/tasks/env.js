@@ -6,12 +6,18 @@
 
 module.exports = function(kbox) {
 
+  var _ = require('lodash');
+
   kbox.tasks.add(function(task) {
     task.path = ['env'];
     task.category = 'dev';
     task.description = 'Print Kalabox environmental vars.';
     task.func = function(done) {
-      console.log(process.env);
+      _.forEach(process.env, function(value, key) {
+        if (_.startsWith(key, 'KALABOX')) {
+          console.log([key, value].join('='));
+        }
+      });
       done();
     };
   });
