@@ -251,11 +251,10 @@ module.exports = function(kbox) {
     step.all = function(state, done) {
 
       // Dedupe images
-      var images = _.uniq(state.images, 'id');
-      state.log.debug('PULLING IMAGES => ' + JSON.stringify(images));
+      state.log.debug('PULLING IMAGES => ' + JSON.stringify(state.images));
 
       // Build all teh submitted images
-      return kbox.engine.build(images)
+      return kbox.engine.build(state.images)
 
       // If this errors then fail the step
       .catch(function(err) {

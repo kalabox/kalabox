@@ -20,7 +20,7 @@ module.exports = function(kbox) {
   var engine = kbox.engine;
   var app = kbox.app;
   var Promise = kbox.Promise;
-  var logDebug = core.log.info;
+  var logDebug = core.log.debug;
 
   /*
    * Given an app return true if the app has any containers running.
@@ -257,7 +257,7 @@ module.exports = function(kbox) {
       .then(function(isInstalled) {
         // Install if it is not already installed.
         if (!isInstalled) {
-          return container.create();
+          return container.start();
         }
       })
       .then(function() {

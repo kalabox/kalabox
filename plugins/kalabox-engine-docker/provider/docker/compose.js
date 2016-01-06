@@ -14,6 +14,7 @@ module.exports = function(kbox) {
   // NPM modules
   var _ = require('lodash');
   var fs = require('fs-extra');
+  var VError = require('verror');
 
   // Kalabox modules
   var bin = require('./lib/bin.js')(kbox);
@@ -56,72 +57,151 @@ module.exports = function(kbox) {
       kbox.core.env.setEnv('DOCKER_CERT_PATH', config.certDir);
 
       // Run a provider command in a shell.
-      return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
+      return Promise.retry(function() {
+        log.info('Running command ' + cmd);
+        return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
+      });
+    });
+
+  };
+
+  /*
+   * Figure out what to do with the compose data we have
+   * and then return a files array
+   */
+  var parseComposeData = function(compose, project, opts) {
+
+    // Start up a collector of files
+    var files = [];
+
+    // Check if we are in binary mode or not.
+    var isBin = kbox.core.deps.get('globalConfig').isBinary;
+
+    // Export our compose stuff and add to commands
+    _.forEach(compose, function(unit) {
+
+      // If we are in binary mode and have internal compose files then we
+      // have to read in files and then export them out because
+      // docker compose cannot read a file that is in a binary
+      if (isBin && opts.internal) {
+        if (typeof unit === 'string') {
+          var newUnit = kbox.util.yaml.toJson(unit);
+          unit = newUnit;
+        }
+      }
+
+      // Now we can proceed normally. Create files where we need to
+      // otherwise use the ones provided
+      if (typeof unit === 'object') {
+
+        // Create temp stuff
+        var tmpDir = path.join(kbox.util.disk.getTempDir(), project);
+        fs.mkdirpSync(tmpDir);
+
+        // Generate a new compose file and add to our thing
+        var fileName = [project, _.uniqueId()].join('-') + '.yml';
+        var newComposeFile = path.join(tmpDir, fileName);
+        kbox.util.yaml.toYamlFile(unit, newComposeFile);
+        unit = newComposeFile;
+
+      }
+
+      // Add in our unit
+      files.push('--file ' + unit);
 
     });
+
+    // Return all the files
+    return files;
 
   };
 
   /*
    * Expand dirs/files to an array of kalabox-compose files options
    */
-  var getFiles = function(compose) {
+  var parseComposeOptions = function(compose, project, opts) {
 
-    // Only add files if they exist
-    return _.map(compose, function(loc) {
+    // A project is required
+    if (!project) {
+      throw new VError('Need to give this composition a project name!');
+    }
 
-      // If we dont have a yaml file then assume its a dir
-      var yamls = ['.yaml', '.yml'];
-      var isDir = !_.includes(yamls, path.extname(loc));
-      var file = (isDir) ? path.join(loc, 'kalabox-compose.yml') : loc;
+    // Kick off options
+    var options = ['--project-name ' + project];
 
-      // Only add yaml files that exist
-      if (fs.existsSync(file)) {
-        return ['--file', file].join(' ');
-      }
+    // Get our array of compose files
+    var files = parseComposeData(compose, project, opts);
 
-    });
+    // Return our compose option
+    return options.concat(files);
+
   };
 
   /*
-   * Run docker compose stop
+   * Parse general docker options
    */
-  var stop = function(compose, opts) {
+  var parseOptions = function(opts) {
 
-    // Get options
-    var options = opts || {};
+    // Start flag collector
+    var flags = [];
 
-    // Get our compose files and build the command
-    var cmd = getFiles(compose);
-
-    // Add project if we have one
-    if (options.project) {
-      cmd.push('--project-name ' + options.project);
+    // Return empty if we have no opts
+    if (!opts) {
+      return flags;
     }
 
-    // Main command
-    cmd.push('stop');
+    // Daemon opts
+    if (opts.background) {
+      flags.push('-d');
+    }
 
-    // Log
-    log.debug('Stopping images from ' + compose);
+    // Recreate opts
+    if (opts.recreate) {
+      flags.push('--force-recreate');
+    }
 
-    // Run command
-    return Promise.retry(function() {
-      return shCompose(cmd);
-    });
+    // Removal opts
+    if (opts.force) {
+      flags.push('--force');
+    }
+    if (opts.volumes) {
+      flags.push('-v');
+    }
+
+    // Return any and all flags
+    return flags;
+
+  };
+
+  /*
+   * Helper to standarize construction of docker commands
+   */
+  var buildCmd = function(compose, project, run, opts) {
+
+    // Get our compose files and build the pre opts
+    var cmd = parseComposeOptions(compose, project, opts).concat([run]);
+
+    // Get options
+    cmd.push(parseOptions(opts));
+
+    // Add in a service arg if its there
+    if (opts && opts.service) {
+      cmd.push(opts.service);
+    }
+
+    return cmd;
 
   };
 
   /*
    * You can do a create, rebuild and start with variants of this
    */
-  var up = function(compose, opts) {
+  var up = function(compose, project, opts) {
 
     // Default options
     var defaults = {
       background: true,
-      recreate: false,
-      stop: false
+      recreate: false
     };
 
     // Get opts
@@ -130,139 +210,69 @@ module.exports = function(kbox) {
     // Merge in defaults
     options = _.merge(defaults, options);
 
-    // Get our compose files
-    var preFlags = getFiles(compose);
+    // Up us
+    return shCompose(buildCmd(compose, project, 'up', options));
 
-    // Add in a project if we have one
-    if (options.project) {
-      preFlags.push('--project-name ' + options.project);
-    }
-
-    // Log
-    log.debug('Creating containers from ' + compose);
-
-    // Run up command if we have compose files
-    if (!_.isEmpty(getFiles(compose))) {
-      return Promise.retry(function() {
-
-        // Up options
-        var flags = [];
-
-        // Run in background
-        if (options.background) {
-          flags.push('-d');
-        }
-
-        // Auto recreate
-        if (options.recreate) {
-          flags.push('--force-recreate');
-        }
-        else {
-          flags.push('--no-recreate');
-        }
-
-        // Up us
-        return shCompose(preFlags.concat(['up']).concat(flags));
-      })
-
-      // Then we want to stop the containers so this works the same as
-      // docker.create
-      .then(function() {
-        if (options.stop) {
-          return stop(compose, options);
-        }
-      });
-    }
   };
 
   /*
    * Run docker compose pull
    */
-  var start = function(compose, opts) {
+  var getId = function(compose, project, opts) {
+    var binOpts = {silent: true};
+    return shCompose(buildCmd(compose, project, 'ps -q', opts), binOpts);
+  };
 
-    // Log
-    log.debug('Starting images from ' + compose);
+  /*
+   * Run docker compose build
+   */
+  var build = function(compose, project, opts) {
+    return shCompose(buildCmd(compose, project, 'build', opts));
+  };
 
-    // Specify correct options for starting via compose up
-    var startOptions = {
-      recreate: false,
-      stop: false
+  /*
+   * Run docker compose pull
+   */
+  var pull = function(compose, project, opts) {
+    return shCompose(buildCmd(compose, project, 'pull', opts));
+  };
+
+  /*
+   * Run docker compose stop
+   */
+  var stop = function(compose, project, opts) {
+    return shCompose(buildCmd(compose, project, 'stop', opts));
+  };
+
+  /*
+   * Run docker compose remove
+   */
+  var remove = function(compose, project, opts) {
+
+    // Default options
+    var defaults = {
+      force: true,
+      volumes: false
     };
 
-    // Get our other options
+    // Get opts
     var options = opts || {};
 
-    // Run command
-    return Promise.retry(function() {
-      return up(compose, _.extend(startOptions, options));
-    });
+    // Merge in defaults
+    options = _.merge(defaults, options);
 
-  };
-
-  /*
-   * Run docker compose pull
-   */
-  var getId = function(compose, opts) {
-
-    // Get our compose files and build the command
-    var cmd = getFiles(compose);
-
-    // Get options
-    var options = opts || {};
-
-    // Push a project if we have one
-    if (options.project) {
-      cmd.push('--project-name ' + options.project);
-    }
-
-    // Add the search
-    cmd.push('ps -q');
-
-    // Specify a service if we have one
-    if (options.service) {
-      cmd.push(options.service);
-    }
-
-    // Log
-    log.debug('Trying to discover container id...');
-
-    // Run command
-    return Promise.retry(function() {
-      return shCompose(cmd, {silent:true});
-    });
-
-  };
-
-  /*
-   * Run docker compose pull
-   */
-  var create = function(compose, opts) {
-
-    // Log
-    log.debug('Starting images from ' + compose);
-
-    // Specify correct options for starting via compose up
-    var createOptions = {
-      recreate: false,
-      stop: true
-    };
-
-    // Get our other options
-    var options = opts || {};
-
-    // Run command
-    return Promise.retry(function() {
-      return up(compose, _.extend(createOptions, options));
-    });
+    return shCompose(buildCmd(compose, project, 'rm', options));
 
   };
 
   // Build module function.
   return {
     getId: getId,
-    create: create,
-    start: start,
-    stop: stop
+    build: build,
+    pull: pull,
+    start: up,
+    stop: stop,
+    remove: remove
   };
 
 };

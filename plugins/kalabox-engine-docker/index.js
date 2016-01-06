@@ -103,8 +103,8 @@ module.exports = function(kbox) {
     if (getId(datum)) {
       return docker.inspect(getId(datum));
     }
-    else if (datum.compose && datum.opts) {
-      return compose.getId(datum.compose, datum.opts)
+    else if (datum.compose) {
+      return compose.getId(datum.compose, datum.project, datum.opts)
       .then(function(id) {
         if (!_.isEmpty(id)) {
           return docker.inspect(_.trim(id));
@@ -122,42 +122,12 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Return a generic container with extra info added.
-   */
-  var info = function(cid) {
-    return docker.info(cid);
-  };
-
-  /*
-   * Create containers
-   */
-  var create = function(data) {
-
-    return Promise.each(normalizer(data), function(datum) {
-      if (getId(datum)) {
-        return docker.create(datum);
-      }
-      else if (datum.compose) {
-        return compose.create(datum.compose, datum.opts);
-      }
-    });
-
-  };
-
-  /*
    * Start a container.
    */
   var start = function(data) {
-
     return Promise.each(normalizer(data), function(datum) {
-      if (getId(datum)) {
-        return docker.start(getId(datum), data.opts);
-      }
-      else if (datum.compose) {
-        return compose.start(datum.compose, datum.opts);
-      }
+      return compose.start(datum.compose, datum.project, datum.opts);
     });
-
   };
 
   /*
@@ -191,8 +161,8 @@ module.exports = function(kbox) {
         return _.has(idSet, getId(datum));
       });
     }
-    else if (datum.compose && datum.opts) {
-      return compose.getId(datum.compose, datum.opts)
+    else if (datum.compose) {
+      return compose.getId(datum.compose, datum.project, datum.opts)
       .then(function(id) {
         return !_.isEmpty(id);
       });
@@ -282,13 +252,12 @@ module.exports = function(kbox) {
    * Stop a container.
    */
   var stop = function(data) {
-
     return Promise.each(normalizer(data), function(datum) {
       if (getId(datum)) {
         return docker.stop(getId(datum));
       }
       else if (datum.compose) {
-        return compose.stop(datum.compose, datum.opts);
+        return compose.stop(datum.compose, datum.project, datum.opts);
       }
     });
   };
@@ -298,7 +267,12 @@ module.exports = function(kbox) {
    */
   var remove = function(data) {
     return Promise.each(normalizer(data), function(datum) {
-      return docker.remove(getId(datum), datum.opts);
+      if (getId(datum)) {
+        return docker.remove(getId(datum));
+      }
+      else if (datum.compose) {
+        return compose.remove(datum.compose, datum.project, datum.opts);
+      }
     });
   };
 
@@ -310,38 +284,34 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Builds or pulls a docker image
-   * NOTE: It's better to route all builds through docker instead of
-   * compose
+   * Builds and/or pulls a docker image
    *
-   * Data can be either an image object or array of image object
+   * Data can be either a compose object or array of compose objects
    * Image objects have the following properties
    *
-   *  'id'          => Arbitraty identified
-   *  'build'       => Boolean to determine whether we should build or pull by default
-   *  'createOpts'  => Array of remote docker API create opts
-   *  'forcePull'   => Always pull from hub
-   *  'name'        => Image name can be: imagename|repo/imagename|repo/imagename:tag
-   *  'src'         => Path to a dockerfile
-   *  'srcRoot'     => Path to a die that contains a dockerfile at dockerfiles/name/Dockerfil
-   *  'startOpts'   => Array of remote docker API start options - Pending deprecation
-   *
+   *  'compose'     => Array of compose objects
+   *  'project'     => Name of the project
+   *  'opts'        => Compose options
+   *    'internal'  => Lets compose know this file will live in our binary
    */
   var build = function(data) {
     return Promise.each(normalizer(data), function(datum) {
-      return docker.build(datum);
+      return compose.pull(datum.compose, datum.project, datum.opts);
+    })
+    .then(function() {
+      return Promise.each(normalizer(data), function(datum) {
+        return compose.build(datum.compose, datum.project, datum.opts);
+      });
     });
   };
 
   return {
     build: build,
-    create: create,
     exec: exec,
     exists: exists,
     get: findContainer,
     getEnsure: findContainerThrows,
     getProvider: getProvider,
-    info: info,
     init: init,
     inspect: inspect,
     isRunning: isRunning,

@@ -11,6 +11,16 @@ module.exports = function(kbox) {
   // Services config
   var config = kbox.util.yaml.toJson(path.join(__dirname, 'config.yml'));
 
+  // Services images
+  var composeFile = path.resolve(__dirname, '..', 'kalabox-compose.yml');
+  var serviceImages = {
+    compose: [composeFile],
+    project: 'kalabox',
+    opts: {
+      internal: true
+    }
+  };
+
   /*
    * Submit core images for install
    */
@@ -20,9 +30,7 @@ module.exports = function(kbox) {
       step.subscribes = ['core-image-build'];
       step.description = 'Adding services images to build list...';
       step.all = function(state) {
-        var srcRoot = path.resolve(__dirname, '..');
-        state.images.push({id: 'proxy', name: 'proxy', srcRoot: srcRoot});
-        state.images.push({id: 'dns', name: 'dns', srcRoot: srcRoot});
+        state.images.push(serviceImages);
       };
 
     });
