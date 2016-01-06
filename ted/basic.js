@@ -1,5 +1,4 @@
 
-
 ted.describe('kalabox', function(config) {
 
   var sha = config.sha;
