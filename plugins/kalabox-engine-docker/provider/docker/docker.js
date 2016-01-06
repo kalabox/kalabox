@@ -378,28 +378,6 @@ module.exports = function(kbox) {
 
   };
 
-  /*
-   * Read the contents of the containers logs.
-   */
-  var logs = function(cid, opts) {
-
-    opts = opts || {};
-    opts.stdout = opts.stdout || true;
-    opts.stderr = opts.stderr || false;
-
-    return findContainerThrows(cid)
-    .then(function(container) {
-      return Promise.fromNode(function(cb) {
-        container.logs(opts, cb);
-      });
-    })
-    // Wrap errors.
-    .catch(function(err) {
-      throw new VError(err, 'Error reading container logs: %s.', cid);
-    });
-
-  };
-
   return {
     findContainer: findContainer,
     findContainerThrows: findContainerThrows,
@@ -407,7 +385,6 @@ module.exports = function(kbox) {
     inspect: inspect,
     isRunning: isRunning,
     list: list,
-    logs: logs,
     remove: remove,
     stop: stop
   };

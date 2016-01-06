@@ -204,13 +204,6 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Read the contents of the containers logs.
-   */
-  var logs = function(data) {
-    return docker.logs(getId(data), data.opts);
-  };
-
-  /*
    * Builds and/or pulls a docker image
    */
   var build = function(data) {
@@ -232,7 +225,6 @@ module.exports = function(kbox) {
     inspect: inspect,
     isRunning: isRunning,
     list: list,
-    logs: logs,
     remove: remove,
     run: run,
     start: start,
