@@ -59,7 +59,7 @@ module.exports = function(kbox) {
     }
 
     // Process admin commands.
-    var child = kbox.install.cmd.runCmdsAsync(adminCommands, state);
+    var child = kbox.util.shell.runCmdsAsync(adminCommands, state);
 
     // Events
     // Output data

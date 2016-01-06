@@ -46,7 +46,7 @@ module.exports = function(kbox) {
    * Helper function to determine whether we need to run linux DNS commands
    */
   var needsLinuxDNS = function() {
-    var flavor = kbox.install.linuxOsInfo.getFlavor();
+    var flavor = kbox.util.linux.getFlavor();
     var dnsDir = config.dns.files.linux[flavor].path;
     return !fs.existsSync(path.join(dnsDir, posixDnsFile));
   };
@@ -192,7 +192,7 @@ module.exports = function(kbox) {
     }
 
     // Process admin commands.
-    var child = kbox.install.cmd.runCmdsAsync(adminCommands, state);
+    var child = kbox.util.shell.runCmdsAsync(adminCommands, state);
 
     // Events
     // Output data
@@ -313,7 +313,7 @@ module.exports = function(kbox) {
       if (needsLinuxDNS()) {
 
         // Get linux flavor
-        var flavor = kbox.install.linuxOsInfo.getFlavor();
+        var flavor = kbox.util.linux.getFlavor();
 
         var dnsDir = path.join(config.dns.pkg.linux[flavor].path);
         var dnsFile = [dnsDir, posixDnsFile];
@@ -347,8 +347,8 @@ module.exports = function(kbox) {
 
     // Get the linux flavor and version
     // VERSION_ID="14.04"
-    var flavor = kbox.install.linuxOsInfo.getFlavor();
-    var version = kbox.install.linuxOsInfo.get().VERSION_ID.replace('.', '_');
+    var flavor = kbox.util.linux.getFlavor();
+    var version = kbox.util.linux.get().VERSION_ID.replace('.', '_');
 
     // Determine whether we need to use a generic version or not
     var flavorPkgs = config.dns.pkg[flavor];
@@ -383,7 +383,7 @@ module.exports = function(kbox) {
     var escPack = pkg.replace(/ /g, '\\ ');
 
     // Return based on flavor
-    switch (kbox.install.linuxOsInfo.getFlavor()) {
+    switch (kbox.util.linux.getFlavor()) {
       case 'debian': return ['dpkg', '-i', escPack].join(' ');
       case 'fedora': return ['rpm', '-Uvh', escPack].join(' ');
     }

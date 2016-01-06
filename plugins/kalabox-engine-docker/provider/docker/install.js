@@ -138,7 +138,7 @@ module.exports = function(kbox) {
         if (util.needsVB()) {
 
           // Get the metas
-          var flavor = kbox.install.linuxOsInfo.getFlavor();
+          var flavor = kbox.util.linux.getFlavor();
           var packager = (flavor === 'debian') ? 'apt' : 'dnf';
           var deps = VIRTUALBOX_CONFIG[packager].deps.join(' ');
           var pkg = VIRTUALBOX_CONFIG.pkg[flavor];

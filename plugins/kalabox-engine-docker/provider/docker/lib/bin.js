@@ -141,7 +141,7 @@ module.exports = function(kbox) {
    */
   var bringVBModulesUp = function() {
     var _sh = kbox.core.deps.get('shell');
-    var flavor = kbox.install.linuxOsInfo.getFlavor();
+    var flavor = kbox.util.linux.getFlavor();
     var packager = (flavor === 'debian') ? 'apt' : 'dnf';
     var cmd = VIRTUALBOX_CONFIG[packager].recompile;
 

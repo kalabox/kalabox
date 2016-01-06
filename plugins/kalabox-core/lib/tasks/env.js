@@ -10,7 +10,6 @@ module.exports = function(kbox) {
 
   kbox.tasks.add(function(task) {
     task.path = ['env'];
-    task.category = 'dev';
     task.description = 'Print Kalabox environmental vars.';
     task.func = function(done) {
       _.forEach(process.env, function(value, key) {
