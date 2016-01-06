@@ -19,8 +19,8 @@ module.exports = function(kbox) {
   // Syncthing container
   var syncthingContainer = {
     compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
+    project: 'kalabox',
     opts: {
-      project: 'kalabox',
       service: 'syncthing'
     }
   };

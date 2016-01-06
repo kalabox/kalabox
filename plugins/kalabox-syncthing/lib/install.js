@@ -14,6 +14,16 @@ module.exports = function(kbox) {
   // Get and load the install config
   var config = kbox.util.yaml.toJson(path.join(__dirname, 'config.yml'));
 
+  // Syncthing image
+  var composeFile = path.resolve(__dirname, '..', 'kalabox-compose.yml');
+  var syncthingImage = {
+    compose: [composeFile],
+    project: 'kalabox',
+    opts: {
+      internal: true
+    }
+  };
+
   /*
    * We only need to turn syncthing off if we plan on updateing it
    */
@@ -102,11 +112,8 @@ module.exports = function(kbox) {
       step.subscribes = ['core-image-build'];
       step.description = 'Adding syncthing image to build list...';
       step.all = function(state) {
-
         // Adds in the images we need for syncthing
-        var src = path.resolve(__dirname, '..');
-        state.images.push({id: 'syncthing', name: 'syncthing', srcRoot: src});
-
+        state.images.push(syncthingImage);
       };
     });
   }

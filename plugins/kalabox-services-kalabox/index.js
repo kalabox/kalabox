@@ -20,7 +20,10 @@ module.exports = function(kbox) {
   // Path to our compose file
   var coreServices = {
     compose: [path.join(__dirname, 'kalabox-compose.yml')],
-    opts: {project: 'kalabox'}
+    project: 'kalabox',
+    opts: {
+      recreate: true
+    }
   };
 
   /*
@@ -44,31 +47,14 @@ module.exports = function(kbox) {
   });
 
   /*
-   * Install services.
-   */
-  var install = function() {
-
-    // Log action
-    log.debug('Creating services from ' + coreServices);
-
-    // Get service info and bind to this.
-    return kbox.engine.create(coreServices);
-
-  };
-
-  /*
    * Rebuild services.
    */
   var rebuild = function() {
 
-    // Get service info and bind to this.
-    var rebuildServices = coreServices;
-    rebuildServices.opts.recreate = true;
-
     // Log action
-    log.debug('Rebuilding services from ' + rebuildServices);
+    log.debug('Starting services from ' + coreServices);
 
-    return kbox.engine.create(rebuildServices);
+    return kbox.engine.start(coreServices);
 
   };
 
@@ -105,11 +91,7 @@ module.exports = function(kbox) {
     // Restart our services if needed
     .then(function(running) {
       if (!running) {
-
-        log.info('Services are not running. Restarting...');
-
-        // Start up our services again
-        return kbox.engine.start(coreServices);
+        return rebuild(coreServices);
       }
     });
 
@@ -117,7 +99,6 @@ module.exports = function(kbox) {
 
   return {
     init: init,
-    install: install,
     rebuild: rebuild,
     verify: verify
   };

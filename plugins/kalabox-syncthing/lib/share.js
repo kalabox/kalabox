@@ -257,7 +257,7 @@ module.exports = function(kbox) {
       .then(function(isInstalled) {
         // Install if it is not already installed.
         if (!isInstalled) {
-          return container.create();
+          return container.start();
         }
       })
       .then(function() {
