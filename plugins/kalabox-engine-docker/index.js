@@ -125,11 +125,9 @@ module.exports = function(kbox) {
    * Start a container.
    */
   var start = function(data) {
-
     return Promise.each(normalizer(data), function(datum) {
       return compose.start(datum.compose, datum.project, datum.opts);
     });
-
   };
 
   /*
@@ -254,7 +252,6 @@ module.exports = function(kbox) {
    * Stop a container.
    */
   var stop = function(data) {
-
     return Promise.each(normalizer(data), function(datum) {
       if (getId(datum)) {
         return docker.stop(getId(datum));
@@ -270,7 +267,12 @@ module.exports = function(kbox) {
    */
   var remove = function(data) {
     return Promise.each(normalizer(data), function(datum) {
-      return docker.remove(getId(datum), datum.opts);
+      if (getId(datum)) {
+        return docker.remove(getId(datum));
+      }
+      else if (datum.compose) {
+        return compose.remove(datum.compose, datum.project, datum.opts);
+      }
     });
   };
 

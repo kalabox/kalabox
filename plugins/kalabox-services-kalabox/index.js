@@ -20,10 +20,7 @@ module.exports = function(kbox) {
   // Path to our compose file
   var coreServices = {
     compose: [path.join(__dirname, 'kalabox-compose.yml')],
-    project: 'kalabox',
-    opts: {
-      recreate: true
-    }
+    project: 'kalabox'
   };
 
   /*
@@ -54,7 +51,11 @@ module.exports = function(kbox) {
     // Log action
     log.debug('Starting services from ' + coreServices);
 
-    return kbox.engine.start(coreServices);
+    // Add in force recreate
+    var recreateServices = coreServices;
+    recreateServices.opts = {recreate: true};
+
+    return kbox.engine.start(recreateServices);
 
   };
 
@@ -79,7 +80,7 @@ module.exports = function(kbox) {
     // Filter out services
     .map(function(service) {
       var check = coreServices;
-      check.opts.service = service;
+      check.opts = {service: service};
       return kbox.engine.inspect(check);
     })
 

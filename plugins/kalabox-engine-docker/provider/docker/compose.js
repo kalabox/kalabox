@@ -58,6 +58,7 @@ module.exports = function(kbox) {
 
       // Run a provider command in a shell.
       return Promise.retry(function() {
+        log.info('Running command ' + cmd);
         return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
       });
     });
@@ -137,26 +138,59 @@ module.exports = function(kbox) {
   };
 
   /*
+   * Parse general docker options
+   */
+  var parseOptions = function(opts) {
+
+    // Start flag collector
+    var flags = [];
+
+    // Return empty if we have no opts
+    if (!opts) {
+      return flags;
+    }
+
+    // Daemon opts
+    if (opts.background) {
+      flags.push('-d');
+    }
+
+    // Recreate opts
+    if (opts.recreate) {
+      flags.push('--force-recreate');
+    }
+
+    // Removal opts
+    if (opts.force) {
+      flags.push('--force');
+    }
+    if (opts.volumes) {
+      flags.push('-v');
+    }
+
+    // Return any and all flags
+    return flags;
+
+  };
+
+  /*
    * Helper to standarize construction of docker commands
    */
   var buildCmd = function(compose, project, run, opts) {
 
     // Get our compose files and build the pre opts
-    var preOpts = parseComposeOptions(compose, project, opts);
+    var cmd = parseComposeOptions(compose, project, opts).concat([run]);
 
     // Get options
-    //var options = opts || {};
-    // @todo: options parsing here
+    cmd.push(parseOptions(opts));
 
-    return preOpts.concat([run]);
+    // Add in a service arg if its there
+    if (opts && opts.service) {
+      cmd.push(opts.service);
+    }
 
-  };
+    return cmd;
 
-  /*
-   * Run docker compose stop
-   */
-  var stop = function(compose, project, opts) {
-    return shCompose(buildCmd(compose, project, 'stop', opts));
   };
 
   /*
@@ -167,8 +201,7 @@ module.exports = function(kbox) {
     // Default options
     var defaults = {
       background: true,
-      recreate: false,
-      stop: false
+      recreate: false
     };
 
     // Get opts
@@ -177,62 +210,8 @@ module.exports = function(kbox) {
     // Merge in defaults
     options = _.merge(defaults, options);
 
-    // Get our compose files
-    var preFlags = parseComposeOptions(compose, project, opts);
-
-    // Log
-    log.debug('Creating containers from ' + compose);
-
-    // Up options
-    var flags = [];
-
-    // Run in background
-    if (options.background) {
-      flags.push('-d');
-    }
-
-    // Auto recreate
-    if (options.recreate) {
-      flags.push('--force-recreate');
-    }
-    else {
-      flags.push('--no-recreate');
-    }
-
     // Up us
-    return shCompose(preFlags.concat(['up']).concat(flags))
-
-    // Then we want to stop the containers so this works the same as
-    // docker.create
-    .then(function() {
-      if (options.stop) {
-        return stop(compose, options);
-      }
-    });
-
-  };
-
-  /*
-   * Run docker compose pull
-   */
-  var start = function(compose, project, opts) {
-
-    // Log
-    log.debug('Starting images from ' + compose);
-
-    // Specify correct options for starting via compose up
-    var startOptions = {
-      recreate: false,
-      stop: false
-    };
-
-    // Get our other options
-    var options = opts || {};
-
-    // Run command
-    return Promise.retry(function() {
-      return up(compose, project, _.extend(startOptions, options));
-    });
+    return shCompose(buildCmd(compose, project, 'up', options));
 
   };
 
@@ -240,29 +219,8 @@ module.exports = function(kbox) {
    * Run docker compose pull
    */
   var getId = function(compose, project, opts) {
-
-    // Get our compose files and build the command
-    var cmd = parseComposeOptions(compose, project, opts);
-
-    // Get options
-    var options = opts || {};
-
-    // Add the search
-    cmd.push('ps -q');
-
-    // Specify a service if we have one
-    if (options.service) {
-      cmd.push(options.service);
-    }
-
-    // Log
-    log.debug('Trying to discover container id...');
-
-    // Run command
-    return Promise.retry(function() {
-      return shCompose(cmd, {silent:true});
-    });
-
+    var binOpts = {silent: true};
+    return shCompose(buildCmd(compose, project, 'ps -q', opts), binOpts);
   };
 
   /*
@@ -279,13 +237,42 @@ module.exports = function(kbox) {
     return shCompose(buildCmd(compose, project, 'pull', opts));
   };
 
+  /*
+   * Run docker compose stop
+   */
+  var stop = function(compose, project, opts) {
+    return shCompose(buildCmd(compose, project, 'stop', opts));
+  };
+
+  /*
+   * Run docker compose remove
+   */
+  var remove = function(compose, project, opts) {
+
+    // Default options
+    var defaults = {
+      force: true,
+      volumes: false
+    };
+
+    // Get opts
+    var options = opts || {};
+
+    // Merge in defaults
+    options = _.merge(defaults, options);
+
+    return shCompose(buildCmd(compose, project, 'rm', options));
+
+  };
+
   // Build module function.
   return {
     getId: getId,
     build: build,
     pull: pull,
-    start: start,
-    stop: stop
+    start: up,
+    stop: stop,
+    remove: remove
   };
 
 };
