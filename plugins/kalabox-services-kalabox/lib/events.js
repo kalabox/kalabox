@@ -13,17 +13,21 @@ module.exports = function(kbox) {
   var Promise = kbox.Promise;
   var events = kbox.core.events.context();
 
-  // Path to our compose file
-  var coreServices = {
-    compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
-    project: 'kalabox'
-  };
-
   // Cached verify value
   var servicesVerified = false;
 
   // Logging
   var log = kbox.core.log.make('SERVICES');
+
+  /*
+   * Return our core services definition base
+   */
+  var getCoreServices = function() {
+    return {
+      compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
+      project: 'kalabox'
+    };
+  };
 
   /*
    * Verify services are in a good state.
@@ -42,7 +46,7 @@ module.exports = function(kbox) {
     var components = {};
 
     // Load our core kalabox-compose.yml
-    _.forEach(coreServices.compose, function(file) {
+    _.forEach(getCoreServices().compose, function(file) {
       _.extend(components, kbox.util.yaml.toJson(file));
     });
 
@@ -51,21 +55,23 @@ module.exports = function(kbox) {
 
     // Filter out services
     .map(function(service) {
-      console.log(service);
-      var check = coreServices;
+      var check = getCoreServices();
       check.opts = {service: service};
       return kbox.engine.inspect(check);
     })
 
     // Discover if we need to boot up our services
     .reduce(function(running, service) {
-      return kbox.engine.isRunning(service.Id);
-    }, false)
+      return kbox.engine.isRunning(service.Id)
+      .then(function(isRunning) {
+        return running && isRunning;
+      });
+    }, true)
 
     // Restart our services if needed
     .then(function(running) {
       if (!running) {
-        var recreateServices = coreServices;
+        var recreateServices = getCoreServices();
         recreateServices.opts = {recreate: true};
         return kbox.engine.start(recreateServices);
       }

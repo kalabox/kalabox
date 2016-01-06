@@ -58,7 +58,7 @@ module.exports = function(kbox) {
 
       // Run a provider command in a shell.
       return Promise.retry(function() {
-        log.info('Running command ' + cmd);
+        log.debug('Running command ' + cmd);
         return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
       });
     });
