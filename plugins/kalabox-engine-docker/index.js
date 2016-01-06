@@ -8,10 +8,11 @@
 // Build module.
 module.exports = function(kbox) {
 
-  /*
-   * Native modules.
-   */
+  // Node
   var path = require('path');
+
+  // Npm
+  var _ = require('lodash');
 
   // Constants
   var PROVIDER_PATH = path.join(__dirname, 'provider', 'docker');
@@ -21,18 +22,13 @@ module.exports = function(kbox) {
   var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
   kbox.core.deps.register('providerConfig', providerConfig);
 
-  /*
-   * NPM modules.
-   */
-  var _ = require('lodash');
-
   // Kalabox Modules
   var Promise = kbox.Promise;
   var compose = require(path.join(PROVIDER_PATH, 'compose.js'))(kbox);
   var docker = require(path.join(PROVIDER_PATH, 'docker.js'))(kbox);
 
   /*
-   * Init.
+   * Load our engine things
    */
   var init = _.once(function() {
 
@@ -131,13 +127,6 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Do a docker exec into a container.
-   */
-  var exec = function(data) {
-    return docker.exec(getId(data), data.opts);
-  };
-
-  /*
    * Check if container exists
    */
   var exists = function(datum) {
@@ -173,79 +162,17 @@ module.exports = function(kbox) {
   /*
    * Do a docker exec into a container.
    */
-  var findContainer = function(cid) {
-    return docker.findContainer(cid);
-  };
-
-  /*
-   * Do a docker exec into a container.
-   */
-  var findContainerThrows = function(cid) {
-    return docker.findContainerThrows(cid);
-  };
-
-  /*
-   * Do a docker exec into a container.
-   */
   var getProvider = _.once(function() {
     return docker.getProvider();
   });
 
   /*
-   * Open a terminal to a container.
-   */
-  var terminal = function(cid) {
-    return docker.terminal(cid);
-  };
-
-  /*
-   * Run a query against a container.
-   */
-  var query = function(data) {
-    return docker.query(getId(data), data.cmd, data.opts);
-  };
-
-  /*
-   * Run a query against a container, return data.
-   */
-  var queryData = function(data) {
-    return docker.queryData(getId(data), data.cmd);
-  };
-
-  /*
-   * Create a container, do something, then make sure it gets stopped
-   * and removed.
-   *
-   * THIS WILL NOT WORK IF YOU CHANGE THE DEFAULT ENTRYPOINT. MAKE SURE
-   * IT IS SET TO ["/bin/sh", "-c"] IN YOUR CREATEOPTS BEFORE YOU CALL
-   * THIS.
-   *
-   */
-  var use = function(data) {
-
-    // Extract our data
-    // @todo: better checks
-    var rawImage = data.rawImage;
-    var createOpts = data.createOpts;
-    var startOpts = data.startOpts;
-    var fn = data.fn;
-
-    return docker.use(rawImage, createOpts, startOpts, fn);
-  };
-
-  /*
    * Create and run a command inside of a container.
    */
   var run = function(data) {
-
-    // Extract our data
-    // @todo: better checks
-    var rawImage = data.rawImage;
-    var cmd = data.cmd;
-    var createOpts = data.createOpts;
-    var startOpts = data.startOpts;
-
-    return docker.run(rawImage, cmd, createOpts, startOpts);
+    return Promise.each(normalizer(data), function(datum) {
+      return compose.run(datum.compose, datum.project, datum.opts);
+    });
   };
 
   /*
@@ -285,14 +212,6 @@ module.exports = function(kbox) {
 
   /*
    * Builds and/or pulls a docker image
-   *
-   * Data can be either a compose object or array of compose objects
-   * Image objects have the following properties
-   *
-   *  'compose'     => Array of compose objects
-   *  'project'     => Name of the project
-   *  'opts'        => Compose options
-   *    'internal'  => Lets compose know this file will live in our binary
    */
   var build = function(data) {
     return Promise.each(normalizer(data), function(datum) {
@@ -307,24 +226,17 @@ module.exports = function(kbox) {
 
   return {
     build: build,
-    exec: exec,
     exists: exists,
-    get: findContainer,
-    getEnsure: findContainerThrows,
     getProvider: getProvider,
     init: init,
     inspect: inspect,
     isRunning: isRunning,
     list: list,
     logs: logs,
-    query: query,
-    queryData: queryData,
     remove: remove,
     run: run,
     start: start,
-    stop: stop,
-    terminal: terminal,
-    use: use
+    stop: stop
   };
 
 };

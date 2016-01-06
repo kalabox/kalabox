@@ -23,6 +23,9 @@ module.exports = function(kbox) {
     project: 'kalabox'
   };
 
+  // Cached verify value
+  var servicesVerified = false;
+
   /*
    * Logging functions.
    */
@@ -64,7 +67,13 @@ module.exports = function(kbox) {
    */
   var verify = function() {
 
+    // Log
     log.debug('Verifying services are up');
+
+    // Return cached magic
+    if (servicesVerified) {
+      return Promise.resolve(true);
+    }
 
     // Start component collector
     var components = {};
@@ -93,6 +102,9 @@ module.exports = function(kbox) {
     .then(function(running) {
       if (!running) {
         return rebuild(coreServices);
+      }
+      else {
+        servicesVerified = true;
       }
     });
 

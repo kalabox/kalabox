@@ -13,16 +13,17 @@ module.exports = function(kbox) {
   // Kalabox
   var Promise = kbox.Promise;
   var events = kbox.core.events.context();
-  var engine = kbox.engine;
   var share = require('./share.js')(kbox);
 
   // Syncthing container
-  var syncthingContainer = {
-    compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
-    project: 'kalabox',
-    opts: {
-      service: 'syncthing'
-    }
+  var syncthingContainer = function() {
+    return {
+      compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
+      project: 'kalabox',
+      opts: {
+        service: 'syncthing'
+      }
+    };
   };
 
   /*
@@ -165,21 +166,21 @@ module.exports = function(kbox) {
           var remoteDir = _.trimLeft(app.config.syncthing.codeRoot, home);
           // Command to make query.
           var cpCmd = [
-            'cp',
             '/src/' + remoteDir + '/.stignore',
             '/code/' + app.name + '/.stignore'
           ];
-          return kbox.engine.inspect(syncthingContainer)
-          .then(function(data) {
-            return engine.queryData({cid: data.Id, cmd: cpCmd});
-          });
+          // Build run definition
+          var runDef = syncthingContainer();
+          runDef.opts.entrypoint = '/bin/cp';
+          runDef.opts.cmd = cpCmd.join(' ');
+          return kbox.engine.run(runDef);
         })
 
         // Add the sharing mount to container with the webroot at that webroot
         .then(function() {
 
           // Inspect syncthing
-          return kbox.engine.inspect(syncthingContainer)
+          return kbox.engine.inspect(syncthingContainer())
 
           // Return syncthing code mount.
           .then(function(data) {

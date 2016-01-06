@@ -168,8 +168,28 @@ module.exports = function(kbox) {
       flags.push('-v');
     }
 
+    // Run options
+    // Do not start linked containers
+    if (opts.noDeps) {
+      flags.push('--no-deps');
+    }
+    // Change the entrypoint
+    if (opts.entrypoint) {
+      flags.push('--entrypoint ' + opts.entrypoint);
+    }
+    // Remove the container after the run is done
+    if (opts.rm) {
+      flags.push('--rm');
+    }
+    // Add additional ENVs
+    if (opts.environment) {
+      _.forEach(opts.environment, function(e) {
+        flags.push('-e ' + e);
+      });
+    }
+
     // Return any and all flags
-    return flags;
+    return flags.join(' ');
 
   };
 
@@ -187,6 +207,11 @@ module.exports = function(kbox) {
     // Add in a service arg if its there
     if (opts && opts.service) {
       cmd.push(opts.service);
+    }
+
+    // Add in a command arg if its there
+    if (opts && opts.cmd) {
+      cmd.push(opts.cmd);
     }
 
     return cmd;
@@ -262,7 +287,29 @@ module.exports = function(kbox) {
     options = _.merge(defaults, options);
 
     return shCompose(buildCmd(compose, project, 'rm', options));
+  };
 
+  /*
+   * Run docker compose run
+   */
+  var run = function(compose, project, opts) {
+
+    // Default options
+    var defaults = {
+      entrypoint: '"/bin/sh -c"',
+      environment: [],
+      noDeps: false,
+      rm: true,
+      cmd: '',
+    };
+
+    // Get opts
+    var options = opts || {};
+
+    // Merge in defaults
+    options = _.merge(defaults, options);
+
+    return shCompose(buildCmd(compose, project, 'run', options));
   };
 
   // Build module function.
@@ -272,6 +319,7 @@ module.exports = function(kbox) {
     pull: pull,
     start: up,
     stop: stop,
+    run: run,
     remove: remove
   };
 

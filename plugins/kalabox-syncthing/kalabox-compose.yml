@@ -3,7 +3,7 @@ syncthing:
   restart: always
   volumes:
     - /config
-    - /code
+    - /kalabox/code:/code
     - $KALABOX_ENGINE_HOME:/src
   ports:
     - "60008:60008/tcp"
