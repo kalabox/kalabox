@@ -300,59 +300,6 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Return a generic container with extra info added.
-   */
-  var info = function(cid) {
-
-    // Find a generic container.
-    return findGenericContainer(cid)
-    .then(function(container) {
-
-      if (!container) {
-
-        // No container found so return undefined.
-        return undefined;
-
-      } else {
-
-        // Inspect container.
-        return dockerInstance()
-        .then(function(dockerInstance) {
-          return Promise.retry(function() {
-            return Promise.fromNode(function(cb) {
-              dockerInstance.getContainer(container.id).inspect(cb);
-            });
-          });
-        })
-        // Wrap errors.
-        .catch(function(err) {
-          throw new VError(err, 'Error inspecting container: %s.', cid);
-        })
-        // Add more information properties to generic container object.
-        .then(function(data) {
-
-          // Add port mappings.
-          var ports = _.get(data, 'NetworkSettings.Ports', {});
-          container.ports = _.map(ports, function(val, key) {
-            var port = key;
-            var hostPort = _.get(val, '[0].HostPort', null);
-            return [port, hostPort].join('=>');
-          });
-
-          // Add container's running status.
-          container.running = _.get(data, 'State.Running', false);
-
-          return container;
-
-        });
-
-      }
-
-    });
-
-  };
-
-  /*
    * Do a docker exec into a container.
    */
   var exec = function(cid, opts) {
@@ -846,7 +793,6 @@ module.exports = function(kbox) {
     findContainer: findContainer,
     findContainerThrows: findContainerThrows,
     getProvider: getProvider,
-    info: info,
     inspect: inspect,
     isRunning: isRunning,
     list: list,

@@ -8,26 +8,23 @@ module.exports = function(kbox) {
   // Default compose definition
   var syncthingService = {
     compose: [path.resolve(__dirname, '..', '..', 'kalabox-compose.yml')],
-    opts: {project: 'kalabox'}
+    project: 'kalabox',
+    opts: {
+      service: 'syncthing'
+    }
   };
-  var SERVICE_NAME = 'syncthing';
 
   // Set compose to know this is a service
 
   // Query engine to see if syncthing container exists.
   var isInstalled = function() {
-    var checkFor = syncthingService;
-    checkFor.opts.service = SERVICE_NAME;
-    return kbox.engine.exists(checkFor);
+    return kbox.engine.exists(syncthingService);
   };
 
   // Query engine to see if syncthing container is running.
   var isRunning = function() {
-    // Add the services to check for
-    var checkFor = syncthingService;
-    checkFor.opts.service = SERVICE_NAME;
     // Inspect.
-    return kbox.engine.inspect(checkFor)
+    return kbox.engine.inspect(syncthingService)
     // Return container's running status.
     .then(function(data) {
       return data.State.Running;

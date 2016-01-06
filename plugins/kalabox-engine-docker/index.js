@@ -103,8 +103,8 @@ module.exports = function(kbox) {
     if (getId(datum)) {
       return docker.inspect(getId(datum));
     }
-    else if (datum.compose && datum.opts) {
-      return compose.getId(datum.compose, datum.opts)
+    else if (datum.compose) {
+      return compose.getId(datum.compose, datum.project, datum.opts)
       .then(function(id) {
         if (!_.isEmpty(id)) {
           return docker.inspect(_.trim(id));
@@ -119,13 +119,6 @@ module.exports = function(kbox) {
    */
   var isRunning = function(cid) {
     return docker.isRunning(cid);
-  };
-
-  /*
-   * Return a generic container with extra info added.
-   */
-  var info = function(cid) {
-    return docker.info(cid);
   };
 
   /*
@@ -170,8 +163,8 @@ module.exports = function(kbox) {
         return _.has(idSet, getId(datum));
       });
     }
-    else if (datum.compose && datum.opts) {
-      return compose.getId(datum.compose, datum.opts)
+    else if (datum.compose) {
+      return compose.getId(datum.compose, datum.project, datum.opts)
       .then(function(id) {
         return !_.isEmpty(id);
       });
@@ -267,7 +260,7 @@ module.exports = function(kbox) {
         return docker.stop(getId(datum));
       }
       else if (datum.compose) {
-        return compose.stop(datum.compose, datum.opts);
+        return compose.stop(datum.compose, datum.project, datum.opts);
       }
     });
   };
@@ -317,7 +310,6 @@ module.exports = function(kbox) {
     get: findContainer,
     getEnsure: findContainerThrows,
     getProvider: getProvider,
-    info: info,
     init: init,
     inspect: inspect,
     isRunning: isRunning,

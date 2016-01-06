@@ -178,7 +178,7 @@ module.exports = function(kbox) {
     options = _.merge(defaults, options);
 
     // Get our compose files
-    var preFlags = parseComposeOptions(compose, project);
+    var preFlags = parseComposeOptions(compose, project, opts);
 
     // Log
     log.debug('Creating containers from ' + compose);
@@ -242,7 +242,7 @@ module.exports = function(kbox) {
   var getId = function(compose, project, opts) {
 
     // Get our compose files and build the command
-    var cmd = parseComposeOptions(compose, project);
+    var cmd = parseComposeOptions(compose, project, opts);
 
     // Get options
     var options = opts || {};

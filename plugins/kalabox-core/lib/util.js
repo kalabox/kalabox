@@ -39,7 +39,7 @@ module.exports = function(kbox) {
     })
     // Map container ids to container infos.
     .map(function(containerId) {
-      return kbox.engine.info(containerId);
+      return kbox.engine.inspect({cid: containerId});
     });
 
   };
@@ -96,7 +96,7 @@ module.exports = function(kbox) {
     .each(function(container) {
 
       // Get more info about each container
-      return kbox.engine.info(container.id)
+      return kbox.engine.inspect({cid: container.id})
 
       // Take the info and print it out nicely
       .then(function(info) {
