@@ -47,7 +47,10 @@ module.exports = function(kbox) {
       step.all = function(state, done) {
 
         // Start the installer
-        kbox.services.rebuild()
+        var recreateServices = serviceImages;
+        recreateServices.opts = {recreate: true};
+
+        return kbox.engine.start(recreateServices)
 
         // Catch any errors and fail the installer
         .catch(function(err) {

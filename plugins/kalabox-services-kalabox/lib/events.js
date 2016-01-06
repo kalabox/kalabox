@@ -6,16 +6,75 @@ module.exports = function(kbox) {
   var redis = require('redis');
   var VError = require('verror');
   var pp = kbox.util.pp;
+  var path = require('path');
 
   var REDIS_PORT = 8160;
 
   var Promise = kbox.Promise;
   var events = kbox.core.events.context();
 
+  // Path to our compose file
+  var coreServices = {
+    compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
+    project: 'kalabox'
+  };
+
+  // Cached verify value
+  var servicesVerified = false;
+
+  // Logging
+  var log = kbox.core.log.make('SERVICES');
+
   /*
-   * Logging functions.
+   * Verify services are in a good state.
    */
-  var log = kbox.core.log.make('HIPACHE');
+  var verify = function() {
+
+    // Log
+    log.debug('Verifying services are up');
+
+    // Return cached magic
+    if (servicesVerified) {
+      return Promise.resolve(true);
+    }
+
+    // Start component collector
+    var components = {};
+
+    // Load our core kalabox-compose.yml
+    _.forEach(coreServices.compose, function(file) {
+      _.extend(components, kbox.util.yaml.toJson(file));
+    });
+
+    // Get our containers
+    return Promise.resolve(_.keys(components))
+
+    // Filter out services
+    .map(function(service) {
+      console.log(service);
+      var check = coreServices;
+      check.opts = {service: service};
+      return kbox.engine.inspect(check);
+    })
+
+    // Discover if we need to boot up our services
+    .reduce(function(running, service) {
+      return kbox.engine.isRunning(service.Id);
+    }, false)
+
+    // Restart our services if needed
+    .then(function(running) {
+      if (!running) {
+        var recreateServices = coreServices;
+        recreateServices.opts = {recreate: true};
+        return kbox.engine.start(recreateServices);
+      }
+      else {
+        servicesVerified = true;
+      }
+    });
+
+  };
 
   /**
    * Adds our services config to the relevant components
@@ -32,6 +91,13 @@ module.exports = function(kbox) {
 
     done();
 
+  });
+
+  /**
+   * Turn on a reverse proxy and dns server before our app starts
+   */
+  events.on('pre-app-start', function() {
+    return verify();
   });
 
   /**
@@ -129,71 +195,78 @@ module.exports = function(kbox) {
    */
   events.on('post-app-stop', function(app) {
 
-    // Go through our components
-    return Promise.each(app.components, function(cmp) {
+    // Turn on a reverse proxy and dns server before our app starts
+    // @todo: is this needed?
+    return verify()
 
-      if (cmp.proxy) {
+    // Go through our components and add a DNS record if needed
+    .then(function() {
 
-        // IP address of the hipache redis server.
-        var redisIp = kbox.core.deps.get('engineConfig').host;
+      return Promise.each(app.components, function(cmp) {
 
-        var redisClient = null;
+        if (cmp.proxy) {
 
-        // Connect to the hipache redis server.
-        return Promise.try(function() {
-          return Promise.fromNode(function(cb) {
-            redisClient = redis.createClient(REDIS_PORT, redisIp);
-            redisClient.on('ready', cb);
-            redisClient.on('error', function(err) {
-              redisClient.end();
-              redisClient = undefined;
-              cb(err);
-            });
-          });
-        })
-        // Loop through each proxy.
-        .then(function() {
-          return Promise.map(cmp.proxy, function(proxy) {
+          // IP address of the hipache redis server.
+          var redisIp = kbox.core.deps.get('engineConfig').host;
 
-            // Should this proxy mapping be just the domain, or should
-            // it have a subdomain.
-            var hostname = proxy.default ? cmp.appDomain : cmp.hostname;
+          var redisClient = null;
 
-            // Build redis key for this proxy.
-            var redisKey = ['frontend', hostname].join(':');
-
-            // Log deletiong of DNS records.
-            log.debug(kbox.util.format('Removing DNS records. %s', redisKey));
-
-            // Delete key on redis server.
+          // Connect to the hipache redis server.
+          return Promise.try(function() {
             return Promise.fromNode(function(cb) {
-              redisClient.del(redisKey, cb);
+              redisClient = redis.createClient(REDIS_PORT, redisIp);
+              redisClient.on('ready', cb);
+              redisClient.on('error', function(err) {
+                redisClient.end();
+                redisClient = undefined;
+                cb(err);
+              });
             });
+          })
+          // Loop through each proxy.
+          .then(function() {
+            return Promise.map(cmp.proxy, function(proxy) {
+
+              // Should this proxy mapping be just the domain, or should
+              // it have a subdomain.
+              var hostname = proxy.default ? cmp.appDomain : cmp.hostname;
+
+              // Build redis key for this proxy.
+              var redisKey = ['frontend', hostname].join(':');
+
+              // Log deletiong of DNS records.
+              log.debug(kbox.util.format('Removing DNS records. %s', redisKey));
+
+              // Delete key on redis server.
+              return Promise.fromNode(function(cb) {
+                redisClient.del(redisKey, cb);
+              });
+            });
+          })
+          // Wrap errors.
+          .catch(function(err) {
+            /*
+             * Ignore ECONNREFUSED errors because sometimes we might want to
+             * uninstall an app without having the startup services running.
+             * When that is the case it's best to just ignore errors trying
+             * to connect to the redis server.
+             */
+            if (!_.contains(err.message, 'ECONNREFUSED')) {
+              throw new VError(
+                err,
+                'Error resetting DNS for component "%s".',
+                pp(cmp)
+              );
+            }
+          })
+          // Make sure we end connection to redis server.
+          .finally(function() {
+            if (redisClient) {
+              redisClient.end();
+            }
           });
-        })
-        // Wrap errors.
-        .catch(function(err) {
-          /*
-           * Ignore ECONNREFUSED errors because sometimes we might want to
-           * uninstall an app without having the startup services running.
-           * When that is the case it's best to just ignore errors trying
-           * to connect to the redis server.
-           */
-          if (!_.contains(err.message, 'ECONNREFUSED')) {
-            throw new VError(
-              err,
-              'Error resetting DNS for component "%s".',
-              pp(cmp)
-            );
-          }
-        })
-        // Make sure we end connection to redis server.
-        .finally(function() {
-          if (redisClient) {
-            redisClient.end();
-          }
-        });
-      }
+        }
+      });
     });
   });
 

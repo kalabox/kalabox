@@ -225,7 +225,7 @@ module.exports = function(kbox) {
     inspect: inspect,
     isRunning: isRunning,
     list: list,
-    remove: remove,
+    destroy: remove,
     run: run,
     start: start,
     stop: stop

@@ -1,5 +1,6 @@
 globalPlugins:
   - kalabox-core
+  - kalabox-services-kalabox
   - kalabox-syncthing
   - kalabox-app-pantheon
 externalPlugins:
@@ -8,4 +9,3 @@ apps:
   - kalabox-app-pantheon
 logLevelConsole: info
 engine: kalabox-engine-docker
-services: kalabox-services-kalabox
