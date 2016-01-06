@@ -18,8 +18,24 @@ module.exports = function(kbox) {
   var log = kbox.core.log.make('HIPACHE');
 
   /**
-   * Listens for post-start-component
-   * - Creates a proxy record via redis for components with proxy definitions.
+   * Adds our services config to the relevant components
+   */
+  events.on('pre-component-create', function(data, done) {
+
+    // Get our services config from the app
+    var serviceConfig = data.app.config.pluginconfig.services || {};
+
+    // Check to see if this component should be exposed
+    if (serviceConfig.expose && serviceConfig.expose[data.cmp.name]) {
+      data.cmp.proxy = serviceConfig.expose[data.cmp.name];
+    }
+
+    done();
+
+  });
+
+  /**
+   * Creates a proxy record via redis for components with proxy definitions.
    */
   events.on('post-app-start', 1, function(app) {
 
@@ -109,8 +125,7 @@ module.exports = function(kbox) {
   });
 
   /**
-   * Listens for post-start-component
-   * - Removes proxy records via redis.
+   * Removes proxy records via redis.
    */
   events.on('post-app-stop', function(app) {
 
