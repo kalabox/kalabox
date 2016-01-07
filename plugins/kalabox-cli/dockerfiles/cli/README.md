@@ -21,5 +21,7 @@ RUN \
   bash && \
   rm -rf /var/cache/apk/*
 
+CMD ["true"]
+
 ```
 

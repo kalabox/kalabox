@@ -13,3 +13,5 @@ RUN \
   curl \
   bash && \
   rm -rf /var/cache/apk/*
+
+CMD ["true"]

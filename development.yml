@@ -1,6 +1,7 @@
 globalPlugins:
-  - kalabox-services-kalabox
   - kalabox-core
+  - kalabox-cli
+  - kalabox-services-kalabox
   - kalabox-syncthing
   - kalabox-app-pantheon
 externalPlugins:
