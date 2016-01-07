@@ -2,14 +2,14 @@
 
 ted.describe('kalabox', function(config) {
 
-  var sha = config.sha;
+  var ref = config.ref;
   var tag = config.tag;
 
   var vm = null;
 
   before(function() {
     vm = ted.driver.install(tag, {
-      sha: sha
+      ref: ref
     });
     return vm.promise();
   });
