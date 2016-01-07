@@ -1,0 +1,3 @@
+cli:
+  #image: kalabox/cli:$KALABOX_IMG_VERSION
+  build: ./dockerfiles/cli

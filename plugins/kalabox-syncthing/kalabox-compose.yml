@@ -1,5 +1,6 @@
 syncthing:
   image: kalabox/syncthing:$KALABOX_IMG_VERSION
+  #build: ./dockerfiles/syncthing
   restart: always
   volumes:
     - /config

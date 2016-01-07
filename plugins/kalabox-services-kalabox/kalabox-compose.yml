@@ -1,5 +1,6 @@
 proxy:
   image: kalabox/proxy:$KALABOX_IMG_VERSION
+  #build: ./dockerfiles/proxy
   environment:
     DOMAIN: $KALABOX_DOMAIN
   ports:
@@ -9,6 +10,7 @@ proxy:
   restart: always
 dns:
   image: kalabox/dns:$KALABOX_IMG_VERSION
+  #build: ./dockerfiles/dns
   environment:
     IP: $KALABOX_ENGINE_IP
     DOMAIN: $KALABOX_DOMAIN
