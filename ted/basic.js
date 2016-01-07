@@ -1,4 +1,3 @@
-// 1
 
 ted.describe('kalabox', function(config) {
 
