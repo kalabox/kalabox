@@ -14,4 +14,6 @@ RUN \
   bash && \
   rm -rf /var/cache/apk/*
 
+COPY ./config/gitconfig /root/.gitconfig
+
 CMD ["true"]

@@ -9,18 +9,23 @@ module.exports = function(kbox) {
 
   // Node modules
   var path = require('path');
+  var spawn = require('child_process').spawn;
 
   // NPM modules
   var _ = require('lodash');
 
   // Kalabox modules
   var Promise = kbox.Promise;
+  var _sh = kbox.util.shell;
 
   // Provider config
   var providerConfig = kbox.core.deps.get('providerConfig');
 
   // Get VB config
   var VIRTUALBOX_CONFIG = providerConfig.virtualbox;
+
+  // Set of logging functions.
+  var log = kbox.core.log.make('COMPOSE EXECUTABLE');
 
   /*
    * Get directory for docker executables.
@@ -69,14 +74,6 @@ module.exports = function(kbox) {
 
   };
 
-  // Set of logging functions.
-  var log = kbox.core.log.make('DOCKER EXECUTABLE');
-
-  /*
-   * Base shell command.
-   */
-  var _sh = kbox.core.deps.get('shell');
-
   /*
    * Run a shell command.
    */
@@ -88,15 +85,27 @@ module.exports = function(kbox) {
     // pass in options
     var options = _.extend({silent: false}, opts);
 
-    // Run shell command.
-    return Promise.fromNode(function(cb) {
-      _sh.exec(cmd, options, cb);
-    })
-
-    // Log results.
-    .tap(function(data) {
-      log.debug('Command results.', data);
-    });
+    // Run and attach
+    if (opts.attach) {
+      return Promise.fromNode(function(cb) {
+        var options = {stdio: [process.stdin, process.stdout, process.stderr]};
+        var run = spawn(cmd.shift(), cmd, options);
+        run.on('close', function(code) {
+          log.debug('Attach exited with code: ', code);
+          cb();
+        });
+      });
+    }
+    // Else shell command
+    else {
+      return Promise.fromNode(function(cb) {
+        _sh.exec(cmd, options, cb);
+      })
+      // Log results.
+      .tap(function(data) {
+        log.debug('Command results.', data);
+      });
+    }
 
   };
 

@@ -24,7 +24,9 @@ module.exports = function(kbox) {
       // Cli tasks yml file
       var tasksFile = path.join(app.root, 'cli.yml');
 
-      // Task defaults
+      /*
+       * Return the task defaults
+       */
       var taskDefaults = function() {
         return {
           binary: 'cli:/bin/sh',
@@ -32,12 +34,28 @@ module.exports = function(kbox) {
         };
       };
 
-      // Get run object
-      // @todo: later
+      /*
+       * Return a run object
+       */
+      var getRun = function(cmd) {
+        var cliFile = path.join(app.root, 'kalabox-cli.yml');
+        var parts = cmd.binary.split(':');
+        return {
+          compose: app.composeCore.concat([cliFile]),
+          project: app.name,
+          opts: {
+            attach: true,
+            service: parts[0],
+            entrypoint: parts[1],
+            cmd: cmd.cmd
+          }
+        };
+      };
 
       // Check for our tasks and then generate tasks if we have a
       // file
       if (fs.existsSync(tasksFile)) {
+
         var tasks = kbox.util.yaml.toJson(tasksFile);
 
         _.forEach(tasks, function(data, cmd) {
@@ -52,7 +70,11 @@ module.exports = function(kbox) {
             task.kind = 'delegate';
             task.description = options.description;
             task.func = function() {
-              console.log('RUN!');
+              var payload = kbox.core.deps.get('argv').payload;
+              payload.shift();
+              options.cmd = payload;
+              var runDef = getRun(options);
+              return kbox.engine.run(runDef);
             };
           });
 

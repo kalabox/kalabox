@@ -107,7 +107,8 @@ module.exports = function(kbox) {
       }
 
       // Add in our unit
-      files.push('--file ' + unit);
+      files.push('--file');
+      files.push(unit);
 
     });
 
@@ -127,7 +128,7 @@ module.exports = function(kbox) {
     }
 
     // Kick off options
-    var options = ['--project-name ' + project];
+    var options = ['--project-name', project];
 
     // Get our array of compose files
     var files = parseComposeData(compose, project, opts);
@@ -175,7 +176,8 @@ module.exports = function(kbox) {
     }
     // Change the entrypoint
     if (opts.entrypoint) {
-      flags.push('--entrypoint ' + opts.entrypoint);
+      flags.push('--entrypoint');
+      flags.push(opts.entrypoint);
     }
     // Remove the container after the run is done
     if (opts.rm) {
@@ -189,7 +191,7 @@ module.exports = function(kbox) {
     }
 
     // Return any and all flags
-    return flags.join(' ');
+    return flags;
 
   };
 
@@ -202,7 +204,7 @@ module.exports = function(kbox) {
     var cmd = parseComposeOptions(compose, project, opts).concat([run]);
 
     // Get options
-    cmd.push(parseOptions(opts));
+    cmd = cmd.concat(parseOptions(opts));
 
     // Add in a service arg if its there
     if (opts && opts.service) {
@@ -211,7 +213,7 @@ module.exports = function(kbox) {
 
     // Add in a command arg if its there
     if (opts && opts.cmd) {
-      cmd.push(opts.cmd);
+      cmd = cmd.concat(opts.cmd);
     }
 
     return cmd;
@@ -300,16 +302,21 @@ module.exports = function(kbox) {
       environment: [],
       noDeps: false,
       rm: true,
-      cmd: '',
+      cmd: ''
     };
 
     // Get opts
-    var options = opts || {};
+    var optz = opts || {};
+
+    // GEt whether we want to attach or not
+    var attach = (optz && optz.attach) ? true : false;
 
     // Merge in defaults
-    options = _.merge(defaults, options);
+    optz = _.merge(defaults, optz);
 
-    return shCompose(buildCmd(compose, project, 'run', options));
+    // Execute
+    return shCompose(buildCmd(compose, project, 'run', optz), {attach: attach});
+
   };
 
   // Build module function.
