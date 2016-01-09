@@ -86,7 +86,7 @@ module.exports = function(kbox) {
     var options = _.extend({silent: false}, opts);
 
     // Run and attach
-    if (opts.attach) {
+    if (opts && opts.attach) {
       return Promise.fromNode(function(cb) {
         var options = {stdio: [process.stdin, process.stdout, process.stderr]};
         var run = spawn(cmd.shift(), cmd, options);
