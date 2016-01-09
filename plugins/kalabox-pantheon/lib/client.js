@@ -183,9 +183,10 @@ Client.prototype.getSession = function(email) {
 
   // If no email try to load from app conf
   // @todo: if no email then load all the sessions we have saved
-  if (!email && this.app) {
-    var config = this.__getOpts();
-    email = config.account;
+  if (!email) {
+    if (this.kbox.core.deps.contains('argv')) {
+      email = this.kbox.core.deps.get('argv').options.email;
+    }
   }
 
   // Get this instance's cached session.

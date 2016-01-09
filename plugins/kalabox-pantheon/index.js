@@ -14,8 +14,8 @@ module.exports = function(kbox) {
   var pantheon = new Client(kbox);
 
   // Load our events and create modules
-  //require('./lib/events.js')(kbox, pantheon);
   require('./lib/create.js')(kbox, pantheon);
+  require('./lib/events.js')(kbox, pantheon);
 
   /*
    * App package location.
