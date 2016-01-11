@@ -22,7 +22,7 @@ function Client(kbox) {
 
   var globalConfig = this.kbox.core.deps.lookup('globalConfig');
   var homeDir = globalConfig.home;
-  this.cacheDir = path.join(homeDir, '.kalabox', 'terminus', 'session');
+  this.cacheDir = path.join(homeDir, '.kalabox', 'pantheon', 'session');
   if (!fs.existsSync(this.cacheDir)) {
     fs.mkdirpSync(this.cacheDir);
   }
@@ -37,7 +37,6 @@ function Client(kbox) {
   // Das Kindacache
   this.session = undefined;
   this.sites = undefined;
-  this.keySet = false;
 
 }
 
@@ -46,34 +45,14 @@ function Client(kbox) {
  */
 Client.prototype.setSession = function(session) {
 
-  // @todo: how do we validate?
-  // @todo: only write file if its changed? md5 hash compare?
-
   // Make sure we are translating expire correctly
   // jshint camelcase:false
   // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-  var expires;
-  if (session.session_expire_time) {
-    expires = session.session_expire_time;
-  }
-  else {
-    expires = session.expires_at;
-  }
-
-  // Make sure we are translating uid correctly
-  var uid;
-  if (session.user_uuid) {
-    uid = session.user_uuid;
-  }
-  else {
-    uid = session.user_id;
-  }
-
   // Set our runtime cache
   this.session = {
     session: session.session,
-    session_expire_time: expires,
-    user_uuid: uid,
+    session_expire_time: session.session_expire_time || session.expires_at,
+    user_uuid: session.user_uuid || session.user_id,
     email: session.email,
     name: session.name
   };
@@ -181,14 +160,6 @@ Client.prototype.validateSession = function(session) {
  */
 Client.prototype.getSession = function(email) {
 
-  // If no email try to load from app conf
-  // @todo: if no email then load all the sessions we have saved
-  if (!email) {
-    if (this.kbox.core.deps.contains('argv')) {
-      email = this.kbox.core.deps.get('argv').options.email;
-    }
-  }
-
   // Get this instance's cached session.
   var session = this.session || this.getSessionFile(email);
 
@@ -197,100 +168,56 @@ Client.prototype.getSession = function(email) {
     return session;
   }
 
-  // At least return the email and name even if we are invalid
-  else {
-    if (session && session.email && session.name) {
-      return {
-        email: session.email,
-        name: session.name
-      };
-    }
-    else {
-      return undefined;
-    }
+  // Otherwise return undefined
+  return undefined;
+
+};
+
+/*
+ * Returns a session property
+ */
+Client.prototype.getSessionProp = function(prop) {
+
+  // jshint camelcase:false
+  // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+  switch (prop) {
+    case 'session': return this.getSession().session;
+    case 'expires': return this.getSession().session_expire_time;
+    case 'user': return this.getSession().getSession().user_uuid;
+    case 'email': return this.getSession().email;
+    case 'name': return this.getSession().name;
   }
-};
-
-/*
- * Returns true if we need to reauth
- */
-Client.prototype.needsReauth = function(session) {
-
-  var reUp = (session && session.session === undefined);
-  this.kbox.core.log.debug('SESSION VALID => ' + !reUp);
-  return reUp;
+  // jshint camelcase:true
+  // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 
 };
 
 /*
- * If our session is not valid lets try to get a new one
+ * Return auth headers
  */
-Client.prototype.reAuthSession = function() {
-
-  // Summon the inquisitor
-  var inquirer = require('inquirer');
-
-  // We need ourselves present when we make promises
-  var self = this;
-
-  var session = this.getSession();
-
-  // Prompt question
-  var questions = [
-    {
-      name: 'password',
-      type: 'password',
-      message: 'Pantheon dashboard password (' + session.email + ')'
-    }
-  ];
-
-  /*
-   * Helper method to promisify inquiries
-   */
-  var askIt = function(questions, session) {
-    if (self.needsReauth(session)) {
-      return new self.Promise(function(answers) {
-        console.log('Your Pantheon session has expired. We need to reauth!');
-        inquirer.prompt(questions, answers);
-      });
-    }
-    else {
-      return self.Promise.resolve(false);
-    }
-  };
-
-  // Run the prompt and return the password
-  return askIt(questions, session)
-
-  // Get my answers
-  .then(function(answers) {
-
-    // Get the email
-    if (answers !== false) {
-
-      // Grab the session again
-      // @todo: what happens if we can't do this?
-      var session = self.getSession();
-
-      // Login
-      return self.auth(session.email, answers.password);
-    }
-
-  });
-
-};
-
-/*
- * Build headers with our pantheon session so we can do
- * protected stuff
- */
-Client.prototype.__getSessionHeaders = function(session) {
-
-  // Reutrn the header object
+Client.prototype.__getAuthHeaders = function(session) {
   return {
     'Content-Type': 'application/json',
-    'Cookie': 'X-Pantheon-Session=' + session.session
+    'Cookie': 'X-Pantheon-Session=' + session
   };
+};
+
+/*
+ * Return a default data object
+ */
+Client.prototype.__getRequestData = function(data) {
+
+  // Make sure data is at least an empty object
+  data = (data !== undefined) ? data : {};
+
+  // Merge in session data if we have it
+  if (this.getSession()) {
+    var session = this.getSession();
+    data = _.merge(data, {headers: this.__getAuthHeaders(session.session)});
+  }
+
+  // Return our data
+  return data;
 
 };
 
@@ -308,67 +235,33 @@ Client.prototype.__url = function(parts) {
  */
 Client.prototype.__request = function(verb, pathname, data) {
 
+  // Log our requests
+  var log = this.kbox.core.log.make('PANTHEON API');
+  log.debug(verb);
+  log.debug(pathname);
+  log.debug(data);
+
   // GEt rest mod
   var rest = require('restler');
 
   // Need this for all the promises we will make
   var self = this;
 
-  // Skip this part for an authorize request since we may
-  // not have a session yet and dont need auth headers anyway
-  if (!_.includes(pathname, 'authorize')) {
+  // Build the URL object
+  var obj = _.extend(this.target, {pathname: self.__url(pathname)});
 
-    // Grab a session to set up our auth
-    var session = this.getSession();
-
-    // Prompt the user to reauth if the session is invalid
-    if (this.needsReauth(session)) {
-
-      // Reuath attempt
-      return this.reAuthSession()
-
-      // Set our session to be the new session
-      .then(function(reAuthSession) {
-        session = reAuthSession;
-      });
-
-    }
-
-    // Build our header and merge it into any other
-    // data we might be sending along
-    var headers = this.__getSessionHeaders(session);
-    data = _.merge(data, {headers: headers});
-
-  }
-
-  // Format our URL
-  return self.Promise.try(function() {
-
-    // Build the URL object
-    var obj = _.extend(self.target, {pathname: self.__url(pathname)});
-
-    // Format to url string and return
-    return urls.format(obj);
-
-  })
-
-  // Make the Request and handle the result
-  // @todo: clean this code up
-  .then(function(url) {
-
-    return self.Promise.retry(function() {
-      // Send REST request.
-      return new self.Promise(function(fulfill, reject) {
-        rest[verb](url, data)
-        .on('success', fulfill)
-        .on('fail', function(data) {
-          var err = new Error(data);
-          reject(err);
-        })
-        .on('error', reject);
-      });
+  // Attempt the request
+  return this.Promise.retry(function() {
+    // Send REST request.
+    return new self.Promise(function(fulfill, reject) {
+      rest[verb](urls.format(obj), data)
+      .on('success', fulfill)
+      .on('fail', function(data) {
+        var err = new Error(data);
+        reject(err);
+      })
+      .on('error', reject);
     });
-
   });
 
 };
@@ -394,32 +287,31 @@ Client.prototype.auth = function(email, password) {
   };
 
   // Send REST request.
-  return self.__request('postJson', ['authorize'], data)
+  return this.__request('postJson', ['authorize'], data)
 
   // Validate response and return ID.
   .then(function(response) {
 
-    // Set the email and placeholder name
-    response.email = email;
-    response.name = '';
-
-    // Set the session once here so we can run the profile disco request
-    self.session = self.setSession(response);
+    // Get auth headers since we have a valid session now
+    var headers = self.__getAuthHeaders(response.session);
 
     // Set the fullname
-    return self.getProfile()
+    // jshint camelcase:false
+    // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+    return self.getProfile(response.user_id, {headers: headers})
       .then(function(profile) {
-        // jshint camelcase:false
-        // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-        self.session.name = profile.full_name;
+
+        // Add additional data to our response and then set
+        // the session
+        var session = _.merge(response, {
+          email: email,
+          name: profile.full_name
+        });
         // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
         // jshint camelcase:true
-      })
-      .then(function() {
-        // Set session again with additional info
-        // @todo: this might be redundant
-        self.session = self.setSession(self.session);
-        return self.session;
+
+        // Set and return the session
+        return self.setSession(session);
       });
 
   });
@@ -431,7 +323,7 @@ Client.prototype.auth = function(email, password) {
  *
  * sites/USERID/sites
  */
-Client.prototype.getSites = function() {
+Client.prototype.getSites = function(userId, data) {
 
   // Just grab the cached sites if we already have
   // made a request this process
@@ -442,15 +334,15 @@ Client.prototype.getSites = function() {
   // Some things to use later
   var self = this;
 
-  // Get the session for user info
-  var session = this.getSession();
+  // Use cached user if we have one
+  var user = userId || this.getSessionProp('user');
 
   // Make the request
-  // jshint camelcase:false
-  // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-  return this.__request('get', ['users', session.user_uuid, 'sites'], {})
-  // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
-  // jshint camelcase:true
+  return this.__request(
+    'get',
+    ['users', user, 'sites'],
+    this.__getRequestData(data)
+  )
 
   // Return sites
   .then(function(sites) {
@@ -465,10 +357,14 @@ Client.prototype.getSites = function() {
  *
  * sites/SITEID/environments/
  */
-Client.prototype.getEnvironments = function(sid) {
+Client.prototype.getEnvironments = function(sid, data) {
 
   // Make request
-  return this.__request('get', ['sites', sid, 'environments'], {})
+  return this.__request(
+    'get',
+    ['sites', sid, 'environments'],
+    this.__getRequestData(data)
+  )
 
   // Return object of envs
   .then(function(envs) {
@@ -483,17 +379,17 @@ Client.prototype.getEnvironments = function(sid) {
  * GET /users/USERID/profile
  *
  */
-Client.prototype.getProfile = function() {
+Client.prototype.getProfile = function(userId, data) {
 
-  // Get the session for user info
-  var session = this.getSession();
+  // Use cached user if we have one
+  var user = userId || this.getSessionProp('user');
 
   // Send REST request.
-  // jshint camelcase:false
-  // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-  return this.__request('get', ['users', session.user_uuid, 'profile'], {})
-  // jscs:emable requireCamelCaseOrUpperCaseIdentifiers
-  // jshint camelcase:true
+  return this.__request(
+    'get',
+    ['users', user, 'profile'],
+    this.__getRequestData(data)
+  )
 
   // Return the profile
   .then(function(profile) {

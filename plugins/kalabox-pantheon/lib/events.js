@@ -18,7 +18,7 @@ module.exports = function(kbox, pantheon) {
     // Only do this on pantheon apps
     if (config.type === 'pantheon') {
 
-      // Grab any argv opts we may have
+      // Grab the current config
       var pantheonConfig = config.pluginconfig.pantheon;
 
       // Get site info
@@ -42,6 +42,9 @@ module.exports = function(kbox, pantheon) {
         // jshint camelcase:true
         // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
         pantheonConfig.upstream = site.upstream;
+
+        // Remove password
+        delete pantheonConfig.password;
 
         // Rebuild json
         config.pluginconfig.pantheon = pantheonConfig;

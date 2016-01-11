@@ -17,12 +17,6 @@ module.exports = function(kbox, pantheon) {
     'backdrop'
   ];
 
-  // argv v for usage later
-  var options = kbox.core.deps.get('argv').options;
-
-  // We need this so we can later "validate" our password
-  var loginEmail;
-
   /*
    * Parse our sites from terminus into a choices array
    */
@@ -57,6 +51,51 @@ module.exports = function(kbox, pantheon) {
     return _.sortBy(choices, 'name');
   };
 
+  /*
+   * Helper to return valid cached sessions
+   */
+  var getValidSessions = function() {
+    return _.without(_.map(pantheon.getSessionFiles(), function(session) {
+      if (pantheon.validateSession(session)) {
+        return {name: session.email, value: session.email};
+      }
+    }), undefined);
+  };
+
+  /*
+   * Helper to determine whether we need an email or not
+   */
+  var needsEmail = function() {
+    var options = kbox.core.deps.get('argv').options;
+    return (pantheon.getSession() === undefined && !options.email);
+  };
+
+  /*
+   * Helper to determine whether we need a password or not
+   */
+  var needsPassword = function() {
+    var options = kbox.core.deps.get('argv').options;
+    return (pantheon.getSession() === undefined && !options.password);
+  };
+
+  /*
+   * Helper to set the session correctly
+   */
+  var validateSession = function(answers) {
+    // We may be in semi-interactive mode so we want to handle the situation
+    // where we might not have logged in yet. this is ok because
+    // if we authed already its trivial to grab the cached session
+    var options = kbox.core.deps.get('argv').options;
+    var email = options.email || answers.email;
+    var password = options.password || answers.password;
+    // Login to the pantheon if needed
+    return Promise.try(function() {
+      if (pantheon.getSession() === undefined) {
+        return pantheon.auth(email, password);
+      }
+    });
+  };
+
   // Choose a pantheon account to use or optionally auth with a
   // differnet account
   kbox.create.add('pantheon', {
@@ -74,15 +113,8 @@ module.exports = function(kbox, pantheon) {
         // new account
         choices: function() {
 
-          // See if we have previously used accounts
-          var sessions = pantheon.getSessionFiles();
-
-          // Build choices array
-          var choices = [];
-          _.forEach(sessions, function(session) {
-            var email = session.email;
-            choices.push({name: email, value: email});
-          });
+          // Get previously valid sessions
+          var choices = getValidSessions();
 
           // Add option to add account
           choices.push({name: 'add a different account', value: 'more'});
@@ -91,18 +123,19 @@ module.exports = function(kbox, pantheon) {
           return choices;
 
         },
+        // If we have a session we should set it here
+        filter: function(input) {
+          if (input !== 'more' && pantheon.getSessionFile(input)) {
+            pantheon.setSession(pantheon.getSessionFile(input));
+          }
+          return input;
+        },
         // Only run this prompt if we have logged in with a pantheon
         // account before.
         when: function() {
-          // See if we have previously used accounts
-          var sessions = pantheon.getSessionFiles();
-          // This assumes all kalabox terminus sessions have an email property
-          return (sessions);
-        },
-        filter: function(value) {
-          loginEmail = value;
-          return value;
-        },
+          // Run if we have valid sessions
+          return (!_.isEmpty(getValidSessions()));
+        }
       }
     }
   });
@@ -115,24 +148,16 @@ module.exports = function(kbox, pantheon) {
       inquire: {
         type: 'input',
         message: 'Pantheon dashboard email',
-        validate: function(value) {
-          loginEmail = value;
-          return true;
-        },
-        // Only run this prompt if we havent logged in with a pantheon
-        // account before.
-        when: function(answers) {
-          if (answers.email === undefined || answers.email === 'more') {
-            return true;
-          }
+        // Only run this prompt if we don't have a session set yet or
+        // we have passed in the email as an option
+        when: function(/*answers*/) {
+          return needsEmail();
         }
       }
     }
   });
 
   // Prompt for password if needed
-  // @todo: eventually remove this and have this handled inside getToken
-  // we can only do this when we resolve the inquiry inception issue.
   kbox.create.add('pantheon', {
     option: {
       name: 'password',
@@ -144,41 +169,8 @@ module.exports = function(kbox, pantheon) {
       inquire: {
         type: 'password',
         message: 'Pantheon dashboard password',
-        validate: function(value) {
-
-          // Make this async cause we need to hit the terminus
-          var done = this.async();
-
-          // Login to the pantheon
-          pantheon.auth(loginEmail, value)
-
-          // Validate if we have a valid session
-          .then(function(session) {
-            done(pantheon.validateSession(session));
-          });
-
-        },
-        when: function(answers) {
-
-          // Store initial email from first question
-          var email = options.email || answers.email;
-
-          // Prompt for password if we have no stored session
-          // or if user is entering a new account or we have no option
-          if (email === undefined || email === 'more') {
-
-            // And then prompt for a password
-            return true;
-
-          }
-
-          // Also prompt for password if we are trying to use a preexisting
-          // session and that session is no longer valid
-          if (email) {
-            var session = pantheon.getSessionFile(email);
-            return !pantheon.validateSession(session);
-          }
-
+        when: function(/*answers*/) {
+          return needsPassword();
         }
       }
     }
@@ -201,38 +193,16 @@ module.exports = function(kbox, pantheon) {
           // Make this async cause we need to hit the terminus
           var done = this.async();
 
-          // We may be in semi-interactive mode so we want to handle the situation
-          // where we might not have logged in yet. this is ok because
-          // if we authed already its trivial to grab the cached session
-          var email = options.email || answers.email;
-          var password = options.password || answers.password;
+          // Validate our session
+          return validateSession(answers)
 
-          // Do we need to login?
-          return Promise.try(function() {
-            return password !== undefined;
-          })
-
-          // Login to the pantheon if needed
-          .then(function(needsLogin) {
-            if (needsLogin) {
-              return pantheon.auth(email, password);
-            }
-            else {
-              return pantheon.setSession(pantheon.getSessionFile(email));
-            }
-          })
-
-          // Grab a list of sites from pantheon, we presume if youve
-          // gotten this far that you have a valid session and all is right in
-          // the world
+          // Grab a list of sites from pantheon
           .then(function() {
             return pantheon.getSites();
           })
 
           // Parse the list
           .then(function(sites) {
-            // Check to see if we have a null framework so we can set it
-            // correctly in the next optional step
             done(parseSites(sites));
           });
 
@@ -258,27 +228,8 @@ module.exports = function(kbox, pantheon) {
           // Make this async cause we need to hit the terminus
           var done = this.async();
 
-          // We may be in semi-interactive mode so we want to handle the situation
-          // where we might not have logged in yet. this is ok because
-          // if we authed already its trivial to grab the cached session
-          var email = options.email || answers.email;
-          var password = options.password || answers.password;
-          var site = options.site || answers.site;
-
-          // Do we need to login?
-          return Promise.try(function() {
-            return password !== undefined;
-          })
-
-          // Login to the pantheon if needed
-          .then(function(needsLogin) {
-            if (needsLogin) {
-              return pantheon.auth(email, password);
-            }
-            else {
-              return pantheon.setSession(pantheon.getSessionFile(email));
-            }
-          })
+          // Validate our session
+          return validateSession(answers)
 
           // Grab our sites again so we can look for a correctly set framework
           .then(function() {
@@ -288,6 +239,9 @@ module.exports = function(kbox, pantheon) {
           // Check to see whether we need to prompt the user for a framework
           // in the next step
           .then(function(sites) {
+            // Our site is either an answer or option
+            var options = kbox.core.deps.get('argv').options;
+            var site = options.site || answers.site;
             // Get the UUID
             var uuid = _.findKey(sites, function(s) {
               return s.information.name === site;
@@ -317,7 +271,8 @@ module.exports = function(kbox, pantheon) {
   });
 
   // Add an option
-  // todo: make this message better?
+  // @todo: make this message better?
+  // @todo: do we need this still?
   var fMessage = 'This is quite unexpected! It looks like you do not have a ' +
     'framework associated with your site. Please contact Pantheon support to ' +
     'resolve this issue. In the meantime you can select your framework ' +
@@ -363,6 +318,7 @@ module.exports = function(kbox, pantheon) {
           }
         },
         default: function(answers) {
+          var options = kbox.core.deps.get('argv').options;
           return options.site || answers.site;
         }
       },
