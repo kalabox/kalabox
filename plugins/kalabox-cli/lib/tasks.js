@@ -76,7 +76,7 @@ module.exports = function(kbox) {
               // @todo: this implies that our entrypoint should be in the path
               // and not constructed absolutely
               var payload = kbox.core.deps.get('argv').payload;
-              if (options.entrypoint === payload[0] || cmd === payload[0]) {
+              if (options.entrypoint === payload[0] || options.stripfirst) {
                 payload.shift();
               }
 

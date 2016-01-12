@@ -9,10 +9,10 @@ module.exports = function(kbox, pantheon) {
   // Load some boxmods
   var events = kbox.core.events.context('29b1da3b-e0d0-49e3-a343-ea528a21c6e2');
 
-  // Events
-  // pre-create-instantiate
-  // Add some other important things to our kalabox.yml before
-  // creating it
+  /*
+   * Add some other important things to our kalabox.yml before
+   * creating it
+   */
   events.on('pre-create-configure', function(config) {
 
     // Only do this on pantheon apps
@@ -50,6 +50,29 @@ module.exports = function(kbox, pantheon) {
         // Rebuild json
         config.pluginconfig.pantheon = pantheonConfig;
       });
+    }
+  });
+
+  /*
+   * Make sure our pantheon SSH keys are set up
+   */
+  events.on('post-create-configure', function(app) {
+
+    // Load the pantheon api client
+    var Client = require('./client.js');
+    pantheon = new Client(kbox, app);
+
+    // Only do this on pantheon apps
+    if (app.type === 'pantheon') {
+
+      // Set the correct session
+      // @todo: it feels weird to have to do this again
+      var account = app.pluginconfig.pantheon.email;
+      pantheon.setSession(pantheon.getSessionFile(account));
+
+      // Make sure we have SSH keys that can communciate with pantheon
+      return pantheon.sshKeySetup();
+
     }
   });
 

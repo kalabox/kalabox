@@ -52,6 +52,8 @@
     "rimraf": "~2.2.8",
     "sha1": "^1.1.0",
     "shelljs": "^0.3.0",
+    "ssh-fingerprint": "0.0.1",
+    "ssh-keygen": "^0.2.1",
     "tsort": "0.0.1",
     "uuid": "^2.0.1",
     "verror": "1.6.x",

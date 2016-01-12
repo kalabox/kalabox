@@ -176,16 +176,16 @@ Client.prototype.getSession = function(email) {
 /*
  * Returns a session property
  */
-Client.prototype.getSessionProp = function(prop) {
+Client.prototype.getSessionProp = function(prop, email) {
 
   // jshint camelcase:false
   // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
   switch (prop) {
-    case 'session': return this.getSession().session;
-    case 'expires': return this.getSession().session_expire_time;
-    case 'user': return this.getSession().user_uuid;
-    case 'email': return this.getSession().email;
-    case 'name': return this.getSession().name;
+    case 'session': return this.getSession(email).session;
+    case 'expires': return this.getSession(email).session_expire_time;
+    case 'user': return this.getSession(email).user_uuid;
+    case 'email': return this.getSession(email).email;
+    case 'name': return this.getSession(email).name;
   }
   // jshint camelcase:true
   // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
@@ -394,6 +394,193 @@ Client.prototype.getProfile = function(userId, data) {
   // Return the profile
   .then(function(profile) {
     return profile;
+  });
+
+};
+
+/*
+ * Get users ssh keys
+ *
+ * GET /users/USERID/keys
+ *
+ */
+Client.prototype.__getSSHKeys = function(userId, data) {
+
+  // Use cached user if we have one
+  var user = userId || this.getSessionProp('user');
+
+  // Send REST request.
+  return this.__request(
+    'get',
+    ['users', user, 'keys'],
+    this.__getRequestData(data)
+  )
+
+  // Return keys
+  .then(function(keys) {
+    return keys;
+  });
+
+};
+
+/*
+ * Post users ssh keys
+ *
+ * POST /users/USERID/keys
+ *
+ */
+Client.prototype.__postSSHKey = function(userId, sshKey) {
+
+  // Argument handling
+  if (sshKey === undefined) {
+    sshKey = userId;
+    userId = undefined;
+  }
+
+  // Use cached user if we have one
+  var user = userId || this.getSessionProp('user');
+
+  // Send in our ssh key with validation on
+  var data = {
+    data: JSON.stringify(sshKey),
+    query: {
+      validate: true
+    }
+  };
+
+  // Send REST request.
+  return this.__request(
+    'post',
+    ['users', user, 'keys'],
+    this.__getRequestData(data)
+  )
+
+  // Return keys
+  .then(function(keys) {
+    return keys;
+  });
+
+};
+
+/*
+ * Set up our SSH keys if needed
+ *
+ * We only needs to check for this if we are going to run something in either
+ * the terminus/git/rsync containers
+ */
+Client.prototype.sshKeySetup = function() {
+
+  // Node modules
+  var fingerprint = require('ssh-fingerprint');
+  var keygen = require('ssh-keygen');
+
+  // for later
+  var self = this;
+
+  // Get our global config
+  var home = this.kbox.core.deps.get('globalConfig').home;
+
+  // "CONSTANTS"
+  var SSH_DIR = path.join(home, '.ssh');
+  var PRIVATE_KEY_PATH = path.join(SSH_DIR, 'pantheon.kalabox.id_rsa');
+  var PUBLIC_KEY_PATH = path.join(SSH_DIR, 'pantheon.kalabox.id_rsa.pub');
+
+  /*
+   * Load our pantheon public key and return it and a non-coloned
+   * fingerprint
+   */
+  var loadPubKey = function() {
+    var data = fs.readFileSync(PUBLIC_KEY_PATH, 'utf-8');
+    return {
+      data: data,
+      print: fingerprint(data).replace(/:/g, '')
+    };
+  };
+
+  /*
+   * Helper method to promisigy fs.exists
+   */
+  var existsAsync = function(path) {
+    return new self.Promise(function(exists) {
+      fs.exists(path, exists);
+    });
+  };
+
+  // Check to see if we have both keys
+  return self.Promise.join(
+    existsAsync(PRIVATE_KEY_PATH),
+    existsAsync(PUBLIC_KEY_PATH),
+    function(privateExists, publicExists) {
+      return privateExists && publicExists;
+    }
+  )
+
+  // Generate a new SSH key if needed
+  .then(function(exists) {
+    if (!exists) {
+
+      // Set Path environmental variable if we are on windows.
+      // We need this because ssh-keygen is not in the path by default
+      if (process.platform === 'win32') {
+
+        // Add the correct gitbin
+        // This can be in different spots for different windows versions so
+        // we add the ones that exist
+        var home = self.kbox.core.deps.get('globalConfig').home;
+        var gBin1 = 'C:\\Program Files (x86)\\Git\\bin';
+        var gBin2 = path.join(home, 'AppData\\Local', 'Programs', 'Git', 'bin');
+
+        // Only add the gitbin to the path if the path doesn't start with
+        // it. We want to make sure gitBin is first so other things like
+        // putty don't F with it.
+        // See https://github.com/kalabox/kalabox/issues/342
+        _.forEach([gBin1, gBin2], function(bin) {
+          var env = self.kbox.core.env;
+          if (fs.existsSync(bin) && !_.startsWith(process.env.path, bin)) {
+            env.setEnv('Path', [bin, process.env.Path].join(';'));
+          }
+        });
+      }
+
+      // Build our key option array
+      // @todo: add session email for comment
+      var pw = (process.platform === 'win32' ? '\'\'' : '');
+      var keyOpts = {
+        location: PRIVATE_KEY_PATH,
+        comment: 'me@kalabox',
+        password: pw,
+        read: false,
+        destroy: false
+      };
+
+      // Generate our key if needed
+      return self.Promise.fromNode(function(callback) {
+        keygen(keyOpts, callback);
+      });
+    }
+  })
+
+  // Look to see if pantheon has our pubkey
+  .then(function() {
+
+    // Grab our public key
+    var pubKey = loadPubKey();
+
+    // Grab public key fingerprints from pantheon
+    return self.__getSSHKeys()
+
+    // IF THE GLOVE FITS! YOU MUST ACQUIT!
+    .then(function(keys) {
+      return _.has(keys, pubKey.print);
+    })
+
+    // Post a key to pantheon if needed
+    .then(function(hasKey) {
+      if (!hasKey) {
+        return self.__postSSHKey(pubKey.data);
+      }
+    });
+
   });
 
 };
