@@ -213,10 +213,14 @@ module.exports = function(kbox) {
 
     // Add in a command arg if its there
     // We need to escape spaces here to get this to work correctly
-    // with docker compose run
-    // @todo: other os?
+    // if bash is our entry point otherwise we can return the normal
     if (opts && opts.cmd) {
-      cmd = cmd.concat(opts.cmd.join('\ '));
+      if (_.includes(opts.entrypoint, 'bash')) {
+        cmd = cmd.concat(opts.cmd.join('\ '));
+      }
+      else {
+        cmd = cmd.concat(opts.cmd);
+      }
     }
 
     return cmd;

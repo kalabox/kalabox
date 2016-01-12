@@ -82,6 +82,11 @@ module.exports = function(kbox) {
               // Set the payload to be the command
               options.cmd = payload;
 
+              // If we have pre cmd opts then unshift them
+              if (options.precmdopts) {
+                options.cmd.unshift(options.precmdopts);
+              }
+
               // Get teh run definition objecti
               var runDef = getRun(options);
 
