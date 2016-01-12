@@ -72,10 +72,11 @@ module.exports = function(kbox) {
             task.func = function() {
 
               // Shift off our first cmd arg if its also the entrypoint
+              // or the name of the command
               // @todo: this implies that our entrypoint should be in the path
               // and not constructed absolutely
               var payload = kbox.core.deps.get('argv').payload;
-              if (options.entrypoint === payload[0]) {
+              if (options.entrypoint === payload[0] || cmd === payload[0]) {
                 payload.shift();
               }
 
