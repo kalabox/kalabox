@@ -15,5 +15,6 @@ RUN \
   rm -rf /var/cache/apk/*
 
 COPY ./config/gitconfig /root/.gitconfig
+COPY ./kgit /usr/local/bin
 
 CMD ["true"]
