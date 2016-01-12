@@ -183,7 +183,7 @@ Client.prototype.getSessionProp = function(prop) {
   switch (prop) {
     case 'session': return this.getSession().session;
     case 'expires': return this.getSession().session_expire_time;
-    case 'user': return this.getSession().getSession().user_uuid;
+    case 'user': return this.getSession().user_uuid;
     case 'email': return this.getSession().email;
     case 'name': return this.getSession().name;
   }
