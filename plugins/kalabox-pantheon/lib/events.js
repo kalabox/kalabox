@@ -42,6 +42,7 @@ module.exports = function(kbox, pantheon) {
         // jshint camelcase:true
         // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
         pantheonConfig.upstream = site.upstream;
+        pantheonConfig.name = pantheon.session.name;
 
         // Remove password
         delete pantheonConfig.password;
