@@ -29,7 +29,8 @@ module.exports = function(kbox) {
        */
       var taskDefaults = function() {
         return {
-          binary: 'cli:/bin/sh',
+          service: 'cli',
+          entrypoint: '/bin/sh -c',
           description: 'Run a command against a container'
         };
       };
@@ -37,17 +38,16 @@ module.exports = function(kbox) {
       /*
        * Return a run object
        */
-      var getRun = function(cmd) {
+      var getRun = function(options) {
         var cliFile = path.join(app.root, 'kalabox-cli.yml');
-        var parts = cmd.binary.split(':');
         return {
           compose: app.composeCore.concat([cliFile]),
           project: app.name,
           opts: {
             attach: true,
-            service: parts[0],
-            entrypoint: parts[1],
-            cmd: cmd.cmd
+            service: options.service,
+            entrypoint: options.entrypoint,
+            cmd: options.cmd
           }
         };
       };
@@ -70,11 +70,24 @@ module.exports = function(kbox) {
             task.kind = 'delegate';
             task.description = options.description;
             task.func = function() {
+
+              // Shift off our first cmd arg if its also the entrypoint
+              // @todo: this implies that our entrypoint should be in the path
+              // and not constructed absolutely
               var payload = kbox.core.deps.get('argv').payload;
-              payload.shift();
+              if (options.entrypoint === payload[0]) {
+                payload.shift();
+              }
+
+              // Set the payload to be the command
               options.cmd = payload;
+
+              // Get teh run definition objecti
               var runDef = getRun(options);
+
+              // RUN IT!
               return kbox.engine.run(runDef);
+
             };
           });
 

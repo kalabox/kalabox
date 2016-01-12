@@ -196,7 +196,7 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Helper to standarize construction of docker commands
+   * Helper to standardize construction of docker commands
    */
   var buildCmd = function(compose, project, run, opts) {
 
@@ -212,8 +212,11 @@ module.exports = function(kbox) {
     }
 
     // Add in a command arg if its there
+    // We need to escape spaces here to get this to work correctly
+    // with docker compose run
+    // @todo: other os?
     if (opts && opts.cmd) {
-      cmd = cmd.concat(opts.cmd);
+      cmd = cmd.concat(opts.cmd.join('\ '));
     }
 
     return cmd;

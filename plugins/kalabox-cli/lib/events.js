@@ -23,6 +23,19 @@ module.exports = function(kbox) {
         app.composeCore.push(path.join(app.root, 'kalabox-cli.yml'));
         done();
       });
+
+      // Remove our CLI tools
+      kbox.core.events.on('pre-app-uninstall', function(app, done) {
+        app.composeCore.push(path.join(app.root, 'kalabox-cli.yml'));
+        done();
+      });
+
+      // Rebuild our CLI tools
+      kbox.core.events.on('pre-app-rebuild', function(app, done) {
+        app.composeCore.push(path.join(app.root, 'kalabox-cli.yml'));
+        done();
+      });
+
     }
 
   });
