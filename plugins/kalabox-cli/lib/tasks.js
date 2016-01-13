@@ -88,6 +88,11 @@ module.exports = function(kbox) {
                 options.cmd.unshift(options.precmdopts);
               }
 
+              // If we have posrt cmd opts then unshift them
+              if (options.postcmdopts) {
+                options.cmd.push(options.postcmdopts);
+              }
+
               // Get teh run definition objecti
               var runDef = getRun(options);
 

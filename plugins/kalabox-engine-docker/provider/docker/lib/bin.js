@@ -106,7 +106,7 @@ module.exports = function(kbox) {
             collector.push(data);
           });
           run.on('error', function(err) {
-            log.info('Error recieved ', err);
+            log.debug('Error recieved ', err);
             reject(new Error(err));
           });
         }
@@ -116,7 +116,7 @@ module.exports = function(kbox) {
           var response = _.filter(collector, function(unit) {
             return !_.isEmpty(unit);
           });
-          log.info('Exiting process with: ', response);
+          log.debug('Exiting process with: ', response);
           resolve(response);
         });
 

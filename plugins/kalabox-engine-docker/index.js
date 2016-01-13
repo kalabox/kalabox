@@ -103,7 +103,11 @@ module.exports = function(kbox) {
       return compose.getId(datum.compose, datum.project, datum.opts)
       .then(function(id) {
         if (!_.isEmpty(id)) {
-          return docker.inspect(_.trim(id));
+          // @todo: this assumes that the container we want
+          // is probably the first id returned. What happens if that is
+          // not true or we need other ids for this service?
+          var ids = id.split('\n');
+          return docker.inspect(_.trim(ids.shift()));
         }
       });
     }
