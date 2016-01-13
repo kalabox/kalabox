@@ -177,7 +177,14 @@ module.exports = function(kbox) {
     // Change the entrypoint
     if (opts.entrypoint) {
       flags.push('--entrypoint');
-      flags.push(opts.entrypoint);
+      if (_.isArray(opts.entrypoint)) {
+        _.forEach(opts.entrypoint, function(piece) {
+          flags.push(piece);
+        });
+      }
+      else {
+        flags.push(opts.entrypoint);
+      }
     }
     // Remove the container after the run is done
     if (opts.rm) {
@@ -185,8 +192,8 @@ module.exports = function(kbox) {
     }
     // Add additional ENVs
     if (opts.environment) {
-      _.forEach(opts.environment, function(e) {
-        flags.push('-e ' + e);
+      _.forEach(opts.environment, function(envVar) {
+        flags.push('-e ' + envVar);
       });
     }
 
@@ -213,9 +220,9 @@ module.exports = function(kbox) {
 
     // Add in a command arg if its there
     // We need to escape spaces here to get this to work correctly
-    // if bash is our entry point otherwise we can return the normal
+    // if bash (any array?) is our entry point otherwise we can return the normal
     if (opts && opts.cmd) {
-      if (_.includes(opts.entrypoint, 'bash')) {
+      if (_.includes(opts.entrypoint, 'bash') && opts.stdio) {
         cmd = cmd.concat(opts.cmd.join('\ '));
       }
       else {
@@ -305,7 +312,6 @@ module.exports = function(kbox) {
 
     // Default options
     var defaults = {
-      entrypoint: '"/bin/sh -c"',
       environment: [],
       noDeps: false,
       rm: true,
@@ -315,14 +321,14 @@ module.exports = function(kbox) {
     // Get opts
     var optz = opts || {};
 
-    // GEt whether we want to attach or not
-    var attach = (optz && optz.attach) ? true : false;
+    // GEt whether we want to attach/collect or not
+    var stdio = opts.stdio || [];
 
     // Merge in defaults
     optz = _.merge(defaults, optz);
 
     // Execute
-    return shCompose(buildCmd(compose, project, 'run', optz), {attach: attach});
+    return shCompose(buildCmd(compose, project, 'run', optz), {stdio: stdio});
 
   };
 

@@ -17,25 +17,7 @@ module.exports = function(kbox) {
      * Build our needed cli images for usage
      */
     if (buildImages) {
-
-      // Add our CLI tools
-      kbox.core.events.on('pre-app-start', function(app, done) {
-        app.composeCore.push(path.join(app.root, 'kalabox-cli.yml'));
-        done();
-      });
-
-      // Remove our CLI tools
-      kbox.core.events.on('pre-app-uninstall', function(app, done) {
-        app.composeCore.push(path.join(app.root, 'kalabox-cli.yml'));
-        done();
-      });
-
-      // Rebuild our CLI tools
-      kbox.core.events.on('pre-app-rebuild', function(app, done) {
-        app.composeCore.push(path.join(app.root, 'kalabox-cli.yml'));
-        done();
-      });
-
+      app.composeCore.push(path.join(app.root, 'kalabox-cli.yml'));
     }
 
   });

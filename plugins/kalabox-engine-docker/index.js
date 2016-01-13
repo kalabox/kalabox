@@ -170,9 +170,9 @@ module.exports = function(kbox) {
    * Create and run a command inside of a container.
    */
   var run = function(data) {
-    return Promise.each(normalizer(data), function(datum) {
+    return Promise.all(_.map(normalizer(data), function(datum) {
       return compose.run(datum.compose, datum.project, datum.opts);
-    });
+    }));
   };
 
   /*

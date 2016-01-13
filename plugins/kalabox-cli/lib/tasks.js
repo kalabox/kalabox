@@ -44,7 +44,7 @@ module.exports = function(kbox) {
           compose: app.composeCore.concat([cliFile]),
           project: app.name,
           opts: {
-            attach: true,
+            stdio: [process.stdin, process.stdout, process.stderr],
             service: options.service,
             entrypoint: options.entrypoint,
             cmd: options.cmd

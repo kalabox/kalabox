@@ -82,29 +82,59 @@ module.exports = function(kbox) {
     // Log start.
     log.debug('Executing command.', cmd);
 
-    // pass in options
+    // Pass in options
     var options = _.extend({silent: false}, opts);
 
-    // Run and attach
-    if (opts && opts.attach) {
-      return Promise.fromNode(function(cb) {
-        var options = {stdio: [process.stdin, process.stdout, process.stderr]};
+    // Do special handling if we have stdio set
+    if (opts && !_.isEmpty(opts.stdio)) {
+
+      // Promisify the spawn
+      return new Promise(function(resolve, reject) {
+
+        // Use stdio options and then create the child
+        var options = {stdio: opts.stdio};
         var run = spawn(cmd.shift(), cmd, options);
-        run.on('close', function(code) {
-          log.debug('Attach exited with code: ', code);
-          cb();
+
+        // Collector for messages
+        var collector = [];
+
+        // Collect data if stdout is being piped
+        if (opts.stdio[1] === 'pipe') {
+          run.stdout.on('data', function(buffer) {
+            var data = _.trim(String(buffer));
+            log.info('Received data ', data);
+            collector.push(data);
+          });
+          run.on('error', function(err) {
+            log.info('Error recieved ', err);
+            reject(new Error(err));
+          });
+        }
+
+        // End on close
+        run.on('exit', function() {
+          var response = _.filter(collector, function(unit) {
+            return !_.isEmpty(unit);
+          });
+          log.info('Exiting process with: ', response);
+          resolve(response);
         });
+
       });
+
     }
-    // Else shell command
+    // Else normal exec command
     else {
+
       return Promise.fromNode(function(cb) {
         _sh.exec(cmd, options, cb);
       })
+
       // Log results.
       .tap(function(data) {
         log.debug('Command results.', data);
       });
+
     }
 
   };
