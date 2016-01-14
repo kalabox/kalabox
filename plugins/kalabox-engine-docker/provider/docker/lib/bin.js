@@ -95,15 +95,14 @@ module.exports = function(kbox) {
         var options = {stdio: opts.stdio};
         var run = spawn(cmd.shift(), cmd, options);
 
-        // Collector for messages
-        var collector = [];
+        // Collector for buffer
+        var collector = '';
 
         // Collect data if stdout is being piped
         if (opts.stdio[1] === 'pipe') {
           run.stdout.on('data', function(buffer) {
-            var data = _.trim(String(buffer));
-            log.info('Received data ', data);
-            collector.push(data);
+            log.debug('Received data ', _.trim(String(buffer)));
+            collector = collector + String(buffer);
           });
           run.on('error', function(err) {
             log.debug('Error recieved ', err);
@@ -113,11 +112,8 @@ module.exports = function(kbox) {
 
         // End on close
         run.on('exit', function() {
-          var response = _.filter(collector, function(unit) {
-            return !_.isEmpty(unit);
-          });
-          log.debug('Exiting process with: ', response);
-          resolve(response);
+          log.debug('Exiting process with: ', collector);
+          resolve(collector);
         });
 
       });
