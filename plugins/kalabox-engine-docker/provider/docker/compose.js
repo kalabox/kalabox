@@ -295,7 +295,7 @@ module.exports = function(kbox) {
     // Default options
     var defaults = {
       force: true,
-      volumes: false
+      volumes: true
     };
 
     // Get opts

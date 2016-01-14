@@ -29,7 +29,7 @@ module.exports = function(kbox) {
   /*
    * Mix in our with default syncthing config and set into the app
    */
-  events.on('post-app-create', function(app, done) {
+  events.on('post-app-create', function(app) {
 
     // Our default syncthing configuration
     var defaultConfig = kbox.core.config.normalize({
@@ -68,17 +68,14 @@ module.exports = function(kbox) {
     app.config.syncthing = config;
     delete app.config.pluginconfig.syncthing;
 
-    // Return
-    done();
-
   });
 
   /*
    * Turn off the local sycnthing when the engine goes down
    */
-  events.on('pre-engine-down', function(done) {
+  events.on('pre-engine-down', function() {
     // Get local sync instance
-    share.getLocalSync()
+    return share.getLocalSync()
     .then(function(localSync) {
       // Check if it's up
       return localSync.isUp()
@@ -88,8 +85,8 @@ module.exports = function(kbox) {
           return localSync.shutdown();
         }
       });
-    })
-    .nodeify(done);
+    });
+
   });
 
   /*
@@ -220,12 +217,13 @@ module.exports = function(kbox) {
 
     /*
      * Clear app folder when the app is uninstalled.
-     * @todo: this doesnt seem to work?
      */
-    events.on('post-app-uninstall', function(app, done) {
+    events.on('post-app-uninstall', function(app) {
 
+      // Array the syncthing instances
       var syncs = [share.getRemoteSync(), share.getLocalSync()];
 
+      // Remove our folders
       return Promise.each(syncs, function(sync) {
         return sync.isUp()
         .then(function(isUp) {
@@ -236,8 +234,28 @@ module.exports = function(kbox) {
             });
           }
         });
-      })
-      .nodeify(done);
+      });
+
+    });
+
+    /*
+     * Delete the code volume on a destroy
+     */
+    events.on('post-app-destroy', function(app) {
+
+      // Command to remove
+      var rmCmd = [
+        '-rf',
+        '/code/' + app.name
+      ];
+
+      // Build kill definition
+      var rmDef = syncthingContainer();
+      rmDef.opts.entrypoint = 'rm';
+      rmDef.opts.cmd = rmCmd.join(' ');
+
+      // Run the kill
+      return kbox.engine.run(rmDef);
 
     });
 
