@@ -93,27 +93,6 @@ module.exports = function(kbox) {
   });
 
   /*
-   * Clear app folder when the app is uninstalled.
-   */
-  events.on('pre-app-uninstall', function(app, done) {
-
-    share.getRemoteSync()
-    .then(function(remoteSync) {
-      return remoteSync.isUp()
-      .then(function(isUp) {
-        if (isUp) {
-          return remoteSync.clearFolder(app.name)
-          .then(function() {
-            return remoteSync.restartWait();
-          });
-        }
-      });
-    })
-    .nodeify(done);
-
-  });
-
-  /*
    * App events
    */
   kbox.whenAppRegistered(function(app) {
@@ -239,10 +218,27 @@ module.exports = function(kbox) {
       }
     });
 
-    events.on('pre-app-uninstall', function(/*app*/) {
-      if (app.config.syncthing.share) {
-        return share.restart();
-      }
+    /*
+     * Clear app folder when the app is uninstalled.
+     * @todo: this doesnt seem to work?
+     */
+    events.on('post-app-uninstall', function(app, done) {
+
+      var syncs = [share.getRemoteSync(), share.getLocalSync()];
+
+      return Promise.each(syncs, function(sync) {
+        return sync.isUp()
+        .then(function(isUp) {
+          if (isUp) {
+            return sync.clearFolder(app.name)
+            .then(function() {
+              return sync.restartWait();
+            });
+          }
+        });
+      })
+      .nodeify(done);
+
     });
 
   });
