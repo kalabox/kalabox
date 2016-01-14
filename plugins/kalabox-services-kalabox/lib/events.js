@@ -71,7 +71,11 @@ module.exports = function(kbox) {
 
             // Should this proxy mapping be just the domain, or should
             // it have a subdomain.
-            var hostname = proxy.default ? app.hostname : proxy.hostname;
+            var hostname = proxy.default ? app.hostname : [
+              proxy.hostname,
+              app.name,
+              app.domain
+            ].join('.');
             var protocol = proxy.secure ? 'https' : 'http';
             var url = [protocol, hostname].join('://');
 
@@ -162,7 +166,11 @@ module.exports = function(kbox) {
 
             // Should this proxy mapping be just the domain, or should
             // it have a subdomain.
-            var hostname = proxy.default ? app.hostname : proxy.hostname;
+            var hostname = proxy.default ? app.hostname : [
+              proxy.hostname,
+              app.name,
+              app.domain
+            ].join('.');
 
             // Build redis key for this proxy.
             var redisKey = ['frontend', hostname].join(':');
