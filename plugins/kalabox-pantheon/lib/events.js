@@ -15,42 +15,39 @@ module.exports = function(kbox, pantheon) {
    */
   events.on('pre-create-configure', function(config) {
 
-    // Only do this on pantheon apps
-    if (config.type === 'pantheon') {
+    // Grab the current config
+    var pantheonConfig = config.pluginconfig.pantheon;
 
-      // Grab the current config
-      var pantheonConfig = config.pluginconfig.pantheon;
+    // Get site info
+    return pantheon.getSites()
 
-      // Get site info
-      return pantheon.getSites()
-
-      // Update our config with relevant info
-      .then(function(pSites) {
-        // Get cached site info
-        var sites = pantheon.sites || pSites;
-        // Get the UUID
-        var uuid = _.findKey(sites, function(site) {
-          return site.information.name === pantheonConfig.site;
-        });
-        var site = sites[uuid].information;
-
-        // Set various kbox.json properties
-        pantheonConfig.framework = pantheonConfig.framework || site.framework;
-        // jshint camelcase:false
-        // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-        pantheonConfig.php = site.php_version || 53;
-        // jshint camelcase:true
-        // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
-        pantheonConfig.upstream = site.upstream;
-        pantheonConfig.name = pantheon.session.name;
-
-        // Remove password
-        delete pantheonConfig.password;
-
-        // Rebuild json
-        config.pluginconfig.pantheon = pantheonConfig;
+    // Update our config with relevant info
+    .then(function(pSites) {
+      // Get cached site info
+      var sites = pantheon.sites || pSites;
+      // Get the UUID
+      var uuid = _.findKey(sites, function(site) {
+        return site.information.name === pantheonConfig.site;
       });
-    }
+      var site = sites[uuid].information;
+
+      // Set various kbox.json properties
+      pantheonConfig.framework = pantheonConfig.framework || site.framework;
+      // jshint camelcase:false
+      // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+      pantheonConfig.php = site.php_version || 53;
+      // jshint camelcase:true
+      // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
+      pantheonConfig.upstream = site.upstream;
+      pantheonConfig.name = pantheon.session.name;
+
+      // Remove password
+      delete pantheonConfig.password;
+
+      // Rebuild json
+      config.pluginconfig.pantheon = pantheonConfig;
+    });
+
   });
 
   /*
@@ -62,18 +59,14 @@ module.exports = function(kbox, pantheon) {
     var Client = require('./client.js');
     pantheon = new Client(kbox, app);
 
-    // Only do this on pantheon apps
-    if (app.type === 'pantheon') {
+    // Set the correct session
+    // @todo: it feels weird to have to do this again
+    var account = app.pluginconfig.pantheon.email;
+    pantheon.setSession(pantheon.getSessionFile(account));
 
-      // Set the correct session
-      // @todo: it feels weird to have to do this again
-      var account = app.pluginconfig.pantheon.email;
-      pantheon.setSession(pantheon.getSessionFile(account));
+    // Make sure we have SSH keys that can communciate with pantheon
+    return pantheon.sshKeySetup();
 
-      // Make sure we have SSH keys that can communciate with pantheon
-      return pantheon.sshKeySetup();
-
-    }
   });
 
 };
