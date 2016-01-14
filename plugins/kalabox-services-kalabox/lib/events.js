@@ -2,130 +2,62 @@
 
 module.exports = function(kbox) {
 
+  // Npm modules
   var _ = require('lodash');
   var redis = require('redis');
   var VError = require('verror');
   var pp = kbox.util.pp;
-  var path = require('path');
 
-  var REDIS_PORT = 8160;
-
+  // Kalabox modules
   var Promise = kbox.Promise;
   var events = kbox.core.events.context();
-
-  // Cached verify value
-  var servicesVerified = false;
 
   // Logging
   var log = kbox.core.log.make('SERVICES');
 
   /*
-   * Return our core services definition base
+   * App events
    */
-  var getCoreServices = function() {
-    return {
-      compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
-      project: 'kalabox'
+  kbox.whenAppRegistered(function(app) {
+
+    // Grab our services config
+    var services = app.config.pluginconfig.services || {};
+
+    // "Constants"
+    var REDIS_PORT = 8160;
+
+    /*
+     * Return the default app compose object
+     */
+    var getAppServices = function(app) {
+      return {
+        compose: _.uniq(app.composeCore),
+        project: app.name
+      };
     };
-  };
 
-  /*
-   * Verify services are in a good state.
-   */
-  var verify = function() {
+    /**
+     * Creates a proxy record via redis for components with proxy definitions.
+     */
+    events.on('post-app-start', 1, function(app) {
 
-    // Log
-    log.debug('Verifying services are up');
+      // Go through our services that need to be exposed
+      return Promise.each(_.keys(services), function(service) {
 
-    // Return cached magic
-    if (servicesVerified) {
-      return Promise.resolve(true);
-    }
-
-    // Start component collector
-    var components = {};
-
-    // Load our core kalabox-compose.yml
-    _.forEach(getCoreServices().compose, function(file) {
-      _.extend(components, kbox.util.yaml.toJson(file));
-    });
-
-    // Get our containers
-    return Promise.resolve(_.keys(components))
-
-    // Filter out services
-    .map(function(service) {
-      var check = getCoreServices();
-      check.opts = {service: service};
-      return kbox.engine.inspect(check);
-    })
-
-    // Discover if we need to boot up our services
-    .reduce(function(running, service) {
-      return kbox.engine.isRunning(service.Id)
-      .then(function(isRunning) {
-        return running && isRunning;
-      });
-    }, true)
-
-    // Restart our services if needed
-    .then(function(running) {
-      if (!running) {
-        var recreateServices = getCoreServices();
-        recreateServices.opts = {recreate: true};
-        return kbox.engine.start(recreateServices);
-      }
-      else {
-        servicesVerified = true;
-      }
-    });
-
-  };
-
-  /**
-   * Adds our services config to the relevant components
-   */
-  events.on('pre-component-create', function(data, done) {
-
-    // Get our services config from the app
-    var serviceConfig = data.app.config.pluginconfig.services || {};
-
-    // Check to see if this component should be exposed
-    if (serviceConfig.expose && serviceConfig.expose[data.cmp.name]) {
-      data.cmp.proxy = serviceConfig.expose[data.cmp.name];
-    }
-
-    done();
-
-  });
-
-  /**
-   * Turn on a reverse proxy and dns server before our app starts
-   */
-  events.on('pre-app-start', function() {
-    return verify();
-  });
-
-  /**
-   * Creates a proxy record via redis for components with proxy definitions.
-   */
-  events.on('post-app-start', 1, function(app) {
-
-    // Go through our components
-    return Promise.each(app.components, function(cmp) {
-
-      // Do stuff if we have a proxy
-      if (cmp.proxy) {
-
-        // IP address of the hipache redis server.
-        var redisIp = kbox.core.deps.get('engineConfig').host;
+        // Get the redis IP
+        var REDIS_IP = kbox.core.deps.get('engineConfig').host;
 
         // Connect to the hipache redis server.
-        var redisClient = redis.createClient(REDIS_PORT, redisIp);
+        var redisClient = redis.createClient(REDIS_PORT, REDIS_IP);
+
+        // Build an inspect definition
+        var inspectService = getAppServices(app);
+        inspectService.opts = {
+          services: [service]
+        };
 
         // Query engine for component container's information.
-        // @todo: check for other ids besides cid?
-        kbox.engine.inspect(cmp)
+        kbox.engine.inspect(inspectService)
         .then(function(data) {
 
           // Get port information from container query.
@@ -135,13 +67,14 @@ module.exports = function(kbox) {
           var mapOpts = {concurrency: 1};
 
           // Loop through each proxy.
-          return Promise.map(cmp.proxy, function(proxy) {
+          return Promise.map(services[service], function(proxy) {
 
             // Should this proxy mapping be just the domain, or should
             // it have a subdomain.
-            var hostname = proxy.default ? app.hostname : cmp.hostname;
+            var hostname = proxy.default ? app.hostname : proxy.hostname;
             var protocol = proxy.secure ? 'https' : 'http';
             var url = [protocol, hostname].join('://');
+
             // Build redis key for this proxy.
             var redisKey = ['frontend', url].join(':');
 
@@ -152,13 +85,15 @@ module.exports = function(kbox) {
               null
             );
 
+            // If we have ports then do the mapping
             if (port) {
 
-              // Build a destination.
-              var destination = [protocol, '://', redisIp, ':', port].join('');
+              // Build our destinations.
+              var destination = [protocol, '://', REDIS_IP, ':', port].join('');
+              var containerName = _.trimLeft(data.Name, '/');
 
               // Log each DNS record being added.
-              _.each([cmp.containerName, destination], function(address) {
+              _.each([containerName, destination], function(address) {
                 log.debug(kbox.util.format(
                   'Setting DNS record. %s => %s',
                   redisKey,
@@ -170,7 +105,7 @@ module.exports = function(kbox) {
               return Promise.fromNode(function(cb) {
                 redisClient.multi()
                 .del(redisKey)
-                .rpush(redisKey, cmp.containerName)
+                .rpush(redisKey, containerName)
                 .rpush(redisKey, destination)
                 .exec(cb);
               });
@@ -185,95 +120,86 @@ module.exports = function(kbox) {
           throw new VError(
             err,
             'Error configuring DNS for component "%s".',
-            pp(cmp)
+            pp(service)
           );
         })
         // Make sure we disconnect from redis server.
         .finally(function() {
           redisClient.quit();
         });
-      }
+
+      });
     });
-  });
 
-  /**
-   * Removes proxy records via redis.
-   */
-  events.on('post-app-stop', function(app) {
+    /**
+     * Removes proxy records via redis.
+     */
+    events.on('post-app-stop', function(app) {
 
-    // Turn on a reverse proxy and dns server before our app starts
-    // @todo: is this needed?
-    return verify()
+      // Go through our services that need to be exposed
+      return Promise.each(_.keys(services), function(service) {
 
-    // Go through our components and add a DNS record if needed
-    .then(function() {
+        // Get the redis IP
+        var REDIS_IP = kbox.core.deps.get('engineConfig').host;
 
-      return Promise.each(app.components, function(cmp) {
+        var redisClient = null;
 
-        if (cmp.proxy) {
-
-          // IP address of the hipache redis server.
-          var redisIp = kbox.core.deps.get('engineConfig').host;
-
-          var redisClient = null;
-
-          // Connect to the hipache redis server.
-          return Promise.try(function() {
-            return Promise.fromNode(function(cb) {
-              redisClient = redis.createClient(REDIS_PORT, redisIp);
-              redisClient.on('ready', cb);
-              redisClient.on('error', function(err) {
-                redisClient.end();
-                redisClient = undefined;
-                cb(err);
-              });
-            });
-          })
-          // Loop through each proxy.
-          .then(function() {
-            return Promise.map(cmp.proxy, function(proxy) {
-
-              // Should this proxy mapping be just the domain, or should
-              // it have a subdomain.
-              var hostname = proxy.default ? cmp.appDomain : cmp.hostname;
-
-              // Build redis key for this proxy.
-              var redisKey = ['frontend', hostname].join(':');
-
-              // Log deletiong of DNS records.
-              log.debug(kbox.util.format('Removing DNS records. %s', redisKey));
-
-              // Delete key on redis server.
-              return Promise.fromNode(function(cb) {
-                redisClient.del(redisKey, cb);
-              });
-            });
-          })
-          // Wrap errors.
-          .catch(function(err) {
-            /*
-             * Ignore ECONNREFUSED errors because sometimes we might want to
-             * uninstall an app without having the startup services running.
-             * When that is the case it's best to just ignore errors trying
-             * to connect to the redis server.
-             */
-            if (!_.contains(err.message, 'ECONNREFUSED')) {
-              throw new VError(
-                err,
-                'Error resetting DNS for component "%s".',
-                pp(cmp)
-              );
-            }
-          })
-          // Make sure we end connection to redis server.
-          .finally(function() {
-            if (redisClient) {
+        // Connect to the hipache redis server.
+        return Promise.try(function() {
+          return Promise.fromNode(function(cb) {
+            redisClient = redis.createClient(REDIS_PORT, REDIS_IP);
+            redisClient.on('ready', cb);
+            redisClient.on('error', function(err) {
               redisClient.end();
-            }
+              redisClient = undefined;
+              cb(err);
+            });
           });
-        }
+        })
+        // Loop through each proxy.
+        .then(function() {
+          return Promise.map(services[service], function(proxy) {
+
+            // Should this proxy mapping be just the domain, or should
+            // it have a subdomain.
+            var hostname = proxy.default ? app.hostname : proxy.hostname;
+
+            // Build redis key for this proxy.
+            var redisKey = ['frontend', hostname].join(':');
+
+            // Log deletiong of DNS records.
+            log.debug(kbox.util.format('Removing DNS records. %s', redisKey));
+
+            // Delete key on redis server.
+            return Promise.fromNode(function(cb) {
+              redisClient.del(redisKey, cb);
+            });
+          });
+        })
+        // Wrap errors.
+        .catch(function(err) {
+          /*
+           * Ignore ECONNREFUSED errors because sometimes we might want to
+           * uninstall an app without having the startup services running.
+           * When that is the case it's best to just ignore errors trying
+           * to connect to the redis server.
+           */
+          if (!_.contains(err.message, 'ECONNREFUSED')) {
+            throw new VError(
+              err,
+              'Error resetting DNS for component "%s".',
+              pp(service)
+            );
+          }
+        })
+        // Make sure we end connection to redis server.
+        .finally(function() {
+          if (redisClient) {
+            redisClient.end();
+          }
+        });
+
       });
     });
   });
-
 };

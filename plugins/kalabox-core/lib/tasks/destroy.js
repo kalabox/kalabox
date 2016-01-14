@@ -11,6 +11,8 @@ module.exports = function(kbox) {
   var chalk = require('chalk');
   var _ = require('lodash');
 
+  var events = kbox.core.events.context();
+
   kbox.whenAppRegistered(function(app) {
 
     kbox.tasks.add(function(task) {
@@ -24,6 +26,12 @@ module.exports = function(kbox) {
       });
       task.description = 'Completely destroys and removes an app.';
       task.func = function(done) {
+
+        // Print helpful stuff to the user after their app has
+        // been destroyed
+        events.on('post-app-destroy', 9, function(/*app*/) {
+          console.log(kbox.art.postDestroy());
+        });
 
         // Needs to prompt?
         var confirmPrompt = !this.options.yes;

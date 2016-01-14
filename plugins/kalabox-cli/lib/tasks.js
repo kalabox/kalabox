@@ -29,7 +29,7 @@ module.exports = function(kbox) {
        */
       var taskDefaults = function() {
         return {
-          service: 'cli',
+          services: ['cli'],
           entrypoint: '/bin/sh -c',
           description: 'Run a command against a container'
         };
@@ -44,8 +44,8 @@ module.exports = function(kbox) {
           compose: app.composeCore.concat([cliFile]),
           project: app.name,
           opts: {
-            stdio: [process.stdin, process.stdout, process.stderr],
-            service: options.service,
+            stdio: 'inherit',
+            services: [options.service],
             entrypoint: options.entrypoint,
             cmd: options.cmd
           }

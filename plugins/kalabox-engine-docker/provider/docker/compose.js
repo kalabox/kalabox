@@ -213,9 +213,11 @@ module.exports = function(kbox) {
     // Get options
     cmd = cmd.concat(parseOptions(opts));
 
-    // Add in a service arg if its there
-    if (opts && opts.service) {
-      cmd.push(opts.service);
+    // Add in a services arg if its there
+    if (opts && opts.services) {
+      _.forEach(opts.services, function(service) {
+        cmd.push(service);
+      });
     }
 
     // Add in a command arg if its there
