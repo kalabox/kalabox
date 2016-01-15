@@ -12,8 +12,19 @@ module.exports = function(kbox) {
   kbox.tasks.add(function(task) {
     task.path = ['update'];
     task.description = 'Run this after you update your Kalabox code.';
+
+    // If on posix pass in a password options
+    if (process.platform !== 'win32') {
+      task.options.push({
+        name: 'password',
+        kind: 'string',
+        description: 'Sudo password for admin commands.'
+      });
+    }
+
     task.func = function(done) {
-      return installer.run({nonInteractive: true})
+      var password = this.options.password;
+      return installer.run({nonInteractive: true, password: password})
       .nodeify(done);
     };
   });
