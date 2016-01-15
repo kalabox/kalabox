@@ -43,7 +43,7 @@ function Client(kbox) {
 /*
  * Set the session
  */
-Client.prototype.setSession = function(session) {
+Client.prototype.setSession = function(email, session) {
 
   // Make sure we are translating expire correctly
   // jshint camelcase:false
@@ -52,16 +52,14 @@ Client.prototype.setSession = function(session) {
   this.session = {
     session: session.session,
     session_expire_time: session.session_expire_time || session.expires_at,
-    user_uuid: session.user_uuid || session.user_id,
-    email: session.email,
-    name: session.name
+    user_uuid: session.user_uuid || session.user_id
   };
   // jshint camelcase:true
   // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 
   // Save a cache locally so we can share among terminus clients
   fs.mkdirpSync(this.cacheDir);
-  var sessionFile = path.join(this.cacheDir, this.session.email);
+  var sessionFile = path.join(this.cacheDir, email);
   var writableSession = JSON.stringify(this.session);
   fs.writeFileSync(sessionFile, writableSession);
 
@@ -70,23 +68,53 @@ Client.prototype.setSession = function(session) {
 };
 
 /*
+ * Helper function for reading file cache.
+ */
+Client.prototype.getSessionFiles = function() {
+
+  var self = this;
+  var files = fs.readdirSync(this.cacheDir);
+  var sessions = [];
+
+  // Try to load all our session files
+  _.forEach(files, function(filename) {
+    // Try to read in each file
+    try {
+      // Read in the file
+      var sessionFile = path.join(self.cacheDir, filename);
+      fs.readFileSync(sessionFile, 'utf8');
+      sessions.push(filename);
+    }
+    catch (err) {
+      if (err.code !== 'ENOENT') {
+        throw err;
+      }
+    }
+  });
+
+  // If file cache was loaded, parse the contents and set the session.
+  if (!_.isEmpty(sessions)) {
+    return sessions;
+  } else {
+    return undefined;
+  }
+
+};
+
+/*
  * Helper function for reading specific file cache.
  */
 Client.prototype.getSessionFile = function(email) {
 
-  // The directory in which our sessions live
-  var homeDir = this.kbox.core.deps.lookup('globalConfig').home;
-  var sessionDir = path.join(homeDir, '.kalabox', 'pantheon', 'session');
-  var sessionFile = path.join(sessionDir, email);
-  var data = fs.readFileSync(sessionFile, 'utf8');
-  var session = JSON.parse(data);
-
-  // If file cache was loaded, parse the contents and set the session.
-  if (!_.isEmpty(session)) {
-    return session;
-  } else {
+  // Cleary we dont have it
+  if (!email) {
     return undefined;
   }
+
+  // The directory in which our sessions live
+  var sessionFile = path.join(this.cacheDir, email);
+  var data = fs.readFileSync(sessionFile, 'utf8');
+  return (JSON.parse(data));
 
 };
 
@@ -256,7 +284,7 @@ Client.prototype.auth = function(email, password) {
 
   // Validate response and return ID.
   .then(function(response) {
-    return self.setSession(response);
+    return self.setSession(email, response);
   });
 
 };

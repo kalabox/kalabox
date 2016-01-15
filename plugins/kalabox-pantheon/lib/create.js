@@ -56,8 +56,8 @@ module.exports = function(kbox, pantheon) {
    */
   var getValidSessions = function() {
     return _.without(_.map(pantheon.getSessionFiles(), function(session) {
-      if (pantheon.validateSession(session)) {
-        return {name: session.email, value: session.email};
+      if (pantheon.validateSession(pantheon.getSession(session))) {
+        return {name: session, value: session};
       }
     }), undefined);
   };
@@ -126,7 +126,7 @@ module.exports = function(kbox, pantheon) {
         // If we have a session we should set it here
         filter: function(input) {
           if (input !== 'more' && pantheon.getSessionFile(input)) {
-            pantheon.setSession(pantheon.getSessionFile(input));
+            pantheon.setSession(input, pantheon.getSessionFile(input));
           }
           return input;
         },

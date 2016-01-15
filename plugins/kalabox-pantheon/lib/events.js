@@ -62,14 +62,10 @@ module.exports = function(kbox, pantheon) {
    */
   events.on('post-create-configure', function(app) {
 
-    // Load the pantheon api client
-    var Client = require('./client.js');
-    pantheon = new Client(kbox, app);
-
     // Set the correct session
     // @todo: it feels weird to have to do this again
     var account = app.pluginconfig.pantheon.email;
-    pantheon.setSession(pantheon.getSessionFile(account));
+    pantheon.setSession(account, pantheon.getSessionFile(account));
 
     // Make sure we have SSH keys that can communciate with pantheon
     return pantheon.sshKeySetup();

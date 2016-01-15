@@ -22,10 +22,9 @@ module.exports = function(kbox) {
       });
     }
 
-    task.func = function(done) {
+    task.func = function() {
       var password = this.options.password;
-      return installer.run({nonInteractive: true, password: password})
-      .nodeify(done);
+      return installer.run({nonInteractive: true, password: password});
     };
   });
 

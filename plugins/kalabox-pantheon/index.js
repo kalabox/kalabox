@@ -75,7 +75,7 @@ module.exports = function(kbox) {
   kbox.integrations.create('pantheon', function(api) {
 
     // Authorize login.
-    api.methods.auth = function(/*email, password*/) {
+    api.methods.auth = function(email/*, password*/) {
       var self = this;
       return kbox.Promise.try(function() {
         return self.ask([
@@ -91,7 +91,7 @@ module.exports = function(kbox) {
         return pantheon.auth(answers.username, answers.password);
       })
       .tap(function(session) {
-        return pantheon.setSession(session);
+        return pantheon.setSession(email, session);
       });
     };
 
@@ -116,7 +116,7 @@ module.exports = function(kbox) {
       // Set session based on email.
       .then(function(answers) {
         var session = pantheon.getSessionFile(answers.username);
-        pantheon.setSession(session);
+        pantheon.setSession(answers.username, session);
       })
       // Get and map sites.
       .then(function() {
