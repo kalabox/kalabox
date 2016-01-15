@@ -70,52 +70,23 @@ Client.prototype.setSession = function(session) {
 };
 
 /*
- * Helper function for reading file cache.
- */
-Client.prototype.getSessionFiles = function() {
-
-  var self = this;
-  var files = fs.readdirSync(this.cacheDir);
-  var sessions = [];
-
-  // Try to load all our session files
-  _.forEach(files, function(filename) {
-    // Try to read in each file
-    try {
-      // Read in the file
-      var sessionFile = path.join(self.cacheDir, filename);
-      var data = fs.readFileSync(sessionFile, 'utf8');
-      var session = JSON.parse(data);
-      sessions.push(session);
-    }
-    catch (err) {
-      if (err.code !== 'ENOENT') {
-        throw err;
-      }
-    }
-  });
-
-  // If file cache was loaded, parse the contents and set the session.
-  if (!_.isEmpty(sessions)) {
-    return sessions;
-  } else {
-    return undefined;
-  }
-
-};
-
-/*
  * Helper function for reading specific file cache.
  */
 Client.prototype.getSessionFile = function(email) {
 
-  var sessions = this.getSessionFiles();
+  // The directory in which our sessions live
+  var homeDir = this.kbox.core.deps.lookup('globalConfig').home;
+  var sessionDir = path.join(homeDir, '.kalabox', 'pantheon', 'session');
+  var sessionFile = path.join(sessionDir, email);
+  var data = fs.readFileSync(sessionFile, 'utf8');
+  var session = JSON.parse(data);
 
-  var session = _.find(sessions, function(sess) {
-    return sess.email === email;
-  });
-
-  return session;
+  // If file cache was loaded, parse the contents and set the session.
+  if (!_.isEmpty(session)) {
+    return session;
+  } else {
+    return undefined;
+  }
 
 };
 
