@@ -36,14 +36,21 @@ module.exports = function(kbox, pantheon) {
       // jshint camelcase:false
       // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
       pantheonConfig.php = site.php_version || 53;
-      // jshint camelcase:true
-      // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
       pantheonConfig.upstream = site.upstream;
-      pantheonConfig.name = pantheon.session.name;
 
       // Remove password
       delete pantheonConfig.password;
 
+      // Get the user profile
+      var data = pantheon.__getAuthHeaders(pantheon.session);
+      return pantheon.getProfile(pantheon.session.user_id, data);
+
+    })
+
+    .then(function(profile) {
+      // jshint camelcase:false
+      // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+      pantheonConfig.name = profile.full_name;
       // Rebuild json
       config.pluginconfig.pantheon = pantheonConfig;
     });

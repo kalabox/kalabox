@@ -144,12 +144,6 @@ Client.prototype.validateSession = function(session) {
   // jshint camelcase:true
   // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 
-  // Kill session if it doesn't have the full name on it so we can reauth
-  // and get this important data
-  if (session && session.name === undefined) {
-    return false;
-  }
-
   // Session is lookin MIGHTY FINE! MIGHTY FINE INDEED!
   return true;
 
@@ -291,29 +285,7 @@ Client.prototype.auth = function(email, password) {
 
   // Validate response and return ID.
   .then(function(response) {
-
-    // Get auth headers since we have a valid session now
-    var headers = self.__getAuthHeaders(response.session);
-
-    // Set the fullname
-    // jshint camelcase:false
-    // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-    return self.getProfile(response.user_id, {headers: headers})
-      .then(function(profile) {
-
-        // Add additional data to our response and then set
-        // the session
-        var session = _.merge(response, {
-          email: email,
-          name: profile.full_name
-        });
-        // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
-        // jshint camelcase:true
-
-        // Set and return the session
-        return self.setSession(session);
-      });
-
+    return self.setSession(response);
   });
 
 };
