@@ -9,14 +9,13 @@ module.exports = function(kbox) {
 
   // Node modules
   var path = require('path');
-  var spawn = require('child_process').spawn;
 
   // NPM modules
   var _ = require('lodash');
 
   // Kalabox modules
   var Promise = kbox.Promise;
-  var _sh = kbox.util.shell;
+  var shell = kbox.util.shell;
 
   // Provider config
   var providerConfig = kbox.core.deps.get('providerConfig');
@@ -25,7 +24,7 @@ module.exports = function(kbox) {
   var VIRTUALBOX_CONFIG = providerConfig.virtualbox;
 
   // Set of logging functions.
-  var log = kbox.core.log.make('COMPOSE EXECUTABLE');
+  var log = kbox.core.log.make('DOCKER');
 
   /*
    * Get directory for docker executables.
@@ -75,56 +74,29 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Run a shell command.
+   * Exec or spawn a shell command.
    */
   var sh = function(cmd, opts) {
 
-    // Log start.
-    log.debug('Executing command.', cmd);
+    // If we have a mode then we need to spawn
+    if (opts && opts.mode) {
 
-    // Pass in options
-    var options = _.extend({silent: false}, opts);
+      // Stdio per mode
+      var collect = {stdio: ['pipe', 'pipe', 'pipe']};
+      var attach = {stdio: ['inherit', 'inherit', 'inherit']};
+      var stdio = (opts.mode === 'attach') ? attach : collect;
 
-    // Do special handling if we have stdio set
-    if (opts && !_.isEmpty(opts.stdio)) {
+      // Merge in our options
+      var options = (opts) ? _.extend(opts, stdio) : stdio;
 
-      // Promisify the spawn
-      return new Promise(function(resolve, reject) {
-
-        // Use stdio options and then create the child
-        var options = {stdio: opts.stdio};
-        var run = spawn(cmd.shift(), cmd, options);
-
-        // Collector for buffer
-        var collector = '';
-
-        // Collect data if stdout is being piped
-        if (opts.stdio[1] === 'pipe') {
-          run.stdout.on('data', function(buffer) {
-            log.debug('Received data ', _.trim(String(buffer)));
-            collector = collector + String(buffer);
-          });
-          run.on('error', function(err) {
-            log.debug('Error recieved ', err);
-            reject(new Error(err));
-          });
-        }
-
-        // End on close
-        run.on('exit', function() {
-          log.debug('Exiting process with: ', collector);
-          resolve(collector);
-        });
-
-      });
-
+      return shell.spawn(cmd, options);
     }
-    // Else normal exec command
+
+    // Otherwise we can do a basic exec
     else {
 
-      return Promise.fromNode(function(cb) {
-        _sh.exec(cmd, options, cb);
-      })
+      // Do the exec
+      return shell.exec(cmd, opts)
 
       // Log results.
       .tap(function(data) {
@@ -132,7 +104,6 @@ module.exports = function(kbox) {
       });
 
     }
-
   };
 
   /*
@@ -175,7 +146,6 @@ module.exports = function(kbox) {
    * recompile if that fails
    */
   var bringVBModulesUp = function() {
-    var _sh = kbox.core.deps.get('shell');
     var flavor = kbox.util.linux.getFlavor();
     var packager = (flavor === 'debian') ? 'apt' : 'dnf';
     var cmd = VIRTUALBOX_CONFIG[packager].recompile;
@@ -183,9 +153,7 @@ module.exports = function(kbox) {
     log.info('VBox\'s kernel modules seem to be down. Attempting recompile...');
 
     // Run the recompile command
-    return Promise.fromNode(function(cb) {
-      _sh.execAdmin(cmd, cb);
-    })
+    return shell.execAdmin(cmd)
 
     // Return good or bad
     .then(function(output) {

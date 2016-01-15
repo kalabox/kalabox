@@ -114,10 +114,8 @@ module.exports = function(kbox) {
       // Command to run
       var cmd = 'netsh interface ipv4 show dnsservers';
 
-      // Execute promisified shell
-      return Promise.fromNode(function(cb) {
-        shell.exec(cmd, cb);
-      })
+      // Execute shell
+      return shell.exec(cmd)
 
       // Need to catch findstr null reporting as error
       .catch(function(/*err*/) {
@@ -192,7 +190,7 @@ module.exports = function(kbox) {
     }
 
     // Process admin commands.
-    var child = kbox.util.shell.runCmdsAsync(adminCommands, state);
+    var child = kbox.util.shell.execAdminAsync(adminCommands, state);
 
     // Events
     // Output data

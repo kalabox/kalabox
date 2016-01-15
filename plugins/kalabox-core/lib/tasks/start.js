@@ -9,19 +9,19 @@ module.exports = function(kbox) {
   var events = kbox.core.events.context();
 
   kbox.whenAppRegistered(function(app) {
+
     kbox.tasks.add(function(task) {
       task.path = [app.name, 'start'];
       task.category = 'appAction';
       task.description = 'Start an installed kbox application.';
-      task.func = function(done) {
+      task.func = function() {
 
         // Print helpful stuff to the user after their app has started
-        events.on('post-app-start', 9, function(app, done) {
+        events.on('post-app-start', 9, function(app) {
           console.log(kbox.art.appStart(app));
-          done();
         });
 
-        kbox.app.start(app, done);
+        return kbox.app.start(app);
       };
     });
   });

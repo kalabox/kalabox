@@ -12,25 +12,13 @@ module.exports = function(kbox) {
 
   // Kalabox modules
   var Promise = kbox.Promise;
+  var shell = kbox.util.shell;
 
   // Provider config
   var providerConfig = kbox.core.deps.get('providerConfig');
 
   // Set some machine things
   var MACHINE_CONFIG = providerConfig.machine.kalabox;
-
-  /*
-   * Promisified shell
-   */
-  var shell = function(cmd) {
-    // Kbox shell
-    var _shell = kbox.core.deps.get('shell');
-
-    // Execute promisified shell
-    return Promise.fromNode(function(cb) {
-      _shell.exec(cmd, cb);
-    });
-  };
 
   /*
    * Helper to get the vbox exec

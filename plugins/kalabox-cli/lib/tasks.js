@@ -44,7 +44,7 @@ module.exports = function(kbox) {
           compose: app.composeCore.concat([cliFile]),
           project: app.name,
           opts: {
-            stdio: 'inherit',
+            mode: 'attach',
             services: [options.service],
             entrypoint: options.entrypoint,
             cmd: options.cmd

@@ -58,7 +58,7 @@ module.exports = function(kbox) {
 
       // Run a provider command in a shell.
       return Promise.retry(function() {
-        log.debug('Running command ' + cmd);
+        log.info(cmd);
         return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
       });
     });
@@ -248,13 +248,11 @@ module.exports = function(kbox) {
     };
 
     // Get opts
-    var options = opts || {};
-
-    // Merge in defaults
-    options = _.merge(defaults, options);
+    var options = (opts) ? _.merge(defaults, opts) : defaults;
 
     // Up us
-    return shCompose(buildCmd(compose, project, 'up', options));
+    var cmd = buildCmd(compose, project, 'up', options);
+    return shCompose(cmd, {mode: 'collect'});
 
   };
 
@@ -262,29 +260,31 @@ module.exports = function(kbox) {
    * Run docker compose pull
    */
   var getId = function(compose, project, opts) {
-    var binOpts = {silent: true};
-    return shCompose(buildCmd(compose, project, 'ps -q', opts), binOpts);
+    return shCompose(buildCmd(compose, project, 'ps -q', opts));
   };
 
   /*
    * Run docker compose build
    */
   var build = function(compose, project, opts) {
-    return shCompose(buildCmd(compose, project, 'build', opts));
+    var cmd = buildCmd(compose, project, 'build', opts);
+    return shCompose(cmd, {mode: 'collect'});
   };
 
   /*
    * Run docker compose pull
    */
   var pull = function(compose, project, opts) {
-    return shCompose(buildCmd(compose, project, 'pull', opts));
+    var cmd = buildCmd(compose, project, 'pull', opts);
+    return shCompose(cmd, {mode: 'collect'});
   };
 
   /*
    * Run docker compose stop
    */
   var stop = function(compose, project, opts) {
-    return shCompose(buildCmd(compose, project, 'stop', opts));
+    var cmd = buildCmd(compose, project, 'stop', opts);
+    return shCompose(cmd, {mode: 'collect'});
   };
 
   /*
@@ -299,12 +299,11 @@ module.exports = function(kbox) {
     };
 
     // Get opts
-    var options = opts || {};
+    var options = (opts) ? _.merge(defaults, opts) : defaults;
 
-    // Merge in defaults
-    options = _.merge(defaults, options);
-
-    return shCompose(buildCmd(compose, project, 'rm', options));
+    // Build the command and run it
+    var cmd = buildCmd(compose, project, 'rm', options);
+    return shCompose(cmd, {mode: 'collect'});
   };
 
   /*
@@ -321,16 +320,13 @@ module.exports = function(kbox) {
     };
 
     // Get opts
-    var optz = opts || {};
+    var options = (opts) ? _.merge(defaults, opts) : defaults;
 
-    // GEt whether we want to attach/collect or not
-    var stdio = opts.stdio || [];
-
-    // Merge in defaults
-    optz = _.merge(defaults, optz);
+    // Get whether we want to attach/collect or not
+    var mode = opts.mode || false;
 
     // Execute
-    return shCompose(buildCmd(compose, project, 'run', optz), {stdio: stdio});
+    return shCompose(buildCmd(compose, project, 'run', options), {mode: mode});
 
   };
 

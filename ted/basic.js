@@ -1,4 +1,6 @@
-// 1
+/**
+ * Basic ted tests
+ */
 
 ted.describe('kalabox', function(config) {
 

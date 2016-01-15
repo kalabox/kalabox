@@ -1,14 +1,16 @@
+'use strict';
+
 /**
  * Module to wrap and abstract access to docker machine.
  * @module docker
  */
 
-'use strict';
+// Cache inspect data
+var inspectData = {};
 
 module.exports = function(kbox) {
 
   // Node modules
-  var format = require('util').format;
   var path = require('path');
 
   // NPM modules
@@ -23,6 +25,7 @@ module.exports = function(kbox) {
   var env = require('./lib/env.js')(kbox);
   var net = require('./lib/net.js')(kbox);
 
+  // Get our docker machine executable
   var MACHINE_EXECUTABLE = bin.getMachineExecutable();
 
   // Set of logging functions.
@@ -37,26 +40,6 @@ module.exports = function(kbox) {
   });
 
   /*
-   * Helper to parse errors better
-   */
-  var shProviderError = function(msg) {
-
-    // This will always happen on create with our custom iso
-    if (_.includes(msg, 'Unable to verify the Docker daemon is listening')) {
-      return false;
-    }
-
-    // This is ok too
-    if (_.includes(msg, 'Host does not exist: "' + getMachine().name + '"')) {
-      return false;
-    }
-
-    // Otherwise throw an error
-    return true;
-
-  };
-
-  /*
    * Run a provider command in a shell.
    */
   var shProvider = function(cmd, opts) {
@@ -64,38 +47,44 @@ module.exports = function(kbox) {
     // Set the machine env
     env.setDockerEnv();
 
-    // Run a provider command in a shell.
-    var run = [MACHINE_EXECUTABLE].concat(cmd).concat(getMachine().name);
-    return bin.sh(run, opts)
+    // Try a few times
+    return Promise.retry(function() {
 
-    // See if we need to recompile our kernel mod
-    // on linux also we assume a few select errors
-    // are actually ok
-    .catch(function(err) {
+      // Build and log the command
+      var run = [MACHINE_EXECUTABLE].concat(cmd).concat(getMachine().name);
+      log.info(run);
 
-      // Let's see if this problem is caused by missing VB's kernel modules
-      // @todo: On machine we might need to stop first here
-      return bin.checkVBModules()
+      // Run the command
+      return bin.sh(run, opts)
 
-      // If our modules are down let's try to get them into a good state
-      .then(function(modulesAreUp) {
-        if (!modulesAreUp) {
+      // See if we need to recompile our kernel mod
+      // on linux also we assume a few select errors
+      // are actually ok
+      .catch(function(err) {
 
-          // Attempt to bring them up
-          return bin.bringVBModulesUp()
+        // Let's see if this problem is caused by missing VB's kernel modules
+        // @todo: On machine we might need to stop first here
+        return bin.checkVBModules()
 
-          // Now retry the create regardless
-          .then(function() {
-            throw new VError('Retrying...');
-          });
-        }
-      })
+        // If our modules are down let's try to get them into a good state
+        .then(function(modulesAreUp) {
+          if (!modulesAreUp) {
 
-      // If our kernel isn't the issue
-      .then(function() {
-        if (shProviderError(err.message)) {
+            // Attempt to bring them up
+            return bin.bringVBModulesUp()
+
+            // Now retry the create regardless
+            .then(function() {
+              throw new VError('Retrying...');
+            });
+          }
+        })
+
+        // If our kernel isn't the issue
+        .then(function() {
           throw new VError(err);
-        }
+        });
+
       });
 
     });
@@ -110,7 +99,7 @@ module.exports = function(kbox) {
     // Try a few times
     return Promise.retry(function() {
 
-      // Inspect our machine
+      // Get IP
       return shProvider(['ip'])
 
       // Parse the data and correct if needed
@@ -130,11 +119,6 @@ module.exports = function(kbox) {
           });
         }
 
-        // Say we are good
-        else {
-          log.info('Static IP set correctly at ' + getMachine().ip);
-        }
-
       });
     });
 
@@ -145,86 +129,70 @@ module.exports = function(kbox) {
    */
   var create = function(opts) {
 
-    return Promise.retry(function(counter) {
+    // Build command and options with defaults
+    // Core create command
+    var createCmd = ['create', '--driver', getMachine().driver];
 
-      // Log start.
-      log.info(kbox.util.format('Initializing docker machine [%s].', counter));
+    // Get driver options
+    var createOptions = getMachine().driveropts || [];
 
-      // Build command and options with defaults
-      // Core create command
-      var createCmd = ['create', '--driver ' + getMachine().driver];
-
-      // Get driver options
-      var createOptions = getMachine().driveropts || [];
-
-      // Add otherOpts
-      _.forEach(getMachine().otheropts, function(option) {
-        createOptions.push(option);
-      });
-
-      // Add some more dynamic options
-      if (opts.disksize && getMachine().driver === 'virtualbox') {
-        createOptions.unshift('--virtualbox-disk-size ' + opts.disksize);
-      }
-
-      // Run provider command.
-      var run = createCmd.concat(createOptions);
-      return shProvider(run)
-
-      // Handle relevant create errors
-      .catch(function(err) {
-        log.info('Initializing docker machine failed, retrying.', err);
-        throw new VError(err, 'Error initializing machine.', run);
-      })
-
-      // Verify our networking is setup correctly on windows
-      .then(function() {
-        if (process.platform === 'win32') {
-          return net.verifyWindowsNetworking();
-        }
-      });
-
+    // Add otherOpts
+    _.forEach(getMachine().otheropts, function(option) {
+      createOptions.push(option);
     });
+
+    // Add some more dynamic options
+    if (opts.disksize && getMachine().driver === 'virtualbox') {
+      createOptions.unshift(opts.disksize);
+      createOptions.unshift('--virtualbox-disk-size');
+    }
+
+    // Run provider command.
+    var run = _.flatten(createCmd.concat(createOptions));
+    return shProvider(run, {mode: 'collect'})
+
+    // Handle relevant create errors
+    .catch(function(err) {
+      throw new VError(err, 'Error initializing machine.', run);
+    })
+
+    // Verify our networking is setup correctly on windows
+    .then(function() {
+      if (process.platform === 'win32') {
+        return net.verifyWindowsNetworking();
+      }
+    });
+
   };
 
   /*
    * Machine start helper
    */
   var _up = function() {
-    // Retry the upping
-    return Promise.retry(function(counter) {
 
-      // Log start.
-      log.info(kbox.util.format('Bringing machine up [%s].', counter));
+    var stoppedStates = ['paused', 'saved', 'stopped', 'error'];
 
-      var stoppedStates = ['paused', 'saved', 'stopped', 'error'];
+    // Get status
+    return getStatus()
 
-      // Get status
-      return getStatus()
+    // Only start if we aren't already
+    .then(function(status) {
+      if (_.includes(stoppedStates, status)) {
+        return shProvider(['start'], {mode: 'collect'});
+      }
+    })
 
-      // Only start if we aren't already
-      .then(function(status) {
-        if (_.includes(stoppedStates, status)) {
-          return shProvider(['start']);
-        }
-      })
-
-      // Wrap errors.
-      .catch(function(err) {
-        log.info('Bringing up machine failed, retrying.', err);
-        throw new VError(err, 'Error bringing machine up.');
-      });
-
+    // Wrap errors.
+    .catch(function(err) {
+      throw new VError(err, 'Error bringing machine up.');
     });
+
   };
 
   /*
    * Bring machine up.
    */
   var up = function(opts) {
-
-    // Log start.
-    log.info('Starting up.', opts);
 
     // Check to see if we need to create a machine or not
     return Promise.try(function() {
@@ -246,11 +214,6 @@ module.exports = function(kbox) {
     // Verify static IP is set
     .then(function() {
       return verifyStaticIp();
-    })
-
-    // Log success.
-    .then(function() {
-      log.info('Machine is up.');
     });
 
   };
@@ -261,15 +224,8 @@ module.exports = function(kbox) {
    */
   var getStatus = function() {
 
-    // Set the machine ENV explicitly for this one because we arent
-    // routing through shProvider
-    env.setDockerEnv();
-
     // Get status.
-    return Promise.retry(function(counter) {
-      log.debug(format('Checking status [%s].', counter));
-      return shProvider(['ls'], {silent:true});
-    })
+    return shProvider(['ls'], {silent:true})
     // Do some lodash fu to get the status
     .then(function(result) {
 
@@ -277,9 +233,6 @@ module.exports = function(kbox) {
       var status = _.result(_.find(shellParser(result), function(machine) {
         return machine.NAME === getMachine().name;
       }), 'STATE');
-
-      // Tell us WTFIGO
-      log.debug(getMachine().name + ' is ' + status);
 
       return status.toLowerCase();
     });
@@ -295,20 +248,9 @@ module.exports = function(kbox) {
     return getStatus()
     // Shut provider down if its status is running.
     .then(function(status) {
-      if (status === 'running') {
+      if (status !== 'stopped') {
         // Retry to shutdown if an error occurs.
-        return Promise.try(function() {
-          return Promise.retry(function(counter) {
-            log.info(format('Shutting down [%s].', counter));
-            return shProvider(['stop']);
-          });
-        })
-        // Log success.
-        .then(function() {
-          log.info('Shutdown successful.');
-        });
-      } else {
-        log.info('Already shutdown.');
+        return shProvider(['stop'], {mode: 'collect'});
       }
     })
     // Wrap errors.
@@ -323,14 +265,11 @@ module.exports = function(kbox) {
    */
   var getIso = function() {
     // Get status.
-    return Promise.retry(function(counter) {
-      log.debug(format('Checking for new ISO [%s].', counter));
-      return shProvider(['upgrade'])
-      .catch(function(/*err*/) {
-        return up()
-        .then(function() {
-          throw new VError('Need to start the machine to upgrade');
-        });
+    return shProvider(['upgrade'], {mode: 'collect'})
+    .catch(function(/*err*/) {
+      return up()
+      .then(function() {
+        throw new VError('Need to start the machine to upgrade');
       });
     });
   };
@@ -367,12 +306,31 @@ module.exports = function(kbox) {
   };
 
   /*
+   * Inspect
+   */
+  var inspect = function() {
+
+    // Return the cached data if its there
+    if (!_.isEmpty(inspectData)) {
+      return Promise.resolve(inspectData);
+    }
+
+    // Else query for it and set it in the cache
+    return shProvider(['inspect'], {silent:true})
+    .then(function(data) {
+      inspectData = data;
+      return inspectData;
+    });
+
+  };
+
+  /*
    * Check to see if we have a Kalabox2 VM
    */
   var vmExists = function() {
 
     // See if there is any info
-    return shProvider(['inspect'], {silent:true})
+    return inspect()
 
     // if there is output then we are probably good
     // @todo: we can do a stronger check here
@@ -426,7 +384,7 @@ module.exports = function(kbox) {
     opts = opts || {};
 
     // Inspect our machine so we can get certificates
-    return shProvider(['inspect'], {silent:true})
+    return inspect()
 
     // Build our config
     .then(function(data) {
