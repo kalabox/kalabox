@@ -4,8 +4,6 @@ globalPlugins:
   - kalabox-services-kalabox
   - kalabox-syncthing
   - kalabox-pantheon
-externalPlugins:
-  - kalabox-app-pantheon@https://github.com/kalabox/kalabox-app-pantheon/tarball/dockerCompose
 logLevelConsole: debug
 engine: kalabox-engine-docker
 devMode: true

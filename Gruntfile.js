@@ -70,8 +70,9 @@ module.exports = function(grunt) {
           'bin/kbox.*',
           'lib/**',
           'plugins/**',
-          'scripts/postinstall.js',
-          '*.json'
+          '*.json',
+          'kalabox.yml',
+          'development.yml'
         ],
       }
     },

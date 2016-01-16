@@ -48,7 +48,7 @@ module.exports = function(kbox) {
 
         // Start the installer
         var recreateServices = serviceImages;
-        recreateServices.opts = {recreate: true};
+        recreateServices.opts = {recreate: true, internal: true};
 
         return kbox.engine.start(recreateServices)
 

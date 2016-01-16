@@ -27,8 +27,7 @@
     "kbox": "./bin/kbox.js"
   },
   "scripts": {
-    "test": "istanbul cover _mocha",
-    "postinstall": "node ./scripts/postinstall.js"
+    "test": "istanbul cover _mocha"
   },
   "dependencies": {
     "bluebird": "^2.9.3",
@@ -47,7 +46,7 @@
     "moment": "^2.10.6",
     "node-shell-parser": "^0.2.1",
     "node-windows": "https://github.com/kalabox/node-windows/tarball/master",
-    "redis": "^2.4.2",
+    "redis": "https://github.com/kalabox/node_redis/tarball/master",
     "restler": "^3.2.2",
     "sha1": "^1.1.0",
     "shelljs": "^0.3.0",

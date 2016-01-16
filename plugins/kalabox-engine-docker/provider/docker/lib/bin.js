@@ -82,8 +82,8 @@ module.exports = function(kbox) {
     if (opts && opts.mode) {
 
       // Stdio per mode
-      var collect = {stdio: ['inherit', 'pipe', 'inherit']};
-      var attach = {stdio: ['inherit', 'inherit', 'inherit']};
+      var collect = {stdio: 'pipe'};
+      var attach = {stdio: 'inherit'};
       var stdio = (opts.mode === 'attach') ? attach : collect;
 
       // Merge in our options
