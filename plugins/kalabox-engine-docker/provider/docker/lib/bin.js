@@ -82,7 +82,7 @@ module.exports = function(kbox) {
     if (opts && opts.mode) {
 
       // Stdio per mode
-      var collect = {stdio: 'pipe'};
+      var collect = {stdio: [process.stdin, 'pipe', process.stderr]};
       var attach = {stdio: 'inherit'};
       var stdio = (opts.mode === 'attach') ? attach : collect;
 
