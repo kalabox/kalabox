@@ -5,23 +5,19 @@
 
 'use strict';
 
+// Node modules
+var path = require('path');
+
 // Npm mods
 var Promise = require('bluebird');
 
 // Some kbox dependencies
-var shell = require('./../lib/util/shell.js');
-var config = require('./../lib/core/config.js');
+var shell = require('shelljs');
+var yaml = require('./../lib/util/yaml.js');
+var devMode = (process.env.KALABOX_DEV === 'true') ? true : false;
 
 // Grab our global config
-var globalConfig = config.getGlobalConfig();
-
 var installPackages = function(pkgs) {
-
-  // Get our current dir so we can restore later
-  var oldDir = process.cwd();
-
-  // Change to the source root for our npm install
-  process.chdir(globalConfig.srcRoot);
 
   // Go through each package, transform it
   return Promise.resolve(pkgs)
@@ -37,21 +33,18 @@ var installPackages = function(pkgs) {
       shell.exec(['npm', 'install', pkg].join(' '), callback);
     });
 
-  })
-
-  .then(function() {
-    // Return back to where we started
-    process.chdir(oldDir);
   });
 
 };
 
 // Kick off an empty array
 var pkgs = [];
-
+// Code root
+var srcRoot = path.resolve(__dirname, '..');
+// Grab config file
+var configFile = (devMode) ? 'development.yml' : 'kalabox.yml';
 // Grab any external plugins
-pkgs.push(globalConfig.externalPlugins);
-
+pkgs.push(yaml.toJson(path.join(srcRoot, configFile)).externalPlugins);
 // Npm install our apps and backends
 installPackages(pkgs)
 
