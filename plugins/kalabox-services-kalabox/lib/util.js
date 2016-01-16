@@ -312,10 +312,8 @@ module.exports = function(kbox) {
 
         // Get linux flavor
         var flavor = kbox.util.linux.getFlavor();
-
-        var dnsDir = path.join(config.dns.pkg.linux[flavor].path);
+        var dnsDir = path.join(config.dns.files.linux[flavor].path);
         var dnsFile = [dnsDir, posixDnsFile];
-
         var ipCmds = kbox.util.dns.dnsCmd(ips, dnsFile);
         var cmd = ipCmds.join(' && ');
         dnsCmds.push(cmd);

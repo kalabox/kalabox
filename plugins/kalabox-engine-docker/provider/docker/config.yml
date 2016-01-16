@@ -23,7 +23,6 @@ virtualbox:
     key:
     recompile: /usr/lib/virtualbox/vboxdrv.sh setup
   apt:
-    deps:
     source: http://download.virtualbox.org/virtualbox/debian
     sourcefile: /etc/apt/sources.list.d/kalabox.list
     key: https://www.virtualbox.org/download/oracle_vbox.asc

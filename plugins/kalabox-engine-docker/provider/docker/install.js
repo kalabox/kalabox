@@ -140,7 +140,6 @@ module.exports = function(kbox) {
           // Get the metas
           var flavor = kbox.util.linux.getFlavor();
           var packager = (flavor === 'debian') ? 'apt' : 'dnf';
-          var deps = VIRTUALBOX_CONFIG[packager].deps.join(' ');
           var pkg = VIRTUALBOX_CONFIG.pkg[flavor];
           var source = VIRTUALBOX_CONFIG[packager].source;
           var key = VIRTUALBOX_CONFIG[packager].key;
@@ -150,7 +149,8 @@ module.exports = function(kbox) {
           state.adminCommands.push(kbox.util.pkg.refreshSourcesCmd());
 
           // Install the deps first if we have them
-          if (!_.isEmpty(deps)) {
+          if (!_.isEmpty(VIRTUALBOX_CONFIG[packager].deps)) {
+            var deps = VIRTUALBOX_CONFIG[packager].deps.join(' ');
             state.adminCommands.push(kbox.util.pkg.installCmd(deps));
           }
 
