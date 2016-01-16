@@ -92,39 +92,6 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Do a check to verify our static IP is good
-   */
-  var verifyStaticIp = function() {
-
-    // Try a few times
-    return Promise.retry(function() {
-
-      // Get IP
-      return shProvider(['ip'])
-
-      // Parse the data and correct if needed
-      .then(function(data) {
-
-        // Correct if not set
-        if (!_.includes(data, getMachine().ip)) {
-
-          // Run the corrector command
-          var ssh = [MACHINE_EXECUTABLE, 'ssh'].concat(getMachine().name);
-          var cmd = ['sudo', '/opt/bootsync.sh'];
-          return bin.sh(ssh.concat(cmd))
-
-          // Retry and see if we are good now
-          .then(function() {
-            throw new VError('Rechecking static IP');
-          });
-        }
-
-      });
-    });
-
-  };
-
-  /*
    * Create a machine
    */
   var create = function(opts) {
@@ -209,11 +176,6 @@ module.exports = function(kbox) {
     // Bring machine up.
     .then(function() {
       return _up();
-    })
-
-    // Verify static IP is set
-    .then(function() {
-      return verifyStaticIp();
     });
 
   };

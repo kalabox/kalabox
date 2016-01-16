@@ -26,7 +26,7 @@ module.exports = function(kbox) {
   var Promise = kbox.Promise;
 
   // Create logging functions.
-  var log = kbox.core.log.make('DOCKER');
+  var log = kbox.core.log.make('DOCKER ENGINE');
 
   /*
    * Load the provider module.

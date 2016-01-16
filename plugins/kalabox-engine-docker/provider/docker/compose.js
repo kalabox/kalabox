@@ -58,7 +58,7 @@ module.exports = function(kbox) {
 
       // Run a provider command in a shell.
       return Promise.retry(function() {
-        log.info(cmd);
+        log.info(_.flatten([cmd, opts]));
         return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
       });
     });
@@ -224,7 +224,7 @@ module.exports = function(kbox) {
     // We need to escape spaces here to get this to work correctly
     // if bash (any array?) is our entry point otherwise we can return the normal
     if (opts && opts.cmd) {
-      if (_.includes(opts.entrypoint, 'bash') && opts.stdio) {
+      if (_.includes(opts.entrypoint, 'bash') && opts.mode) {
         cmd = cmd.concat(opts.cmd.join('\ '));
       }
       else {
