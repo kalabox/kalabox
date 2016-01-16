@@ -11,7 +11,6 @@ module.exports = function(kbox) {
   var _ = require('lodash');
 
   // Kalabox modules
-  var Promise = kbox.Promise;
   var shell = kbox.util.shell;
 
   // Provider config
@@ -215,27 +214,6 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Set up dns resolution
-   */
-  var setHostDnsResolver = function() {
-
-    // Retry the linxu sharing a few times
-    return Promise.retry(function(/*counter*/) {
-
-      // VBOXMANAGE dns resolver
-      var cmd = [
-        getVboxExec(),
-        'modifyvm "Kalabox2"',
-        '--natdnshostresolver1 on'];
-
-      // Run the command
-      return shell(cmd.join(' '));
-
-    });
-
-  };
-
-  /*
    * Get host only adapter that mathes our Kalabox host ip
    */
   var getHostOnlyAdapter = function() {
@@ -330,8 +308,7 @@ module.exports = function(kbox) {
   return {
     isHostOnlySet: isHostOnlySet,
     setHostOnly: setHostOnly,
-    verifyWindowsNetworking: verifyWindowsNetworking,
-    setHostDnsResolver: setHostDnsResolver
+    verifyWindowsNetworking: verifyWindowsNetworking
   };
 
 };
