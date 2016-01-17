@@ -142,7 +142,7 @@ module.exports = function(kbox) {
           var packager = (flavor === 'debian') ? 'apt' : 'dnf';
           var pkg = VIRTUALBOX_CONFIG.pkg[flavor];
           var source = VIRTUALBOX_CONFIG[packager].source;
-          var key = VIRTUALBOX_CONFIG[packager].key;
+          var key = VIRTUALBOX_CONFIG[packager].key || '';
 
           // Add and refresh sources
           state.adminCommands.push(kbox.util.pkg.addSourceCmd(source, key));
@@ -156,7 +156,6 @@ module.exports = function(kbox) {
 
           // Install VB
           state.adminCommands.push(kbox.util.pkg.installCmd(pkg));
-
         }
 
       };

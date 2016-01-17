@@ -18,9 +18,8 @@ virtualbox:
       - kernel-headers-$(uname -r)
       - kernel-devel-$(uname -r)
       - dkms
-    souce: http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo
+    source: http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo
     sourcefile: '/etc/yum.repos.d/kalabox.repo'
-    key:
     recompile: /usr/lib/virtualbox/vboxdrv.sh setup
   apt:
     source: http://download.virtualbox.org/virtualbox/debian
