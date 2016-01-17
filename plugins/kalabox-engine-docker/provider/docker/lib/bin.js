@@ -48,7 +48,7 @@ module.exports = function(kbox) {
 
     // Return exec based on path
     switch (process.platform) {
-      case 'win32': return '"' + machineBin + '.exe"';
+      case 'win32': return machineBin + '.exe';
       case 'darwin': return machineBin;
       case 'linux': return machineBin;
     }
@@ -66,7 +66,7 @@ module.exports = function(kbox) {
 
     // Return exec based on path
     switch (process.platform) {
-      case 'win32': return '"' + composeBin + '.exe"';
+      case 'win32': return composeBin + '.exe';
       case 'darwin': return composeBin;
       case 'linux': return composeBin;
     }

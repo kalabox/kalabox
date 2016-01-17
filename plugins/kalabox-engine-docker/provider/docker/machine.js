@@ -23,7 +23,6 @@ module.exports = function(kbox) {
   var Promise = kbox.Promise;
   var bin = require('./lib/bin.js')(kbox);
   var env = require('./lib/env.js')(kbox);
-  var net = require('./lib/net.js')(kbox);
 
   // Get our docker machine executable
   var MACHINE_EXECUTABLE = bin.getMachineExecutable();
@@ -121,13 +120,6 @@ module.exports = function(kbox) {
     // Handle relevant create errors
     .catch(function(err) {
       throw new VError(err, 'Error initializing machine.', run);
-    })
-
-    // Verify our networking is setup correctly on windows
-    .then(function() {
-      if (process.platform === 'win32') {
-        return net.verifyWindowsNetworking();
-      }
     });
 
   };
