@@ -58,7 +58,7 @@ module.exports = function(kbox) {
 
       // Run a provider command in a shell.
       return Promise.retry(function() {
-        log.info(_.flatten([cmd, opts]));
+        log.debug(_.flatten([cmd, opts]));
         return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
       });
     });
@@ -151,6 +151,11 @@ module.exports = function(kbox) {
       return flags;
     }
 
+    // Inspect opts
+    if (opts.q) {
+      flags.push('-q');
+    }
+
     // Daemon opts
     if (opts.background) {
       flags.push('-d');
@@ -178,9 +183,7 @@ module.exports = function(kbox) {
     if (opts.entrypoint) {
       flags.push('--entrypoint');
       if (_.isArray(opts.entrypoint)) {
-        _.forEach(opts.entrypoint, function(piece) {
-          flags.push(piece);
-        });
+        flags.push(kbox.util.shell.escSpaces(opts.entrypoint.join(' ')));
       }
       else {
         flags.push(opts.entrypoint);
@@ -193,7 +196,8 @@ module.exports = function(kbox) {
     // Add additional ENVs
     if (opts.environment) {
       _.forEach(opts.environment, function(envVar) {
-        flags.push('-e ' + envVar);
+        flags.push('-e');
+        flags.push(envVar);
       });
     }
 
@@ -221,11 +225,12 @@ module.exports = function(kbox) {
     }
 
     // Add in a command arg if its there
-    // We need to escape spaces here to get this to work correctly
-    // if bash (any array?) is our entry point otherwise we can return the normal
     if (opts && opts.cmd) {
-      if (_.includes(opts.entrypoint, 'bash') && opts.mode) {
-        cmd = cmd.concat(opts.cmd.join('\ '));
+      if (typeof opts.cmd === 'string') {
+        opts.cmd = [opts.cmd];
+      }
+      if (_.isArray(opts.entrypoint)) {
+        cmd.push(kbox.util.shell.escSpaces(opts.cmd.join(' ')));
       }
       else {
         cmd = cmd.concat(opts.cmd);
@@ -260,7 +265,16 @@ module.exports = function(kbox) {
    * Run docker compose pull
    */
   var getId = function(compose, project, opts) {
-    return shCompose(buildCmd(compose, project, 'ps -q', opts));
+
+    // Default options
+    var defaults = {
+      q: true
+    };
+
+    // Get opts
+    var options = (opts) ? _.merge(defaults, opts) : defaults;
+
+    return shCompose(buildCmd(compose, project, 'ps', options));
   };
 
   /*

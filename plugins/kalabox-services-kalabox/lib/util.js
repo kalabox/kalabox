@@ -230,8 +230,7 @@ module.exports = function(kbox) {
       if (needsDarwinDNS()) {
         var dnsFile = [config.dns.files.darwin.path, posixDnsFile];
         var ipCmds = kbox.util.dns.dnsCmd(ips, dnsFile);
-        var cmd = ipCmds.join(' && ');
-        dnsCmds.push(cmd);
+        dnsCmds.push(ipCmds);
       }
 
       // Debug
@@ -315,8 +314,7 @@ module.exports = function(kbox) {
         var dnsDir = path.join(config.dns.files.linux[flavor].path);
         var dnsFile = [dnsDir, posixDnsFile];
         var ipCmds = kbox.util.dns.dnsCmd(ips, dnsFile);
-        var cmd = ipCmds.join(' && ');
-        dnsCmds.push(cmd);
+        dnsCmds.push(ipCmds);
       }
 
       // Debug

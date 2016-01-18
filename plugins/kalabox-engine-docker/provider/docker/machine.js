@@ -51,7 +51,7 @@ module.exports = function(kbox) {
 
       // Build and log the command
       var run = [MACHINE_EXECUTABLE].concat(cmd).concat(getMachine().name);
-      log.info(run);
+      log.debug(run);
 
       // Run the command
       return bin.sh(run, opts)

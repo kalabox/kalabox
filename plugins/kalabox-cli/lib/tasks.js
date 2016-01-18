@@ -30,7 +30,7 @@ module.exports = function(kbox) {
       var taskDefaults = function() {
         return {
           services: ['cli'],
-          entrypoint: '/bin/sh -c',
+          entrypoint: ['/bin/sh', '-c'],
           description: 'Run a command against a container'
         };
       };

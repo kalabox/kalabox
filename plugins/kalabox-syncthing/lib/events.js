@@ -149,7 +149,7 @@ module.exports = function(kbox) {
           // Build run definition
           var runDef = syncthingContainer();
           runDef.opts.entrypoint = '/bin/cp';
-          runDef.opts.cmd = cpCmd.join(' ');
+          runDef.opts.cmd = cpCmd;
           return kbox.engine.run(runDef);
         })
 
@@ -253,7 +253,7 @@ module.exports = function(kbox) {
       // Build kill definition
       var rmDef = syncthingContainer();
       rmDef.opts.entrypoint = 'rm';
-      rmDef.opts.cmd = rmCmd.join(' ');
+      rmDef.opts.cmd = rmCmd;
 
       // Run the kill
       return kbox.engine.run(rmDef);
