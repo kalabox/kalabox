@@ -225,13 +225,13 @@ module.exports = function(kbox) {
     step.description = 'Running admin install commands...';
     step.all = function(state, done) {
 
-      // Grab our admin helpers
-      var admin = require('./steps/admin.js')(kbox);
-
       // Run the admin commands if we have any
       if (!_.isEmpty(state.adminCommands)) {
-        state.log.debug('COMMANDS => ' + JSON.stringify(state.adminCommands));
-        admin.run(state.adminCommands, state, done);
+        return kbox.util.shell.execAdminAsync(state.adminCommands)
+        .catch(function(err) {
+          state.fail(state, err);
+        })
+        .nodeify(done);
       }
       else {
         done();

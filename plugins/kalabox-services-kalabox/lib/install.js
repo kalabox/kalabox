@@ -149,13 +149,6 @@ module.exports = function(kbox) {
         state.fail(state, err);
       })
 
-      // Reflect that DNS has been migrated to libnss-resolver
-      .then(function() {
-        if (state.status) {
-          state.updateCurrentInstall({SERVICE_LIBNSS_RESOLVER: true});
-        }
-      })
-
       // Next Step
       .nodeify(done);
 

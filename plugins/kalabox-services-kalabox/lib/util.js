@@ -23,9 +23,8 @@ module.exports = function(kbox) {
   var config = kbox.util.yaml.toJson(path.join(__dirname, 'config.yml'));
   var posixDnsFile = kbox.core.deps.lookup('globalConfig').domain;
 
-  // Set Kalabox DNS constantsz
-  // @todo: get this from engine somehow?
-  var KALABOX_WIN32_DNS = '10.13.37.100';
+  // Set of logging functions.
+  var log = kbox.core.log.make('SERVICS DNS');
 
   /*
    * Helper function to assess whether we need new service images
@@ -35,11 +34,17 @@ module.exports = function(kbox) {
   };
 
   /*
+   * Needs Posix DNS helper
+   */
+  var needsPosixDns = function(dnsFile) {
+    return !fs.existsSync(dnsFile);
+  };
+
+  /*
    * Helper function to determine whether we need to run darwin DNS commands
    */
   var needsDarwinDNS = function() {
-    var dnsFile = path.join(config.dns.files.darwin.path, posixDnsFile);
-    return !fs.existsSync(dnsFile);
+    return needsPosixDns(path.join(config.dns.files.darwin.path, posixDnsFile));
   };
 
   /*
@@ -48,7 +53,7 @@ module.exports = function(kbox) {
   var needsLinuxDNS = function() {
     var flavor = kbox.util.linux.getFlavor();
     var dnsDir = config.dns.files.linux[flavor].path;
-    return !fs.existsSync(path.join(dnsDir, posixDnsFile));
+    return needsPosixDns(path.join(dnsDir, posixDnsFile));
   };
 
   /*
@@ -149,7 +154,7 @@ module.exports = function(kbox) {
         });
 
         // Return precise
-        var needDns = adapters[0] !== KALABOX_WIN32_DNS;
+        var needDns = adapters[0] !== provider().call('getIp');
         kbox.core.log.debug('DNS SET CORRECTLY => ' + JSON.stringify(needDns));
         return needDns;
       });
@@ -158,102 +163,9 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Validate admin commands
-   */
-  var validateCmds = function(cmds) {
-
-    // Check if this is an array
-    if (!Array.isArray(cmds)) {
-      return 'Invalid adminCommands: ' + cmds;
-    }
-
-    // Check if each cmd is a string
-    cmds.forEach(function(cmd, index) {
-      if (typeof cmd !== 'string' || cmd.length < 1) {
-        return 'Invalid cmd index: ' + index + ' cmd: ' + cmd;
-      }
-    });
-
-    // Looks like we good!
-    return true;
-
-  };
-
-  /*
-   * Run the admin commands
-   */
-  var runCmds = function(adminCommands, state, callback) {
-
-    // Validate the admin commands
-    if (validateCmds(adminCommands) !== true) {
-      callback(new Error(validateCmds(adminCommands)));
-    }
-
-    // Process admin commands.
-    var child = kbox.util.shell.execAdminAsync(adminCommands, state);
-
-    // Events
-    // Output data
-    child.stdout.on('data', function(data) {
-      state.log.info(data);
-    });
-    // Callback when done
-    child.stdout.on('end', function() {
-      callback();
-    });
-    // Output stderr data.
-    child.stderr.on('data', function(data) {
-      state.log.info(data);
-    });
-    // Fail the installer if we get an error
-    child.stderr.on('error', function(err) {
-      state.fail(state, err);
-    });
-
-  };
-
-  /*
-   * Helper to set up darwin DNS
-   */
-  var setupDarwinDNS = function(state) {
-
-    // Start up a collector
-    var dnsCmds = [];
-
-    // Get list of server ips.
-    return provider().call('getServerIps')
-
-    // Add dns setup command.
-    .then(function(ips) {
-
-      // Build DNS command
-      if (needsDarwinDNS()) {
-        var dnsFile = [config.dns.files.darwin.path, posixDnsFile];
-        var ipCmds = kbox.util.dns.dnsCmd(ips, dnsFile);
-        dnsCmds.push(ipCmds);
-      }
-
-      // Debug
-      kbox.core.log.debug('DNS CMDS => ' + JSON.stringify(dnsCmds));
-
-      // Try to install DNS if we have commands to run
-      return Promise.fromNode(function(cb) {
-        if (!_.isEmpty(dnsCmds)) {
-          runCmds(dnsCmds, state, cb);
-        }
-        else {
-          cb();
-        }
-      });
-
-    });
-
-  };
-
-  /*
    * Helper to set up windows DNS
    */
-  var setupWindowsDNS = function(state) {
+  var setupWindowsDNS = function() {
 
     // Start up a collector
     var dnsCmds = [];
@@ -276,7 +188,7 @@ module.exports = function(kbox) {
             dnsCmds = (kbox.util.dns.dnsCmd(ips, adapter));
 
             // Debug
-            state.log.debug('DNS CMDS => ' + JSON.stringify(dnsCmds));
+            kbox.core.log.debug('DNS CMDS => ' + JSON.stringify(dnsCmds));
 
             // Run each command through elevation
             // @todo: doesn't seem like node-windows can
@@ -293,45 +205,43 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Helper to set up linux DNS
+   * Helper to set up posix DNS
    */
-  var setupLinuxDNS = function(state) {
+  var setupPosixDNS = function(needs, dnsFile) {
 
- // Start up a collector
-    var dnsCmds = [];
+    // Return engine IP
+    return provider().call('getIp')
 
-    // Get list of server ips.
-    return provider().call('getServerIps')
-
-    // Add dns setup command.
-    .then(function(ips) {
-
+    .then(function(ip) {
       // Build DNS command
-      if (needsLinuxDNS()) {
-
-        // Get linux flavor
-        var flavor = kbox.util.linux.getFlavor();
-        var dnsDir = path.join(config.dns.files.linux[flavor].path);
-        var dnsFile = [dnsDir, posixDnsFile];
-        var ipCmds = kbox.util.dns.dnsCmd(ips, dnsFile);
-        dnsCmds.push(ipCmds);
+      if (needs) {
+        // GEt the commands and att them
+        var dnsCmd = kbox.util.dns.dnsCmd(ip, dnsFile);
+        // Debug
+        log.debug(dnsCmd);
+        // Try to install DNS if we have commands to run
+        return kbox.util.shell.execAdminAsync(dnsCmd);
       }
-
-      // Debug
-      kbox.core.log.debug('DNS CMDS => ' + JSON.stringify(dnsCmds));
-
-      // Try to install DNS if we have commands to run
-      return Promise.fromNode(function(cb) {
-        if (!_.isEmpty(dnsCmds)) {
-          runCmds(dnsCmds, state, cb);
-        }
-        else {
-          cb();
-        }
-      });
-
     });
 
+  };
+
+  /*
+   * Helper to set up darwin DNS
+   */
+  var setupDarwinDNS = function() {
+    var dnsFile = [config.dns.files.darwin.path, posixDnsFile];
+    return setupPosixDNS(needsDarwinDNS(), dnsFile);
+  };
+
+  /*
+   * Helper to set up linux DNS
+   */
+  var setupLinuxDNS = function() {
+    var flavor = kbox.util.linux.getFlavor();
+    var dnsDir = path.join(config.dns.files.linux[flavor].path);
+    var dnsFile = [dnsDir, posixDnsFile];
+    return setupPosixDNS(needsLinuxDNS(), dnsFile);
   };
 
   /*
