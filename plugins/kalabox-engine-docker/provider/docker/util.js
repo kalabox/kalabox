@@ -70,24 +70,9 @@ module.exports = function(kbox) {
    * Helper function to determine whether we need to run linux DNS commands
    */
   var needsKalaboxIsoUpdate = function() {
-
-    // Get some state info
-    var currentInstall = install.getCurrentInstall();
-    var neverUpdated = currentInstall.PROVIDER_KALABOX_ISO === undefined;
-    var hasMachine = currentInstall.PROVIDER_MACHINE_VERSION !== undefined;
-
-    if (!hasMachine) {
-      // Return false if this is our first provision.
-      return false;
-    } else if (neverUpdated) {
-      // Return true if we've never updated before
-      return true;
-    }
-
     // Otherwise return our normal compare
     var isoVersion = MACHINE_CONFIG.kalabox.isoversion;
     return install.getProUp('PROVIDER_KALABOX_ISO', isoVersion);
-
   };
 
   /*

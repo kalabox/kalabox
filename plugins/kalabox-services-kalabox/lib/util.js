@@ -10,6 +10,8 @@ module.exports = function(kbox) {
   var fs = require('fs');
   var path = require('path');
   var url = require('url');
+  var os = require('os');
+  var dns = require('dns');
 
   // Npm modules
   var _ = require('lodash');
@@ -24,7 +26,7 @@ module.exports = function(kbox) {
   var posixDnsFile = kbox.core.deps.lookup('globalConfig').domain;
 
   // Set of logging functions.
-  var log = kbox.core.log.make('SERVICS DNS');
+  var log = kbox.core.log.make('SERVICES DNS');
 
   /*
    * Helper function to assess whether we need new service images
@@ -57,107 +59,16 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Get the correct windows network adapter
-   */
-  var getWindowsAdapter = function() {
-
-    // Get shell library.
-    var shell = kbox.core.deps.get('shell');
-
-    // Command to run
-    var cmd = [
-      '"C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe"',
-      'showvminfo "Kalabox2" | findstr "Host-only"'
-    ];
-
-    // Get network information from virtual box.
-    return Promise.fromNode(function(cb) {
-      shell.exec(cmd.join(' '), cb);
-    })
-
-    // Parse the output
-    .then(function(output) {
-
-      // Debug log output
-      kbox.core.log.debug('ADAPTER INFO => ' + JSON.stringify(output));
-
-      // Parse output to get network adapter information.
-      var start = output.indexOf('\'');
-      var last = output.lastIndexOf('\'');
-
-      // Get the adapter
-      var adapter = [
-        output.slice(start + 1, last).replace('Ethernet Adapter', 'Network')
-      ];
-
-      // debug
-      kbox.core.log.debug('WINDOWS ADAPTER => ' + JSON.stringify(adapter));
-
-      // Return
-      return adapter;
-    });
-
-  };
-
-  /*
    * Helper function to determine whether we need to run win32 DNS commands
    * @todo: Need to expand this to handle both nameservers
    */
   var needsWin32DNS = function() {
 
-    // Get shell library.
-    var shell = kbox.core.deps.get('shell');
+    // Return engine IP
+    return provider().call('getIp')
 
-    // Grab the host only adapter so we can be SUPER PRECISE!
-    return getWindowsAdapter()
-
-    // Get network information from virtual box.
-    .then(function(adapter) {
-
-      var adp = adapter;
-
-      // Command to run
-      var cmd = 'netsh interface ipv4 show dnsservers';
-
-      // Execute shell
-      return shell.exec(cmd)
-
-      // Need to catch findstr null reporting as error
-      .catch(function(/*err*/) {
-        // @todo: something more precise here
-      })
-
-      .then(function(output) {
-
-        // Truncate the string for just data on what we need
-        // This elminates the possibility that another adapter has our
-        // setup. Although, to be fair, if another adapter does then
-        // we are probably SOL anyway.
-
-        // Trim the left
-        var leftTrim = 'Configuration for interface "' + adp + '"';
-        var truncLeft = output.indexOf(leftTrim);
-        var left = output.slice(truncLeft);
-
-        // Trim the right
-        var rightTrim = 'Register with which suffix:';
-        var truncRight = left.indexOf(rightTrim);
-        var adapterConfig = left.slice(0, truncRight);
-
-        // Get the raw DNS IPs
-        var aSplit = adapterConfig.split(':');
-        var rawAdapters = _.trim(aSplit[1]);
-
-        // Map to array of IPs
-        var adapters = _.map(rawAdapters.split('\r\n'), function(rawAdapter) {
-          return _.trim(rawAdapter);
-        });
-
-        // Return precise
-        var needDns = adapters[0] !== provider().call('getIp');
-        kbox.core.log.debug('DNS SET CORRECTLY => ' + JSON.stringify(needDns));
-        return needDns;
-      });
+    .then(function(ip) {
+      return !_.includes(dns.getServers(), ip);
     });
 
   };
@@ -167,28 +78,40 @@ module.exports = function(kbox) {
    */
   var setupWindowsDNS = function() {
 
-    // Start up a collector
-    var dnsCmds = [];
-
+    // Check whether we need this or not
     return needsWin32DNS()
 
     .then(function(needsDns) {
+
       if (needsDns) {
-        // Grab the appropriate windows network adapter
-        return getWindowsAdapter()
+        // Return engine IP
+        return provider().call('getIp')
+
+        // Get subnet
+        .then(function(ip) {
+          return (_.dropRight(ip.split('.'), 1)).join('.');
+        })
+
+        // Get adapter
+        .then(function(sub) {
+          return _.findKey(os.getNetworkInterfaces(), function(iface) {
+            return _.includes(iface[1].address, sub);
+          });
+        })
+
         // Generate teh DNS commands and run it
         .then(function(adapter) {
 
           // Get list of server IPs.
-          return provider().call('getServerIps')
+          return provider().call('getIp')
 
-          .then(function(ips) {
+          .then(function(ip) {
 
             // Build DNS commands
-            dnsCmds = (kbox.util.dns.dnsCmd(ips, adapter));
+            var dnsCmds = kbox.util.dns.dnsCmd(ip, adapter);
 
             // Debug
-            kbox.core.log.debug('DNS CMDS => ' + JSON.stringify(dnsCmds));
+            log.debug(dnsCmds);
 
             // Run each command through elevation
             // @todo: doesn't seem like node-windows can

@@ -125,7 +125,6 @@ module.exports = function(kbox) {
           // Space required in MB
           var neededMB = 2000;
           var enoughFreeSpace = freeMB > neededMB;
-
           // Fail the step if we need more space
           if (!enoughFreeSpace) {
             var msg = ['You need at least', neededMB, 'MB to install!'];

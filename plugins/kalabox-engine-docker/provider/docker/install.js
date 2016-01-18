@@ -175,7 +175,8 @@ module.exports = function(kbox) {
           // Build the extraction command
           var extractOptions = [
             '-extract',
-            '-path "' + extractDir + '"',
+            '-path',
+            extractDir,
             '-silent'
           ];
           var extractCmd = kbox.util.pkg.installCmd(vbPkg, extractOptions);
@@ -345,6 +346,9 @@ module.exports = function(kbox) {
         if (data) {
           state.log.debug(data);
         }
+        state.updateCurrentInstall({
+          PROVIDER_KALABOX_ISO: MACHINE_CONFIG.kalabox.isoversion
+        });
       })
 
       // Next step
