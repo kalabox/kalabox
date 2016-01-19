@@ -367,13 +367,22 @@ module.exports = function(kbox) {
       })
 
       .then(function(stream) {
-        stream.pipe(process.stdout);
-        process.stdin.resume();
-        process.stdin.setEncoding('utf8');
-        if (process.stdin.setRawMode) {
-          process.stdin.setRawMode(true);
+
+        if (opts.mode === 'attach') {
+          stream.pipe(process.stdout);
+          process.stdin.resume();
+          process.stdin.setEncoding('utf8');
+          if (process.stdin.setRawMode) {
+            process.stdin.setRawMode(true);
+          }
+          process.stdin.pipe(stream);
         }
-        process.stdin.pipe(stream);
+        else {
+          stream.on('data', function(buffer) {
+            console.log('readable:', String(buffer));
+          });
+        }
+
         stream.on('end', function() {
           if (process.stdin.setRawMode) {
             process.stdin.setRawMode(false);
