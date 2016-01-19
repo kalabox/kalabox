@@ -337,6 +337,41 @@ module.exports = function(kbox) {
   };
 
   /*
+   * Do a docker run
+   * @todo: we can get rid of this once docker compose run
+   * supports interactive mode on windows
+   */
+  var run = function(/*createOpts, opts*/) {
+    /*
+    return Promise.fromNode(function(cb) {
+
+    return dockerInstance().call('run', image, 'bash', null, createOptions, function(err, data, container) {})
+
+    .then(function(hub) {
+      hub.on('stream', function(stream) {
+        stream.pipe(process.stdout);
+        process.stdin.resume();
+        process.stdin.setEncoding('utf8');
+        if (process.stdin.setRawMode) {
+          process.stdin.setRawMode(true);
+        }
+        process.stdin.pipe(stream);
+        stream.on('end', function() {
+          if (process.stdin.setRawMode) {
+            process.stdin.setRawMode(false);
+          }
+          process.stdin.pause();
+          cb();
+        });
+        //return stream;
+
+      });
+    });
+    })
+    */
+  };
+
+  /*
    * Remove a container.
    */
   var remove = function(cid, opts) {
@@ -344,33 +379,50 @@ module.exports = function(kbox) {
     // Some option handling.
     opts = opts || {};
     opts.v = _.get(opts, 'v', true);
-    opts.kill = _.get(opts, 'kill', false);
+    opts.force = _.get(opts, 'force', false);
 
     // Log start.
     log.info(format('Removing container %s.', cid), opts);
 
-    // Find a container or throw and error.
+    // Find a container or throw an error.
     return findContainerThrows(cid)
+
+    // Do stuff with the container
+    // @todo: this is kind of sloppy for now
     .then(function(container) {
-      // Stop the container if it's running.
-      return isRunning(cid)
-      .tap(function(isRunning) {
-        if (isRunning) {
-          log.info('Stopping container.', cid);
-          return Promise.fromNode(container.stop);
-        }
-      })
-      // Remove the container.
-      .then(function() {
-        return Promise.fromNode(function(cb) {
-          container.remove(opts, cb);
+
+      // Stop the container if it's running. Unless we are in force mode
+      if (!opts.force) {
+        return (isRunning(cid))
+        .then(function(isRunning) {
+          if (isRunning) {
+            log.info('Stopping container.', cid);
+            return Promise.fromNode(container.stop);
+          }
+          else {
+            return container;
+          }
         });
-      })
-      // Log success.
-      .then(function() {
-        log.info('Container removed.', cid);
+      }
+
+      // Return the continer to eliminate
+      else {
+        return container;
+      }
+    })
+
+    // Remove the container.
+    .then(function(container) {
+      return Promise.fromNode(function(cb) {
+        container.remove(opts, cb);
       });
     })
+
+    // Log success.
+    .then(function() {
+      log.info('Container removed.', cid);
+    })
+
     // Wrap errors.
     .catch(function(err) {
       throw new VError(err, 'Error removing container %s.', cid);
@@ -386,6 +438,7 @@ module.exports = function(kbox) {
     isRunning: isRunning,
     list: list,
     remove: remove,
+    run: run,
     stop: stop
   };
 

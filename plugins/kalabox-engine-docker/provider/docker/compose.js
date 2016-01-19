@@ -58,7 +58,7 @@ module.exports = function(kbox) {
 
       // Run a provider command in a shell.
       return Promise.retry(function() {
-        log.debug(_.flatten([cmd, opts]));
+        log.info(_.flatten([cmd, opts]));
         return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
       });
     });
@@ -330,6 +330,7 @@ module.exports = function(kbox) {
       environment: [],
       noDeps: false,
       rm: true,
+      background: false,
       cmd: ''
     };
 
@@ -337,7 +338,7 @@ module.exports = function(kbox) {
     var options = (opts) ? _.merge(defaults, opts) : defaults;
 
     // Get whether we want to attach/collect or not
-    var mode = opts.mode || false;
+    var mode = (options.background) ? false : (opts.mode || false);
 
     // Execute
     return shCompose(buildCmd(compose, project, 'run', options), {mode: mode});

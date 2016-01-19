@@ -456,6 +456,11 @@ Client.prototype.sshKeySetup = function() {
   var PRIVATE_KEY_PATH = path.join(SSH_DIR, 'pantheon.kalabox.id_rsa');
   var PUBLIC_KEY_PATH = path.join(SSH_DIR, 'pantheon.kalabox.id_rsa.pub');
 
+  // Make sure SSHDIR exists
+  if (!fs.existsSync(SSH_DIR)) {
+    fs.mkdirpSync(SSH_DIR);
+  }
+
   /*
    * Load our pantheon public key and return it and a non-coloned
    * fingerprint
