@@ -368,6 +368,11 @@ module.exports = function(kbox) {
 
       .then(function(stream) {
 
+        // Collector for buffer
+        var stdOut = '';
+        var stdErr = '';
+
+        // Attaching mode
         if (opts.mode === 'attach') {
           stream.pipe(process.stdout);
           process.stdin.resume();
@@ -377,17 +382,30 @@ module.exports = function(kbox) {
           }
           process.stdin.pipe(stream);
         }
+
+        // Collecting mode
         else {
           stream.on('data', function(buffer) {
-            console.log('readable:', String(buffer));
+            stdOut = stdOut + String(buffer);
+          });
+          stream.on('error', function(buffer) {
+            stdErr = stdErr + String(buffer);
           });
         }
 
         stream.on('end', function() {
-          if (process.stdin.setRawMode) {
-            process.stdin.setRawMode(false);
+          if (opts.mode === 'attach') {
+            if (process.stdin.setRawMode) {
+              process.stdin.setRawMode(false);
+            }
+            process.stdin.pause();
           }
-          process.stdin.pause();
+
+          console.log('stout');
+          console.log(stdOut);
+          console.log('steerrrt');
+          console.log(stdErr);
+
           return Promise.fromNode(function(cb) {
             container.remove({force: true, v: true}, cb);
           });
