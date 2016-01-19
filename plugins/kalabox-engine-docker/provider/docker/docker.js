@@ -341,21 +341,28 @@ module.exports = function(kbox) {
    * @todo: we can get rid of this once docker compose run
    * supports interactive mode on windows
    */
-  var run = function(createOpts/*, opts*/) {
+  var run = function(createOpts, opts) {
 
     // Start by creating a container
     return Promise.fromNode(function(cb) {
       dockerInstance().call('createContainer', createOpts, cb);
     })
 
+    // Container is created now lets attach or collect
     .then(function(container) {
+
       return Promise.fromNode(function(cb) {
         var attachOpts = {
           stream: true,
-          stdin: true,
           stdout: true,
           stderr: true
         };
+
+        // Attach stdin if we are in attach mode
+        if (opts.mode === 'attach') {
+          attachOpts.stdin = true;
+        }
+
         container.attach(attachOpts, cb);
       })
 

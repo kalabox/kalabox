@@ -228,10 +228,14 @@ module.exports = function(kbox) {
         // Now for the crazy shit
         .then(function(data) {
 
+          // Parse commandy data
+          var c = datum.opts.cmd;
+          var command = (_.isArray(c)) ? c.join(' ') : (datum.opts.cmd || []);
+
           // Refactor our create options
           // Handle opts.mode?
           var createOpts = data.Config;
-          createOpts.Cmd = datum.opts.cmd;
+          createOpts.Cmd = command;
           createOpts.name = _.trimLeft(data.Name, '/');
           createOpts.AttachStdin = true;
           createOpts.AttachStdout = true;
@@ -241,7 +245,6 @@ module.exports = function(kbox) {
           createOpts.Tty = true;
           createOpts.OpenStdin = true;
           createOpts.StdinOnce = true;
-          //createOpts.Entrypoint = ["sh", "-c"];
           createOpts.Entrypoint = datum.opts.entrypoint;
 
           // Try to do the run
