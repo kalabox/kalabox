@@ -11,7 +11,6 @@ module.exports = function(kbox) {
   var path = require('path');
   var url = require('url');
   var os = require('os');
-  var dns = require('dns');
 
   // Npm modules
   var _ = require('lodash');
@@ -59,16 +58,82 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Helper function to determine whether we need to run win32 DNS commands
-   * @todo: Need to expand this to handle both nameservers
+   * Helper method to get windows hostonly adapter
    */
-  var needsWin32DNS = function() {
+  var getWindowsAdapter = function() {
 
     // Return engine IP
     return provider().call('getIp')
 
+    // Get subnet
     .then(function(ip) {
-      return !_.includes(dns.getServers(), ip);
+      return (_.dropRight(ip.split('.'), 1)).join('.');
+    })
+
+    // Get adapter
+    .then(function(sub) {
+      return _.findKey(os.networkInterfaces(), function(iface) {
+        return _.includes(iface[1].address, sub);
+      });
+    });
+
+  };
+
+  /*
+   * Helper function to determine whether we need to run win32 DNS commands
+   * @todo: when JXCORE updates to node 0.12+ we can use dns.getServers();
+   */
+  var needsWin32DNS = function() {
+
+    // Get our adapter so we can match up some shit
+    return getWindowsAdapter()
+
+    // Get the DNS servers for our adapter
+    .then(function(adapter) {
+
+      // Get our DNS servers
+      var cmd = [
+        'netsh',
+        'interface',
+        'ipv4',
+        'show',
+        'dnsservers'
+      ];
+
+      // Execute shell
+      return kbox.util.shell.exec(cmd)
+
+      // Crazy parse chaos
+      .then(function(output) {
+
+        // Trim the left
+        var leftTrim = 'Configuration for interface "' + adapter + '"';
+        var truncLeft = output.indexOf(leftTrim);
+        var left = output.slice(truncLeft);
+
+        // Trim the right
+        var rightTrim = 'Register with which suffix:';
+        var truncRight = left.indexOf(rightTrim);
+        var adapterConfig = left.slice(0, truncRight);
+
+        // Get the raw DNS IPs
+        var aSplit = adapterConfig.split(':');
+        var rawIps = _.trim(aSplit[1]);
+
+        // Map to array of IPs
+        var ips = _.map(rawIps.split('\r\n'), function(rawIp) {
+          return _.trim(rawIp);
+        });
+
+        // Get our IP
+        return provider().call('getIp')
+
+        // Determin whether we are good or not
+        .then(function(engineIp) {
+          return !_.includes(ips, engineIp);
+        });
+
+      });
     });
 
   };
@@ -84,20 +149,9 @@ module.exports = function(kbox) {
     .then(function(needsDns) {
 
       if (needsDns) {
-        // Return engine IP
-        return provider().call('getIp')
 
-        // Get subnet
-        .then(function(ip) {
-          return (_.dropRight(ip.split('.'), 1)).join('.');
-        })
-
-        // Get adapter
-        .then(function(sub) {
-          return _.findKey(os.getNetworkInterfaces(), function(iface) {
-            return _.includes(iface[1].address, sub);
-          });
-        })
+        // Get windows adapter
+        return getWindowsAdapter()
 
         // Generate teh DNS commands and run it
         .then(function(adapter) {

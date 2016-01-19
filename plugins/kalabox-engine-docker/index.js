@@ -175,7 +175,91 @@ module.exports = function(kbox) {
    */
   var run = function(data) {
     return Promise.all(_.map(normalizer(data), function(datum) {
-      return compose.run(datum.compose, datum.project, datum.opts);
+
+      // docker-compose run currrently does not support interactive
+      // mode for windows so until it does we need to do the following
+      // to replicate:
+      //
+      // 1. Do a compose run in detached mode to create a container
+      //    that has all the power of compose ie links. Run this
+      //    with something that runs indefinitely like 'tail -f /dev/null'
+      //    make sure we set background=true and rm=false in opts
+      // 2. Do an inspect of that container to get relevant start and
+      //    create options, save these options
+      // 3. Force rm that container
+      // 4. Do a "docker run" with dockerode and the data we get from the inspect
+      //
+      // @TODO: remove this in favor of core docker-compose run
+      //        as soon as its implemented in windows
+      //
+      if (process.platform === 'win32' && datum.opts && datum.opts.mode) {
+
+        // Special windows options for initial run so
+        // can inspect a started container
+        var winOpts = {
+          background: true,
+          rm: false,
+          entrypoint: 'tail',
+          cmd: ['-f', '/dev/null']
+        };
+
+        // Do the run and return the ID
+        return compose.run(
+          datum.compose,
+          datum.project,
+          _.extend({}, datum.opts, winOpts)
+        )
+
+        // Inspect
+        .then(function(output) {
+          // @todo: a better way to do this?
+          var parts = output.split('\r\n');
+          parts.pop();
+          var id = _.last(parts);
+          return docker.inspect(id);
+        })
+
+        // Remove the container and tap the data
+        .tap(function(data) {
+          return docker.remove(data.Id, {force: true, v: true});
+        })
+
+        // Now for the crazy shit
+        .then(function(data) {
+
+          // Parse commandy data
+          var c = datum.opts.cmd;
+          var e = datum.opts.entrypoint;
+          var command = (_.isArray(e)) ? [c.join(' ')] : (c || []);
+          var entrypoint = (!_.isArray(e)) ? [e] : e;
+
+          // Refactor our create options
+          // Handle opts.mode?
+          var createOpts = data.Config;
+          createOpts.Cmd = command;
+          createOpts.name = _.trimLeft(data.Name, '/');
+          createOpts.AttachStdin = true;
+          createOpts.AttachStdout = true;
+          createOpts.AttachStderr = true;
+          createOpts.Mounts = data.Mounts;
+          createOpts.HostConfig = data.HostConfig;
+          createOpts.Tty = true;
+          createOpts.OpenStdin = true;
+          createOpts.StdinOnce = true;
+          createOpts.Entrypoint = entrypoint;
+
+          // Try to do the run
+          return docker.run(createOpts, datum.opts);
+
+        });
+
+      }
+
+      // We can use normal compose run
+      else {
+        return compose.run(datum.compose, datum.project, datum.opts);
+      }
+
     }));
   };
 
