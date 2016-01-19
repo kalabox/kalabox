@@ -372,6 +372,9 @@ module.exports = function(kbox) {
             process.stdin.setRawMode(false);
           }
           process.stdin.pause();
+          return Promise.fromNode(function(cb) {
+            container.remove({force: true, v: true}, cb);
+          });
         });
 
         return Promise.fromNode(function(cb) {

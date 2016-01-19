@@ -195,7 +195,7 @@ module.exports = function(kbox) {
       // @TODO: remove this in favor of core docker-compose run
       //        ASAP
       //
-      if (process.platform === 'win32') {
+      if (process.platform === 'win32' && datum.opts && datum.opts.mode) {
 
         // Special windows options for initial run so
         // can inspect a started container

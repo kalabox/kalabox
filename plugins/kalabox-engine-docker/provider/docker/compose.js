@@ -330,7 +330,7 @@ module.exports = function(kbox) {
       environment: [],
       noDeps: false,
       rm: true,
-      background: false,
+      background: (process.platform === 'win32') ? true : false,
       cmd: ''
     };
 
