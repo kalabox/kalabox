@@ -92,14 +92,16 @@ module.exports = function(kbox) {
       })
       .tap(function(session) {
         return pantheon.setSession(email, session);
-      });
+      })
+      .wrap('Error authorizing: %s', email);
     };
 
     // Set the logins method of api.
     api.methods.logins = function() {
       return kbox.Promise.try(function() {
         return pantheon.getSessionFiles();
-      });
+      })
+      .wrap('Error getting logins.');
     };
 
     // Set the sites method of the api.
@@ -142,7 +144,8 @@ module.exports = function(kbox) {
             });
           });
         });
-      });
+      })
+      .wrap('Error getting sites.');
     };
 
   });
