@@ -341,14 +341,25 @@ module.exports = function(kbox) {
    * @todo: we can get rid of this once docker compose run
    * supports interactive mode on windows
    */
-  var run = function(/*createOpts, opts*/) {
-    /*
+  var run = function(createOpts/*, opts*/) {
+
+    // Start by creating a container
     return Promise.fromNode(function(cb) {
+      dockerInstance().call('createContainer', createOpts, cb);
+    })
 
-    return dockerInstance().call('run', image, 'bash', null, createOptions, function(err, data, container) {})
+    .then(function(container) {
+      return Promise.fromNode(function(cb) {
+        var attachOpts = {
+          stream: true,
+          stdin: true,
+          stdout: true,
+          stderr: true
+        };
+        container.attach(attachOpts, cb);
+      })
 
-    .then(function(hub) {
-      hub.on('stream', function(stream) {
+      .then(function(stream) {
         stream.pipe(process.stdout);
         process.stdin.resume();
         process.stdin.setEncoding('utf8');
@@ -361,14 +372,15 @@ module.exports = function(kbox) {
             process.stdin.setRawMode(false);
           }
           process.stdin.pause();
-          cb();
         });
-        //return stream;
+
+        return Promise.fromNode(function(cb) {
+          container.start({}, cb);
+        });
 
       });
     });
-    })
-    */
+
   };
 
   /*

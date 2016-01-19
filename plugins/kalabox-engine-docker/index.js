@@ -232,7 +232,7 @@ module.exports = function(kbox) {
           // Handle opts.mode?
           var createOpts = data.Config;
           createOpts.Cmd = datum.opts.cmd;
-          createOpts.Name = _.trimLeft(data.Name, '/');
+          createOpts.name = _.trimLeft(data.Name, '/');
           createOpts.AttachStdin = true;
           createOpts.AttachStdout = true;
           createOpts.AttachStderr = true;
