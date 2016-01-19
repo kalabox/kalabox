@@ -187,13 +187,10 @@ module.exports = function(kbox) {
       // 2. Do an inspect of that container to get relevant start and
       //    create options, save these options
       // 3. Force rm that container
-      // 4. Do dockerode.run with the data we get from the inspect
-      // 5. Handle the returned eventemitter
-      // 6. CAVEATS: switch detached mode, autoremove container on
-      //    finish?
+      // 4. Do a "docker run" with dockerode and the data we get from the inspect
       //
       // @TODO: remove this in favor of core docker-compose run
-      //        ASAP
+      //        as soon as its implemented in windows
       //
       if (process.platform === 'win32' && datum.opts && datum.opts.mode) {
 
@@ -216,13 +213,15 @@ module.exports = function(kbox) {
         // Inspect
         .then(function(output) {
           // @todo: a better way to do this?
-          var id = output.split('\r\n')[1];
+          var parts = output.split('\r\n');
+          parts.pop();
+          var id = _.last(parts);
           return docker.inspect(id);
         })
 
         // Remove the container and tap the data
         .tap(function(data) {
-          return docker.remove(data.Id, {force: true});
+          return docker.remove(data.Id, {force: true, v: true});
         })
 
         // Now for the crazy shit
@@ -230,7 +229,9 @@ module.exports = function(kbox) {
 
           // Parse commandy data
           var c = datum.opts.cmd;
-          var command = (_.isArray(c)) ? c.join(' ') : (datum.opts.cmd || []);
+          var e = datum.opts.entrypoint;
+          var command = (_.isArray(e)) ? [c.join(' ')] : (c || []);
+          var entrypoint = (!_.isArray(e)) ? [e] : e;
 
           // Refactor our create options
           // Handle opts.mode?
@@ -245,7 +246,7 @@ module.exports = function(kbox) {
           createOpts.Tty = true;
           createOpts.OpenStdin = true;
           createOpts.StdinOnce = true;
-          createOpts.Entrypoint = datum.opts.entrypoint;
+          createOpts.Entrypoint = entrypoint;
 
           // Try to do the run
           return docker.run(createOpts, datum.opts);
@@ -258,6 +259,7 @@ module.exports = function(kbox) {
       else {
         return compose.run(datum.compose, datum.project, datum.opts);
       }
+
     }));
   };
 

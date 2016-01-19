@@ -368,10 +368,6 @@ module.exports = function(kbox) {
 
       .then(function(stream) {
 
-        // Collector for buffer
-        var stdOut = '';
-        var stdErr = '';
-
         // Attaching mode
         if (opts.mode === 'attach') {
           stream.pipe(process.stdout);
@@ -383,36 +379,60 @@ module.exports = function(kbox) {
           process.stdin.pipe(stream);
         }
 
-        // Collecting mode
-        else {
-          stream.on('data', function(buffer) {
-            stdOut = stdOut + String(buffer);
-          });
-          stream.on('error', function(buffer) {
-            stdErr = stdErr + String(buffer);
-          });
-        }
-
-        stream.on('end', function() {
-          if (opts.mode === 'attach') {
-            if (process.stdin.setRawMode) {
-              process.stdin.setRawMode(false);
-            }
-            process.stdin.pause();
-          }
-
-          console.log('stout');
-          console.log(stdOut);
-          console.log('steerrrt');
-          console.log(stdErr);
-
-          return Promise.fromNode(function(cb) {
-            container.remove({force: true, v: true}, cb);
-          });
-        });
-
+        // Start the container
         return Promise.fromNode(function(cb) {
           container.start({}, cb);
+        })
+
+        // Wait until the stream is done
+        .then(function() {
+
+          // Promisify the spawn
+          return new Promise(function(resolve, reject) {
+
+            // Collector for buffer
+            var stdOut = '';
+            var stdErr = '';
+
+            // Collect the buffer if in collect mode
+            if (opts.mode === 'collect') {
+              stream.on('data', function(buffer) {
+                stdOut = stdOut + String(buffer);
+              });
+            }
+
+            // Collect the errorz
+            stream.on('error', function(buffer) {
+              stdErr = stdErr + String(buffer);
+            });
+
+            stream.on('end', function() {
+              if (opts.mode === 'attach') {
+                if (process.stdin.setRawMode) {
+                  process.stdin.setRawMode(false);
+                }
+                process.stdin.pause();
+              }
+              if (!_.isEmpty(stdErr)) {
+                reject(stdErr);
+              }
+              else {
+                resolve(stdOut);
+              }
+            });
+
+          });
+
+        })
+
+        // Remove the container and pass the data
+        .then(function(data) {
+          return Promise.fromNode(function(cb) {
+            container.remove({force: true, v: true}, cb);
+          })
+          .then(function() {
+            return data;
+          });
         });
 
       });
@@ -431,7 +451,7 @@ module.exports = function(kbox) {
     opts.force = _.get(opts, 'force', false);
 
     // Log start.
-    log.info(format('Removing container %s.', cid), opts);
+    log.debug(format('Removing container %s.', cid), opts);
 
     // Find a container or throw an error.
     return findContainerThrows(cid)
@@ -445,7 +465,7 @@ module.exports = function(kbox) {
         return (isRunning(cid))
         .then(function(isRunning) {
           if (isRunning) {
-            log.info('Stopping container.', cid);
+            log.debug('Stopping container.', cid);
             return Promise.fromNode(container.stop);
           }
           else {
@@ -469,7 +489,7 @@ module.exports = function(kbox) {
 
     // Log success.
     .then(function() {
-      log.info('Container removed.', cid);
+      log.debug('Container removed.', cid);
     })
 
     // Wrap errors.
