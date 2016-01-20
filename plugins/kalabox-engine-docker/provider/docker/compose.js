@@ -233,7 +233,7 @@ module.exports = function(kbox) {
         cmd.push(kbox.util.shell.escSpaces(opts.cmd.join(' ')));
       }
       else {
-        cmd = cmd.concat(opts.cmd);
+        cmd = _.flatten(cmd.concat(opts.cmd));
       }
     }
 

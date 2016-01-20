@@ -14,20 +14,35 @@ module.exports = function(kbox) {
     task.path = ['up'];
     task.category = 'dev';
     task.description = 'Bring kbox container engine up.';
-    task.func = function(done) {
-      engine.up()
-      .nodeify(done);
+    task.func = function() {
+
+      // Events
+      events.on('post-engine-up', function(done) {
+        console.log(chalk.green('Kalabox engine has been activated.'));
+        done();
+      });
+
+      return engine.up();
+
     };
   });
 
   // Stop the kalabox engine
   kbox.tasks.add(function(task) {
+
     task.path = ['down'];
     task.category = 'dev';
     task.description = 'Bring kbox container engine down.';
-    task.func = function(done) {
-      engine.down()
-      .nodeify(done);
+    task.func = function() {
+
+      // Events
+      events.on('post-engine-down', function(done) {
+        console.log(chalk.red('Kalabox engine has been deactivated.'));
+        done();
+      });
+
+      return engine.down();
+
     };
   });
 
@@ -44,17 +59,6 @@ module.exports = function(kbox) {
       .then(console.log)
       .nodeify(done);
     };
-  });
-
-  // Events
-  events.on('post-engine-up', function(done) {
-    console.log(chalk.green('Kalabox engine has been activated.'));
-    done();
-  });
-
-  events.on('post-engine-down', function(done) {
-    console.log(chalk.red('Kalabox engine has been deactivated.'));
-    done();
   });
 
 };
