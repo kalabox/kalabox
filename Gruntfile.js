@@ -15,6 +15,7 @@ module.exports = function(grunt) {
   // Build commands
   var jxAddPatterns = [
     '*.js',
+    '*.yml',
     '*.json',
     '*.cmd',
     '*.vbs'
@@ -22,6 +23,7 @@ module.exports = function(grunt) {
   var jxSlimPatterns = [
     '*.spec',
     '*test/*',
+    '*kalabox-app-*/*',
     '.git/*'
   ];
   var jxCmd = [
@@ -55,6 +57,7 @@ module.exports = function(grunt) {
           'lib/**/*.js',
           'plugins/**/*.js',
           'plugins/**/**/*.js',
+          'plugins/**/**/**/*.js',
           'test/**/*.js',
           'bin/kbox.js',
           'scripts/*.js',
@@ -67,8 +70,9 @@ module.exports = function(grunt) {
           'bin/kbox.*',
           'lib/**',
           'plugins/**',
-          'scripts/postinstall.js',
-          '*.json'
+          '*.json',
+          'kalabox.yml',
+          'development.yml'
         ],
       }
     },

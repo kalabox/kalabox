@@ -1,0 +1,99 @@
+#
+# Core Kalabox development file
+#
+# This file specifies the core development configuration options for Kalabox.
+# This file is loaded instead of kalabox.yml when devMode is on.
+#
+# You can also drop a development.yml file in ~/.kalabox to
+# override the settings found here
+#
+# This file only works in "normal" mode. Please see the development.yml
+# For "devMode" specific configuration.
+#
+# There are other options beyond what are listed in this file that can be
+# overriden although they are currently not officially supported.
+#
+# Do a `kbox config` to get a sense of what they are. This also should apply
+# for kalabox.yml app configurations.
+#
+
+#
+# Development Mode
+#
+# Generally you are not going to want to change this
+#
+#   Options: [true|false]
+#
+devmode: true
+
+#
+# Domain
+#
+# You can change the domain suffix used by default. The support level of
+# this setting is currently unknown.
+#
+# domain: kbox
+
+#
+# Global Plugins
+#
+# These are plugins that Kalabox should load by default. Plugins can live
+# in the following directories:
+#
+#   Inside of Kalabox source/binary
+#
+#     1. ./node_modules/*
+#     2. ./plugins
+#
+#   In the global plugin directory
+#
+#     1. ~/.kalabox/plugins
+#
+# Drop a plugin in one of these locations and then add it to the plugins array
+# below. Example:
+#
+#   globalPlugins:
+#     - kalabox-core
+#     - kalabox-cli
+#     - kalabox-services-kalabox
+#     - kalabox-syncthing
+#     - kalabox-pantheon
+#     - my-wicked-awesome-plugin
+#
+globalPlugins:
+  - kalabox-core
+  - kalabox-cli
+  - kalabox-services-kalabox
+  - kalabox-syncthing
+  - kalabox-pantheon
+
+#
+# Console log level
+#
+# Determines the verbosity with which messages are printed to the screen
+#
+#   Options: [debug|info|none]
+#
+logLevelConsole: debug
+
+#
+# Log level
+#
+# Determines the verbosity with which messages are added to the log
+#
+#   Options: [debug|info|none]
+#
+# logLevel: debug
+
+#
+# Engine
+#
+# The engine is a special kind of plugin that implements the Kalabox container
+# interface.
+#
+#   Options: [plugin-name]
+#
+# You generally are not going to want to change this unless you've got a
+# good replacement
+#
+engine: kalabox-engine-docker

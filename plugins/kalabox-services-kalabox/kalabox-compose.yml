@@ -1,0 +1,49 @@
+#
+# Basic proxy service.
+#
+# This is a small alpine linux container that contains redis and hipache
+# to handle requests
+#
+# You can set the domain you want to use with the $KALABOX_DOMAIN env
+#
+proxy:
+  # Comment this and uncomment 'build' below if you want to edit your
+  # local dockerfile and build from there. This is useful for development
+  image: kalabox/proxy:$KALABOX_IMG_VERSION
+
+  # Uncomment this and comment 'image' above if you want to edit your
+  # local dockerfile and build from there. This is useful for development
+  #
+  # build: ./dockerfiles/proxy
+
+  environment:
+    DOMAIN: $KALABOX_DOMAIN
+  ports:
+    - "80:80"
+    - "443:443"
+    - "8160:8160"
+  restart: always
+
+#
+# Basic dns service.
+#
+# This is a small alpine linux container that contains dnsmasq
+#
+# You can set the domain you want to use with the $KALABOX_DOMAIN env
+#
+dns:
+  # Comment this and uncomment 'build' below if you want to edit your
+  # local dockerfile and build from there. This is useful for development
+  image: kalabox/dns:$KALABOX_IMG_VERSION
+
+  # Uncomment this and comment 'image' above if you want to edit your
+  # local dockerfile and build from there. This is useful for development
+  #
+  # build: ./dockerfiles/dns
+
+  environment:
+    IP: $KALABOX_ENGINE_IP
+    DOMAIN: $KALABOX_DOMAIN
+  ports:
+    - "$KALABOX_ENGINE_IP:53:53/udp"
+  restart: always

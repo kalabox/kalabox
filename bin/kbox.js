@@ -92,11 +92,11 @@ function getAppContextFromCwd(apps) {
 function getAppContextFromCwdConfig(/*apps*/) {
   return Promise.try(function() {
     var cwd = process.cwd();
-    var configFilepath = path.join(cwd, 'kalabox.json');
+    var configFilepath = path.join(cwd, 'kalabox.yml');
     if (fs.existsSync(configFilepath)) {
-      var config = kbox.core.config.getAppConfig(null, cwd);
-      if (config.appName) {
-        return kbox.app.create(config.appName, config);
+      var config = kbox.core.config.getAppConfig(cwd);
+      if (config.name) {
+        return kbox.app.create(config.name, config);
       }
     }
   });

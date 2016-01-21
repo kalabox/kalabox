@@ -2,9 +2,7 @@
 
 module.exports = function(kbox) {
   // Load CLI tasks for this plugin.
-  require('./tasks.js')(kbox);
+  require('./lib/tasks.js')(kbox);
   // Load the install steps for this plugin.
-  require('./install.js')(kbox);
-  // Some events!
-  require('./events.js')(kbox);
+  require('./lib/install.js')(kbox);
 };

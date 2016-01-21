@@ -1,0 +1,9 @@
+url:
+  base: https://github.com/kalabox/kalabox-app-pantheon
+  prod: v0.11.0
+  dev: v0.11
+  path: app
+  folder: kalabox-kalabox-app-pantheon-
+path:
+  base: kalabox-app-pantheon
+  path: app
