@@ -4,6 +4,10 @@
 
 A framework to build reusable, super fast, highly customizable, extensible and local integrated workflow solutions for all kinds of apps. **You can think about Kalabox as a super-fast, highly-customizable Vagrant for containers.**
 
+Kalabox by default uses the docker toolset as its engine, although this is
+swappable with your own custom backend. This means that your current docker
+compose files are easily adaptable and likely "drop-in-ready" with Kalabox.
+
 With Kalabox you can
 
 * Easily mimic your production environment on local
@@ -18,14 +22,14 @@ For more info on how you can do some of the above check out the [wiki](https://g
 
 If you want to contribute to Kalabox development check out our [Developer Guide](https://github.com/kalabox/kalabox/wiki/Contribution-Guide). If you want to help test Kalabox so we can make it the best thing ever then check out our [Testing Guide](https://github.com/kalabox/kalabox/wiki/Circle-of-Trust-Testing-Guide).
 
-**If you've already installed Kalabox and it's pre-version 0.10.0 you should
+**If you've already installed Kalabox and it's pre-version 0.11.0 you should
 [uninstall](https://github.com/kalabox/kalabox/wiki/Uninstalling-Kalabox/) first.**
 
 Download one of the the below.
 
-1. [kbox-macosx-amd64-v0.10.6-alpha6](https://github.com/kalabox/kalabox/releases/download/v0.10.6/kbox-macosx-amd64-v0.10.6-alpha6)
-2. [kbox-windows-amd64-v0.10.6-alpha6](https://github.com/kalabox/kalabox/releases/download/v0.10.6/kbox-win-amd64-v0.10.6-alpha6.exe)
-3. [kbox-linux-amd64-v0.10.6-alpha6](https://github.com/kalabox/kalabox/releases/download/v0.10.6/kbox-linux-amd64-v0.10.6-alpha6)
+1. [kbox-macosx-amd64-v0.11.0-alpha1](https://github.com/kalabox/kalabox/releases/download/v0.11.0/kbox-macosx-amd64-v0.11.0-alpha1)
+2. [kbox-windows-amd64-v0.11.0-alpha1](https://github.com/kalabox/kalabox/releases/download/v0.11.0/kbox-win-amd64-v0.11.0-alpha1.exe)
+3. [kbox-linux-amd64-v0.11.0-alpha1](https://github.com/kalabox/kalabox/releases/download/v0.11.0/kbox-linux-amd64-v0.11.0-alpha1)
 
 If you are unsure about what to do with the above then [click here](https://github.com/kalabox/kalabox/wiki/Normal-Installation).
 
@@ -50,6 +54,6 @@ Check out the [Kalabox wiki](https://github.com/kalabox/kalabox/wiki) for more i
 * [Docker](https://github.com/docker/docker)
 
 -------------------------------------------------------------------------------------
-(C) 2015 Kalamuna and friends and things
+(C) 2016 Kalabox Inc and friends and things
 
 

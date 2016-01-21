@@ -1,8 +1,10 @@
 ```
-Kalabox would like to thank the following people/organizations for their generous 
+Kalabox would like to thank the following people/organizations for their generous
 contributions:
 
 Pantheon Systems, Inc.
+Microsoft
+Kalamuna LLC
 
 Computers and Structures, Inc.
 Kanopi Studios
