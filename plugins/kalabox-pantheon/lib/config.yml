@@ -1,7 +1,7 @@
 url:
   base: https://github.com/kalabox/kalabox-app-pantheon
-  prod: dockerCompose
-  dev: dockerCompose
+  prod: v0.11.0
+  dev: v0.11
   path: app
   folder: kalabox-kalabox-app-pantheon-
 path:
