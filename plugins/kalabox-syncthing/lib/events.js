@@ -136,6 +136,34 @@ module.exports = function(kbox) {
           return share.restart();
         })
 
+        // Make sure remote dir exists
+        .then(function() {
+          // Command to make query.
+          var createCmd = [
+            '-p',
+            '/code/' + app.name
+          ];
+          // Build run definition
+          var createDef = syncthingContainer();
+          createDef.opts.entrypoint = '/bin/mkdir';
+          createDef.opts.cmd = createCmd;
+          return kbox.engine.run(createDef);
+        })
+
+        // Make sure it has a .stfolder file
+        .then(function() {
+          // Command to make query.
+          var touchCmd = [
+            'touch',
+            '/code/' + app.name + '.stfolder'
+          ];
+          // Build run definition
+          var touchDef = syncthingContainer();
+          touchDef.opts.entrypoint = '/bin/mkdir';
+          touchDef.opts.cmd = touchCmd;
+          return kbox.engine.run(touchDef);
+        })
+
         // Write the remote ignore file
         .then(function() {
           // Compute the remote ignore file location
