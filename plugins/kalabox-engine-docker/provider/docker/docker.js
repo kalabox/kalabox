@@ -25,27 +25,16 @@ module.exports = function(kbox) {
   // Kalabox Modules
   var Promise = kbox.Promise;
 
-  // Create logging functions.
-  var log = kbox.core.log.make('DOCKER ENGINE');
-
   /*
    * Load the provider module.
    */
   var getProvider = function() {
-
-    // Log.
-    log.debug('Initializing machine provider.');
 
     // Load.
     return Promise.try(function() {
       // Get the provider we need and then load its install routinezzz
       var providerFile = path.join(PROVIDER_PATH, 'machine.js');
       return require(providerFile)(kbox);
-    })
-
-    // Log success.
-    .tap(function() {
-      log.debug('Provider machine initialized.');
     })
 
     // Wrap errors.
@@ -60,14 +49,10 @@ module.exports = function(kbox) {
    */
   var dockerConfigInstance = function(opts) {
 
-    // Log start.
-    log.debug('Initializing docker config.');
-
     // Get engine config from provider.
     return getProvider().call('engineConfig', opts)
     // Register engine config dependency.
     .tap(function(engineConfig) {
-      log.debug('Docker config initialized.');
       kbox.core.deps.remove('engineConfig');
       kbox.core.deps.register('engineConfig', engineConfig);
     })
@@ -87,12 +72,7 @@ module.exports = function(kbox) {
     return dockerConfigInstance(opts)
     // Initalize a dockerode object.
     .then(function(engineConfig) {
-      log.debug('Initializing docker.');
       return new Dockerode(engineConfig);
-    })
-    // Log success.
-    .tap(function() {
-      log.debug('Docker initialized.');
     })
     // Wrap errors.
     .catch(function(err) {
@@ -227,7 +207,7 @@ module.exports = function(kbox) {
   var findContainerThrows = function(cid) {
 
     if (typeof cid !== 'string') {
-      throw new Error(format('Invalid container id: "%s"', pp(cid)));
+      throw new VError(format('Invalid container id: "%s"', pp(cid)));
     }
 
     // Find container.
@@ -235,7 +215,7 @@ module.exports = function(kbox) {
     // Throw an error if a container was not found.
     .tap(function(container) {
       if (!container) {
-        throw new Error(format('The container "%s" does not exist!', pp(cid)));
+        throw new VError(format('The container "%s" does not exist!', pp(cid)));
       }
     });
 
@@ -270,7 +250,7 @@ module.exports = function(kbox) {
     // Validate input.
     return Promise.try(function() {
       if (typeof cid !== 'string') {
-        throw new Error('Invalid cid: ' + pp(cid));
+        throw new VError('Invalid cid: ' + pp(cid));
       }
     })
     // Inspect.
@@ -299,9 +279,6 @@ module.exports = function(kbox) {
    */
   var stop = function(cid) {
 
-    // Log start.
-    log.info('Stopping container.', cid);
-
     // Find and bind container.
     return findContainerThrows(cid)
     .bind({})
@@ -315,17 +292,9 @@ module.exports = function(kbox) {
     // Stop container if it is running.
     .then(function(isRunning) {
       var self = this;
-      if (!isRunning) {
-        // Container is already stopped so do nothing.
-        log.info('Container already stopped.', cid);
-      } else {
-        // Stop container.
+      if (isRunning) {
         return Promise.fromNode(function(cb) {
           self.container.stop(cb);
-        })
-        // Log success.
-        .then(function() {
-          log.info('Container stopped.', cid);
         });
       }
     })
@@ -450,9 +419,6 @@ module.exports = function(kbox) {
     opts.v = _.get(opts, 'v', true);
     opts.force = _.get(opts, 'force', false);
 
-    // Log start.
-    log.debug(format('Removing container %s.', cid), opts);
-
     // Find a container or throw an error.
     return findContainerThrows(cid)
 
@@ -465,7 +431,6 @@ module.exports = function(kbox) {
         return (isRunning(cid))
         .then(function(isRunning) {
           if (isRunning) {
-            log.debug('Stopping container.', cid);
             return Promise.fromNode(container.stop);
           }
           else {
@@ -485,11 +450,6 @@ module.exports = function(kbox) {
       return Promise.fromNode(function(cb) {
         container.remove(opts, cb);
       });
-    })
-
-    // Log success.
-    .then(function() {
-      log.debug('Container removed.', cid);
     })
 
     // Wrap errors.
