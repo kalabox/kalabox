@@ -153,13 +153,10 @@ module.exports = function(kbox) {
         // Make sure it has a .stfolder file
         .then(function() {
           // Command to make query.
-          var touchCmd = [
-            'touch',
-            '/code/' + app.name + '.stfolder'
-          ];
+          var touchCmd = ['/code/' + app.name + '/.stfolder'];
           // Build run definition
           var touchDef = syncthingContainer();
-          touchDef.opts.entrypoint = '/bin/mkdir';
+          touchDef.opts.entrypoint = 'touch';
           touchDef.opts.cmd = touchCmd;
           return kbox.engine.run(touchDef);
         })
