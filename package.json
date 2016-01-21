@@ -44,7 +44,6 @@
     "lodash": "^3.10.1",
     "mkdirp": "^0.5.1",
     "moment": "^2.10.6",
-    "node-shell-parser": "^0.2.1",
     "node-windows": "https://github.com/kalabox/node-windows/tarball/master",
     "redis": "https://github.com/kalabox/node_redis/tarball/master",
     "restler": "^3.2.2",

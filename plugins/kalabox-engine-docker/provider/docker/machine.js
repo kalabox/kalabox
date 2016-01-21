@@ -16,7 +16,6 @@ module.exports = function(kbox) {
   // NPM modules
   var VError = require('verror');
   var _ = require('lodash');
-  var shellParser = require('node-shell-parser');
   var fs = require('fs-extra');
 
   // Kalabox modules
@@ -129,14 +128,12 @@ module.exports = function(kbox) {
    */
   var _up = function() {
 
-    var stoppedStates = ['paused', 'saved', 'stopped', 'error'];
-
     // Get status
-    return getStatus()
+    return isDown()
 
     // Only start if we aren't already
-    .then(function(status) {
-      if (_.includes(stoppedStates, status)) {
+    .then(function(isDown) {
+      if (isDown) {
         return shProvider(['start'], {mode: 'collect'});
       }
     })
@@ -179,16 +176,10 @@ module.exports = function(kbox) {
   var getStatus = function() {
 
     // Get status.
-    return shProvider(['ls'], {silent:true})
+    return shProvider(['status'], {silent:true})
     // Do some lodash fu to get the status
     .then(function(result) {
-
-      // Find the status of our machine in a parsed result
-      var status = _.result(_.find(shellParser(result), function(machine) {
-        return machine.NAME === getMachine().name;
-      }), 'STATE');
-
-      return status.toLowerCase();
+      return result.toLowerCase();
     });
 
   };
@@ -199,10 +190,10 @@ module.exports = function(kbox) {
   var down = function() {
 
     // Get provider status.
-    return getStatus()
+    return isUp()
     // Shut provider down if its status is running.
-    .then(function(status) {
-      if (status !== 'stopped') {
+    .then(function(isUp) {
+      if (isUp) {
         // Retry to shutdown if an error occurs.
         return shProvider(['stop'], {mode: 'collect'});
       }
@@ -255,7 +246,9 @@ module.exports = function(kbox) {
 
     // Return the opposite of isUp.
     return isUp()
-    .then(_.negate);
+    .then(function(isUp) {
+      return !isUp;
+    });
 
   };
 
