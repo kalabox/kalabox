@@ -179,7 +179,8 @@ module.exports = function(kbox) {
     return shProvider(['status'], {silent:true})
     // Do some lodash fu to get the status
     .then(function(result) {
-      return result.toLowerCase();
+      log.debug('Current status', result);
+      return _.trim(result.toLowerCase());
     });
 
   };
