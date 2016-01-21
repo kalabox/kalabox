@@ -20,7 +20,6 @@ module.exports = function(kbox) {
   var bin = require('./lib/bin.js')(kbox);
   var env = require('./lib/env.js')(kbox);
   var machine = require('./machine.js')(kbox);
-  var Promise = kbox.Promise;
 
   // Get some composer things
   var COMPOSE_EXECUTABLE = bin.getComposeExecutable();
@@ -57,10 +56,8 @@ module.exports = function(kbox) {
       kbox.core.env.setEnv('DOCKER_CERT_PATH', config.certDir);
 
       // Run a provider command in a shell.
-      return Promise.retry(function() {
-        log.info(_.flatten([cmd, opts]));
-        return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
-      });
+      log.info(_.flatten([cmd, opts]));
+      return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
     });
 
   };
