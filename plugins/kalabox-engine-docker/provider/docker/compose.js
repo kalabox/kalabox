@@ -80,7 +80,7 @@ module.exports = function(kbox) {
       // If we are in binary mode and have internal compose files then we
       // have to read in files and then export them out because
       // docker compose cannot read a file that is in a binary
-      if (isBin && opts.internal) {
+      if (isBin && opts && opts.internal) {
         if (typeof unit === 'string') {
           var newUnit = kbox.util.yaml.toJson(unit);
           unit = newUnit;
