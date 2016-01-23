@@ -1,5 +1,7 @@
+[core]
+  pager = more
 [color]
-  ui = auto
+  ui = true
 [color "branch"]
   current = yellow reverse
   local = yellow
@@ -13,3 +15,5 @@
   added = yellow
   changed = green
   untracked = cyan
+[push]
+  default = simple
