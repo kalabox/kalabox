@@ -45,7 +45,7 @@ module.exports = function(kbox) {
     // Set the machine env
     env.setDockerEnv();
 
-    // Try a few times
+    // Retry
     return Promise.retry(function() {
 
       // Build and log the command
@@ -264,10 +264,29 @@ module.exports = function(kbox) {
     }
 
     // Else query for it and set it in the cache
-    return shProvider(['inspect'], {silent:true})
+    return shProvider(['inspect'], {silent: true})
+
+    // We've got data lets check if we can parse it and then cache it
     .then(function(data) {
-      inspectData = data;
+
+      // Check if we have valid JSON
+      try {
+        JSON.parse(data);
+      }
+      // If not we have a problem
+      catch (e) {
+        throw new Error(e);
+      }
+
+      // Try was good so we can set cache and return the parsed json
+      inspectData = JSON.parse(data);
       return inspectData;
+    })
+
+    // Host does not exist, lets return {}
+    // @todo: better checks here?
+    .catch(function(/*err*/) {
+      return {};
     });
 
   };
@@ -280,17 +299,9 @@ module.exports = function(kbox) {
     // See if there is any info
     return inspect()
 
-    // if there is output then we are probably good
-    // @todo: we can do a stronger check here
-    .then(function(output) {
-      if (output) {
-        return true;
-      }
-    })
-
-    // If there is an error then we probably need to run the create
-    .catch(function(/*err*/) {
-      return false;
+    // if we have dont have an empty object then the vm exists
+    .then(function(data) {
+      return !_.isEmpty(data);
     });
 
   };
@@ -336,7 +347,7 @@ module.exports = function(kbox) {
 
     // Build our config
     .then(function(data) {
-      var auth = JSON.parse(data).HostOptions.AuthOptions;
+      var auth = data.HostOptions.AuthOptions;
       return {
         protocol: 'https',
         host: getMachine().ip,
