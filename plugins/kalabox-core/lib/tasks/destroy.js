@@ -48,6 +48,9 @@ module.exports = function(kbox) {
           message: 'So, are you still prepared to DESTROY?',
           when: function(/*answers*/) {
             return confirmPrompt;
+          },
+          default: function() {
+            return false;
           }
         };
 
