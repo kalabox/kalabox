@@ -10,9 +10,6 @@ var inspectData = {};
 
 module.exports = function(kbox) {
 
-  // Node modules
-  var path = require('path');
-
   // NPM modules
   var VError = require('verror');
   var _ = require('lodash');
@@ -303,24 +300,14 @@ module.exports = function(kbox) {
     // set the machine env
     env.setDockerEnv();
 
-    // Grab correct path checking tool
-    var which = (process.platform === 'win32') ? 'where' : 'which';
-    // Run command to find location of machine.
-    return bin.sh([which, path.basename(MACHINE_EXECUTABLE)], {silent:true})
-    .then(function(output) {
-      if (output) {
-        return vmExists();
-      }
-      else {
-        // Kalabox2 machine does not exist so return false.
-        return false;
-      }
-    })
+    // We have the machine executable now return whether we have the
+    // vm or not
+    if (kbox.util.shell.which(MACHINE_EXECUTABLE) === MACHINE_EXECUTABLE) {
+      return Promise.resolve(vmExists());
+    }
 
-    // Which returned an error, this should mean it does not exist.
-    .catch(function(/*err*/) {
-      return false;
-    });
+    // We are not installed
+    return Promise.resolve(false);
 
   };
 
