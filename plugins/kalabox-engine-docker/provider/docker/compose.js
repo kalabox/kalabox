@@ -323,6 +323,8 @@ module.exports = function(kbox) {
   var run = function(compose, project, opts) {
 
     // Default options
+    // NOTE: background=true causes rm to be ignored
+    // So we are setting mode to default to collect on win32
     var defaults = {
       environment: [],
       noDeps: false,

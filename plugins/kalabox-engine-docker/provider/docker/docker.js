@@ -312,6 +312,9 @@ module.exports = function(kbox) {
    */
   var run = function(createOpts, opts) {
 
+    // Get the mode
+    var mode = (opts && opts.mode) ? opts.mode : 'collect';
+
     // Start by creating a container
     return Promise.fromNode(function(cb) {
       dockerInstance().call('createContainer', createOpts, cb);
@@ -328,7 +331,7 @@ module.exports = function(kbox) {
         };
 
         // Attach stdin if we are in attach mode
-        if (opts.mode === 'attach') {
+        if (mode === 'attach') {
           attachOpts.stdin = true;
         }
 
@@ -338,7 +341,7 @@ module.exports = function(kbox) {
       .then(function(stream) {
 
         // Attaching mode
-        if (opts.mode === 'attach') {
+        if (mode === 'attach') {
           stream.pipe(process.stdout);
           process.stdin.resume();
           process.stdin.setEncoding('utf8');
@@ -364,7 +367,7 @@ module.exports = function(kbox) {
             var stdErr = '';
 
             // Collect the buffer if in collect mode
-            if (opts.mode === 'collect') {
+            if (mode === 'collect') {
               stream.on('data', function(buffer) {
                 stdOut = stdOut + String(buffer);
               });
@@ -376,7 +379,7 @@ module.exports = function(kbox) {
             });
 
             stream.on('end', function() {
-              if (opts.mode === 'attach') {
+              if (mode === 'attach') {
                 if (process.stdin.setRawMode) {
                   process.stdin.setRawMode(false);
                 }
@@ -395,12 +398,9 @@ module.exports = function(kbox) {
         })
 
         // Remove the container and pass the data
-        .then(function(data) {
+        .then(function() {
           return Promise.fromNode(function(cb) {
             container.remove({force: true, v: true}, cb);
-          })
-          .then(function() {
-            return data;
           });
         });
 
