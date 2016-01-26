@@ -4,10 +4,7 @@
  * This contains some helpers to the download step
  */
 
-module.exports = function(kbox) {
-
-  var fs = require('fs');
-  var path = require('path');
+module.exports = function(/*kbox*/) {
 
   /*
    * Validate that our downloads are all good and proper
@@ -31,17 +28,7 @@ module.exports = function(kbox) {
 
   };
 
-  /*
-   * Quick check that we need the invis.vbs
-   */
-  var needsElevate = function() {
-    var sysRoot = kbox.core.deps.get('globalConfig').sysConfRoot;
-    var elRoot = path.join(sysRoot, 'downloads', 'elevate');
-    return !fs.existsSync(elRoot + '.cmd') || !fs.existsSync(elRoot + '.vbs');
-  };
-
   return {
-    needsElevate: needsElevate,
     validate: validateDownloads
   };
 
