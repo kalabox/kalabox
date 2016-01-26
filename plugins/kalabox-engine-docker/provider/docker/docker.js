@@ -398,9 +398,12 @@ module.exports = function(kbox) {
         })
 
         // Remove the container and pass the data
-        .then(function() {
+        .then(function(result) {
           return Promise.fromNode(function(cb) {
             container.remove({force: true, v: true}, cb);
+          })
+          .then(function() {
+            return result;
           });
         });
 
