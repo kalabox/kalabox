@@ -81,8 +81,14 @@ module.exports = function(kbox) {
     // If we have a mode then we need to spawn
     if (opts && opts.mode) {
 
+      /*
+       * Compose run's require stdin to be a tty to get the correct output back
+       * so we have to set stdin on collect to pty so it get's replaced with a
+       * pseudo terminal's stdin.
+       */
+
       // Stdio per mode
-      var collect = {stdio: [process.stdin, 'pipe', process.stderr]};
+      var collect = {stdio: ['pty', 'pipe', process.stderr]};
       var attach = {stdio: 'inherit'};
       var stdio = (opts.mode === 'attach') ? attach : collect;
 
