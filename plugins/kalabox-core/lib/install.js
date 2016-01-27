@@ -4,7 +4,6 @@ module.exports = function(kbox) {
 
   // Native modules
   var path = require('path');
-  var url = require('url');
 
   // NPM modules
   var chalk = require('chalk');
@@ -12,7 +11,6 @@ module.exports = function(kbox) {
   var fs = require('fs-extra');
 
   // Kbox modules
-  var inBin = kbox.core.deps.get('globalConfig').isBinary;
   var Promise = kbox.Promise;
 
   /*
@@ -140,38 +138,6 @@ module.exports = function(kbox) {
 
     };
   });
-
-  /*
-   * We need this to download some support files to run the windows binary
-   * @todo: only run on binary
-   */
-  if (process.platform === 'win32' && inBin) {
-    kbox.install.registerStep(function(step) {
-      step.name = 'core-downloads-win32';
-      step.description = 'Queuing up support files...';
-      step.subscribes = ['core-downloads'];
-      step.all.win32 = function(state) {
-
-        // Helpers
-        var helpers = require('./steps/downloads.js')(kbox);
-
-        // We only need this if we need to update the local binary
-        if (helpers.needsElevate()) {
-          // This is going to be basically the same for two files
-          var elevateBaseUrl = {
-            protocol: 'https:',
-            host: 'raw.githubusercontent.com',
-            pathname: 'kalabox/node-windows/master/bin/elevate/elevate'
-          };
-
-          // Build and add elevate.cmd/vbs
-          state.downloads.push(url.format(elevateBaseUrl) + '.vbs');
-          state.downloads.push(url.format(elevateBaseUrl) + '.cmd');
-        }
-
-      };
-    });
-  }
 
   /*
    * Download all the files that are in state.download

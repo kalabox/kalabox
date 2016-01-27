@@ -163,9 +163,13 @@ module.exports = function(kbox) {
 
         // Write the remote ignore file
         .then(function() {
+
           // Compute the remote ignore file location
           var home = kbox.core.deps.get('globalConfig').home;
-          var remoteDir = _.trimLeft(app.config.syncthing.codeRoot, home);
+          var homeSplit = home.split(path.sep);
+          var codeRootSplit = app.config.syncthing.codeRoot.split(path.sep);
+          var remoteDir = _.drop(codeRootSplit, homeSplit.length).join('/');
+
           // Command to make query.
           var cpCmd = [
             '/src/' + remoteDir + '/.stignore',

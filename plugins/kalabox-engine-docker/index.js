@@ -236,7 +236,7 @@ module.exports = function(kbox) {
           // Refactor our create options
           // Handle opts.mode?
           var createOpts = data.Config;
-          createOpts.Cmd = command;
+          createOpts.Cmd = _.flatten(command);
           createOpts.name = _.trimLeft(data.Name, '/');
           createOpts.AttachStdin = true;
           createOpts.AttachStdout = true;
