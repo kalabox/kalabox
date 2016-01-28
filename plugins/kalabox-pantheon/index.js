@@ -109,20 +109,13 @@ module.exports = function(kbox) {
     };
 
     // Set the sites method of the api.
-    api.methods.sites = function() {
+    api.methods.sites = function(username) {
       var self = this;
       // Get email.
-      return kbox.Promise.try(function() {
-        return self.ask([
-          {
-            id: 'username'
-          }
-        ]);
-      })
       // Set session based on email.
-      .then(function(answers) {
-        var session = pantheon.getSessionFile(answers.username);
-        pantheon.setSession(answers.username, session);
+      return kbox.Promise.try(function() {
+        var session = pantheon.getSessionFile(username);
+        pantheon.setSession(username, session);
       })
       // Get and map sites.
       .then(function() {
