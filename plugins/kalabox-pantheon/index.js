@@ -110,7 +110,6 @@ module.exports = function(kbox) {
 
     // Set the sites method of the api.
     api.methods.sites = function(username) {
-      var self = this;
       // Get email.
       // Set session based on email.
       return kbox.Promise.try(function() {
