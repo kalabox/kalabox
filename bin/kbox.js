@@ -186,8 +186,7 @@ function main() {
 
   // Initialization options.
   var opts = {
-    mode: 'cli',
-    prepackaged: false
+    mode: 'cli'
   };
 
   // Initialize core library.
