@@ -124,10 +124,10 @@ module.exports = function(grunt) {
           mask: '*.spec.js',
           coverage:true,
           check: {
-            lines: 10,
-            statements: 10,
-            branches: 10,
-            functions: 10
+            lines: 5,
+            statements: 5,
+            branches: 5,
+            functions: 5
           },
           root: './lib',
           reportFormats: ['lcov','html']
