@@ -10,15 +10,20 @@ var inspectData = {};
 
 module.exports = function(kbox) {
 
+  // Node modules
+  var path = require('path');
+
   // NPM modules
   var VError = require('verror');
   var _ = require('lodash');
   var fs = require('fs-extra');
 
   // Kalabox modules
+  var deps = kbox.core.deps;
   var Promise = kbox.Promise;
   var bin = require('./lib/bin.js')(kbox);
   var env = require('./lib/env.js')(kbox);
+  var docker = require('./docker.js')(kbox);
 
   // Get our docker machine executable
   var MACHINE_EXECUTABLE = bin.getMachineExecutable();
@@ -116,6 +121,44 @@ module.exports = function(kbox) {
     // Handle relevant create errors
     .catch(function(err) {
       throw new VError(err, 'Error initializing machine.', run);
+    })
+
+    // Import an internal archive if it exists
+    // @todo: this probably should live somewhere else in the future
+    .then(function() {
+
+      // Check for predownloaded image archivces and copy them over if they exist
+      // This only works in gui mode
+      if (deps.get('mode') === 'gui') {
+
+        // This is where our predownloads images should live
+        var imageRoot = path.resolve(process.cwd(), 'deps', 'images');
+        var archivePath = path.join(imageRoot, 'images.tar.gz');
+
+        // Check if we have the that might contain predownlaods
+        if (fs.existsSync(archivePath)) {
+
+          // Basic log info
+          log.info('Importing docker images from ' + archivePath);
+
+          // Source and destination dirs
+          var source = archivePath;
+          var write = path.join(kbox.util.disk.getTempDir(), 'images.tar.gz');
+
+          // If the source exists write it to the dest and remove
+          // from the downloads array
+          // @todo: something async so we can error check?
+          // @todo: what about files that need extraction?
+          if (fs.existsSync(source)) {
+            fs.writeFileSync(write, fs.readFileSync(source));
+          }
+
+          // Load the archive
+          return docker.load(write);
+
+        }
+      }
+
     });
 
   };
