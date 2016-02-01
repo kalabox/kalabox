@@ -8,7 +8,6 @@ module.exports = function(kbox) {
   // Kalabox modules
   var util = require('./util.js')(kbox);
   var share = require('./share.js')(kbox);
-  var packed = kbox.core.deps.get('prepackaged');
   var provisioned = kbox.core.deps.get('globalConfig').provisioned;
 
   // Get and load the install config
@@ -60,7 +59,7 @@ module.exports = function(kbox) {
    * If we need to do updates or install syncthing for the first time
    * then run this step FOR SURE
    */
-  if ((!packed || !provisioned) && util.needsDownloads()) {
+  if (!provisioned && util.needsDownloads()) {
     kbox.install.registerStep(function(step) {
       step.name = 'syncthing-downloads';
       step.description = 'Queuing up syncthing downloads...';

@@ -13,7 +13,6 @@ module.exports = function(kbox) {
   var fs = require('fs-extra');
 
   // Kalabox modules
-  var packed = kbox.core.deps.get('prepackaged');
   var provisioned = kbox.core.deps.get('globalConfig').provisioned;
   var install = kbox.install;
 
@@ -62,7 +61,7 @@ module.exports = function(kbox) {
 
     // Move config from download location to the correct location if this
     // is a valid update move
-    if ((!packed && !provisioned) && this.needsDownloads()) {
+    if (!provisioned && this.needsDownloads()) {
       var configFile = path.basename(config.configfile);
       var src = path.join(tmp, configFile);
       fs.renameSync(src, path.join(syncthingDir, configFile));
