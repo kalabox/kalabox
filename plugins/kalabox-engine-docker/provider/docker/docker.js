@@ -306,6 +306,17 @@ module.exports = function(kbox) {
   };
 
   /*
+   * Load images from a image archive
+   */
+  var load = function(file) {
+
+    return Promise.fromNode(function(cb) {
+      dockerInstance().call('loadImage', file, {}, cb);
+    });
+
+  };
+
+  /*
    * Do a docker run
    * @todo: we can get rid of this once docker compose run
    * supports interactive mode on windows
@@ -471,7 +482,8 @@ module.exports = function(kbox) {
     list: list,
     remove: remove,
     run: run,
-    stop: stop
+    stop: stop,
+    load: load
   };
 
 };
