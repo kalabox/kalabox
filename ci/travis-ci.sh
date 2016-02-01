@@ -125,6 +125,8 @@ after-success() {
         # Bump our things and reset tags
         # Dont bump or push if this is a new minor version
         if [ "${DISCO_ARRAY[2]}" -gt "0" ]; then
+
+          # Bump our version
           grunt bump-patch
 
           # Reset upstream and tags so we can push our changes to it
@@ -132,12 +134,15 @@ after-success() {
           git remote rm origin
           git remote add origin git@github.com:$TRAVIS_REPO_SLUG.git
           git checkout $TRAVIS_BRANCH
+          git tag -d $DISCO_TAG
+          git push origin :$DISCO_TAG
 
           # Add all our new code and push reset tag with ci skipping on
           git add --all
           git commit -m "${COMMIT_MSG} VERSION ${DISCO_TAG} [ci skip]" --author="Kala C. Bot <kalacommitbot@kalamuna.com>" --no-verify
           git tag $DISCO_TAG
           git push origin $TRAVIS_BRANCH --tags
+
         fi
 
         # NODE PACKAGES
