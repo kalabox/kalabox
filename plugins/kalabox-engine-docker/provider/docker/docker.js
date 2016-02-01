@@ -309,11 +309,9 @@ module.exports = function(kbox) {
    * Load images from a image archive
    */
   var load = function(file) {
-
     return Promise.fromNode(function(cb) {
       dockerInstance().call('loadImage', file, {}, cb);
     });
-
   };
 
   /*
