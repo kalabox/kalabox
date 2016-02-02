@@ -53,6 +53,17 @@ module.exports = function(kbox) {
       kbox.core.env.setEnv(pathString, newPath);
     }
 
+    // NW does not inherit the users environment on POSIX (possibly on windows also)
+    // This means /usr/local/bin is not in the path by default. Docker-machine needs this
+    // because VBoxManage should be there. Let's add this in if its not there.
+    if (kbox.core.deps.get('mode') === 'gui' && process.platform !== 'win32') {
+      var ulb = '/usr/local/bin';
+      if (!_.includes(process.env.PATH, ulb)) {
+        var ulbPath = [process.env.PATH, ulb].join(':');
+        kbox.core.env.setEnv('PATH', ulbPath);
+      }
+    }
+
   };
 
   // Build module function.
