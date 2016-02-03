@@ -24,7 +24,7 @@
 #
 #   Options: [true|false]
 #
-devmode: true
+devMode: true
 
 #
 # Domain
