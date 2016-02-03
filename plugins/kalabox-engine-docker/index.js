@@ -200,8 +200,8 @@ module.exports = function(kbox) {
       // Inspect
       .then(function(output) {
         // @todo: a better way to do this?
-        //var parts = output.split('\r\n');
-        var parts = output.split('\n');
+        var splitter = (process.platform === 'win32') ? '\r\n' : '\n';
+        var parts = output.split(splitter);
         parts.pop();
         var id = _.last(parts);
         return docker.inspect(id);
