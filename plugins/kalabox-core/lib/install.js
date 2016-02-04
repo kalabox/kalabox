@@ -22,28 +22,30 @@ module.exports = function(kbox) {
     step.name = 'core-auth';
     step.first = true;
     step.description = 'Authorizing trilling subroutines...';
-    step.all = function(state, done) {
+    step.all = function(state) {
 
       // If we are in non-interactive mode report that
       if (state.nonInteractive) {
         state.log.info(chalk.grey('Non-interactive mode.'));
       }
 
-      // Get our authorize code
-      var authorize = require('./steps/authorize.js')(kbox);
+      // If we are interactive then we have questions, questions that need
+      // answering. We need to make sure this doesnt run in GUI installs
+      // on windows otherwise we get a weird STDIN error
+      else {
+        // Get our authorize code
+        var authorize = require('./steps/authorize.js')(kbox);
 
-      // Kick off the auth chain
-      return authorize(state)
+        // Kick off the auth chain
+        return authorize(state)
 
-      // Get the users response and exit if they do not confirm
-      .then(function(answers) {
-        if (!_.isEmpty(answers) && !answers.doit) {
-          state.fail(state, 'Fine! Be that way!');
-        }
-      })
-
-      // Move onto the next step
-      .nodeify(done);
+        // Get the users response and exit if they do not confirm
+        .then(function(answers) {
+          if (!_.isEmpty(answers) && !answers.doit) {
+            state.fail(state, 'Fine! Be that way!');
+          }
+        });
+      }
 
     };
   });
