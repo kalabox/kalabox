@@ -1,0 +1,6 @@
+kalabox:
+  version: 0.11.1
+  pkg:
+    darwin: https://github.com/kalabox/kalabox/releases/download/v0.11.1/kbox-osx-amd64-v0.11.1-alpha1
+    win32: https://github.com/kalabox/kalabox/releases/download/v0.11.1/kbox-win-amd64-v0.11.1-alpha1.exe
+    linux: https://github.com/kalabox/kalabox/releases/download/v0.11.1/kbox-linux-amd64-v0.11.1-alpha1
