@@ -90,7 +90,10 @@ module.exports = function(kbox) {
       // Stdio per mode
       var mode = kbox.core.deps.get('mode');
       var stdinMode = (mode === 'gui') ? 'ignore' : process.stdin;
-      var collect = {stdio: [stdinMode, 'pipe', process.stderr]};
+      var stdErrMode = (mode === 'gui') ? 'ignore' : process.stderr;
+
+      // Attach and collect modes
+      var collect = {stdio: [stdinMode, 'pipe', stdErrMode]};
       var attach = {stdio: 'inherit'};
       var stdio = (opts.mode === 'attach') ? attach : collect;
 
