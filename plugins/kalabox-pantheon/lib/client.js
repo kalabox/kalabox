@@ -561,5 +561,13 @@ Client.prototype.sshKeySetup = function() {
 
 };
 
+/*
+ * Temporary measure to get around site and session caching in the GUI.
+ */
+Client.prototype.reset = function() {
+  this.session = undefined;
+  this.sites = undefined;
+};
+
 // Return constructor as the module object.
 module.exports = Client;

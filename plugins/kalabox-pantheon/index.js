@@ -79,30 +79,16 @@ module.exports = function(kbox) {
   kbox.integrations.create('pantheon', function(api) {
 
     // Authorize login.
-    api.methods.auth = function(email/*, password*/) {
-      var self = this;
-      return kbox.Promise.try(function() {
-        return self.ask([
-          {
-            id: 'username'
-          },
-          {
-            id: 'password'
-          }
-        ]);
-      })
-      .then(function(answers) {
-        return pantheon.auth(answers.username, answers.password);
-      })
-      .tap(function(session) {
-        return pantheon.setSession(email, session);
-      })
-      .wrap('Error authorizing: %s', email);
+    api.methods.auth = function(username, password) {
+      pantheon.reset();
+      return pantheon.auth(username, password)
+      .wrap('Error authorizing: %s', username);
     };
 
     // Set the logins method of api.
     api.methods.logins = function() {
       return kbox.Promise.try(function() {
+        pantheon.reset();
         return pantheon.getSessionFiles();
       })
       .wrap('Error getting logins.');
@@ -113,6 +99,7 @@ module.exports = function(kbox) {
       // Get email.
       // Set session based on email.
       return kbox.Promise.try(function() {
+        pantheon.reset();
         var session = pantheon.getSessionFile(username);
         pantheon.setSession(username, session);
       })
