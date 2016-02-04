@@ -12,6 +12,11 @@ module.exports = function(kbox) {
 
   // Kbox modules
   var Promise = kbox.Promise;
+  var util = require('./util.js')(kbox);
+  var isNW = kbox.core.deps.get('globalConfig').isNW;
+
+  // Get and load the install config
+  var config = kbox.util.yaml.toJson(path.join(__dirname, 'config.yml'));
 
   /*
    * This step attempts to get authorization from the user that we can
@@ -142,6 +147,28 @@ module.exports = function(kbox) {
   });
 
   /*
+   * Add the kalabox binary to the downloader if needed and we are in NW
+   */
+  if (isNW && util.needsKboxBinary()) {
+    kbox.install.registerStep(function(step) {
+      step.name = 'kbox-binary-downloads';
+      step.description = 'Queuing up Kalabox binary downloads...';
+      step.subscribes = ['core-downloads'];
+      step.all = function(state) {
+
+        // We only need this if we need to update the local binary
+        if (util.needsKboxBinary()) {
+          state.downloads.push(config.kalabox.pkg[process.platform]);
+        }
+
+        // Queue up some admin commands to get our bin in the path
+        state.adminCommands.push(util.kboxBin2Path());
+
+      };
+    });
+  }
+
+  /*
    * Download all the files that are in state.download
    */
   kbox.install.registerStep(function(step) {
@@ -183,6 +210,24 @@ module.exports = function(kbox) {
 
     };
   });
+
+  /*
+   * If we need to do updates then we will need to install our syncthing
+   * binary again
+   */
+  if (isNW && util.needsKboxBinary()) {
+    kbox.install.registerStep(function(step) {
+      step.name = 'kbox-binary-setup';
+      step.description = 'Setting up kalabox binary...';
+      step.deps = ['core-downloads'];
+      step.all = function(state) {
+
+        // Install the kalabox binary
+        util.installKboxBinary(state);
+
+      };
+    });
+  }
 
   /*
    * Runs a prebuilt list of admin commands if there are any
@@ -253,6 +298,11 @@ module.exports = function(kbox) {
       // Update our current install file
       var kVersion = state.config.version;
       state.updateCurrentInstall({KALABOX_VERSION: kVersion});
+
+      // Update our bin version if we are in NW
+      if (isNW && util.needsKboxBinary()) {
+        state.updateCurrentInstall({KBOX_BIN_VERSION: config.kalabox.version});
+      }
 
     };
   });
