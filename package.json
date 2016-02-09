@@ -16,7 +16,7 @@
     "url": "https://github.com/kalabox/kalabox"
   },
   "bugs": {
-    "email": "mike@kalamuna.com",
+    "email": "mike@kalabox.io",
     "url": "https://github.com/kalabox/kalabox/issues"
   },
   "directories": {
@@ -27,7 +27,8 @@
     "kbox": "./bin/kbox.js"
   },
   "scripts": {
-    "test": "istanbul cover _mocha"
+    "test": "istanbul cover _mocha",
+    "postinstall": "node scripts/lock.js"
   },
   "dependencies": {
     "bluebird": "^2.9.3",

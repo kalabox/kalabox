@@ -148,6 +148,8 @@ after-success() {
         # NODE PACKAGES
         # Deploy to NPM
         $HOME/npm-config.sh > /dev/null
+        # Run this to dropin lockfile
+        npm install --production
         npm publish ./
 
         # DEPLOY API DOCS to API.KALABOX.ME
