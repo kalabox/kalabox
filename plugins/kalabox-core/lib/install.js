@@ -27,11 +27,12 @@ module.exports = function(kbox) {
     step.name = 'core-auth';
     step.first = true;
     step.description = 'Authorizing trilling subroutines...';
-    step.all = function(state) {
+    step.all = function(state, done) {
 
       // If we are in non-interactive mode report that
       if (state.nonInteractive) {
         state.log.info(chalk.grey('Non-interactive mode.'));
+        done();
       }
 
       // If we are interactive then we have questions, questions that need
@@ -49,7 +50,10 @@ module.exports = function(kbox) {
           if (!_.isEmpty(answers) && !answers.doit) {
             state.fail(state, 'Fine! Be that way!');
           }
-        });
+        })
+
+        // Continue on
+        .nodeify(done);
       }
 
     };

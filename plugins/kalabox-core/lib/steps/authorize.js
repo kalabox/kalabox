@@ -29,7 +29,7 @@ module.exports = function(kbox) {
 
     // Kick off a promise for this
     return new Promise(function(resolve) {
-      return inquirer.prompt([confirm], function(answers) {
+      inquirer.prompt([confirm], function(answers) {
 
         // Log our answers
         state.log.debug('USER INPUT => ' + JSON.stringify(answers));
