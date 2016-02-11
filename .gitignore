@@ -24,3 +24,4 @@ build
 bin/kbox*
 *.sublime-*
 dist
+version.lock

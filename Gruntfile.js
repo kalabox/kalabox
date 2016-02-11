@@ -8,9 +8,24 @@ module.exports = function(grunt) {
 
   // Helpful vars
   var platform = process.platform;
+  var os = require('os');
+  var pkg = require('./package.json');
 
   // Figure out what our compiled binary will be called
-  var binName = (platform === 'win32') ? 'kbox.exe' : 'kbox';
+  var binBuild = [
+    'kbox',
+    process.platform,
+    os.arch(),
+    'v' + pkg.version
+  ];
+
+  // Add EXE if needed
+  if (platform === 'win32') {
+    binBuild.push('.exe');
+  }
+
+  // Build the binName
+  var binName = binBuild.join('-');
 
   // Build commands
   var jxAddPatterns = [
@@ -18,7 +33,8 @@ module.exports = function(grunt) {
     '*.yml',
     '*.json',
     '*.cmd',
-    '*.vbs'
+    '*.vbs',
+    'version.lock'
   ];
   var jxSlimPatterns = [
     '*.spec',
@@ -29,20 +45,25 @@ module.exports = function(grunt) {
   var jxCmd = [
     'jx package',
     'bin/kbox.js',
-    'dist/kbox',
+    'dist/' + binName,
     '--add "' + jxAddPatterns.join(',') + '"',
     '--slime "' + jxSlimPatterns.join(',') + '"',
     '--native'
   ];
+  var installCmd = ['npm', 'install'];
+  // Figure out whether we want to not version lock our build
+  if (!grunt.option('dev')) {
+    installCmd.push('--production');
+  }
   var buildCmds = [
-    'npm install --production',
+    installCmd.join(' '),
     'mkdir dist',
     jxCmd.join(' ')
   ];
 
   // Add additional build cmd for POSIX
   if (platform !== 'win32') {
-    buildCmds.push('chmod +x dist/kbox');
+    buildCmds.push('chmod +x dist/' + binName);
     buildCmds.push('sleep 2');
   }
 
@@ -70,9 +91,9 @@ module.exports = function(grunt) {
           'bin/kbox.*',
           'lib/**',
           'plugins/**',
+          'scripts/lock.js',
           '*.json',
-          'kalabox.yml',
-          'development.yml'
+          'kalabox.yml'
         ],
       }
     },
@@ -142,7 +163,8 @@ module.exports = function(grunt) {
       build: {
         options: {
           execOptions: {
-            cwd: 'build'
+            cwd: 'build',
+            maxBuffer: 20 * 1024 * 1024
           }
         },
         command: buildCmds.join(' && ')
@@ -250,7 +272,7 @@ module.exports = function(grunt) {
   ]);
 
   // Build a binary
-  grunt.registerTask('build', [
+  grunt.registerTask('pkg', [
     'clean:build',
     'clean:dist',
     'copy:build',

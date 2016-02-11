@@ -8,24 +8,12 @@
 # Alternatively you can also drop a kalabox.yml file in ~/.kalabox to
 # override the settings found here
 #
-# This file only works in "normal" mode. Please see the development.yml
-# For "devMode" specific configuration.
-#
 # There are other options beyond what are listed in this file that can be
 # overriden although they are currently not officially supported.
 #
 # Do a `kbox config` to get a sense of what they are. This also should apply
 # for kalabox.yml app configurations.
 #
-
-#
-# Development Mode
-#
-# Generally you are not going to want to change this
-#
-#   Options: [true|false]
-#
-# devmode: false
 
 #
 # Domain

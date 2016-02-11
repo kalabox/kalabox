@@ -33,14 +33,14 @@ module.exports = function(kbox) {
     // Get relevant config options
     var config = util.yaml.toJson(path.join(__dirname, 'lib', 'config.yml'));
     var isBinary = kbox.core.deps.get('globalConfig').isBinary;
-    var devMode = kbox.core.deps.get('globalConfig').devMode;
+    var locked = kbox.core.deps.get('globalConfig').locked;
 
     // Expose the correct pantheon img version
-    var imgVersion = (devMode) ? 'dev' : config.url.prod;
+    var imgVersion = (!locked) ? 'dev' : config.url.prod;
     kbox.core.env.setEnv('KALABOX_PANTHEON_IMAGE_VERSION', imgVersion);
 
     // Return an internal path
-    if (!isBinary && devMode) {
+    if (!isBinary && !locked) {
       var srcRoot = kbox.core.deps.get('globalConfig').srcRoot;
       var modFold = path.join(srcRoot, 'node_modules');
       return {
@@ -50,7 +50,7 @@ module.exports = function(kbox) {
     // Return a url of an archive
     else {
       var format = (process.platform === 'win32') ? 'zipball' : 'tarball';
-      var branch = (devMode) ? config.url.dev : config.url.prod;
+      var branch = (!locked) ? config.url.dev : config.url.prod;
       var url = [config.url.base, format, branch].join('/');
       return {
         url: url,
