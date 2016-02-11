@@ -39,9 +39,8 @@ module.exports = function(kbox) {
        * Return a run object
        */
       var getRun = function(options) {
-        var cliFile = path.join(app.root, 'kalabox-cli.yml');
         return {
-          compose: app.composeCore.concat([cliFile]),
+          compose: app.composeCore,
           project: app.name,
           opts: {
             mode: 'attach',
