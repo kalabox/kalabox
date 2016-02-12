@@ -35,10 +35,6 @@ module.exports = function(kbox) {
     var isBinary = kbox.core.deps.get('globalConfig').isBinary;
     var locked = kbox.core.deps.get('globalConfig').locked;
 
-    // Expose the correct pantheon img version
-    var imgVersion = (!locked) ? 'dev' : config.url.prod;
-    kbox.core.env.setEnv('KALABOX_PANTHEON_IMAGE_VERSION', imgVersion);
-
     // Return an internal path
     if (!isBinary && !locked) {
       var srcRoot = kbox.core.deps.get('globalConfig').srcRoot;
