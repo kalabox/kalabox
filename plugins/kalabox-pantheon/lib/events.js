@@ -3,6 +3,9 @@
 
 module.exports = function(kbox, pantheon) {
 
+  // Node modules
+  var path = require('path');
+
   // npm modules
   var _ = require('lodash');
 
@@ -18,11 +21,20 @@ module.exports = function(kbox, pantheon) {
     // Grab the current config
     var pantheonConfig = config.pluginconfig.pantheon;
 
+    // Set the image version
+    // Get relevant config options
+    var prod = kbox.util.yaml.toJson(path.join(__dirname, 'config.yml'));
+    var locked = kbox.core.deps.get('globalConfig').locked;
+
+    // Expose the correct pantheon img version
+    pantheonConfig.images = (!locked) ? 'dev' : prod.url.prod;
+
     // Get site info
     return pantheon.getSites()
 
     // Update our config with relevant info
     .then(function(pSites) {
+
       // Get cached site info
       var sites = pantheon.sites || pSites;
       // Get the UUID
@@ -31,7 +43,7 @@ module.exports = function(kbox, pantheon) {
       });
       var site = sites[uuid].information;
 
-      // Set various kbox.json properties
+      // Set various kbox.yml properties
       pantheonConfig.framework = pantheonConfig.framework || site.framework;
       // jshint camelcase:false
       // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
