@@ -13,13 +13,10 @@ module.exports = function(kbox) {
    */
   kbox.whenAppRegistered(function(app) {
 
-    // Check whether we should load these task or not
-    var buildImages = (app.config.pluginconfig.cli === 'on') ? true : false;
-
     /**
-     * Build our needed cli images for usage
+     * Add our cli yaml file into the mix
      */
-    if (buildImages) {
+    if (_.get(app.config.pluginconfig, 'cli') === 'on') {
 
       // Uniquely add our cli tools
       var cliCompose = path.join(app.root, 'kalabox-cli.yml');
