@@ -13,6 +13,9 @@ module.exports = function(kbox) {
   // Npm
   var _ = require('lodash');
 
+  // Kalabox modules
+  var env = kbox.core.env;
+
   kbox.whenAppRegistered(function(app) {
 
     // Load the tasks
@@ -83,6 +86,7 @@ module.exports = function(kbox) {
               // a working directory plus env so we have something to use to
               // drop the user into the right location in the container to run
               // their task
+              // @todo: clean this up so we only call env.setEnv once
               if (_.has(data, 'mapping')) {
 
                 // Resolve any path mappings that are in config
@@ -96,8 +100,10 @@ module.exports = function(kbox) {
                 var pwdSplit = process.cwd().split(path.sep);
                 var diffDir = _.drop(pwdSplit, localSplit.length).join('/');
                 var workingDir = path.join(dirs[1], diffDir);
-                var env = kbox.core.env;
                 env.setEnv('KALABOX_CLI_WORKING_DIR', workingDir);
+              }
+              else {
+                env.setEnv('KALABOX_CLI_WORKING_DIR', '');
               }
 
               // Shift off our first cmd arg if its also the entrypoint
