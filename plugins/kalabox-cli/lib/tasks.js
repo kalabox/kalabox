@@ -101,7 +101,6 @@ module.exports = function(kbox) {
                 env.setEnv('KALABOX_CLI_WORKING_DIR', workingDir);
               }
 
-
               // Shift off our first cmd arg if its also the entrypoint
               // or the name of the command
               // @todo: this implies that our entrypoint should be in the path
