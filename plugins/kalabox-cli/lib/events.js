@@ -8,6 +8,9 @@ module.exports = function(kbox) {
   // NPM Modules
   var _ = require('lodash');
 
+  // Kalabox modules
+  var env = kbox.core.env;
+
   /*
    * Grab our cli config
    */
@@ -22,6 +25,10 @@ module.exports = function(kbox) {
       var cliCompose = path.join(app.root, 'kalabox-cli.yml');
       app.composeCore.push(cliCompose);
       app.composeCore = _.uniq(app.composeCore);
+
+      // Set a default value of null for this here so we dont
+      // mess up other stuff
+      env.setEnv('KALABOX_CLI_WORKING_DIR', '');
 
     }
 
