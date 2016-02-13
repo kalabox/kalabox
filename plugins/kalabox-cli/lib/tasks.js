@@ -15,13 +15,10 @@ module.exports = function(kbox) {
 
   kbox.whenAppRegistered(function(app) {
 
-    // Check whether we should load these task or not
-    var loadTasks = (app.config.pluginconfig.cli === 'on') ? true : false;
-
     // Load the tasks
-    if (loadTasks) {
+    if (_.get(app.config.pluginconfig, 'cli') === 'on') {
 
-      // Cli tasks yml file
+      // Cli tasks and compose yml files
       var tasksFile = path.join(app.root, 'cli.yml');
 
       /*
@@ -51,6 +48,18 @@ module.exports = function(kbox) {
         };
       };
 
+      /*
+       * Map a mapping to a app config prop
+       */
+      var getMappingProp = function(prop) {
+        if (_.startsWith(prop, '<') && _.endsWith(prop, '>')) {
+          return _.get(app, _.trimRight(_.trimLeft(prop, '<'), '>'));
+        }
+        else {
+          return prop;
+        }
+      };
+
       // Check for our tasks and then generate tasks if we have a
       // file
       if (fs.existsSync(tasksFile)) {
@@ -69,6 +78,27 @@ module.exports = function(kbox) {
             task.kind = 'delegate';
             task.description = options.description;
             task.func = function() {
+
+              // If our task has a working directory mapping specified lets set
+              // a working directory plus env so we have something to use to
+              // drop the user into the right location in the container to run
+              // their task
+              if (_.has(data, 'mapping')) {
+
+                // Resolve any path mappings that are in config
+                var dirs = _.map(data.mapping.split(':'), function(path) {
+                  return getMappingProp(path);
+                });
+
+                // Get relevant directories so we can determine the correct
+                // working directory
+                var localSplit = path.join(app.root, dirs[0]).split(path.sep);
+                var pwdSplit = process.cwd().split(path.sep);
+                var diffDir = _.drop(pwdSplit, localSplit.length).join('/');
+                var workingDir = path.join(dirs[1], diffDir);
+                var env = kbox.core.env;
+                env.setEnv('KALABOX_CLI_WORKING_DIR', workingDir);
+              }
 
               // Shift off our first cmd arg if its also the entrypoint
               // or the name of the command
