@@ -40,8 +40,6 @@ machine:
     name: Kalabox2
     driver: virtualbox
     driveropts:
-      - --virtualbox-boot2docker-url
-      - https://github.com/kalabox/kalabox-iso/releases/download/v0.11.3/kalabox.iso
       - --virtualbox-memory
       - 2048
       - --virtualbox-hostonly-cidr
