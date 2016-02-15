@@ -103,6 +103,26 @@ module.exports = function(kbox) {
     // Get driver options
     var createOptions = getMachine().driveropts || [];
 
+    // Check if we have a prepackaged binary
+    // if it exists, move it into the filesystem and use that instead of
+    // a remote url
+    var isoName = path.basename(getMachine().isourl);
+    var prepackagedIso = path.resolve(process.cwd(), 'deps', 'iso', isoName);
+
+    // If exists use local iso
+    if (fs.existsSync(prepackagedIso)) {
+      var sysConfRoot = kbox.core.deps.get('globalConfig').sysConfRoot;
+      var dest = path.join(sysConfRoot, isoName);
+      fs.writeFileSync(dest, fs.readFileSync(prepackagedIso));
+      createOptions.unshift('file://' + dest);
+    }
+    else {
+      createOptions.unshift(getMachine().isourl);
+    }
+
+    // Add the key for the iso
+    createOptions.unshift('--virtualbox-boot2docker-url');
+
     // Add otherOpts
     _.forEach(getMachine().otheropts, function(option) {
       createOptions.push(option);
