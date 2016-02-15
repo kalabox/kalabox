@@ -2,7 +2,7 @@
 # docker build -t kalabox/cli .
 # docker run kalabox/cli
 
-FROM alpine:3.2
+FROM mhart/alpine-node:4
 
 RUN \
   apk add --update \
@@ -12,6 +12,9 @@ RUN \
   wget \
   curl \
   bash && \
+  npm install --production -g grunt-cli gulp-cli bower && \
+  rm -rf ~/.npm && \
+  npm cache clear && \
   rm -rf /var/cache/apk/*
 
 COPY ./config/gitconfig /root/.gitconfig
