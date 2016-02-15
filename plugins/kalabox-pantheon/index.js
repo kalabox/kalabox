@@ -121,7 +121,7 @@ module.exports = function(kbox) {
               site.environments.sort();
               return site;
             });
-          });
+          }, {concurrency: 1});
         });
       })
       .wrap('Error getting sites.');

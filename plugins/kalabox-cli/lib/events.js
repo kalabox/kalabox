@@ -8,23 +8,27 @@ module.exports = function(kbox) {
   // NPM Modules
   var _ = require('lodash');
 
+  // Kalabox modules
+  var env = kbox.core.env;
+
   /*
    * Grab our cli config
    */
   kbox.whenAppRegistered(function(app) {
 
-    // Check whether we should load these task or not
-    var buildImages = (app.config.pluginconfig.cli === 'on') ? true : false;
-
     /**
-     * Build our needed cli images for usage
+     * Add our cli yaml file into the mix
      */
-    if (buildImages) {
+    if (_.get(app.config.pluginconfig, 'cli') === 'on') {
 
       // Uniquely add our cli tools
       var cliCompose = path.join(app.root, 'kalabox-cli.yml');
       app.composeCore.push(cliCompose);
       app.composeCore = _.uniq(app.composeCore);
+
+      // Set a default value of null for this here so we dont
+      // mess up other stuff
+      env.setEnv('KALABOX_CLI_WORKING_DIR', '');
 
     }
 
