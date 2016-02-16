@@ -100,6 +100,7 @@ module.exports = function(kbox) {
      */
     events.on('pre-app-stop', function() {
       if (app.config.syncthing.share) {
+        kbox.status.update('Stopping code sharing.');
         return share.restart();
       }
     });
@@ -112,6 +113,8 @@ module.exports = function(kbox) {
     events.on('pre-app-start', 1, function(app) {
 
       if (app.config.syncthing.share) {
+
+        kbox.status.update('Sharing code.');
 
         // Get the host code root
         var codeRoot = app.config.syncthing.codeRoot;
