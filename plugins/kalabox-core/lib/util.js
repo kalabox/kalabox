@@ -39,14 +39,24 @@ module.exports = function(kbox) {
     }
 
     // Return on posix
-    // @todo: we might need to verify /usr/local/bin/ exists
     else {
 
       // Source and target file
       var kboxBin = (process.platform === 'win32') ? 'kbox.exe' : 'kbox';
+      var ulb = '/usr/local/bin';
       var source = path.join(sysBinRoot, kboxBin);
-      var target = path.join('/usr/local/bin', kboxBin);
-      return ['ln', '-sf', source, target].join(' ');
+      var target = path.join(ulb, kboxBin);
+      return [
+        'mkdir',
+        '-p',
+        ulb,
+        '&&',
+        'ln',
+        '-sf',
+        source,
+        target
+      ].join(' ');
+
     }
   };
 
