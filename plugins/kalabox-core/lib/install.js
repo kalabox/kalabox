@@ -48,7 +48,7 @@ module.exports = function(kbox) {
         // Get the users response and exit if they do not confirm
         .then(function(answers) {
           if (!_.isEmpty(answers) && !answers.doit) {
-            state.fail(state, 'Fine! Be that way!');
+            throw new Error('Fine! Be that way!');
           }
         })
 
@@ -75,7 +75,7 @@ module.exports = function(kbox) {
       .then(function(isOkay) {
         if (!isOkay) {
           var msg = 'You need to make sure your firewall is not blocking all';
-          state.fail(state, msg);
+          throw new Error(msg);
         }
       })
 
@@ -115,12 +115,12 @@ module.exports = function(kbox) {
       return kbox.util.disk.getDiskStatus()
 
       // Calculate whether we have enough free space to install
-      // if not fail and alert the user
+      // if not throw an error.
       .then(function(status) {
 
         // Fail step if our disk is not ready
         if (status !== 'READY') {
-          state.fail(state, 'Disk not ready!');
+          throw new Error('Disk not ready!');
         }
 
         // Now check to see if we have enough free space
@@ -137,8 +137,8 @@ module.exports = function(kbox) {
           var enoughFreeSpace = freeMB > neededMB;
           // Fail the step if we need more space
           if (!enoughFreeSpace) {
-            var msg = ['You need at least', neededMB, 'MB to install!'];
-            state.fail(state, msg.join(' '));
+            var msg = ['You need at least', neededMB, 'MB to install!'].join(' ');
+            throw new Error(msg);
           }
 
         });
@@ -187,10 +187,10 @@ module.exports = function(kbox) {
       // Grab downloads from state.
       var downloads = state.downloads;
 
-      // Validate our downloads and fail if they
+      // Validate our downloads and throw an error if they
       // dont check out
       if (helpers.validate(downloads) !== true) {
-        state.fail(state, helpers.validate(downloads));
+        throw new Error(helpers.validate(downloads));
       }
 
       // Get our temp dir
@@ -206,7 +206,7 @@ module.exports = function(kbox) {
 
       // Fail the step if we catch an error
       .catch(function(err) {
-        state.fail(state, err);
+        throw new VError(err, 'Error downloading files.');
       })
 
       // Next step
@@ -245,9 +245,6 @@ module.exports = function(kbox) {
       // Run the admin commands if we have any
       if (!_.isEmpty(state.adminCommands)) {
         return kbox.util.shell.execAdminAsync(state.adminCommands)
-        .catch(function(err) {
-          state.fail(state, err);
-        })
         .nodeify(done);
       }
       else {
@@ -273,11 +270,6 @@ module.exports = function(kbox) {
       // Build all teh submitted images
       return Promise.retry(function() {
         return kbox.engine.build(state.images);
-      })
-
-      // If this errors then fail the step
-      .catch(function(err) {
-        state.fail(state, err);
       })
 
       // Next step

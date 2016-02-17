@@ -111,9 +111,9 @@ module.exports = function(kbox) {
           // Analyze volume data
           var match = data.match(/Volume UUID:[ ]*(.*)\n/);
 
-          // Fail if there is no match
+          // Throw an error if there is no match
           if (!match) {
-            state.fail(state, 'Cannot get your Mac volume UUID!');
+            throw new Error('Cannot get your Mac volume UUID!');
           }
 
           // Add the install VM command if we need to
@@ -312,12 +312,12 @@ module.exports = function(kbox) {
       return kbox.util.disk.getDiskStatus()
 
       // Calculate whether we have enough free space to install
-      // if not fail and alert the user
+      // if not throw an error
       .then(function(status) {
 
-        // Fail step if our disk is not ready
+        // Throw an error if our disk is not ready
         if (status !== 'READY') {
-          state.fail(state, 'Disk not ready!');
+          throw new Error('Disk not ready!');
         }
 
         // Grab free space so we can use it for the disksize
@@ -334,11 +334,6 @@ module.exports = function(kbox) {
       // Init the engine
       .then(function(diskspace) {
         return kbox.engine.provider().call('up', {disksize: diskspace});
-      })
-
-      // Fail the step on an error
-      .catch(function(err) {
-        state.fail(state, err);
       })
 
       // Debug log out output
