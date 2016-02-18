@@ -63,7 +63,7 @@ globalPlugins:
 #
 #   Options: [debug|info|none]
 #
-logLevelConsole: info
+logLevelConsole: none
 
 #
 # Log level
