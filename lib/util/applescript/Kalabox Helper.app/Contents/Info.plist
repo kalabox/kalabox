@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>LSBackgroundOnly</key>
+	<string>1</string>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -11,11 +13,11 @@
 	<key>CFBundleIconFile</key>
 	<string>applet</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.apple.ScriptEditor.id.dialogueappstayopen</string>
+	<string>com.apple.ScriptEditor.id.Kalabox-Helper</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>dialogueappstayopen</string>
+	<string>Kalabox Helper</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -32,9 +34,9 @@
 	<key>WindowState</key>
 	<dict>
 		<key>bundleDividerCollapsed</key>
-		<false/>
+		<true/>
 		<key>bundlePositionOfDivider</key>
-		<real>401</real>
+		<real>0.0</real>
 		<key>dividerCollapsed</key>
 		<false/>
 		<key>eventLogLevel</key>
@@ -44,7 +46,7 @@
 		<key>positionOfDivider</key>
 		<real>421</real>
 		<key>savedFrame</key>
-		<string>657 63 700 672 0 0 1600 877 </string>
+		<string>75 190 700 672 0 0 1440 877 </string>
 		<key>selectedTab</key>
 		<string>description</string>
 	</dict>
