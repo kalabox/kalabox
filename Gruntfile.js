@@ -70,15 +70,11 @@ module.exports = function(grunt) {
 
   // Documentation helpers
   var docBin = 'node_modules/.bin/documentation';
-  var docSrc = [
-    'lib/app.js'
-  ];
   var docOpts = [
     '--output=docs',
-    '--format=html',
-    '--shallow'
+    '--format=html'
   ];
-  var docBuildCmd = [docBin, docSrc.join(' '), docOpts.join(' ')].join(' ');
+  var docBuildCmd = [docBin, docOpts.join(' ')].join(' ');
   var docLintCmd = [docBuildCmd, '--lint'].join(' ');
 
   // Setup task config
