@@ -9,6 +9,7 @@ module.exports = function(kbox) {
   var chalk = require('chalk');
   var _ = require('lodash');
   var fs = require('fs-extra');
+  var VError = require('verror');
 
   // Kbox modules
   var Promise = kbox.Promise;
@@ -137,8 +138,8 @@ module.exports = function(kbox) {
           var enoughFreeSpace = freeMB > neededMB;
           // Fail the step if we need more space
           if (!enoughFreeSpace) {
-            var msg = ['You need at least', neededMB, 'MB to install!'].join(' ');
-            throw new Error(msg);
+            var msg = ['You need at least', neededMB, 'MB to install!'];
+            throw new Error(msg.join('  '));
           }
 
         });
