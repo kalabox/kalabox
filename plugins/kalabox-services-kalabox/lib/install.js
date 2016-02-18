@@ -52,11 +52,6 @@ module.exports = function(kbox) {
 
         return kbox.engine.start(recreateServices)
 
-        // Catch any errors and fail the installer
-        .catch(function(err) {
-          state.fail(state, err);
-        })
-
         // If we've gotten this far we can update our current install
         .then(function() {
 
@@ -144,11 +139,6 @@ module.exports = function(kbox) {
       // Set up Linux DNS
       util.setupLinuxDNS(state)
 
-      // Fail step if we catch an error
-      .catch(function(err) {
-        state.fail(state, err);
-      })
-
       // Next Step
       .nodeify(done);
 
@@ -158,11 +148,6 @@ module.exports = function(kbox) {
       // Set up darwin DNS
       util.setupWindowsDNS(state)
 
-      // Fail step if we catch an error
-      .catch(function(err) {
-        state.fail(state, err);
-      })
-
       // Next Step
       .nodeify(done);
 
@@ -171,11 +156,6 @@ module.exports = function(kbox) {
 
       // Set up darwin DNS
       util.setupDarwinDNS(state)
-
-      // Fail step if we catch an error
-      .catch(function(err) {
-        state.fail(state, err);
-      })
 
       // Next Step
       .nodeify(done);
