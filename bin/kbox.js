@@ -25,6 +25,13 @@ if (process.isPackaged || process.IsEmbedded) {
 var argv = kbox.tasks.partitionArgv(process.argv.slice(2));
 
 /*
+ * Output status update messages.
+ */
+kbox.status.on('update', function(data) {
+  console.log(data.message);
+});
+
+/*
  * Handler errors.
  */
 function handleError(err) {
