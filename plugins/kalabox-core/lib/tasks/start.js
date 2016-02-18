@@ -22,6 +22,7 @@ module.exports = function(kbox) {
         });
 
         return kbox.app.start(app);
+
       };
     });
   });

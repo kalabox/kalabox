@@ -6,55 +6,13 @@
 
 module.exports = function(kbox) {
 
-  // NPM modules
-  var _ = require('lodash');
-
-  /*
-   * Helper to determine whether an app is running or not
-   */
-  var isRunning = function(app) {
-
-    // Check if our engine is up
-    return kbox.engine.isUp()
-
-    // If we are up check for containers running for an app
-    // otherwise return false
-    .then(function(isUp) {
-
-      // Engine is up so lets check if the app has running containers
-      if (isUp) {
-
-        // Get list of containers
-        return kbox.engine.list(app.name)
-
-        // Return running containers
-        .filter(function(container) {
-          return kbox.engine.isRunning(container.id);
-        })
-
-        // Return if we have non empty results
-        .then(function(running) {
-          return !_.isEmpty(running);
-        });
-
-      }
-
-      // Engine is down so nothing can be running
-      else {
-        return false;
-      }
-
-    });
-
-  };
-
   /*
    * Helper function to build some summary info for our apps
    */
   var appSummary = function(app) {
 
     // Chcek if our app is running
-    return isRunning(app)
+    return kbox.app.isRunning(app)
 
     // Return a nice app summary
     .then(function(isRunning) {

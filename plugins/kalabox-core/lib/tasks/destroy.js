@@ -38,7 +38,7 @@ module.exports = function(kbox) {
 
         // Display ominous warning if prompted
         if (confirmPrompt) {
-          console.log(kbox.art.destroyWarn());
+          console.log(kbox.art.destroyWarn(app));
         }
 
         // Set up our confirmation question if needed
