@@ -47,7 +47,7 @@ script() {
   run_command grunt test:code
   run_command bin/kbox.js config
   run_command grunt test
-  run_command grunt jsdoc:safe
+  run_command grunt documentation
 }
 
 # after-script

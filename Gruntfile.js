@@ -203,26 +203,27 @@ module.exports = function(grunt) {
       }
     },
 
-    // Some pretty shitty api docs
-    jsdoc: {
-      safe: {
-        src: [
-          'README.md',
-          'lib/app.js',
-          'lib/core/*.js',
-          'lib/create.js',
-          'lib/engine.js',
-          'lib/engine/provider.js',
-          'lib/install.js',
-          'lib/kbox.js',
-          'lib/services.js',
-          'lib/update.js',
-          'lib/util/*.js'
+    // Basic api docs
+    documentation: {
+      default: {
+        files: [
+          {
+            expand: true,
+            cwd: 'lib',
+            src: [
+              'README.md',
+              'app.js',
+              'core/*.js',
+              'create.js',
+              'engine.js',
+              'install.js',
+              'kbox.js',
+              'util/*.js'
+            ],
+          }
         ],
         options: {
-          destination: 'doc',
-          template: 'node_modules/jsdoc-oblivion/template',
-          configure : '.jsdoc.conf.json'
+          destination: 'doc'
         }
       }
     }
