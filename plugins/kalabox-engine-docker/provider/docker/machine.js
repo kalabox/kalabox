@@ -110,7 +110,8 @@ module.exports = function(kbox) {
     var prepackagedIso = path.resolve(process.cwd(), 'deps', 'iso', isoName);
 
     // If exists use local iso
-    if (fs.existsSync(prepackagedIso)) {
+    // @todo: this doesnt seem to work on windows yet
+    if (process.platform !== 'win32' && fs.existsSync(prepackagedIso)) {
       var sysConfRoot = kbox.core.deps.get('globalConfig').sysConfRoot;
       var dest = path.join(sysConfRoot, isoName);
       fs.writeFileSync(dest, fs.readFileSync(prepackagedIso));
