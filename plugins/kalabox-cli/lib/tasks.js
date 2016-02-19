@@ -96,7 +96,7 @@ module.exports = function(kbox) {
                 var localSplit = path.join(app.root, dirs[0]).split(path.sep);
                 var pwdSplit = process.cwd().split(path.sep);
                 var diffDir = _.drop(pwdSplit, localSplit.length).join('/');
-                var workingDir = path.join(dirs[1], diffDir);
+                var workingDir = [dirs[1], diffDir].join('/');
                 var env = kbox.core.env;
                 env.setEnv('KALABOX_CLI_WORKING_DIR', workingDir);
               }
