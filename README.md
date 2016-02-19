@@ -27,9 +27,9 @@ If you want to contribute to Kalabox development check out our [Developer Guide]
 
 Download one of the the below.
 
-1. [kbox-darwin-x64-v0.11.2](https://github.com/kalabox/kalabox/releases/download/v0.11.2/kbox-darwin-x64-v0.11.2)
-2. [kbox-win32-x64-v0.11.2](https://github.com/kalabox/kalabox/releases/download/v0.11.2/kbox-win32-x64-v0.11.2.exe)
-3. [kbox-linux-x64-v0.11.2](https://github.com/kalabox/kalabox/releases/download/v0.11.1/https://github.com/kalabox/kalabox/releases/download/v0.11.2/kbox-linux-x64-v0.11.2)
+1. [kbox-darwin-x64-v0.11.3](https://github.com/kalabox/kalabox/releases/download/v0.11.3/kbox-darwin-x64-v0.11.3)
+2. [kbox-win32-x64-v0.11.3](https://github.com/kalabox/kalabox/releases/download/v0.11.3/kbox-win32-x64-v0.11.3.exe)
+3. [kbox-linux-x64-v0.11.3](https://github.com/kalabox/kalabox/releases/download/v0.11.1/https://github.com/kalabox/kalabox/releases/download/v0.11.3/kbox-linux-x64-v0.11.3)
 
 If you are unsure about what to do with the above then [click here](https://github.com/kalabox/kalabox/wiki/Normal-Installation).
 
