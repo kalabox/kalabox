@@ -35,7 +35,7 @@ module.exports = function(kbox) {
 
     // Return on windows
     if (process.platform === 'win32') {
-      return ['setx', 'Path', '%Path%;' + sysBinRoot].join(' ');
+      return ['setx', 'Path', '"%Path%;' + sysBinRoot + '"'].join(' ');
     }
 
     // Return on posix
