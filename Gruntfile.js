@@ -11,6 +11,7 @@ module.exports = function(grunt) {
   var os = require('os');
   var pkg = require('./package.json');
 
+  // JX CORE build helpers
   // Figure out what our compiled binary will be called
   var binBuild = [
     'kbox',
@@ -66,6 +67,16 @@ module.exports = function(grunt) {
     buildCmds.push('chmod +x dist/' + binName);
     buildCmds.push('sleep 2');
   }
+
+  // Documentation helpers
+  var docBin = 'node_modules/.bin/documentation';
+  var docOpts = [
+    'build',
+    '--output=docs',
+    '--format=html'
+  ];
+  var docBuildCmd = [docBin, docOpts.join(' ')].join(' ');
+  var docLintCmd = [docBin, 'lint'].join(' ');
 
   // Setup task config
   var config = {
@@ -168,6 +179,22 @@ module.exports = function(grunt) {
           }
         },
         command: buildCmds.join(' && ')
+      },
+      docgen: {
+        options: {
+          execOptions: {
+            maxBuffer: 20 * 1024 * 1024
+          }
+        },
+        command: docBuildCmd
+      },
+      doclint: {
+        options: {
+          execOptions: {
+            maxBuffer: 20 * 1024 * 1024
+          }
+        },
+        command: docLintCmd
       }
     },
 
@@ -201,30 +228,6 @@ module.exports = function(grunt) {
       options: {
         config: '.jscsrc'
       }
-    },
-
-    // Some pretty shitty api docs
-    jsdoc: {
-      safe: {
-        src: [
-          'README.md',
-          'lib/app.js',
-          'lib/core/*.js',
-          'lib/create.js',
-          'lib/engine.js',
-          'lib/engine/provider.js',
-          'lib/install.js',
-          'lib/kbox.js',
-          'lib/services.js',
-          'lib/update.js',
-          'lib/util/*.js'
-        ],
-        options: {
-          destination: 'doc',
-          template: 'node_modules/jsdoc-oblivion/template',
-          configure : '.jsdoc.conf.json'
-        }
-      }
     }
 
   };
@@ -251,6 +254,12 @@ module.exports = function(grunt) {
   // Run just coverage reports
   grunt.registerTask('test:coverage', [
     'mocha_istanbul:coverage'
+  ]);
+
+  // Generate documentation
+  grunt.registerTask('docs', [
+    'shell:doclint',
+    'shell:docgen'
   ]);
 
   // Run just code styles

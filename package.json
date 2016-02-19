@@ -62,6 +62,7 @@
   "devDependencies": {
     "ben": "0.0.0",
     "chai": "^3.4.1",
+    "documentation": "4.0.0-beta",
     "grunt": "^0.4.5",
     "grunt-bump": "0.0.16",
     "grunt-contrib-clean": "^0.6.0",
@@ -74,7 +75,6 @@
     "grunt-mocha-istanbul": "^3.0.1",
     "grunt-shell": "^1.1.1",
     "istanbul": "^0.3.2",
-    "jsdoc-oblivion": "0.0.4",
     "jshint-stylish": "~1.0.0",
     "kalabox-app-pantheon": "https://github.com/kalabox/kalabox-app-pantheon/tarball/v0.11",
     "matchdep": "^0.3.0",
