@@ -71,11 +71,12 @@ module.exports = function(grunt) {
   // Documentation helpers
   var docBin = 'node_modules/.bin/documentation';
   var docOpts = [
+    'build',
     '--output=docs',
     '--format=html'
   ];
   var docBuildCmd = [docBin, docOpts.join(' ')].join(' ');
-  var docLintCmd = [docBuildCmd, '--lint'].join(' ');
+  var docLintCmd = [docBin, 'lint'].join(' ');
 
   // Setup task config
   var config = {
