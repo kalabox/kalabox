@@ -8,6 +8,7 @@ module.exports = function(kbox) {
 
   // NPM modules
   var _ = require('lodash');
+  var VError = require('verror');
 
   // Grab client module
   var Client = require('./lib/client.js');
@@ -103,25 +104,37 @@ module.exports = function(kbox) {
       .then(function() {
         return pantheon.getSites()
         .then(function(sites) {
-          var sitesArray = _.transform(sites, function(acc, val, key) {
+          return _.transform(sites, function(acc, val, key) {
             acc.push({
               name: val.information.name,
-              id: key
+              id: key,
+              // Instead of loading environments now, instead create a function
+              // that can be called to get them when needed.
+              getEnvironments: function() {
+                // Reset cache.
+                pantheon.reset();
+                var session = pantheon.getSessionFile(username);
+                pantheon.setSession(username, session);
+                // Get environments.
+                return pantheon.getEnvironments(key)
+                // Wrap errors.
+                .catch(function(err) {
+                  throw new VError(err, 'Error getting environments.');
+                })
+                // Map, filter, and sort environments.
+                .then(function(envs) {
+                  delete envs.live;
+                  delete envs.test;
+                  envs = _.map(envs, function(val, key) {
+                    return key;
+                  });
+                  envs.sort();
+                  return envs;
+                });
+              }
             });
             return acc;
           }, []);
-          return kbox.Promise.map(sitesArray, function(site) {
-            return pantheon.getEnvironments(site.id)
-            .then(function(envs) {
-              delete envs.live;
-              delete envs.test;
-              site.environments = _.map(envs, function(val, key) {
-                return key;
-              });
-              site.environments.sort();
-              return site;
-            });
-          }, {concurrency: 1});
         });
       })
       .wrap('Error getting sites.');
