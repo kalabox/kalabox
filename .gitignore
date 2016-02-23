@@ -12,7 +12,7 @@ npm-debug.log
 *.log
 cache
 coverage
-doc
+docs
 deploy
 node_modules
 cids
