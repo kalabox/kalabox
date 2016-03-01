@@ -27,8 +27,16 @@ var argv = kbox.tasks.partitionArgv(process.argv.slice(2));
 /*
  * Output status update messages.
  */
-kbox.status.on('update', function(data) {
-  console.log(data.message);
+kbox.core.log.on('status', function(data) {
+  console.log(data);
+});
+/*
+ * Output warning messages.
+ */
+kbox.core.log.on('warn', function(data) {
+  console.log();
+  console.log(chalk.bgYellow.underline.bold('WARNING: ' + data));
+  console.log();
 });
 
 /*
