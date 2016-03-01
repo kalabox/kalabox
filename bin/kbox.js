@@ -51,9 +51,7 @@ function handleError(err) {
   console.log(chalk.red(kbox.getStackTrace(err)));
 
   // Log error to local log.
-  return Promise.fromNode(function(cb) {
-    kbox.core.log.error(err, cb);
-  })
+  return kbox.core.log.error(err)
   // Report error to stats server.
   .then(function() {
     return kbox.metrics.reportError(err);
