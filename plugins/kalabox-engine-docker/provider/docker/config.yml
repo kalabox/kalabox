@@ -35,8 +35,8 @@ machine:
   kalabox:
     ip: 10.13.37.100
     host: 10.13.37.1
-    isoversion: 0.11.3
-    isourl: https://github.com/kalabox/kalabox-iso/releases/download/v0.11.3/kalabox.iso
+    isoversion: 0.11.4
+    isourl: https://github.com/kalabox/kalabox-iso/releases/download/v0.11.4/kalabox.iso
     name: Kalabox2
     driver: virtualbox
     driveropts:
@@ -53,11 +53,11 @@ machine:
       - --engine-opt
       - dns=208.67.220.220
 compose:
-  version: 1.6.0
+  version: 1.6.2
   pkg:
-    darwin: https://github.com/kalabox/kalabox/releases/download/v0.11.2/docker-compose
-    win32: https://github.com/docker/compose/releases/download/1.6.0/docker-compose-Windows-x86_64.exe
-    linux: https://github.com/docker/compose/releases/download/1.6.0/docker-compose-Linux-x86_64
+    darwin: https://github.com/docker/compose/releases/download/1.6.2/docker-compose-Darwin-x86_64
+    win32: https://github.com/docker/compose/releases/download/1.6.2/docker-compose-Windows-x86_64.exe
+    linux: https://github.com/docker/compose/releases/download/1.6.2/docker-compose-Linux-x86_64
 msysgit:
   version: Git-1.9.5-preview20150319
   pkg:
