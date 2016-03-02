@@ -77,6 +77,7 @@
     "istanbul": "^0.3.2",
     "jshint-stylish": "~1.0.0",
     "kalabox-app-pantheon": "https://github.com/kalabox/kalabox-app-pantheon/tarball/v0.11",
+    "kalabox-app-drupal": "https://github.com/kalabox/kalabox-app-drupal/tarball/v0.11",
     "matchdep": "^0.3.0",
     "mocha": "^2.3.4",
     "mock-fs": "^3.5.0",

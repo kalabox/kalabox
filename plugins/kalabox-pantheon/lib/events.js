@@ -18,54 +18,59 @@ module.exports = function(kbox, pantheon) {
    */
   events.on('pre-create-configure', function(config) {
 
-    // Grab the current config
-    var pantheonConfig = config.pluginconfig.pantheon;
+    // Only run on Pantheon apps
+    if (config.type === 'pantheon') {
 
-    // Set the image version
-    // Get relevant config options
-    var prod = kbox.util.yaml.toJson(path.join(__dirname, 'config.yml'));
-    var locked = kbox.core.deps.get('globalConfig').locked;
+      // Grab the current config
+      var pantheonConfig = config.pluginconfig.pantheon;
 
-    // Expose the correct pantheon img version
-    pantheonConfig.images = (!locked) ? 'dev' : prod.url.prod;
+      // Set the image version
+      // Get relevant config options
+      var prod = kbox.util.yaml.toJson(path.join(__dirname, 'config.yml'));
+      var locked = kbox.core.deps.get('globalConfig').locked;
 
-    // Get site info
-    return pantheon.getSites()
+      // Expose the correct pantheon img version
+      pantheonConfig.images = (!locked) ? 'dev' : prod.url.prod;
 
-    // Update our config with relevant info
-    .then(function(pSites) {
+      // Get site info
+      return pantheon.getSites()
 
-      // Get cached site info
-      var sites = pantheon.sites || pSites;
-      // Get the UUID
-      var uuid = _.findKey(sites, function(site) {
-        return site.information.name === pantheonConfig.site;
+      // Update our config with relevant info
+      .then(function(pSites) {
+
+        // Get cached site info
+        var sites = pantheon.sites || pSites;
+        // Get the UUID
+        var uuid = _.findKey(sites, function(site) {
+          return site.information.name === pantheonConfig.site;
+        });
+        var site = sites[uuid].information;
+
+        // Set various kbox.yml properties
+        pantheonConfig.framework = pantheonConfig.framework || site.framework;
+        // jshint camelcase:false
+        // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+        pantheonConfig.php = site.php_version || 53;
+        pantheonConfig.upstream = site.upstream;
+
+        // Remove password
+        delete pantheonConfig.password;
+
+        // Get the user profile
+        var data = pantheon.__getAuthHeaders(pantheon.session);
+        return pantheon.getProfile(pantheon.session.user_id, data);
+
+      })
+
+      .then(function(profile) {
+        // jshint camelcase:false
+        // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+        pantheonConfig.name = profile.full_name;
+        // Rebuild json
+        config.pluginconfig.pantheon = pantheonConfig;
       });
-      var site = sites[uuid].information;
 
-      // Set various kbox.yml properties
-      pantheonConfig.framework = pantheonConfig.framework || site.framework;
-      // jshint camelcase:false
-      // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-      pantheonConfig.php = site.php_version || 53;
-      pantheonConfig.upstream = site.upstream;
-
-      // Remove password
-      delete pantheonConfig.password;
-
-      // Get the user profile
-      var data = pantheon.__getAuthHeaders(pantheon.session);
-      return pantheon.getProfile(pantheon.session.user_id, data);
-
-    })
-
-    .then(function(profile) {
-      // jshint camelcase:false
-      // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-      pantheonConfig.name = profile.full_name;
-      // Rebuild json
-      config.pluginconfig.pantheon = pantheonConfig;
-    });
+    }
 
   });
 
@@ -74,13 +79,17 @@ module.exports = function(kbox, pantheon) {
    */
   events.on('post-create-configure', function(app) {
 
-    // Set the correct session
-    // @todo: it feels weird to have to do this again
-    var account = app.pluginconfig.pantheon.email;
-    pantheon.setSession(account, pantheon.getSessionFile(account));
+    if (app.type === 'pantheon') {
 
-    // Make sure we have SSH keys that can communciate with pantheon
-    return pantheon.sshKeySetup();
+      // Set the correct session
+      // @todo: it feels weird to have to do this again
+      var account = app.pluginconfig.pantheon.email;
+      pantheon.setSession(account, pantheon.getSessionFile(account));
+
+      // Make sure we have SSH keys that can communciate with pantheon
+      return pantheon.sshKeySetup();
+
+    }
 
   });
 
