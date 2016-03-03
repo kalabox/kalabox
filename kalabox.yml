@@ -55,7 +55,7 @@ globalPlugins:
   - kalabox-services-kalabox
   - kalabox-syncthing
   - kalabox-pantheon
-  - kalabox-drupal
+  - kalabox-php
 
 #
 # Console log level

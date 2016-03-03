@@ -1,9 +1,0 @@
-url:
-  base: https://github.com/kalabox/kalabox-app-drupal
-  prod: v0.11.0
-  dev: v0.11
-  path: app
-  folder: kalabox-kalabox-app-drupal-
-path:
-  base: kalabox-app-drupal
-  path: app
