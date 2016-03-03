@@ -1,10 +1,7 @@
 
 'use strict';
 
-module.exports = function(kbox, frameworks) {
-
-  // npm modules
-  var _ = require('lodash');
+module.exports = function(kbox) {
 
   // Load some boxmods
   var events = kbox.core.events.context('29b1da3b-e0d0-49e3-a343-ea558a21c6e2');
@@ -15,10 +12,11 @@ module.exports = function(kbox, frameworks) {
    */
   events.on('pre-create-configure', function(config) {
 
-    if (_.includes(frameworks, config.type)) {
+    // Only run if this is a drupal app
+    if (config.type === 'drupal') {
       // Set the drupal version into the config
       var drupalVersion = kbox.core.deps.get('argv').payload.pop();
-      config.pluginconfig.drupal = drupalVersion.replace('drupal', '');
+      config.pluginconfig.drupal.version = drupalVersion.replace('drupal', '');
     }
 
   });

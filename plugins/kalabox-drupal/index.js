@@ -57,7 +57,7 @@ module.exports = function(kbox) {
 
   // Load our events and create modules
   require('./lib/create.js')(kbox, frameworks);
-  require('./lib/events.js')(kbox, frameworks);
+  require('./lib/events.js')(kbox);
 
   _.forEach(frameworks, function(framework) {
     // Declare our apps to the world
