@@ -52,7 +52,8 @@ module.exports = function(kbox) {
   // List of viable frameworks
   var frameworks = [
     'drupal7',
-    'drupal8'
+    'drupal8',
+    'wordpress'
   ];
 
   // Load our events and create modules
