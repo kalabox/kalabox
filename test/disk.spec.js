@@ -21,20 +21,4 @@ describe('disk.js', function() {
 
   });
 
-  describe('#getDiskFreeSpace()', function() {
-
-    it('should return a number greater than zero.', function(done) {
-      return disk.getDiskFreeSpace()
-
-      .then(function(freeSpace) {
-        expect(freeSpace).to.be.a('number');
-        expect(freeSpace).to.be.above(0);
-      })
-
-      .nodeify(done);
-
-    });
-
-  });
-
 });
