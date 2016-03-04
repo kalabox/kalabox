@@ -17,11 +17,6 @@ module.exports = function(kbox) {
   // Constants
   var PROVIDER_PATH = path.join(__dirname, 'provider', 'docker');
 
-  // Get and load the provider config
-  var providerConfigFile = path.resolve(PROVIDER_PATH, 'config.yml');
-  var providerConfig = kbox.util.yaml.toJson(providerConfigFile);
-  kbox.core.deps.register('providerConfig', providerConfig);
-
   // Kalabox Modules
   var Promise = kbox.Promise;
   var compose = require(path.join(PROVIDER_PATH, 'compose.js'))(kbox);
@@ -33,7 +28,6 @@ module.exports = function(kbox) {
   var init = _.once(function() {
 
     var VError = require('verror');
-    var path = require('path');
 
     /*
      * Helper function to load our engine things
@@ -48,10 +42,6 @@ module.exports = function(kbox) {
 
     // Load our tasks
     load('./lib/tasks.js');
-
-    // Get the provider we need and then load its install routinezzz
-    var providerInstallerFile = path.join(PROVIDER_PATH, 'install.js');
-    load(providerInstallerFile);
 
   });
 

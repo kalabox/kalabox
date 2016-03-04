@@ -1,8 +1,0 @@
-binary: 0.11.26
-image: 0.11.26
-config: 0.11.0
-configfile: https://raw.githubusercontent.com/kalabox/kalabox/v0.10/dockerfiles/syncthing/config.xml
-pkg:
-  darwin: https://github.com/syncthing/syncthing/releases/download/v0.11.26/syncthing-macosx-amd64-v0.11.26.tar.gz
-  win32: https://github.com/syncthing/syncthing/releases/download/v0.11.26/syncthing-windows-amd64-v0.11.26.zip
-  linux: https://github.com/syncthing/syncthing/releases/download/v0.11.26/syncthing-linux-amd64-v0.11.26.tar.gz

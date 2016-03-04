@@ -10,20 +10,15 @@ var inspectData = {};
 
 module.exports = function(kbox) {
 
-  // Node modules
-  var path = require('path');
-
   // NPM modules
   var VError = require('verror');
   var _ = require('lodash');
   var fs = require('fs-extra');
 
   // Kalabox modules
-  var deps = kbox.core.deps;
   var Promise = kbox.Promise;
   var bin = require('./lib/bin.js')(kbox);
   var env = require('./lib/env.js')(kbox);
-  var docker = require('./docker.js')(kbox);
 
   // Get our docker machine executable
   var MACHINE_EXECUTABLE = bin.getMachineExecutable();
@@ -36,7 +31,10 @@ module.exports = function(kbox) {
    * @todo: get this to handle multiple machines?
    */
   var getMachine = _.once(function() {
-    return kbox.core.deps.get('providerConfig').machine.kalabox;
+    return {
+      name: 'Kalabox2',
+      ip: '10.13.37.100'
+    };
   });
 
   /*
@@ -57,34 +55,9 @@ module.exports = function(kbox) {
       // Run the command
       return bin.sh(run, opts)
 
-      // See if we need to recompile our kernel mod
-      // on linux also we assume a few select errors
-      // are actually ok
+      // Throw an error
       .catch(function(err) {
-
-        // Let's see if this problem is caused by missing VB's kernel modules
-        // @todo: On machine we might need to stop first here
-        return bin.checkVBModules()
-
-        // If our modules are down let's try to get them into a good state
-        .then(function(modulesAreUp) {
-          if (!modulesAreUp) {
-
-            // Attempt to bring them up
-            return bin.bringVBModulesUp()
-
-            // Now retry the create regardless
-            .then(function() {
-              throw new VError('Retrying...');
-            });
-          }
-        })
-
-        // If our kernel isn't the issue
-        .then(function() {
-          throw new VError(err);
-        });
-
+        throw new VError(err);
       });
 
     });
@@ -92,102 +65,9 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Create a machine
+   * Bring machine up.
    */
-  var create = function(opts) {
-
-    // Build command and options with defaults
-    // Core create command
-    var createCmd = ['create', '--driver', getMachine().driver];
-
-    // Get driver options
-    var createOptions = getMachine().driveropts || [];
-
-    // Check if we have a prepackaged binary
-    // if it exists, move it into the filesystem and use that instead of
-    // a remote url
-    var isoName = path.basename(getMachine().isourl);
-    var prepackagedIso = path.resolve(process.cwd(), 'deps', 'iso', isoName);
-
-    // If exists use local iso
-    // @todo: this doesnt seem to work on windows yet
-    if (process.platform !== 'win32' && fs.existsSync(prepackagedIso)) {
-      var sysConfRoot = kbox.core.deps.get('globalConfig').sysConfRoot;
-      var dest = path.join(sysConfRoot, isoName);
-      fs.writeFileSync(dest, fs.readFileSync(prepackagedIso));
-      createOptions.unshift('file://' + dest);
-    }
-    else {
-      createOptions.unshift(getMachine().isourl);
-    }
-
-    // Add the key for the iso
-    createOptions.unshift('--virtualbox-boot2docker-url');
-
-    // Add otherOpts
-    _.forEach(getMachine().otheropts, function(option) {
-      createOptions.push(option);
-    });
-
-    // Add some more dynamic options
-    if (opts.disksize && getMachine().driver === 'virtualbox') {
-      createOptions.unshift(opts.disksize);
-      createOptions.unshift('--virtualbox-disk-size');
-    }
-
-    // Run provider command.
-    var run = _.flatten(createCmd.concat(createOptions));
-    return shProvider(run, {mode: 'collect'})
-
-    // Handle relevant create errors
-    .catch(function(err) {
-      throw new VError(err, 'Error initializing machine.', run);
-    })
-
-    // Import an internal archive if it exists
-    // @todo: this probably should live somewhere else in the future
-    .then(function() {
-
-      // Check for predownloaded image archivces and copy them over if they exist
-      // This only works in gui mode
-      if (deps.get('mode') === 'gui') {
-
-        // This is where our predownloads images should live
-        var imageRoot = path.resolve(process.cwd(), 'deps', 'images');
-        var archivePath = path.join(imageRoot, 'images.tar.gz');
-
-        // Check if we have the that might contain predownlaods
-        if (fs.existsSync(archivePath)) {
-
-          // Basic log info
-          log.info('Importing docker images from ' + archivePath);
-
-          // Source and destination dirs
-          var source = archivePath;
-          var write = path.join(kbox.util.disk.getTempDir(), 'images.tar.gz');
-
-          // If the source exists write it to the dest and remove
-          // from the downloads array
-          // @todo: something async so we can error check?
-          // @todo: what about files that need extraction?
-          if (fs.existsSync(source)) {
-            fs.writeFileSync(write, fs.readFileSync(source));
-          }
-
-          // Load the archive
-          return docker.load(write);
-
-        }
-      }
-
-    });
-
-  };
-
-  /*
-   * Machine start helper
-   */
-  var _up = function() {
+  var up = function() {
 
     // Get status
     return isDown()
@@ -202,30 +82,6 @@ module.exports = function(kbox) {
     // Wrap errors.
     .catch(function(err) {
       throw new VError(err, 'Error bringing machine up.');
-    });
-
-  };
-
-  /*
-   * Bring machine up.
-   */
-  var up = function(opts) {
-
-    // Check to see if we need to create a machine or not
-    return Promise.try(function() {
-      return vmExists();
-    })
-
-    // Create the machine if needed.
-    .then(function(exists) {
-      if (!exists) {
-        return create(opts);
-      }
-    })
-
-    // Bring machine up.
-    .then(function() {
-      return _up();
     });
 
   };

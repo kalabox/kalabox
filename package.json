@@ -33,7 +33,6 @@
   "dependencies": {
     "bluebird": "^2.9.3",
     "chalk": "~0.5.1",
-    "diskspace": "^1.0.2",
     "dmg": "^0.1.0",
     "dockerode": "^2.2.7",
     "download": "^3.3.0",
@@ -45,7 +44,6 @@
     "lodash": "^3.10.1",
     "mkdirp": "^0.5.1",
     "moment": "^2.10.6",
-    "node-windows": "https://github.com/kalabox/node-windows/tarball/master",
     "redis": "https://github.com/kalabox/node_redis/tarball/master",
     "restler": "^3.2.2",
     "sha1": "^1.1.0",
