@@ -27,17 +27,6 @@ module.exports = function(kbox) {
   var log = kbox.core.log.make('MACHINE');
 
   /*
-   * Return machine config
-   * @todo: get this to handle multiple machines?
-   */
-  var getMachine = _.once(function() {
-    return {
-      name: 'Kalabox2',
-      ip: '10.13.37.100'
-    };
-  });
-
-  /*
    * Run a provider command in a shell.
    */
   var shProvider = function(cmd, opts) {
@@ -49,7 +38,7 @@ module.exports = function(kbox) {
     return Promise.retry(function() {
 
       // Build and log the command
-      var run = [MACHINE_EXECUTABLE].concat(cmd).concat(getMachine().name);
+      var run = [MACHINE_EXECUTABLE].concat(cmd).concat('Kalabox2');
       log.debug(run);
 
       // Run the command
@@ -141,7 +130,8 @@ module.exports = function(kbox) {
    * Return machine's IP address.
    */
   var getIp = function() {
-    return Promise.resolve(getMachine().ip);
+    // Retry to shutdown if an error occurs.
+    return shProvider(['ip'], {mode: 'collect'});
   };
 
   /*
@@ -255,10 +245,11 @@ module.exports = function(kbox) {
     // Build our config
     .then(function(data) {
       var auth = data.HostOptions.AuthOptions;
+      var ip = data.Driver.IPAddress;
       return {
         protocol: 'https',
-        host: getMachine().ip,
-        machine: getMachine().name,
+        host: ip,
+        machine: 'Kalabox2',
         port: '2376',
         certDir: auth.CertDir,
         ca: fs.readFileSync(auth.CaCertPath),
@@ -273,13 +264,6 @@ module.exports = function(kbox) {
       return config;
     });
 
-  };
-
-  /*
-   * Get list of server IP addresses.
-   */
-  var getServerIps = function() {
-    return [getMachine().ip];
   };
 
   /*
@@ -301,7 +285,6 @@ module.exports = function(kbox) {
     down: down,
     engineConfig: getEngineConfig,
     getIp: getIp,
-    getServerIps: getServerIps,
     getIso: getIso,
     isDown: isDown,
     isInstalled: isInstalled,
