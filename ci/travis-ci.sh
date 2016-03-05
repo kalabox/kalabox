@@ -26,31 +26,24 @@ before-install() {
   if [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ -z "$TRAVIS_TAG" ] &&
     [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ] &&
-    [ $TRAVIS_NODE_VERSION == "4.2" ] &&
     [ $TRAVIS_OS_NAME == "linux" ]; then
       openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/travis.id_rsa.enc -out $HOME/.ssh/travis.id_rsa -d
   fi
 
   # Set OSX specific ENV stuff
   if [ $TRAVIS_OS_NAME == "linux" ]; then
-    export TRAVIS_LOCAL_BIN_DIR="/home/travis/bin"
     export JX_PLATFORM="jx_deb64v8"
   else
-    export TRAVIS_LOCAL_BIN_DIR="/Users/travis/bin"
     export JX_PLATFORM="jx_osx64v8"
   fi
 
-  # Install NVM ourselves since we are cross compiling
-  export NODE_VERSION="4.2"
-  git clone https://github.com/creationix/nvm.git /tmp/.nvm
-  source /tmp/.nvm/nvm.sh
-  nvm install $NODE_VERSION
-  nvm use --delete-prefix $NODE_VERSION
+  # We should have a default node in both OSX and LINUX
+  # The code is old sir but it checks out
   npm install -g grunt-cli
 
   # Create the home bin dir since this already exists in the path by default
-  mkdir -p "${TRAVIS_LOCAL_BIN_DIR}"
-  ln -s "$(which grunt)" "${TRAVIS_LOCAL_BIN_DIR}/grunt"
+  mkdir -p "${HOME}/bin"
+  ln -s "$(which grunt)" "${HOME}/bin/grunt"
 
   # Install JX core
   # Manually get and install JXCORE for each OS until
@@ -58,8 +51,8 @@ before-install() {
   export JX_VERSION="0311"
   curl -fsSL -o /tmp/jxcore.zip "https://raw.githubusercontent.com/jxcore/jxcore-release/master/${JX_VERSION}/${JX_PLATFORM}.zip"
   unzip /tmp/jxcore.zip -d /tmp/jx
-  mv "/tmp/jx/${JX_PLATFORM}/jx" "${TRAVIS_LOCAL_BIN_DIR}/jx"
-  chmod +x "${TRAVIS_LOCAL_BIN_DIR}/jx"
+  mv "/tmp/jx/${JX_PLATFORM}/jx" "${HOME}/bin/jx"
+  chmod +x "${HOME}/bin/jx"
 
 }
 
@@ -102,7 +95,7 @@ script() {
   run_command grunt docs
 
   # Do a basic jx build for a very basic test
-  run_command grunt pkg --dev
+  run_command grunt pkg --dev>/dev/null
   run_command dist/kbox* version
 
 }
@@ -130,7 +123,6 @@ after-success() {
   if [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ -z "$TRAVIS_TAG" ] &&
     [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ] &&
-    [ $TRAVIS_NODE_VERSION == "4.2" ];
     [ $TRAVIS_OS_NAME == "linux" ]; then
 
     # Try to grab our git tag
