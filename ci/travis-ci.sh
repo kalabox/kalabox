@@ -12,14 +12,16 @@ EXIT_VALUE=0
 # Do some stuff before npm install
 #
 before-install() {
+
   # Gather intel
-  echo $TRAVIS_TAG
-  echo $TRAVIS_BRANCH
-  echo $TRAVIS_PULL_REQUEST
-  echo $TRAVIS_REPO_SLUG
-  echo $TRAVIS_NODE_VERSION
-  echo $TRAVIS_BUILD_DIR
-  echo $TRAVIS_OS_NAME
+  echo "TRAVIS_TAG: ${TRAVIS_TAG}"
+  echo "TRAVIS_BRANCH: ${TRAVIS_BRANCH}"
+  echo "TRAVIS_PULL_REQUEST: ${TRAVIS_PULL_REQUEST}"
+  echo "TRAVIS_REPO_SLUG: ${TRAVIS_REPO_SLUG}"
+  echo "TRAVIS_BUILD_DIR: ${TRAVIS_BUILD_DIR}"
+  echo "TRAVIS_OS_NAME: ${TRAVIS_OS_NAME}"
+  echo "PATH: ${PATH}"
+
   # Add our key
   if [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ -z "$TRAVIS_TAG" ] &&
@@ -28,19 +30,37 @@ before-install() {
     [ $TRAVIS_OS_NAME == "linux" ]; then
       openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/travis.id_rsa.enc -out $HOME/.ssh/travis.id_rsa -d
   fi
+
+  # Set OSX specific ENV stuff
+  if [ $TRAVIS_OS_NAME == "linux" ]; then
+    export TRAVIS_LOCAL_BIN_DIR="/home/travis/bin"
+    export JX_PLATFORM="jx_deb64v8"
+  else
+    export TRAVIS_LOCAL_BIN_DIR="/Users/travis/bin"
+    export JX_PLATFORM="jx_osx64v8"
+  fi
+
   # Install NVM ourselves since we are cross compiling
-  git clone https://github.com/creationix/nvm.git /tmp/.nvm;
-  source /tmp/.nvm/nvm.sh;
-  nvm install $NODE_VERSION;
-  nvm use --delete-prefix $NODE_VERSION;
+  export NODE_VERSION="4.2"
+  git clone https://github.com/creationix/nvm.git /tmp/.nvm
+  source /tmp/.nvm/nvm.sh
+  nvm install $NODE_VERSION
+  nvm use --delete-prefix $NODE_VERSION
   npm install -g grunt-cli
-  node --version
-  npm --version
+
+  # Create the home bin dir since this already exists in the path by default
+  mkdir -p "${TRAVIS_LOCAL_BIN_DIR}"
+  ln -s "$(which grunt)" "${TRAVIS_LOCAL_BIN_DIR}/grunt"
 
   # Install JX core
-  curl http://jxcore.com/xil.sh | bash
-  jx --version
-  jx --jxversion
+  # Manually get and install JXCORE for each OS until
+  # https://github.com/jxcore/jxcore-release/issues/1 gets resolved
+  export JX_VERSION="0311"
+  curl -fsSL -o /tmp/jxcore.zip "https://raw.githubusercontent.com/jxcore/jxcore-release/master/${JX_VERSION}/${JX_PLATFORM}.zip"
+  unzip /tmp/jxcore.zip -d /tmp/jx
+  mv "/tmp/jx/${JX_PLATFORM}/jx" "${TRAVIS_LOCAL_BIN_DIR}/jx"
+  chmod +x "${TRAVIS_LOCAL_BIN_DIR}/jx"
+
 }
 
 # install
@@ -48,6 +68,12 @@ before-install() {
 # Install our project
 #
 install() {
+  # Sanity check
+  node --version
+  npm --version
+  grunt --version
+  jx --version
+  jx --jxversion
   npm install
 }
 
