@@ -19,6 +19,7 @@ before-install() {
   echo $TRAVIS_REPO_SLUG
   echo $TRAVIS_NODE_VERSION
   echo $TRAVIS_BUILD_DIR
+  echo $TRAVIS_OS_NAME
   # Add our key
   if [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ -z "$TRAVIS_TAG" ] &&
@@ -34,9 +35,15 @@ before-install() {
 # Run before tests
 #
 before-script() {
-  # Global install some npm
+  # Install NVM ourselves since we are cross compiling
+  git clone https://github.com/creationix/nvm.git /tmp/.nvm;
+  source /tmp/.nvm/nvm.sh;
+  nvm install $NODE_VERSION;
+  nvm use --delete-prefix $NODE_VERSION;
   npm install -g grunt-cli
-  npm install -g npm
+
+  # Install JX core
+  curl http://jxcore.com/xil.sh | bash
 }
 
 # script

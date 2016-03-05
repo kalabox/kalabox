@@ -1,4 +1,4 @@
-language: node_js
+language: cpp
 os:
   - linux
   - osx
@@ -7,8 +7,7 @@ matrix:
     - os: linux
       sudo: false
     - os: osx
-node_js:
-- '4.2'
+  fast_finish: true
 before_install:
 - cp ci/travis-ci.sh $HOME/
 - chmod +x $HOME/travis-ci.sh
