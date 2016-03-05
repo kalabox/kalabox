@@ -23,7 +23,8 @@ before-install() {
   if [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ -z "$TRAVIS_TAG" ] &&
     [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ] &&
-    [ $TRAVIS_NODE_VERSION == "4.2" ]; then
+    [ $TRAVIS_NODE_VERSION == "4.2" ] &&
+    [ $TRAVIS_OS_NAME == "linux" ]; then
       openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/travis.id_rsa.enc -out $HOME/.ssh/travis.id_rsa -d
   fi
 }
@@ -71,7 +72,8 @@ after-success() {
   if [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ -z "$TRAVIS_TAG" ] &&
     [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ] &&
-    [ $TRAVIS_NODE_VERSION == "4.2" ]; then
+    [ $TRAVIS_NODE_VERSION == "4.2" ];
+    [ $TRAVIS_OS_NAME == "linux" ]; then
 
     # Try to grab our git tag
     DISCO_TAG=$(git describe --contains HEAD)
