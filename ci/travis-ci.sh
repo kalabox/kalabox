@@ -28,22 +28,36 @@ before-install() {
     [ $TRAVIS_OS_NAME == "linux" ]; then
       openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/travis.id_rsa.enc -out $HOME/.ssh/travis.id_rsa -d
   fi
-}
-
-# before-script
-#
-# Run before tests
-#
-before-script() {
   # Install NVM ourselves since we are cross compiling
   git clone https://github.com/creationix/nvm.git /tmp/.nvm;
   source /tmp/.nvm/nvm.sh;
   nvm install $NODE_VERSION;
   nvm use --delete-prefix $NODE_VERSION;
   npm install -g grunt-cli
+  node --version
+  npm --version
 
   # Install JX core
   curl http://jxcore.com/xil.sh | bash
+  jx --version
+  jx --jxversion
+}
+
+# install
+#
+# Install our project
+#
+install() {
+  npm install
+}
+
+
+# before-script
+#
+# Run before tests
+#
+before-script() {
+  echo
 }
 
 # script
@@ -255,6 +269,10 @@ cd $TRAVIS_BUILD_DIR
 case $COMMAND in
   before-install)
     run_command before-install
+    ;;
+
+  install)
+    run_command install
     ;;
 
   before-script)

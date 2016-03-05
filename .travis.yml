@@ -14,6 +14,8 @@ before_install:
 - cp ci/npm-config.sh $HOME/
 - chmod +x $HOME/npm-config.sh
 - $HOME/travis-ci.sh before-install
+install:
+- $HOME/travis-ci.sh install
 before_script:
 - $HOME/travis-ci.sh before-script
 script:
