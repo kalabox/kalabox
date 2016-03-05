@@ -68,12 +68,15 @@ before-install() {
 # Install our project
 #
 install() {
-  # Sanity check
+
+  # Sanity checks
   node --version
   npm --version
   grunt --version
   jx --version
   jx --jxversion
+
+  # Normal NPM install
   npm install
 }
 
@@ -91,11 +94,17 @@ before-script() {
 # Run the tests.
 #
 script() {
+
   # Tests
   run_command grunt test:code
   run_command bin/kbox.js config
   run_command grunt test
   run_command grunt docs
+
+  # Do a basic jx build for a very basic test
+  run_command grunt pkg --dev
+  run_command dist/kbox* version
+
 }
 
 # after-script
@@ -111,11 +120,13 @@ after-script() {
 # Clean up after the tests.
 #
 after-success() {
-  # Check for correct travis conditions aka
+
+  # Check for correct travis conditions when we have merged code
   # 1. Is not a pull request
   # 2. Is not a "travis" tag
   # 3. Is correct slug
   # 4. Is latest node version
+  # 5. Is on linux
   if [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ -z "$TRAVIS_TAG" ] &&
     [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ] &&
@@ -249,7 +260,7 @@ after-success() {
 
 # before-deploy
 #
-# Clean up after the tests.
+# Do stuff before deploy
 #
 before-deploy() {
   echo
@@ -257,7 +268,7 @@ before-deploy() {
 
 # after-deploy
 #
-# Clean up after the tests.
+# Do stuff after deploy
 #
 after-deploy() {
   echo
