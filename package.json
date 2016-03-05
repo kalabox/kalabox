@@ -27,8 +27,7 @@
     "kbox": "./bin/kbox.js"
   },
   "scripts": {
-    "test": "istanbul cover _mocha",
-    "postinstall": "node scripts/lock.js"
+    "test": "istanbul cover _mocha"
   },
   "dependencies": {
     "bluebird": "^2.9.3",

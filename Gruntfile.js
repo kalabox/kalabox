@@ -51,10 +51,12 @@ module.exports = function(grunt) {
     '--slime "' + jxSlimPatterns.join(',') + '"',
     '--native'
   ];
-  var installCmd = ['npm', 'install'];
+  var installCmd = ['npm', 'install', '--production'];
   // Figure out whether we want to not version lock our build
   if (!grunt.option('dev')) {
-    installCmd.push('--production');
+    installCmd.push('&&');
+    installCmd.push('touch');
+    installCmd.push('version.lock');
   }
   var buildCmds = [
     installCmd.join(' '),
