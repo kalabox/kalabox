@@ -1,6 +1,0 @@
-kalabox:
-  version: 0.11.3
-  pkg:
-    darwin: https://github.com/kalabox/kalabox/releases/download/v0.11.3/kbox-darwin-x64-v0.11.3
-    win32: https://github.com/kalabox/kalabox/releases/download/v0.11.3/kbox-win32-x64-v0.11.3.exe
-    linux: https://github.com/kalabox/kalabox/releases/download/v0.11.3/kbox-linux-x64-v0.11.3
