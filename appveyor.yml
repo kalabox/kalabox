@@ -1,0 +1,64 @@
+# Make sure we are using correct line endings for win
+init:
+  - git config --global core.autocrlf true
+
+# We only want things super fresh
+platform: x64
+
+# Test against this version of Node.js
+environment:
+  nodejs_version: "4.2"
+
+# Install scripts. (runs after repo cloning)
+install:
+  # Get the latest stable version of Node.js or io.js
+  - ps: Install-Product node $env:nodejs_version
+  - ps: >-
+      $temp_dir = $env:TMP;
+      $jx_url = "https://jxcore.s3.amazonaws.com/0311/jx_winsetup.zip";
+      $jx_dest = "$temp_dir\jx_winsetup.zip";
+      $jx_installer = "$temp_dir\jx_winsetup\JXcore_setup.exe";
+      $webclient = New-Object System.Net.WebClient;
+      $webclient.DownloadFile($jx_url, $jx_dest);
+      $shell = new-object -com shell.application;
+      New-Item -ItemType Directory -Force -Path $temp_dir -WarningAction SilentlyContinue;
+      $shell.namespace($temp_dir).copyhere($shell.namespace("$jx_dest").items());
+      Start-Process -Wait $jx_installer '/SP /SILENT /VERYSILENT /SUPRESSMSGBOXES /NOCANCEL /NOREBOOT /NORESTART /CLOSEAPPLICATIONS';
+      $env:PATH = $env:PATH + ";C:\Program Files (x86)\JXcore";
+      Write-Host $env:PATH;
+
+  # install relevant things
+  - npm install -g grunt-cli
+  # Sanity checks
+  - node --version
+  - npm --version
+  - grunt --version
+  - jx --version
+  - jx --jxversion
+
+  # Build the things
+  - npm install
+
+# Post-install test scripts.
+test_script:
+
+  # Run basic tests
+  - grunt test:code
+  - node bin\\kbox.js config
+  - grunt test
+
+  # Do a basic jx build for a very basic test
+  - grunt pkg --dev
+  - dist\\kbox-win32-x64-0.12.0-alpha.3.exe version
+
+# Don't actually build.
+build: off
+
+notifications:
+  # Email
+  - provider: Email
+    to:
+      - mike@kalabox.io
+      - riley@kalabox.io
+      - alec@kalabox.io
+    on_build_status_changed: true

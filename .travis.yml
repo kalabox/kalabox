@@ -2,12 +2,6 @@ language: cpp
 os:
 - linux
 - osx
-matrix:
-  include:
-  - os: linux
-    sudo: required
-  - os: osx
-  fast_finish: true
 before_install:
 - cp ci/travis-ci.sh $HOME/
 - chmod +x $HOME/travis-ci.sh
@@ -36,6 +30,7 @@ notifications:
     recipients:
     - mike@kalabox.io
     - ben@kalabox.io
+    - alec@kalabox.io
     on_success: always
 deploy:
   - provider: releases
@@ -53,7 +48,7 @@ deploy:
     on:
       tags: true
       repo: kalabox/kalabox
-      condition: $TRAVIS_OS_NAME = osx
+      condition: $TRAVIS_OS_NAME = linux
   - provider: s3
     access_key_id: AKIAIBOHHLAVTVVLZEAQ
     secret_access_key:

@@ -35,22 +35,21 @@ before-install() {
 
   # Upgrade node per OS and set OS JX env
   if [ $TRAVIS_OS_NAME == "linux" ]; then
+    rm -rf $HOME/.nvm
+    curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+    sudo apt-get install -y nodejs
     JX_PLATFORM="jx_deb64v8"
   else
-    brew uninstall node
-    brew update
-    brew upgrade node
-    brew install node
     JX_PLATFORM="jx_osx64v8"
   fi
 
-  # We should have a default node in both OSX and LINUX
   # The code is old sir but it checks out
-  npm install -g grunt-cli
+  mkdir "${HOME}/.npm-global"
+  NPM_CONFIG_PREFIX="${HOME}/.npm-global" npm install -g grunt-cli
 
   # Create the home bin dir since this already exists in the path by default
   mkdir -p "${HOME}/bin"
-  ln -s "$(which grunt)" "${HOME}/bin/grunt"
+  ln -s "${HOME}/.npm-global/lib/node_modules/grunt-cli/bin/grunt" "${HOME}/bin/grunt"
 
   # Install JX core
   # Manually get and install JXCORE for each OS until
