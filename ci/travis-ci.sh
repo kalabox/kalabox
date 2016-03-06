@@ -204,7 +204,7 @@ before-deploy() {
 
   # Rename the builds
   cp dist/kbox* dev_build/kbox-$TRAVIS_OS_NAME-x64-v$BUILD_VERSION-$BUILD_HASH-dev
-  cp dist/kbox* dev_build/kbox-$TRAVIS_OS_NAME-x64-v$BUILD_VERSION-latest-dev
+  cp dist/kbox* dev_build/kbox-$TRAVIS_OS_NAME-x64-latest-dev
 
 }
 
