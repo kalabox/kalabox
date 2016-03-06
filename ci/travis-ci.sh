@@ -22,6 +22,9 @@ before-install() {
   echo "TRAVIS_OS_NAME: ${TRAVIS_OS_NAME}"
   echo "PATH: ${PATH}"
 
+  # Set this to dev mode by default
+  export BUILD_MODE="development"
+
   # Add our key
   if [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ -z "$TRAVIS_TAG" ] &&
@@ -32,9 +35,9 @@ before-install() {
 
   # Set OSX specific ENV stuff
   if [ $TRAVIS_OS_NAME == "linux" ]; then
-    export JX_PLATFORM="jx_deb64v8"
+    JX_PLATFORM="jx_deb64v8"
   else
-    export JX_PLATFORM="jx_osx64v8"
+    JX_PLATFORM="jx_osx64v8"
   fi
 
   # We should have a default node in both OSX and LINUX
@@ -48,7 +51,7 @@ before-install() {
   # Install JX core
   # Manually get and install JXCORE for each OS until
   # https://github.com/jxcore/jxcore-release/issues/1 gets resolved
-  export JX_VERSION="0311"
+  JX_VERSION="0311"
   curl -fsSL -o /tmp/jxcore.zip "https://raw.githubusercontent.com/jxcore/jxcore-release/master/${JX_VERSION}/${JX_PLATFORM}.zip"
   unzip /tmp/jxcore.zip -d /tmp/jx
   mv "/tmp/jx/${JX_PLATFORM}/jx" "${HOME}/bin/jx"
@@ -255,7 +258,25 @@ after-success() {
 # Do stuff before deploy
 #
 before-deploy() {
-  echo
+
+  echo $BUILD_MODE
+
+  # Do the build again
+  grunt pkg --dev>/dev/null
+
+  # Get relevant things to rename our build
+  BUILD_HASH=$(git rev-parse --short HEAD)
+  BUILD_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat $TRAVIS_BUILD_DIR/package.json)")
+  if [ $TRAVIS_OS_NAME == "linux" ]; then
+    BUILD_PLATFORM="linux"
+  else
+    BUILD_PLATFORM="osx"
+  fi
+
+  # Rename our build and produce a latest build
+  mv dist/kbox* dist/kbox-$BUILD_PLATFORM-x64-v$BUILD_VERSION-$BUILD_HASH-dev
+  cp dist/kbox* dist/kbox-$BUILD_PLATFORM-x64-v$BUILD_VERSION-latest-dev
+
 }
 
 # after-deploy

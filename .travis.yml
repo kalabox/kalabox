@@ -1,12 +1,12 @@
 language: cpp
 os:
-  - linux
-  - osx
+- linux
+- osx
 matrix:
   include:
-    - os: linux
-      sudo: false
-    - os: osx
+  - os: linux
+    sudo: false
+  - os: osx
   fast_finish: true
 before_install:
 - cp ci/travis-ci.sh $HOME/
@@ -26,7 +26,6 @@ after_success:
 - $HOME/travis-ci.sh after-success
 before_deploy:
 - $HOME/travis-ci.sh before-deploy
-- cd built
 after_deploy:
 - $HOME/travis-ci.sh after-deploy
 cache:
@@ -45,4 +44,16 @@ env:
   - secure: PL3L4KbkfxEwH24D/eVwYMeucjpYwtKifVE8nQRJBzXWGI5U6clG96WAO8GZjsde/e9Mw3WTfrRbNXyDPalPU+Bn3T/esRNhHedjXO6ZLODNSJsavesXNOZ/To5NjnARg8KjmBz8/A31F11F5oOUxPKhq0Lw3OGcQqkK3CkqFNo=
   - secure: N+6OhnQY9QEDkXkKSZ6/gvhlmX/2I0yKA3GexgXbIW3sHuRczoJw/5gva18z6/KxaWzyNZOgnmxi+tFDz64s0APa1xdtqYgJ6S2RgCASQ8sXrSzpXTFtIzQ81EahPtIiAZsm50W1sUpKPR0MZJG8jZhN6+NE9MqjNcnAUvjzhrE=
   - secure: bJGGxFBQPXCR5Z0T0Bcx3XfNSGQ+uLHyFHa3HOsngN074B2He1yLvQZTAjCXCpG7125+Nmtcb9FEs2NFhrBl7vfCI6a+jhec9pQe7zmdNTRyARt9a20Kbm6qBuzPbypRPPJVRauFGLjpJksDdAxeVZPJRhOauq3Wl40O3ft0UoU=
-
+deploy:
+  provider: s3
+  access_key_id: AKIAIBOHHLAVTVVLZEAQ
+  secret_access_key:
+    secure: Zi9HAr69BDZl7O5eGv5oSdO+3oMPkaU/ECZmZVaRKX0KeG6/piuhbyY30gM+ExCraRNg8oR6GtFm94jS72MbmTVWDoMiY3AUMLZyEw4c6CfCcmKx0GvcfdQ9F+axq6k4K4vkrA5tt3Kchots+8eZ5J1zgCkplYDNf30fu4uQeXg=
+  bucket: cli.kalabox.io
+  local-dir: dist
+  acl: public_read
+  region: us-west-1
+  skip_cleanup: true
+  on:
+    repo: kalabox/kalabox
+    branch: 1096-buildDeploy
