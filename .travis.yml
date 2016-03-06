@@ -11,8 +11,6 @@ matrix:
 before_install:
 - cp ci/travis-ci.sh $HOME/
 - chmod +x $HOME/travis-ci.sh
-- cp ci/npm-config.sh $HOME/
-- chmod +x $HOME/npm-config.sh
 - $HOME/travis-ci.sh before-install
 install:
 - $HOME/travis-ci.sh install
@@ -40,6 +38,14 @@ notifications:
     - ben@kalabox.io
     on_success: always
 deploy:
+  - provider: releases
+    api_key:
+      secure: VfCyGI/XgCKCHWVP65jqsCw5NMqwOFqFR2dU9aIud/Np1SRfaJv2eRFsyA9Bw0EE3RmRClPxFGxRNTtBgtecFJ2S8YHx0xu4ZBCwywfpRkLRKzAoTkb5cGKiVpHOvmcv2Bt1GQUK5lAfxLJM8pv5mk9JQYQwuULQt+0tLGzXnGo=
+    file: prod_build/kbox-$TRAVIS_OS_NAME-x64-v$TRAVIS_TAG
+    skip_cleanup: true
+    on:
+      repo: kalabox/kalabox
+      tags: true
   - provider: npm
     email: mike@kalamuna.com
     api_key:
@@ -47,14 +53,13 @@ deploy:
     on:
       tags: true
       repo: kalabox/kalabox
-      branch: v0.12
       condition: $TRAVIS_OS_NAME = linux
   - provider: s3
     access_key_id: AKIAIBOHHLAVTVVLZEAQ
     secret_access_key:
       secure: Zi9HAr69BDZl7O5eGv5oSdO+3oMPkaU/ECZmZVaRKX0KeG6/piuhbyY30gM+ExCraRNg8oR6GtFm94jS72MbmTVWDoMiY3AUMLZyEw4c6CfCcmKx0GvcfdQ9F+axq6k4K4vkrA5tt3Kchots+8eZ5J1zgCkplYDNf30fu4uQeXg=
     bucket: cli.kalabox.io
-    local-dir: dist
+    local-dir: dev_build
     acl: public_read
     region: us-west-1
     skip_cleanup: true

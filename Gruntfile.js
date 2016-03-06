@@ -284,7 +284,7 @@ module.exports = function(grunt) {
   ]);
 
   // Bump our minor version
-  grunt.registerTask('big-release', [
+  grunt.registerTask('bigrelease', [
     'bump:minor'
   ]);
 

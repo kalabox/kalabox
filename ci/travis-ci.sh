@@ -181,21 +181,30 @@ after-success() {
 #
 before-deploy() {
 
-  # Do the build again
+  # THis is a production release!
+  if [ $TRAVIS_PULL_REQUEST == "false" ] &&
+    [ ! -z "$TRAVIS_TAG" ] &&
+    [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ]; then
+
+    # Do a production build
+    grunt pkg>/dev/null
+    mkdir -p prod_build
+    mv dist/kbox* prod_build/kbox-$TRAVIS_OS_NAME-x64-v$TRAVIS_TAG
+  fi
+
+  # Do the build again for our dev releases
   grunt pkg --dev>/dev/null
+
+  # Rename our build and produce a latest build
+  mkdir -p dev_build
 
   # Get relevant things to rename our build
   BUILD_HASH=$(git rev-parse --short HEAD)
   BUILD_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat $TRAVIS_BUILD_DIR/package.json)")
-  if [ $TRAVIS_OS_NAME == "linux" ]; then
-    BUILD_PLATFORM="linux"
-  else
-    BUILD_PLATFORM="osx"
-  fi
 
-  # Rename our build and produce a latest build
-  mv dist/kbox* dist/kbox-$BUILD_PLATFORM-x64-v$BUILD_VERSION-$BUILD_HASH-dev
-  cp dist/kbox* dist/kbox-$BUILD_PLATFORM-x64-v$BUILD_VERSION-latest-dev
+  # Rename the builds
+  mv dist/kbox* dev_build/kbox-$TRAVIS_OS_NAME-x64-v$BUILD_VERSION-$BUILD_HASH-dev
+  cp dist/kbox* dev_build/kbox-$TRAVIS_OS_NAME-x64-v$BUILD_VERSION-latest-dev
 
 }
 
