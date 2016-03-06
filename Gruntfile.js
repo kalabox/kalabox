@@ -212,7 +212,7 @@ module.exports = function(grunt) {
         tagName: 'v%VERSION%',
         tagMessage: 'Version %VERSION%',
         push: true,
-        pushTo: '1096-buildDeploy',
+        pushTo: 'v0.12',
         gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
         globalReplace: false,
         prereleaseName: 'alpha',
@@ -291,6 +291,11 @@ module.exports = function(grunt) {
   // Bump our patch version
   grunt.registerTask('release', [
     'bump:patch'
+  ]);
+
+  // Do a prerelease version
+  grunt.registerTask('prerelease', [
+    'bump:prerelease'
   ]);
 
   // Build a binary
