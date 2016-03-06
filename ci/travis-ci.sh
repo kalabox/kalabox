@@ -33,10 +33,14 @@ before-install() {
       openssl aes-256-cbc -K $encrypted_fbe4451c16b2_key -iv $encrypted_fbe4451c16b2_iv -in ci/travis.id_rsa.enc -out $HOME/.ssh/travis.id_rsa -d
   fi
 
-  # Set OSX specific ENV stuff
+  # Upgrade node per OS and set OS JX env
   if [ $TRAVIS_OS_NAME == "linux" ]; then
     JX_PLATFORM="jx_deb64v8"
   else
+    brew uninstall node
+    brew update
+    brew upgrade node
+    brew install node
     JX_PLATFORM="jx_osx64v8"
   fi
 
@@ -189,7 +193,7 @@ before-deploy() {
     # Do a production build
     grunt pkg>/dev/null
     mkdir -p prod_build
-    mv dist/kbox* prod_build/kbox-$TRAVIS_OS_NAME-x64-v$TRAVIS_TAG
+    mv dist/kbox* prod_build/kbox-$TRAVIS_OS_NAME-x64-$TRAVIS_TAG
   fi
 
   # Do the build again for our dev releases
