@@ -61,14 +61,12 @@ module.exports = function(grunt) {
     installCmd.push('&&');
     if (platform === 'win32') {
       installCmd.push('copy');
-      installCmd.push('/b');
-      installCmd.push('version.lock');
-      installCmd.push('+,,');
     }
     else {
-      installCmd.push('touch');
-      installCmd.push('version.lock');
+      installCmd.push('cp');
     }
+    installCmd.push('package.json');
+    installCmd.push('version.lock');
   }
   var buildCmds = [
     installCmd.join(' '),

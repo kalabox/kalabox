@@ -9,7 +9,7 @@ platform: x64
 environment:
   nodejs_version: "4.2"
 
-# Install scripts. (runs after repo cloning)
+# Install scripts.
 install:
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version x64
@@ -37,6 +37,7 @@ install:
 
   # install relevant things
   - npm install -g grunt-cli
+
   # Sanity checks
   - node --version
   - npm --version
@@ -47,7 +48,7 @@ install:
   # Build the things
   - npm install
 
-# Post-install test scripts.
+# Custom test script
 test_script:
 
   # Run basic tests
@@ -57,26 +58,35 @@ test_script:
 
   # Do a basic jx build for a very basic test
   - grunt pkg --dev
-  - cmd: "dist\\kbox-win32-x64-%KALABOX_VERSION%.exe version"
+  - cmd: "dist\\kbox-win32-x64-v%KALABOX_VERSION%.exe version"
 
-before_deploy:
+# Custom build script
+build_script:
 
   # Build dev releases
   - grunt pkg --dev
   - mkdir dev_build
-  - xcopy /s "dist\kbox-win32-x64-%KALABOX_VERSION%.exe" "dev_build\kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev.exe"
-  - xcopy /s "dist\kbox-win32-x64-%KALABOX_VERSION%.exe" "dev_build\kbox-win-x64-latest-dev.exe"
+  - copy "dist\kbox-win32-x64-v%KALABOX_VERSION%.exe" "dev_build\kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev.exe"
+  - copy "dist\kbox-win32-x64-v%KALABOX_VERSION%.exe" "dev_build\kbox-win-x64-latest-dev.exe"
   - cmd: "dev_build\\kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev version"
   - cmd: "dev_build\\kbox-win-x64-latest-dev version"
 
   # Build prod releases
   - grunt pkg
   - mkdir prod_build
-  - xcopy /s "dist\kbox-win32-x64-%KALABOX_VERSION%.exe" "prod_build\kbox-win-x64-v%APPVEYOR_REPO_TAG_NAME%.exe"
-  - cmd: "prod_build\\kbox-win-x64-v%APPVEYOR_REPO_TAG_NAME%.exe version"
+  - copy "dist\kbox-win32-x64-v%KALABOX_VERSION%.exe" "prod_build\kbox-win-x64-v%KALABOX_VERSION%.exe"
+  - cmd: "prod_build\\kbox-win-x64-v%KALABOX_VERSION%.exe version"
 
-# Don't actually build.
-build: off
+# Where are our things
+artifacts:
+  - path: dev_build/*.exe
+    name: development
+  - path: prod_build/*.exe
+
+# Rename some stuff
+after_build:
+  - ps: Get-ChildItem .\dev_build\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName s3 }
+  - ps: Get-ChildItem .\prod_build\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName github }
 
 # Deploymentzzz
 deploy:
@@ -86,10 +96,22 @@ deploy:
     secret_access_key:
       secure: o/pYPIuDU8SPSrTB15BwzlLrDXGuhhTJUWdWMyvDLnsAwC6uJmASPEATUX9CFIEW
     bucket: cli.kalabox.io
-    folder: dev_build
+    region: us-west-1
+    artifact: s3
     on:
-      branch: 1096-winDeploy
+      branch: v0.12
+  - provider: GitHub
+    description: v$(KALABOX_VERSION)
+    artifact: github
+    draft: false
+    auth_token:
+      secure: h95XRXK3tAJOZphssQ9dB3rpdK0y2I8VpakCR79+YwjZQOCW4YukAdCcwtBFdEoD
+    prerelease: false
+    on:
+      branch: v0.12
+      appveyor_repo_tag: true
 
+# Notify of build stati
 notifications:
   # Email
   - provider: Email
