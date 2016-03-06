@@ -207,11 +207,17 @@ module.exports = function(grunt) {
         updateConfigs: [],
         commit: true,
         commitMessage: 'Release v%VERSION%',
-        commitFiles: ['package.json', 'bower.json'],
+        commitFiles: ['package.json'],
         createTag: true,
         tagName: 'v%VERSION%',
         tagMessage: 'Version %VERSION%',
-        push: false
+        push: false,
+        pushTo: 'v0.12',
+        gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
+        globalReplace: false,
+        prereleaseName: 'alpha',
+        metadata: '',
+        regExp: false
       }
     },
 
@@ -277,9 +283,14 @@ module.exports = function(grunt) {
     'test:coverage'
   ]);
 
+  // Bump our minor version
+  grunt.registerTask('big-release', [
+    'bump:minor'
+  ]);
+
   // Bump our patch version
-  grunt.registerTask('bump-patch', [
-    'bump-only:patch'
+  grunt.registerTask('release', [
+    'bump:patch'
   ]);
 
   // Build a binary
