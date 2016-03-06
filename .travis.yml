@@ -41,7 +41,7 @@ deploy:
   - provider: releases
     api_key:
       secure: VfCyGI/XgCKCHWVP65jqsCw5NMqwOFqFR2dU9aIud/Np1SRfaJv2eRFsyA9Bw0EE3RmRClPxFGxRNTtBgtecFJ2S8YHx0xu4ZBCwywfpRkLRKzAoTkb5cGKiVpHOvmcv2Bt1GQUK5lAfxLJM8pv5mk9JQYQwuULQt+0tLGzXnGo=
-    file: prod_build/kbox-$TRAVIS_OS_NAME-x64-v$TRAVIS_TAG
+    file: prod_build/kbox-$TRAVIS_OS_NAME-x64-$TRAVIS_TAG
     skip_cleanup: true
     on:
       repo: kalabox/kalabox
