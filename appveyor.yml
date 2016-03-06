@@ -57,27 +57,38 @@ test_script:
 
   # Do a basic jx build for a very basic test
   - grunt pkg --dev
-  - "dist\\kbox-win32-x64-%KALABOX_VERSION%.exe version"
+  - cmd: "dist\\kbox-win32-x64-%KALABOX_VERSION%.exe version"
 
 before_deploy:
 
   # Build dev releases
   - grunt pkg --dev
   - mkdir dev_build
-  - xcopy /s "dist\\kbox-win32-x64-%KALABOX_VERSION%.exe" "dev_build\\kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev.exe"
-  - xcopy /s "dist\\kbox-win32-x64-%KALABOX_VERSION%.exe" "dev_build\\kbox-win-x64-latest-dev.exe"
-  - "dev_build/kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev version"
-  - "dev_build/kbox-win-x64-latest-dev version"
+  - xcopy /s "dist\kbox-win32-x64-%KALABOX_VERSION%.exe" "dev_build\kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev.exe"
+  - xcopy /s "dist\kbox-win32-x64-%KALABOX_VERSION%.exe" "dev_build\kbox-win-x64-latest-dev.exe"
+  - cmd: "dev_build\\kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev version"
+  - cmd: "dev_build\\kbox-win-x64-latest-dev version"
 
   # Build prod releases
   - grunt pkg
   - mkdir prod_build
-  - xcopy /s "dist\\kbox-win32-x64-%KALABOX_VERSION%.exe" "prod_build\\kbox-win-x64-v%APPVEYOR_REPO_TAG_NAME%.exe"
-  - "dev_build/kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev version"
-  - "prod_build\\kbox-win-x64-v%APPVEYOR_REPO_TAG_NAME%.exe version"
+  - xcopy /s "dist\kbox-win32-x64-%KALABOX_VERSION%.exe" "prod_build\kbox-win-x64-v%APPVEYOR_REPO_TAG_NAME%.exe"
+  - cmd: "prod_build\\kbox-win-x64-v%APPVEYOR_REPO_TAG_NAME%.exe version"
 
 # Don't actually build.
 build: off
+
+# Deploymentzzz
+deploy:
+  - provider: S3
+    access_key_id:
+      secure: t16g2geIvu5qJVSiPzqxzUnk4+p9X1psf6e8RmUJPDk=
+    secret_access_key:
+      secure: o/pYPIuDU8SPSrTB15BwzlLrDXGuhhTJUWdWMyvDLnsAwC6uJmASPEATUX9CFIEW
+    bucket: cli.kalabox.io
+    folder: dev_build
+    on:
+      branch: 1096-winDeploy
 
 notifications:
   # Email
