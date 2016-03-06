@@ -51,10 +51,12 @@ module.exports = function(grunt) {
     '--slime "' + jxSlimPatterns.join(',') + '"',
     '--native'
   ];
-  var installCmd = ['npm', 'install'];
+  var installCmd = ['npm', 'install', '--production'];
   // Figure out whether we want to not version lock our build
   if (!grunt.option('dev')) {
-    installCmd.push('--production');
+    installCmd.push('&&');
+    installCmd.push('touch');
+    installCmd.push('version.lock');
   }
   var buildCmds = [
     installCmd.join(' '),
@@ -205,11 +207,17 @@ module.exports = function(grunt) {
         updateConfigs: [],
         commit: true,
         commitMessage: 'Release v%VERSION%',
-        commitFiles: ['package.json', 'bower.json'],
+        commitFiles: ['package.json'],
         createTag: true,
         tagName: 'v%VERSION%',
         tagMessage: 'Version %VERSION%',
-        push: false
+        push: true,
+        pushTo: 'v0.12',
+        gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
+        globalReplace: false,
+        prereleaseName: 'alpha',
+        metadata: '',
+        regExp: false
       }
     },
 
@@ -275,9 +283,19 @@ module.exports = function(grunt) {
     'test:coverage'
   ]);
 
+  // Bump our minor version
+  grunt.registerTask('bigrelease', [
+    'bump:minor'
+  ]);
+
   // Bump our patch version
-  grunt.registerTask('bump-patch', [
-    'bump-only:patch'
+  grunt.registerTask('release', [
+    'bump:patch'
+  ]);
+
+  // Do a prerelease version
+  grunt.registerTask('prerelease', [
+    'bump:prerelease'
   ]);
 
   // Build a binary

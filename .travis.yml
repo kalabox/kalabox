@@ -1,13 +1,19 @@
-language: node_js
-sudo: false
-node_js:
-- '4.2'
+language: cpp
+os:
+- linux
+- osx
+matrix:
+  include:
+  - os: linux
+    sudo: false
+  - os: osx
+  fast_finish: true
 before_install:
 - cp ci/travis-ci.sh $HOME/
 - chmod +x $HOME/travis-ci.sh
-- cp ci/npm-config.sh $HOME/
-- chmod +x $HOME/npm-config.sh
 - $HOME/travis-ci.sh before-install
+install:
+- $HOME/travis-ci.sh install
 before_script:
 - $HOME/travis-ci.sh before-script
 script:
@@ -18,7 +24,6 @@ after_success:
 - $HOME/travis-ci.sh after-success
 before_deploy:
 - $HOME/travis-ci.sh before-deploy
-- cd built
 after_deploy:
 - $HOME/travis-ci.sh after-deploy
 cache:
@@ -29,13 +34,35 @@ notifications:
   - chat.freenode.net#kalabox
   email:
     recipients:
-    - mike@kalamuna.com
-    - ben@kalamuna.com
+    - mike@kalabox.io
+    - ben@kalabox.io
     on_success: always
-env:
-  global:
-  - KALABOX_DEV=true
-  - secure: PL3L4KbkfxEwH24D/eVwYMeucjpYwtKifVE8nQRJBzXWGI5U6clG96WAO8GZjsde/e9Mw3WTfrRbNXyDPalPU+Bn3T/esRNhHedjXO6ZLODNSJsavesXNOZ/To5NjnARg8KjmBz8/A31F11F5oOUxPKhq0Lw3OGcQqkK3CkqFNo=
-  - secure: N+6OhnQY9QEDkXkKSZ6/gvhlmX/2I0yKA3GexgXbIW3sHuRczoJw/5gva18z6/KxaWzyNZOgnmxi+tFDz64s0APa1xdtqYgJ6S2RgCASQ8sXrSzpXTFtIzQ81EahPtIiAZsm50W1sUpKPR0MZJG8jZhN6+NE9MqjNcnAUvjzhrE=
-  - secure: bJGGxFBQPXCR5Z0T0Bcx3XfNSGQ+uLHyFHa3HOsngN074B2He1yLvQZTAjCXCpG7125+Nmtcb9FEs2NFhrBl7vfCI6a+jhec9pQe7zmdNTRyARt9a20Kbm6qBuzPbypRPPJVRauFGLjpJksDdAxeVZPJRhOauq3Wl40O3ft0UoU=
-
+deploy:
+  - provider: releases
+    api_key:
+      secure: VfCyGI/XgCKCHWVP65jqsCw5NMqwOFqFR2dU9aIud/Np1SRfaJv2eRFsyA9Bw0EE3RmRClPxFGxRNTtBgtecFJ2S8YHx0xu4ZBCwywfpRkLRKzAoTkb5cGKiVpHOvmcv2Bt1GQUK5lAfxLJM8pv5mk9JQYQwuULQt+0tLGzXnGo=
+    file: prod_build/kbox-$TRAVIS_OS_NAME-x64-v$TRAVIS_TAG
+    skip_cleanup: true
+    on:
+      repo: kalabox/kalabox
+      tags: true
+  - provider: npm
+    email: mike@kalamuna.com
+    api_key:
+      secure: eOel264BXWzKMo4Gr8A1AqdL9FjqbU9x7AnnAGZfH+bA6V4v+9/PyRJkRQyh5RIaDmLbXVnKZeRX/oI2ewcj7gV/WwLADZm+d8qIFJk0R5CmpPd5ov1xZLOpLHU8PNq6n6htONQHFuRony1w/D+O7bj5ZPJLR7Zf5DjgYo0k76g=
+    on:
+      tags: true
+      repo: kalabox/kalabox
+      condition: $TRAVIS_OS_NAME = linux
+  - provider: s3
+    access_key_id: AKIAIBOHHLAVTVVLZEAQ
+    secret_access_key:
+      secure: Zi9HAr69BDZl7O5eGv5oSdO+3oMPkaU/ECZmZVaRKX0KeG6/piuhbyY30gM+ExCraRNg8oR6GtFm94jS72MbmTVWDoMiY3AUMLZyEw4c6CfCcmKx0GvcfdQ9F+axq6k4K4vkrA5tt3Kchots+8eZ5J1zgCkplYDNf30fu4uQeXg=
+    bucket: cli.kalabox.io
+    local-dir: dev_build
+    acl: public_read
+    region: us-west-1
+    skip_cleanup: true
+    on:
+      repo: kalabox/kalabox
+      branch: v0.12
