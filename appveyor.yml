@@ -12,7 +12,7 @@ environment:
 # Install scripts. (runs after repo cloning)
 install:
   # Get the latest stable version of Node.js or io.js
-  - ps: Install-Product node $env:nodejs_version
+  - ps: Install-Product node $env:nodejs_version x64
   - ps: >-
       $temp_dir = $env:TMP;
       $jx_url = "https://jxcore.s3.amazonaws.com/0311/jx_winsetup.zip";
@@ -26,6 +26,14 @@ install:
       Start-Process -Wait $jx_installer '/SP /SILENT /VERYSILENT /SUPRESSMSGBOXES /NOCANCEL /NOREBOOT /NORESTART /CLOSEAPPLICATIONS';
       $env:PATH = $env:PATH + ";C:\Program Files (x86)\JXcore";
       Write-Host $env:PATH;
+      [System.Reflection.Assembly]::LoadWithPartialName("System.Web.Extensions");
+      $ser = New-Object System.Web.Script.Serialization.JavaScriptSerializer;
+      $json = Get-Content "package.json" | Out-String;
+      $obj = $ser.DeserializeObject($json);
+      $env:KALABOX_VERSION = $obj['version'];
+      Write-Host $env:KALABOX_VERSION;
+      $env:KALABOX_HASH = git rev-parse --short HEAD | Out-String;
+      Write-Host $env:KALABOX_HASH;
 
   # install relevant things
   - npm install -g grunt-cli
@@ -49,7 +57,24 @@ test_script:
 
   # Do a basic jx build for a very basic test
   - grunt pkg --dev
-  - dist\\kbox-win32-x64-0.12.0-alpha.3.exe version
+  - "dist\\kbox-win32-x64-%KALABOX_VERSION%.exe version"
+
+before_deploy:
+
+  # Build dev releases
+  - grunt pkg --dev
+  - mkdir dev_build
+  - xcopy /s "dist\\kbox-win32-x64-%KALABOX_VERSION%.exe" "dev_build\\kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev.exe"
+  - xcopy /s "dist\\kbox-win32-x64-%KALABOX_VERSION%.exe" "dev_build\\kbox-win-x64-latest-dev.exe"
+  - "dev_build/kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev version"
+  - "dev_build/kbox-win-x64-latest-dev version"
+
+  # Build prod releases
+  - grunt pkg
+  - mkdir prod_build
+  - xcopy /s "dist\\kbox-win32-x64-%KALABOX_VERSION%.exe" "prod_build\\kbox-win-x64-v%APPVEYOR_REPO_TAG_NAME%.exe"
+  - "dev_build/kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev version"
+  - "prod_build\\kbox-win-x64-v%APPVEYOR_REPO_TAG_NAME%.exe version"
 
 # Don't actually build.
 build: off

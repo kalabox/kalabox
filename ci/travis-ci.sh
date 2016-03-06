@@ -193,6 +193,9 @@ before-deploy() {
     grunt pkg>/dev/null
     mkdir -p prod_build
     mv dist/kbox* prod_build/kbox-$TRAVIS_OS_NAME-x64-$TRAVIS_TAG
+
+    # Basic test
+    prod_build/kbox-$TRAVIS_OS_NAME-x64-$TRAVIS_TAG version
   fi
 
   # Do the build again for our dev releases
@@ -208,6 +211,10 @@ before-deploy() {
   # Rename the builds
   cp dist/kbox* dev_build/kbox-$TRAVIS_OS_NAME-x64-v$BUILD_VERSION-$BUILD_HASH-dev
   cp dist/kbox* dev_build/kbox-$TRAVIS_OS_NAME-x64-latest-dev
+
+  # Basic tests
+  dev_build/kbox-$TRAVIS_OS_NAME-x64-v$BUILD_VERSION-$BUILD_HASH-dev version
+  dev_build/kbox-$TRAVIS_OS_NAME-x64-latest-dev version
 
 }
 
