@@ -502,20 +502,17 @@ Client.prototype.sshKeySetup = function() {
         // Add the correct gitbin
         // This can be in different spots for different windows versions so
         // we add the ones that exist
-        var home = self.kbox.core.deps.get('globalConfig').home;
-        var gBin1 = 'C:\\Program Files (x86)\\Git\\bin';
-        var gBin2 = path.join(home, 'AppData\\Local', 'Programs', 'Git', 'bin');
+        var appData = process.env.LOCALAPPDATA;
+        var gitBin = path.join(appData, 'Programs', 'Git', 'usr', 'bin');
 
         // Only add the gitbin to the path if the path doesn't start with
         // it. We want to make sure gitBin is first so other things like
         // putty don't F with it.
         // See https://github.com/kalabox/kalabox/issues/342
-        _.forEach([gBin1, gBin2], function(bin) {
-          var env = self.kbox.core.env;
-          if (fs.existsSync(bin) && !_.startsWith(process.env.path, bin)) {
-            env.setEnv('Path', [bin, process.env.Path].join(';'));
-          }
-        });
+        var env = self.kbox.core.env;
+        if (fs.existsSync(gitBin) && !_.startsWith(process.env.path, gitBin)) {
+          env.setEnv('Path', [gitBin, process.env.Path].join(';'));
+        }
       }
 
       // Build our key option array

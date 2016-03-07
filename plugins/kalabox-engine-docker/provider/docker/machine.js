@@ -130,8 +130,15 @@ module.exports = function(kbox) {
    * Return machine's IP address.
    */
   var getIp = function() {
-    // Retry to shutdown if an error occurs.
-    return shProvider(['ip'], {mode: 'collect'});
+
+    // Inspect our machine so we can get ips
+    return inspect()
+
+    // Build our config
+    .then(function(data) {
+      return data.Driver.IPAddress;
+    });
+
   };
 
   /*
@@ -239,7 +246,7 @@ module.exports = function(kbox) {
 
     opts = opts || {};
 
-    // Inspect our machine so we can get certificates
+    // Inspect our machine so we can get some dataz
     return inspect()
 
     // Build our config
