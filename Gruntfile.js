@@ -20,13 +20,17 @@ module.exports = function(grunt) {
     'v' + pkg.version
   ];
 
-  // Add EXE if needed
-  if (platform === 'win32') {
-    binBuild.push('.exe');
-  }
-
   // Build the binName
   var binName = binBuild.join('-');
+
+  // Add EXE if needed
+  var binNameExt;
+  if (platform === 'win32') {
+    binNameExt = binName + '.exe';
+  }
+  else {
+    binNameExt = binName;
+  }
 
   // Build commands
   var jxAddPatterns = [
@@ -55,7 +59,13 @@ module.exports = function(grunt) {
   // Figure out whether we want to not version lock our build
   if (!grunt.option('dev')) {
     installCmd.push('&&');
-    installCmd.push('touch');
+    if (platform === 'win32') {
+      installCmd.push('copy');
+    }
+    else {
+      installCmd.push('cp');
+    }
+    installCmd.push('package.json');
     installCmd.push('version.lock');
   }
   var buildCmds = [
@@ -120,8 +130,8 @@ module.exports = function(grunt) {
       },
       // Copy build artifacts to dist directory
       dist: {
-        src: 'build/dist/' + binName,
-        dest: 'dist/' + binName,
+        src: 'build/dist/' + binNameExt,
+        dest: 'dist/' + binNameExt,
         options: {
           mode: true
         }
