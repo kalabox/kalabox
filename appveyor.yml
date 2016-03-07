@@ -82,6 +82,7 @@ artifacts:
   - path: dev_build/*.exe
     name: development
   - path: prod_build/*.exe
+    name: production
 
 # Rename some stuff
 after_build:
