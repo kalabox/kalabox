@@ -29,19 +29,17 @@ module.exports = function(kbox) {
       // Add the correct gitbin
       // This can be in different spots for different windows versions so
       // we add the ones that exist
-      var home = kbox.core.deps.get('globalConfig').home;
-      var gBin1 = 'C:\\Program Files (x86)\\Git\\bin';
-      var gBin2 = path.join(home, 'AppData', 'Local', 'Programs', 'Git', 'bin');
+      var appData = process.env.LOCALAPPDATA;
+      var gitBin = path.join(appData, 'Programs', 'Git', 'usr', 'bin');
 
       // Only add the gitbin to the path if the path doesn't start with
       // it. We want to make sure gitBin is first so other things like
       // putty don't F with it.
       // See https://github.com/kalabox/kalabox/issues/342
-      _.forEach([gBin1, gBin2], function(gitBin) {
-        if (fs.existsSync(gitBin) && !_.startsWith(process.env.path, gitBin)) {
-          kbox.core.env.setEnv('Path', [gitBin, process.env.Path].join(';'));
-        }
-      });
+      if (fs.existsSync(gitBin) && !_.startsWith(process.env.path, gitBin)) {
+        kbox.core.env.setEnv('Path', [gitBin, process.env.Path].join(';'));
+      }
+
     }
 
     // Add docker executables path to path to handle weird situations where
