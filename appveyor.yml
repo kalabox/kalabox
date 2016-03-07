@@ -109,7 +109,6 @@ deploy:
       secure: h95XRXK3tAJOZphssQ9dB3rpdK0y2I8VpakCR79+YwjZQOCW4YukAdCcwtBFdEoD
     prerelease: false
     on:
-      branch: v0.12
       appveyor_repo_tag: true
 
 # Notify of build stati
