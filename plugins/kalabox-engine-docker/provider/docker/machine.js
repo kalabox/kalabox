@@ -255,7 +255,7 @@ module.exports = function(kbox) {
       var ip = data.Driver.IPAddress;
       return {
         protocol: 'https',
-        host: ip,
+        host: ip || '10.13.37.100',
         machine: 'Kalabox2',
         port: '2376',
         certDir: auth.CertDir,
