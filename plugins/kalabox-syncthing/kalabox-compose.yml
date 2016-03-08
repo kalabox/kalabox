@@ -6,7 +6,7 @@
 syncthing:
   # Comment this and uncomment 'build' below if you want to edit your
   # local dockerfile and build from there. This is useful for development
-  image: kalabox/syncthing:$KALABOX_IMG_VERSION
+  image: kalabox/syncthing:v0.12.0-alpha.5
 
   # Uncomment this and comment 'image' above if you want to edit your
   # local dockerfile and build from there. This is useful for development
