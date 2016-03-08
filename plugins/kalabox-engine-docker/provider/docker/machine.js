@@ -136,7 +136,7 @@ module.exports = function(kbox) {
 
     // Build our config
     .then(function(data) {
-      return data.Driver.IPAddress;
+      return data.Driver.IPAddress || '10.13.37.100';
     });
 
   };
