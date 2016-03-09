@@ -504,15 +504,17 @@ Client.prototype.sshKeySetup = function() {
         // we add the ones that exist
         var appData = process.env.LOCALAPPDATA;
         var programFiles = process.env.ProgramFiles;
+        var programFiles2 = process.env.ProgramW6432;
         var gitBin1 = path.join(appData, 'Programs', 'Git', 'usr', 'bin');
         var gitBin2 = path.join(programFiles, 'Git', 'usr', 'bin');
+        var gitBin3 = path.join(programFiles2, 'Git', 'usr', 'bin');
 
         // Only add the gitbin to the path if the path doesn't start with
         // it. We want to make sure gitBin is first so other things like
         // putty don't F with it.
         // See https://github.com/kalabox/kalabox/issues/342
         var env = self.kbox.core.env;
-        _.forEach([gitBin1, gitBin2], function(gBin) {
+        _.forEach([gitBin1, gitBin2, gitBin3], function(gBin) {
           if (fs.existsSync(gBin) && !_.startsWith(process.env.path, gBin)) {
             env.setEnv('Path', [gBin, process.env.Path].join(';'));
           }
