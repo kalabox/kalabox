@@ -30,15 +30,19 @@ module.exports = function(kbox) {
       // This can be in different spots for different windows versions so
       // we add the ones that exist
       var appData = process.env.LOCALAPPDATA;
-      var gitBin = path.join(appData, 'Programs', 'Git', 'usr', 'bin');
+      var programFiles = process.env.ProgramFiles;
+      var gitBin1 = path.join(appData, 'Programs', 'Git', 'usr', 'bin');
+      var gitBin2 = path.join(programFiles, 'Git', 'usr', 'bin');
 
       // Only add the gitbin to the path if the path doesn't start with
       // it. We want to make sure gitBin is first so other things like
       // putty don't F with it.
       // See https://github.com/kalabox/kalabox/issues/342
-      if (fs.existsSync(gitBin) && !_.startsWith(process.env.path, gitBin)) {
-        kbox.core.env.setEnv('Path', [gitBin, process.env.Path].join(';'));
-      }
+      _.forEach([gitBin1, gitBin2], function(gitBin) {
+        if (fs.existsSync(gitBin) && !_.startsWith(process.env.path, gitBin)) {
+          kbox.core.env.setEnv('Path', [gitBin, process.env.Path].join(';'));
+        }
+      });
 
     }
 
