@@ -113,20 +113,6 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Return status of machine.
-   */
-  var getIso = function() {
-    // Get status.
-    return shProvider(['upgrade'], {mode: 'collect'})
-    .catch(function(/*err*/) {
-      return up()
-      .then(function() {
-        throw new VError('Need to start the machine to upgrade');
-      });
-    });
-  };
-
-  /*
    * Return machine's IP address.
    */
   var getIp = function() {
@@ -292,7 +278,6 @@ module.exports = function(kbox) {
     down: down,
     engineConfig: getEngineConfig,
     getIp: getIp,
-    getIso: getIso,
     isDown: isDown,
     isInstalled: isInstalled,
     isUp: isUp,

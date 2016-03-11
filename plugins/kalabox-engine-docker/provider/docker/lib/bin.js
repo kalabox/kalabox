@@ -67,6 +67,17 @@ module.exports = function(kbox) {
   };
 
   /*
+   * This should only be needed for linux
+   */
+  var getDockerExecutable = function() {
+
+    // Get docker bin path
+    var dockerPath = getBinPath();
+    return path.join(dockerPath, 'docker');
+
+  };
+
+  /*
    * Exec or spawn a shell command.
    */
   var sh = function(cmd, opts) {
@@ -114,6 +125,7 @@ module.exports = function(kbox) {
   return {
     sh: sh,
     getBinPath: getBinPath,
+    getDockerExecutable: getDockerExecutable,
     getMachineExecutable: getMachineExecutable,
     getComposeExecutable: getComposeExecutable
   };

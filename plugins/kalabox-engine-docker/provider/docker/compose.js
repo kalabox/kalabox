@@ -19,7 +19,7 @@ module.exports = function(kbox) {
   // Kalabox modules
   var bin = require('./lib/bin.js')(kbox);
   var env = require('./lib/env.js')(kbox);
-  var machine = require('./machine.js')(kbox);
+  var provider = kbox.engine.provider;
 
   // Get some composer things
   var COMPOSE_EXECUTABLE = bin.getComposeExecutable();
@@ -36,7 +36,7 @@ module.exports = function(kbox) {
     env.setDockerEnv();
 
     // Get our config so we can set our env correctly
-    return machine.engineConfig()
+    return provider.engineConfig()
 
     // Set correct ENV for remote docker composing
     .then(function(config) {
@@ -49,11 +49,15 @@ module.exports = function(kbox) {
         port: config.port
       });
 
-      // Set our compose env
+      // Set our docker host for compose
       kbox.core.env.setEnv('DOCKER_HOST', dockerHost);
-      kbox.core.env.setEnv('DOCKER_TLS_VERIFY', 1);
-      kbox.core.env.setEnv('DOCKER_MACHINE_NAME', config.machine);
-      kbox.core.env.setEnv('DOCKER_CERT_PATH', config.certDir);
+
+      // Additional configuration is needed for docker machinez
+      if (process.platform !== 'linux') {
+        kbox.core.env.setEnv('DOCKER_TLS_VERIFY', 1);
+        kbox.core.env.setEnv('DOCKER_MACHINE_NAME', config.machine);
+        kbox.core.env.setEnv('DOCKER_CERT_PATH', config.certDir);
+      }
 
       // Run a provider command in a shell.
       log.info(_.flatten([cmd, opts]));

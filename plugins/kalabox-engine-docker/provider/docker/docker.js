@@ -33,7 +33,8 @@ module.exports = function(kbox) {
     // Load.
     return Promise.try(function() {
       // Get the provider we need and then load its install routinezzz
-      var providerFile = path.join(PROVIDER_PATH, 'machine.js');
+      var provider = (process.platform === 'linux') ? 'engine' : 'machine';
+      var providerFile = path.join(PROVIDER_PATH, provider + '.js');
       return require(providerFile)(kbox);
     })
 

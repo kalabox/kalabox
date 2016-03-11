@@ -112,7 +112,7 @@ module.exports = function(kbox) {
      */
     events.on('pre-app-start', 1, function(app) {
 
-      if (app.config.syncthing.share) {
+      if (app.config.syncthing.share && process.platform !== 'linux') {
 
         kbox.core.log.status('Sharing code.');
 
