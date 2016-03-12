@@ -228,9 +228,7 @@ module.exports = function(kbox) {
   /*
    * Return cached instance of engine config.
    */
-  var getEngineConfig = function(opts) {
-
-    opts = opts || {};
+  var getEngineConfig = function() {
 
     // Inspect our machine so we can get some dataz
     return inspect()
@@ -249,12 +247,6 @@ module.exports = function(kbox) {
         cert: fs.readFileSync(auth.ClientCertPath),
         key: fs.readFileSync(auth.ClientKeyPath)
       };
-    })
-
-    // Mix in options and return
-    .then(function(config) {
-      _.extend(config, opts);
-      return config;
     });
 
   };
