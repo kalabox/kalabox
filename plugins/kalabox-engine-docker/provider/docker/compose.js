@@ -19,7 +19,6 @@ module.exports = function(kbox) {
   // Kalabox modules
   var bin = require('./lib/bin.js')(kbox);
   var env = require('./lib/env.js')(kbox);
-  var provider = kbox.engine.provider;
 
   // Get some composer things
   var COMPOSE_EXECUTABLE = bin.getComposeExecutable();
@@ -36,33 +35,29 @@ module.exports = function(kbox) {
     env.setDockerEnv();
 
     // Get our config so we can set our env correctly
-    return provider.engineConfig()
+    var engineConfig = kbox.core.deps.get('engineConfig');
 
-    // Set correct ENV for remote docker composing
-    .then(function(config) {
-
-      // Parse the docker host url
-      var dockerHost = url.format({
-        protocol: 'tcp',
-        slashes: true,
-        hostname: config.host,
-        port: config.port
-      });
-
-      // Set our docker host for compose
-      kbox.core.env.setEnv('DOCKER_HOST', dockerHost);
-
-      // Additional configuration is needed for docker machinez
-      if (process.platform !== 'linux') {
-        kbox.core.env.setEnv('DOCKER_TLS_VERIFY', 1);
-        kbox.core.env.setEnv('DOCKER_MACHINE_NAME', config.machine);
-        kbox.core.env.setEnv('DOCKER_CERT_PATH', config.certDir);
-      }
-
-      // Run a provider command in a shell.
-      log.info(_.flatten([cmd, opts]));
-      return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
+    // Parse the docker host url
+    var dockerHost = url.format({
+      protocol: 'tcp',
+      slashes: true,
+      hostname: engineConfig.host,
+      port: engineConfig.port
     });
+
+    // Set our docker host for compose
+    kbox.core.env.setEnv('DOCKER_HOST', dockerHost);
+
+    // Additional configuration is needed for docker machinez
+    if (process.platform !== 'linux') {
+      kbox.core.env.setEnv('DOCKER_TLS_VERIFY', 1);
+      kbox.core.env.setEnv('DOCKER_MACHINE_NAME', engineConfig.machine);
+      kbox.core.env.setEnv('DOCKER_CERT_PATH', engineConfig.certDir);
+    }
+
+    // Run a provider command in a shell.
+    log.info(_.flatten([cmd, opts]));
+    return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
 
   };
 
