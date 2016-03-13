@@ -34,7 +34,7 @@ module.exports = function(kbox) {
     // containers are on or off
     if (core.deps.contains('app')) {
       var regName = core.deps.get('app').name;
-      return app.config.syncthing.share && regName === app.name;
+      return app.config.sharing.share && regName === app.name;
     }
 
     // Otherwise get a list of app's containers.
@@ -195,7 +195,7 @@ module.exports = function(kbox) {
       // Build map of app name to code root.
       var codeRootMap = {};
       _.each(apps, function(app) {
-        codeRootMap[app.name] = app.config.syncthing.codeRoot;
+        codeRootMap[app.name] = app.config.sharing.codeRoot;
       });
 
       // Build map function.
