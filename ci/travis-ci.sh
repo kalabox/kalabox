@@ -22,9 +22,6 @@ before-install() {
   echo "TRAVIS_OS_NAME: ${TRAVIS_OS_NAME}"
   echo "PATH: ${PATH}"
 
-  # Set this to dev mode by default
-  export BUILD_MODE="development"
-
   # Add our key
   if [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ -z "$TRAVIS_TAG" ] &&
