@@ -53,7 +53,7 @@ globalPlugins:
   - kalabox-core
   - kalabox-cli
   - kalabox-services-kalabox
-  - kalabox-syncthing
+  - kalabox-sharing
   - kalabox-pantheon
   - kalabox-php
 

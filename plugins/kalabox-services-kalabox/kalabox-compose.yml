@@ -19,9 +19,9 @@ proxy:
   environment:
     DOMAIN: $KALABOX_DOMAIN
   ports:
-    - "80:80"
-    - "443:443"
-    - "8160:8160"
+    - "$KALABOX_ENGINE_IP:80:80"
+    - "$KALABOX_ENGINE_IP:443:443"
+    - "$KALABOX_ENGINE_IP:8160:8160"
   restart: always
 
 #

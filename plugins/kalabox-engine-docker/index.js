@@ -13,6 +13,7 @@ module.exports = function(kbox) {
 
   // Npm
   var _ = require('lodash');
+  var VError = require('verror');
 
   // Constants
   var PROVIDER_PATH = path.join(__dirname, 'provider', 'docker');
@@ -158,10 +159,41 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Do a docker exec into a container.
+   * Get the provider
    */
   var getProvider = _.once(function() {
-    return docker.getProvider();
+
+    return Promise.try(function() {
+      // Get the provider we need and then load its install routinezzz
+      var provider = (process.platform === 'linux') ? 'engine' : 'machine';
+      var providerFile = path.join(PROVIDER_PATH, provider + '.js');
+      return require(providerFile)(kbox);
+    })
+
+    // Wrap errors.
+    .catch(function(err) {
+      throw new VError(err, 'Failure initializing provider!');
+    })
+
+    // Get and set the engineConfig
+    .tap(function(provider) {
+
+      // Get the engine config
+      return provider.engineConfig()
+
+      // Set the engine config
+      .then(function(engineConfig) {
+        kbox.core.deps.remove('engineConfig');
+        kbox.core.deps.register('engineConfig', engineConfig);
+      });
+
+    })
+
+    // Return the provider module
+    .tap(function(provider) {
+      return provider;
+    });
+
   });
 
   /*

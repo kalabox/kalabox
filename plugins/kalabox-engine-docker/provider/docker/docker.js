@@ -11,11 +11,7 @@ module.exports = function(kbox) {
   // Node
   var assert = require('assert');
   var format = require('util').format;
-  var path = require('path');
   var pp = require('util').inspect;
-
-  // Constants
-  var PROVIDER_PATH = path.join(__dirname);
 
   // Npm modules
   var Dockerode = require('dockerode');
@@ -26,39 +22,17 @@ module.exports = function(kbox) {
   var Promise = kbox.Promise;
 
   /*
-   * Load the provider module.
-   */
-  var getProvider = function() {
-
-    // Load.
-    return Promise.try(function() {
-      // Get the provider we need and then load its install routinezzz
-      var providerFile = path.join(PROVIDER_PATH, 'machine.js');
-      return require(providerFile)(kbox);
-    })
-
-    // Wrap errors.
-    .catch(function(err) {
-      throw new VError(err, 'Failure initializing machine!');
-    });
-
-  };
-
-  /*
    * Docker config instance lazy loaded and cached singelton.
    */
-  var dockerConfigInstance = function(opts) {
+  var dockerConfigInstance = function() {
 
-    // Get engine config from provider.
-    return getProvider().call('engineConfig', opts)
-    // Register engine config dependency.
-    .tap(function(engineConfig) {
-      kbox.core.deps.remove('engineConfig');
-      kbox.core.deps.register('engineConfig', engineConfig);
+    return Promise.try(function() {
+      return kbox.core.deps.get('engineConfig');
     })
+
     // Wrap errors.
     .catch(function(err) {
-      throw new VError(err, 'Error getting docker config.');
+      throw new VError(err, 'Error getting engine config.');
     });
 
   };
@@ -474,7 +448,6 @@ module.exports = function(kbox) {
   return {
     findContainer: findContainer,
     findContainerThrows: findContainerThrows,
-    getProvider: getProvider,
     inspect: inspect,
     isRunning: isRunning,
     list: list,

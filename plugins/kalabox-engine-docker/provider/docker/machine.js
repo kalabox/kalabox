@@ -113,20 +113,6 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Return status of machine.
-   */
-  var getIso = function() {
-    // Get status.
-    return shProvider(['upgrade'], {mode: 'collect'})
-    .catch(function(/*err*/) {
-      return up()
-      .then(function() {
-        throw new VError('Need to start the machine to upgrade');
-      });
-    });
-  };
-
-  /*
    * Return machine's IP address.
    */
   var getIp = function() {
@@ -242,9 +228,7 @@ module.exports = function(kbox) {
   /*
    * Return cached instance of engine config.
    */
-  var getEngineConfig = function(opts) {
-
-    opts = opts || {};
+  var getEngineConfig = function() {
 
     // Inspect our machine so we can get some dataz
     return inspect()
@@ -263,12 +247,6 @@ module.exports = function(kbox) {
         cert: fs.readFileSync(auth.ClientCertPath),
         key: fs.readFileSync(auth.ClientKeyPath)
       };
-    })
-
-    // Mix in options and return
-    .then(function(config) {
-      _.extend(config, opts);
-      return config;
     });
 
   };
@@ -292,7 +270,6 @@ module.exports = function(kbox) {
     down: down,
     engineConfig: getEngineConfig,
     getIp: getIp,
-    getIso: getIso,
     isDown: isDown,
     isInstalled: isInstalled,
     isUp: isUp,
