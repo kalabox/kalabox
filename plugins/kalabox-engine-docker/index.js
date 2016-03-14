@@ -73,6 +73,10 @@ module.exports = function(kbox) {
       if (appName && typeof appName !== 'string') {
         throw new TypeError('Invalid appName: ' + appName);
       }
+
+      if (typeof appName === 'string') {
+        appName = appName.replace('-', '');
+      }
     })
 
     .then(function() {
