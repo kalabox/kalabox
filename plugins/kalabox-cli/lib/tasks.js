@@ -50,11 +50,9 @@ module.exports = function(kbox) {
        * Return the task defaults
        */
       var taskDefaults = function() {
-        var isLinux = process.platform === 'linux';
-        var entryPoint = (isLinux) ? ['usermap'] : ['/bin/sh', '-c'];
         return {
           services: ['cli'],
-          entrypoint: entryPoint,
+          entrypoint: ['usermap'],
           description: 'Run a command against a container'
         };
       };
