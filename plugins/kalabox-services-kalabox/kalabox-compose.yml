@@ -9,7 +9,7 @@
 proxy:
   # Comment this and uncomment 'build' below if you want to edit your
   # local dockerfile and build from there. This is useful for development
-  image: kalabox/proxy:v0.12.0-alpha.5
+  image: kalabox/proxy:stable
 
   # Uncomment this and comment 'image' above if you want to edit your
   # local dockerfile and build from there. This is useful for development
@@ -34,7 +34,7 @@ proxy:
 dns:
   # Comment this and uncomment 'build' below if you want to edit your
   # local dockerfile and build from there. This is useful for development
-  image: kalabox/dns:v0.12.0-alpha.5
+  image: kalabox/dns:stable
 
   # Uncomment this and comment 'image' above if you want to edit your
   # local dockerfile and build from there. This is useful for development
