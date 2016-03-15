@@ -13,11 +13,14 @@ RUN \
   curl \
   bash && \
   npm install --production -g grunt-cli gulp-cli bower && \
+  mkdir -p /config && \
   rm -rf ~/.npm && \
   npm cache clear && \
   rm -rf /var/cache/apk/*
 
-COPY ./config/gitconfig /root/.gitconfig
+COPY ./config/gitconfig /config/.gitconfig
 COPY ./kgit /usr/bin/kgit
+COPY ./usermap.sh /usr/bin/usermap
 
+ENTRYPOINT ["usermap"]
 CMD ["true"]
