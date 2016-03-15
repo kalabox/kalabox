@@ -19,7 +19,6 @@ RUN \
   rm -rf /var/cache/apk/*
 
 COPY ./config/gitconfig /config/.gitconfig
-COPY ./kgit /usr/bin/kgit
 COPY ./usermap.sh /usr/bin/usermap
 
 ENTRYPOINT ["usermap"]
