@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -e
+set -u
+if [ "$1" = "purge" ] ; then
+  update-rc.d kalabox remove > /dev/null || true
+fi
+
+# In case this system is running systemd, we make systemd reload the unit files
+# to pick up changes.
+if [ -d /run/systemd/system ] ; then
+  systemctl --system daemon-reload > /dev/null || true
+fi
+
+# Remove other things
+rm -f /etc/resolver/kbox
+rm -rf /usr/share/kalabox

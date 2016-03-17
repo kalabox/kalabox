@@ -1,0 +1,15 @@
+#!/bin/bash
+
+CONSOLE_USER=$(stat -f '%Su' /dev/console)
+CONSOLE_USER_HOME=$(su $CONSOLE_USER -c 'echo $HOME')
+
+# Fix permissions on binaries
+chown -R $CONSOLE_USER:admin /tmp/syncthing || true
+
+# Move syncthing stuff to correct location
+mkdir -p $CONSOLE_USER_HOME/.kalabox/syncthing
+mkdir -p $CONSOLE_USER_HOME/.kalabox/bin
+mv -f /tmp/config.xml $CONSOLE_USER_HOME/.kalabox/syncthing/config.xml
+mv -f /tmp/syncthing $CONSOLE_USER_HOME/.kalabox/bin/syncthing
+
+chown -R $CONSOLE_USER:staff $CONSOLE_USER_HOME/.kalabox

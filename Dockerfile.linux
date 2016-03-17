@@ -1,0 +1,69 @@
+FROM debian:jessie
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Install our deps
+RUN dpkg --add-architecture i386
+RUN apt-get update && apt-get -y install \
+    curl file \
+    ruby-dev rubygems \
+    build-essential \
+    alien
+
+# Grab the effin package manager
+RUN /usr/bin/gem install --verbose fpm
+
+# installer components
+ENV KALABOX_CLI_VERSION 0.12.0-alpha.15
+ENV KALABOX_GUI_VERSION 0.12.8
+ENV IMAGE_VERSION v0.12
+ENV DOCKER_ENGINE_VERSION 1.9.1
+ENV DOCKER_COMPOSE_VERSION 1.6.2
+ENV VIRTUALBOX_VERSION 5.0.16
+ENV VIRTUALBOX_REVISION 105871
+
+RUN mkdir /install
+WORKDIR /install
+
+# Download docker things
+RUN curl -fsSL -o docker "https://get.docker.com/builds/Linux/x86_64/docker-$DOCKER_ENGINE_VERSION"
+RUN curl -fsSL -o docker-compose "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Linux-x86_64"
+RUN chmod +x docker
+RUN chmod +x docker-compose
+
+# Download kalabox things
+RUN curl -fsSL -o kbox "https://github.com/kalabox/kalabox/releases/download/v$KALABOX_CLI_VERSION/kbox-linux-x64-v$KALABOX_CLI_VERSION"
+RUN chmod +x kbox
+RUN curl -fsSL -o services.yml "https://raw.githubusercontent.com/kalabox/kalabox/$IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
+RUN curl -fsSL -o kalabox-ui.tar.gz "https://github.com/kalabox/kalabox-ui/releases/download/v$KALABOX_GUI_VERSION/kalabox-ui-linux64-v$KALABOX_GUI_VERSION.tar.gz" && \
+    tar -xzvf kalabox-ui.tar.gz && \
+    rm kalabox-ui.tar.gz
+
+# Extract DNS
+RUN curl -fsSL -o dns.rpm "https://github.com/azukiapp/libnss-resolver/releases/download/v0.3.0/fedora20-libnss-resolver-0.3.0-1.x86_64.rpm" && \
+    alien -d dns.rpm --scripts && \
+    mkdir -p dns/rpm/data && mkdir -p dns/rpm/control && cd dns/rpm && \
+    ar x ./../../libnss-resolver_0.3.0-2_amd64.deb && \
+    tar -xzvf control.tar.gz -C control && \
+    tar -xvf data.tar.xz -C data
+RUN curl -fsSL -o dns.deb "https://github.com/azukiapp/libnss-resolver/releases/download/v0.3.0/debian8-0-libnss-resolver_0.3.0_amd64.deb" && \
+    mkdir -p dns/deb/data && mkdir -p dns/deb/control && cd dns/deb && \
+    ar x ./../../dns.deb && \
+    tar -xzvf control.tar.gz -C control && \
+    tar -xzvf data.tar.gz -C data
+
+# Add installer resources
+RUN mkdir -p /install/docs
+COPY linux/scripts /install/scripts
+COPY linux/network /install/network
+COPY linux/daemon /install/daemon
+COPY linux/desktop /install/desktop
+COPY linux/init /install/init
+COPY KALABOX-README.md /install/docs/README.md
+COPY TERMS.md /install/docs/TERMS.md
+COPY LICENSE.md /install/docs/LICENSE.md
+
+# Build our two packages
+RUN /install/scripts/build_pkg.sh deb
+RUN /install/scripts/build_pkg.sh rpm
+

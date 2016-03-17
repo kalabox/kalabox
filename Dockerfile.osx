@@ -1,0 +1,289 @@
+FROM debian:jessie
+
+# Get our needed build packages
+RUN apt-get update && apt-get -y install \
+		autoconf build-essential curl \
+		libxml2-dev libssl-dev \
+		p7zip-full \
+		hfsplus hfsutils hfsprogs cpio \
+		cmake genisoimage zlib1g-dev git
+
+# Clone and build libmdg-hfsplus
+RUN git clone --depth=1 https://github.com/planetbeing/libdmg-hfsplus.git
+RUN cd libdmg-hfsplus && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/local/bin . && \
+    make && \
+    make install && \
+    cd - && rm -r libdmg-hfsplus
+
+# We need the bomutils to create the Mac OS X Bill of Materials (BOM) files.
+# https://github.com/hogliux/bomutils
+RUN curl -fsSL "https://github.com/hogliux/bomutils/archive/0.2.tar.gz" | tar xvz && \
+	cd bomutils-* && \
+	make && make install
+
+# Needed to pack/unpack the .pkg files
+RUN curl -fsSL "https://github.com/mackyle/xar/archive/xar-1.6.1.tar.gz" | tar xvz && \
+	cd xar-*/xar && \
+	./autogen.sh && ./configure && \
+	make && make install
+
+ENV INSTALLER_VERSION 0.12.0-alpha.1
+ENV KALABOX_CLI_VERSION 0.12.0-alpha.15
+ENV KALABOX_GUI_VERSION 0.12.8
+ENV IMAGE_VERSION v0.12
+ENV DOCKER_MACHINE_VERSION 0.6.0
+ENV DOCKER_COMPOSE_VERSION 1.6.2
+ENV BOOT2DOCKER_ISO_VERSION 0.12.0
+ENV VBOX_VERSION 5.0.16
+ENV VBOX_REVISION 105871
+ENV SYNCTHING_VERSION 0.11.26
+
+# Virtualbox
+RUN curl -fsSL -o /vbox.dmg "http://download.virtualbox.org/virtualbox/$VBOX_VERSION/VirtualBox-$VBOX_VERSION-$VBOX_REVISION-OSX.dmg" && \
+	echo "$(curl -fsSL 'http://download.virtualbox.org/virtualbox/'"$VBOX_VERSION"'/SHA256SUMS' | awk '$2 ~ /-OSX.dmg$/ { print $1 }') */vbox.dmg" | sha256sum -c -
+
+# Download the Docker parts
+RUN curl -fsSL -o /docker-machine "https://github.com/docker/machine/releases/download/v$DOCKER_MACHINE_VERSION/docker-machine-Darwin-x86_64"
+RUN chmod +x /docker-machine
+
+RUN curl -fsSL -o /docker-compose "https://github.com/kalabox/kalabox/releases/download/v0.11.3/docker-compose-Darwin-x86_64-1.6.2_build_4d72027"
+RUN chmod +x /docker-compose
+
+RUN curl -fsSL -o /boot2docker.iso "https://github.com/kalabox/kalabox-iso/releases/download/v$BOOT2DOCKER_ISO_VERSION/kalabox.iso"
+
+# Download the Kalabox parts
+RUN curl -fsSL -o /kbox "https://github.com/kalabox/kalabox/releases/download/v$KALABOX_CLI_VERSION/kbox-osx-x64-v$KALABOX_CLI_VERSION"
+RUN chmod +x /kbox
+
+RUN curl -fsSL -o /kalabox-gui.tar.gz "https://github.com/kalabox/kalabox-ui/releases/download/v$KALABOX_GUI_VERSION/kalabox-ui-osx64-v$KALABOX_GUI_VERSION.tar.gz" && \
+	tar -xzvf /kalabox-gui.tar.gz && \
+	mv /Kalabox/Kalabox.app /Kalabox.app
+
+# Download the services parts
+RUN curl -fsSL -o /services.yml "https://raw.githubusercontent.com/kalabox/kalabox/$IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
+RUN curl -fsSL -o /syncthing.yml "https://raw.githubusercontent.com/kalabox/kalabox/$IMAGE_VERSION/plugins/kalabox-sharing/kalabox-compose.yml"
+
+# Download the syncthing parts
+RUN curl -fsSL -o /config.xml "https://raw.githubusercontent.com/kalabox/kalabox/v0.10/dockerfiles/syncthing/config.xml"
+RUN curl -fsSL -o /syncthing.tar.gz "https://github.com/syncthing/syncthing/releases/download/v$SYNCTHING_VERSION/syncthing-macosx-amd64-v$SYNCTHING_VERSION.tar.gz" && \
+	tar -xzvf /syncthing.tar.gz && \
+	chmod +x /syncthing-macosx-amd64-v$SYNCTHING_VERSION/syncthing && \
+	mv /syncthing-macosx-amd64-v$SYNCTHING_VERSION/syncthing /syncthing
+
+# Extract the VirtualBox .pkg
+RUN mkdir -p /mpkg/vbox && \
+	cd /mpkg/vbox && \
+	7z x /vbox.dmg -ir'!*.hfs' && \
+	7z x `find . -name '*.hfs'` -ir'!*.pkg' && \
+	mv VirtualBox/VirtualBox.pkg . && \
+	rm -rf vbox.dmg && \
+	rm -rf `find . -name '*.hfs'`
+
+# Extract the .pkg files
+RUN cd /mpkg/vbox && \
+	mv VirtualBox.pkg /tmp && \
+	xar -xf /tmp/VirtualBox.pkg && \
+	rm -rf /tmp/VirtualBox.pkg
+
+RUN cd /mpkg/vbox && \
+	mv *.pkg .. && \
+	rm -rf vbox
+
+# Add components
+COPY osx/mpkg/Distribution /mpkg/Distribution
+
+# dockermachine.pkg
+COPY osx/mpkg/dockermachine.pkg /mpkg/dockermachine.pkg
+RUN cd /mpkg/dockermachine.pkg && \
+	mkdir rootfs && \
+	cd rootfs && \
+  mkdir -p tmp && \
+  mv /docker-machine tmp/ && \
+  ls -al /tmp/ && \
+	find . | cpio -o --format odc | gzip -c > ../Payload && \
+	mkbom . ../Bom && \
+	sed -i \
+		-e "s/%DOCKERMACHINE_NUMBER_OF_FILES%/`find . | wc -l`/g" \
+		-e "s/%DOCKERMACHINE_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
+		-e "s/%DOCKERMACHINE_VERSION%/$DOCKER_MACHINE_VERSION/g" \
+		../PackageInfo /mpkg/Distribution && \
+	cd .. && \
+	rm -rf ./rootfs
+
+# dockercompose.pkg
+COPY osx/mpkg/dockercompose.pkg /mpkg/dockercompose.pkg
+RUN cd /mpkg/dockercompose.pkg && \
+	mkdir rootfs && \
+	cd rootfs && \
+  mkdir -p tmp && \
+  mv /docker-compose tmp/ && \
+  ls -al /tmp/ && \
+	find . | cpio -o --format odc | gzip -c > ../Payload && \
+	mkbom . ../Bom && \
+	sed -i \
+		-e "s/%DOCKERCOMPOSE_NUMBER_OF_FILES%/`find . | wc -l`/g" \
+		-e "s/%DOCKERCOMPOSE_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
+		-e "s/%DOCKERCOMPOSE_VERSION%/$DOCKER_COMPOSE_VERSION/g" \
+		../PackageInfo /mpkg/Distribution && \
+	cd .. && \
+	rm -rf ./rootfs
+
+# boot2dockeriso.pkg
+COPY osx/mpkg/boot2dockeriso.pkg /mpkg/boot2dockeriso.pkg
+RUN cd /mpkg/boot2dockeriso.pkg && \
+  cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
+  rm -r Scripts && mv Scripts.bin Scripts && \
+	mkdir ./rootfs && \
+	cd ./rootfs && \
+	cp /boot2docker.iso . && \
+	find . | cpio -o --format odc | gzip -c > ../Payload && \
+	mkbom . ../Bom && \
+	sed -i \
+		-e "s/%BOOT2DOCKER_ISO_NUMBER_OF_FILES%/`find . | wc -l`/g" \
+		-e "s/%BOOT2DOCKER_ISO_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
+		-e "s/%BOOT2DOCKER_ISO_VERSION%/$BOOT2DOCKER_ISO_VERSION/g" \
+		../PackageInfo /mpkg/Distribution && \
+	cd .. && \
+	rm -rf ./rootfs
+
+# engine.pkg
+COPY osx/mpkg/engine.pkg /mpkg/engine.pkg
+RUN cd /mpkg/engine.pkg && \
+  cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
+  rm -r Scripts && mv Scripts.bin Scripts && \
+  mkdir ./rootfs && \
+	cd ./rootfs && \
+	find . | cpio -o --format odc | gzip -c > ../Payload && \
+	mkbom . ../Bom && \
+	sed -i \
+		-e "s/%ENGINE_NUMBER_OF_FILES%/`find . | wc -l`/g" \
+		-e "s/%ENGINE_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
+		-e "s/%ENGINE_VERSION%/$BOOT2DOCKER_ISO_VERSION/g" \
+		../PackageInfo /mpkg/Distribution && \
+	cd .. && \
+	rm -rf ./rootfs
+
+# services.pkg
+COPY osx/mpkg/services.pkg /mpkg/services.pkg
+RUN cd /mpkg/services.pkg && \
+  cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
+  rm -r Scripts && mv Scripts.bin Scripts && \
+  mkdir ./rootfs && \
+	cd ./rootfs && \
+	mkdir -p tmp && \
+  mv /syncthing.yml tmp/ && \
+  mv /services.yml tmp/ && \
+  ls -al tmp/ && \
+	find . | cpio -o --format odc | gzip -c > ../Payload && \
+	mkbom . ../Bom && \
+	sed -i \
+		-e "s/%SERVICES_NUMBER_OF_FILES%/`find . | wc -l`/g" \
+		-e "s/%SERVICES_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
+		-e "s/%SERVICES_VERSION%/$IMAGE_VERSION/g" \
+		../PackageInfo /mpkg/Distribution && \
+	cd .. && \
+	rm -rf ./rootfs
+
+# kbox.pkg
+COPY osx/mpkg/kbox.pkg /mpkg/kbox.pkg
+COPY osx/uninstall.sh /uninstall.sh
+RUN cd /mpkg/kbox.pkg && \
+	mkdir rootfs && \
+	cd rootfs && \
+  mkdir -p usr/local/bin && \
+  mv /kbox usr/local/bin/ && \
+  mv /uninstall.sh usr/local/bin/kalabox-uninstall.sh && \
+  ls -al /usr/local/bin/ && \
+	find . | cpio -o --format odc | gzip -c > ../Payload && \
+	mkbom . ../Bom && \
+	sed -i \
+		-e "s/%KBOXCLI_NUMBER_OF_FILES%/`find . | wc -l`/g" \
+		-e "s/%KBOXCLI_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
+		-e "s/%KBOXCLI_VERSION%/$KALABOX_CLI_VERSION/g" \
+		../PackageInfo /mpkg/Distribution && \
+	cd .. && \
+	rm -rf ./rootfs
+
+# kbox-gui.pkg
+COPY osx/mpkg/kbox-gui.pkg /mpkg/kbox-gui.pkg
+RUN cd /mpkg/kbox-gui.pkg && \
+	mkdir ./rootfs && \
+	cd ./rootfs && \
+  mv /Kalabox.app . && \
+  ls -al . && \
+	find . | cpio -o --format odc | gzip -c > ../Payload && \
+	mkbom . ../Bom && \
+	sed -i \
+		-e "s/%KBOXGUI_NUMBER_OF_FILES%/`find . | wc -l`/g" \
+		-e "s/%KBOXGUI_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
+		-e "s/%KBOXGUI_VERSION%/$KALABOX_GUI_VERSION/g" \
+		../PackageInfo /mpkg/Distribution && \
+	cd .. && \
+	rm -rf ./rootfs
+
+# syncthing.pkg
+COPY osx/mpkg/syncthing.pkg /mpkg/syncthing.pkg
+RUN cd /mpkg/syncthing.pkg && \
+  cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
+  rm -r Scripts && mv Scripts.bin Scripts && \
+	mkdir rootfs && \
+	cd rootfs && \
+  mkdir -p tmp && \
+  mv /syncthing tmp/ && \
+  mv /config.xml tmp/ && \
+  ls -al /tmp/ && \
+	find . | cpio -o --format odc | gzip -c > ../Payload && \
+	mkbom . ../Bom && \
+	sed -i \
+		-e "s/%SYNCTHING_NUMBER_OF_FILES%/`find . | wc -l`/g" \
+		-e "s/%SYNCTHING_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
+		-e "s/%SYNCTHING_VERSION%/$SYNCTHING_VERSION/g" \
+		../PackageInfo /mpkg/Distribution && \
+	cd .. && \
+	rm -rf ./rootfs
+
+COPY osx/mpkg/Resources /mpkg/Resources
+COPY osx/mpkg/Plugins /mpkg/Plugins
+
+RUN sed -i \
+		-e "s/%INSTALLER_VERSION%/$INSTALLER_VERSION/g" \
+		mpkg/Resources/en.lproj/welcome.rtfd/TXT.rtf
+RUN sed -i \
+		-e "s/%VBOX_VERSION%/$VBOX_VERSION/g" \
+		/mpkg/Distribution && \
+		sed -i \
+		-e "s/%VBOX_VERSION%/$VBOX_VERSION/g" \
+		-e "s/%DOCKERMACHINE_VERSION%/$DOCKER_MACHINE_VERSION/g" \
+		-e "s/%DOCKERCOMPOSE_VERSION%/$DOCKER_COMPOSE_VERSION/g" \
+		-e "s/%BOOT2DOCKER_ISO_VERSION%/$BOOT2DOCKER_ISO_VERSION/g" \
+		-e "s/%KBOXCLI_VERSION%/$KALABOX_CLI_VERSION/g" \
+		-e "s/%KBOXGUI_VERSION%/$KALABOX_GUI_VERSION/g" \
+		-e "s/%SYNCTHING_VERSION%/$SYNCTHING_VERSION/g" \
+		-e "s/%ENGINE_VERSION%/$SYNCTHING_VERSION/g" \
+		-e "s/%SERVICES_VERSION%/$IMAGE_VERSION/g" \
+		mpkg/Resources/en.lproj/Localizable.strings
+
+# Repackage back. Yes, --compression=none is mandatory.
+# or this won't install in OSX.
+RUN cd /mpkg && \
+	mkdir /dmg && \
+	xar -c --compression=none -f /dmg/KalaboxInstaller.pkg .
+
+# Copy in other stuff
+COPY osx/uninstall.sh dmg/uninstall.tool
+COPY KALABOX-README.md dmg/README.md
+COPY TERMS.md dmg/TERMS.md
+COPY LICENSE.md dmg/LICENSE.md
+COPY ORACLE_VIRTUALBOX_LICENSE dmg/ORACLE_VIRTUALBOX_LICENSE
+COPY SYNCTHING_LICENSE dmg/SYNCTHING_LICENSE
+COPY osx/kalabox.icns dmg/.VolumeIcon.icns
+
+# Make sure uninstall is executable
+RUN chmod +x /dmg/uninstall.tool
+
+# Build the DMG
+RUN genisoimage -quiet -V Kalabox -D -R -apple -no-pad -o Kalabox.dmg /dmg && \
+	dmg dmg Kalabox.dmg
+
+

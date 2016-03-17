@@ -1,0 +1,37 @@
+'kalabox_title' = 'Kalabox';
+
+'choiceDockerMachineCLI_title' = 'Docker Machine %DOCKERMACHINE_VERSION%';
+'choiceDockerMachineCLI_msg' = 'Installs the Docker Machine binaries into ~/.kalabox/bin/';
+
+'choiceDockerComposeCLI_title' = 'Docker Compose %DOCKERCOMPOSE_VERSION%';
+'choiceDockerComposeCLI_msg' = 'Installs the Docker Compose binary into ~/.kalabox/bin/';
+
+'choiceKboxCLI_title' = 'Kalabox CLI %KBOXCLI_VERSION%';
+'choiceKboxCLI_msg' = 'Installs the Kalabox CLI binary into /usr/local/bin/';
+
+'choiceKboxGUI_title' = 'Kalabox GUI %KBOXGUI_VERSION%';
+'choiceKboxGUI_msg' = 'Installs the Kalabox GUI into /Applications/';
+
+'choiceKboxEngine_title' = 'Kalabox Engine';
+'choiceKboxEngine_msg' = 'Installs the Kalabox engine as a VM called Kalabox2';
+
+'choiceKboxServices_title' = 'Kalabox Services';
+'choiceKboxServices_msg' = 'Installs some services in the Kalabox Engine';
+
+'choiceSyncthingCLI_title' = 'Syncthing CLI %SYNCTHING_VERSION%';
+'choiceSyncthingCLI_msg' = 'Installs the Syncthing CLI binary into ~/.kalabox/bin/';
+
+'choiceBoot2DockerISO_title' = 'Boot2Docker ISO %BOOT2DOCKER_ISO_VERSION%';
+'choiceBoot2DockerISO_msg' = 'Installs the boot2docker.iso into /usr/local/share/';
+
+'choiceVBox_title' = 'Oracle VM VirtualBox %VBOX_VERSION%';
+'choiceVBox_msg' = 'Installs or Upgrades the Oracle VM VirtualBox application into /Applications if it is not already installed.';
+
+'RUNNING_VMS_TLE' = "Please Quit VirtualBox!";
+'RUNNING_VMS_MSG' = "The installer has detected that VirtualBox is out of date, and is still running. Please shut down all VMs, quit VirtualBox, and then restart the Kalabox installation.";
+
+'UNSUPPORTED_HW_MACHINE_TLE' = "Unsupported hardware architecture detected!";
+'UNSUPPORTED_HW_MACHINE_MSG' = "The installer has detected an unsupported architecture. VirtualBox only runs on the x86 and amd64 architectures.";
+
+'UNSUPPORTED_OS_TLE' = "Unsupported OS version detected!";
+'UNSUPPORTED_OS_MSG' = "The installer has detected an unsupported operation system. Please upgrade to Mac OS X 10.8 or later.";

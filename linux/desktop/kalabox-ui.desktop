@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Kalabox
+Comment=Fask local dev
+Keywords=development;
+OnlyShowIn=GNOME;Unity;
+Path=/usr/share/kalabox/gui/Kalabox
+Exec=/usr/share/kalabox/gui/Kalabox/Kalabox
+Icon=/usr/share/kalabox/kalabox.png
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=Utility;

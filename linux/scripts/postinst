@@ -1,0 +1,63 @@
+#!/bin/bash
+set -e -x
+KALABOX_ROOT=/usr/share/kalabox
+KALABOX_BIN=$KALABOX_ROOT/bin
+DOCKER_COMPOSE=$KALABOX_BIN/docker-compose
+PATH=$PATH:/usr/local/bin
+TERM=xterm
+KALABOX_IP=10.13.37.100
+
+# we only need to do this if upstart isn't in charge
+if ! { [ -x /sbin/initctl ] && /sbin/initctl version 2>/dev/null | grep -q upstart; }; then
+  command -v foo >/dev/null 2>&1 && { update-rc.d kalabox defaults > /dev/null || true; }
+fi
+
+# We are probably on systemd?
+if [ -d /run/systemd/system ]; then
+  if ! { [ -x "$(which systemctl)" ] && "$(which systemctl)" version 2>/dev/null; }; then
+    systemctl start kalabox.service
+    systemctl enable kalabox.service
+  fi
+else
+  # Set up and run our altdaemon
+  if [ -n "$2" ]; then
+    _dh_action=restart
+  else
+    _dh_action=start
+  fi
+  service kalabox $_dh_action 2>/dev/null || true
+fi
+
+# Check for docker compose
+if [ ! -f "${DOCKER_COMPOSE}" ]; then
+  echo "Docker Compose is not installed. Please re-run the Kalabox Installer and try again."
+  exit 1
+fi
+
+# Launch the services
+mkdir -p /var/log/kalabox/
+DOCKER_HOST="tcp://$KALABOX_IP:2375" \
+KALABOX_DOMAIN=kbox \
+KALABOX_ENGINE_IP="$KALABOX_IP" \
+"$DOCKER_COMPOSE" \
+-p kalabox \
+-f $KALABOX_ROOT/services/services.yml \
+up \
+-d \
+--force-recreate > /var/log/kalabox/compose.log
+
+# Setup DNS
+mkdir -p /etc/resolver
+echo "nameserver ${KALABOX_IP}:53" > /etc/resolver/kbox
+
+# Add an entry to the system menu
+XDG_DESKTOP_MENU="$(which xdg-desktop-menu 2> /dev/null)"
+if [ ! -x "$XDG_DESKTOP_MENU" ]; then
+  echo "WARNING: Could not find xdg-desktop-menu" >&2
+else
+  "$XDG_DESKTOP_MENU" install --mode system /usr/share/applications/kalabox-ui.desktop
+  "$XDG_DESKTOP_MENU" forceupdate --mode system
+fi
+
+# Set provisioned file
+touch /usr/share/kalabox/provisioned

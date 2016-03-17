@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+# Up the d
+/usr/share/kalabox/bin/docker daemon \
+  -D \
+  --bridge=kbox0 \
+  --group=$(echo $(getent group sudo || getent group wheel) | awk -F':' {' print $1 '}) \
+  --exec-root=/usr/share/kalabox/docker.exec \
+  --graph=/usr/share/kalabox/docker.graph \
+  --host=unix:///usr/share/kalabox/docker.socket \
+  --host=tcp://10.13.37.100:2375 \
+  --pidfile=/usr/share/kalabox/docker.pid \
+  --dns=208.67.222.222 \
+  --dns=208.67.220.220

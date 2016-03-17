@@ -1,0 +1,48 @@
+#!/bin/bash
+
+CONSOLE_USER=$(stat -f '%Su' /dev/console)
+CONSOLE_USER_HOME=$(su $CONSOLE_USER -c 'echo $HOME')
+
+DOCKER_MACHINE=$CONSOLE_USER_HOME/.kalabox/bin/docker-machine
+VBOXMANAGE=/Applications/VirtualBox.app/Contents/MacOS/VBoxManage
+VM=Kalabox2
+
+PATH=$PATH:/usr/local/bin
+TERM=xterm
+
+unset DYLD_LIBRARY_PATH
+unset LD_LIBRARY_PATH
+
+if [ ! -f "${DOCKER_MACHINE}" ]; then
+  echo "Docker Machine is not installed. Please re-run the Kalabox Installer and try again."
+  exit 1
+fi
+
+if [ ! -f "${VBOXMANAGE}" ]; then
+  echo "VirtualBox is not installed. Please re-run the Kalabox Installer and try again."
+  exit 1
+fi
+
+sudo -u "${CONSOLE_USER}" "${VBOXMANAGE}" list vms | grep \""${VM}"\" &> /dev/null
+VM_EXISTS_CODE=$?
+
+if [ $VM_EXISTS_CODE -eq 1 ]; then
+  #todo: this is probably not the best way to do this
+  sudo -u "${CONSOLE_USER}" "${DOCKER_MACHINE}" create -d virtualbox \
+    --virtualbox-memory 2048 \
+    --virtualbox-disk-size $(df -m / | awk '{if ($1 != "Filesystem") print $4}') \
+    --virtualbox-hostonly-cidr 10.13.37.1/24 \
+    --virtualbox-host-dns-resolver \
+    --engine-opt dns=172.17.0.1 \
+    --engine-opt dns=208.67.222.222 \
+    --engine-opt dns=208.67.220.220 \
+    "${VM}"
+fi
+
+VM_STATUS="$(sudo -u "${CONSOLE_USER}" ${DOCKER_MACHINE} status ${VM} 2>&1)"
+if [ "${VM_STATUS}" != "Running" ]; then
+  sudo -u "${CONSOLE_USER}" "${DOCKER_MACHINE}" start "${VM}"
+  sudo -u "${CONSOLE_USER}" yes | "${DOCKER_MACHINE}" regenerate-certs "${VM}"
+fi
+
+chown -R $CONSOLE_USER:staff $CONSOLE_USER_HOME/.docker

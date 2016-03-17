@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pkg-info overwrite-permissions="true" relocatable="false" identifier="io.kalabox.pkg.kalabox" postinstall-action="none" version="%KBOXGUI_VERSION%" format-version="2" generator-version="mystic crystal revelation" install-location="/Applications/" auth="root">
+    <payload numberOfFiles="%KBOXGUI_NUMBER_OF_FILES%" installKBytes="%KBOXGUI_INSTALL_KBYTES%"/>
+    <bundle-version/>
+    <upgrade-bundle/>
+    <update-bundle/>
+    <atomic-update-bundle/>
+    <strict-identifier/>
+    <relocate/>
+</pkg-info>

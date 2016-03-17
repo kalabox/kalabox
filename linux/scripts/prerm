@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+set -u
+
+# We are probably on systemd?
+if [ -d /run/systemd/system ]; then
+  if ! { [ -x "$(which systemctl)" ] && "$(which systemctl)" version 2>/dev/null; }; then
+    systemctl stop kalabox.service 2>/dev/null || true
+    systemctl disable kalabox.service 2>/dev/null || true
+  fi
+else
+  service kalabox stop 2>/dev/null || true
+fi

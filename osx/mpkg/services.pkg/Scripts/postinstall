@@ -1,0 +1,66 @@
+#!/bin/bash
+
+CONSOLE_USER=$(stat -f '%Su' /dev/console)
+CONSOLE_USER_HOME=$(su $CONSOLE_USER -c 'echo $HOME')
+
+unset DYLD_LIBRARY_PATH
+unset LD_LIBRARY_PATH
+
+# Fix permissions on binaries
+chown -R $CONSOLE_USER:admin /tmp/syncthing.yml || true
+chown -R $CONSOLE_USER:admin /tmp/services.yml || true
+
+# Move docker binaries to correct location
+mkdir -p $CONSOLE_USER_HOME/.kalabox/services
+mv -f /tmp/syncthing.yml $CONSOLE_USER_HOME/.kalabox/services/syncthing.yml
+mv -f /tmp/services.yml $CONSOLE_USER_HOME/.kalabox/services/services.yml
+
+chown -R $CONSOLE_USER:staff $CONSOLE_USER_HOME/.kalabox
+
+# Docker compose up all the services files
+DOCKER_COMPOSE=$CONSOLE_USER_HOME/.kalabox/bin/docker-compose
+DOCKER_MACHINE=$CONSOLE_USER_HOME/.kalabox/bin/docker-machine
+VBOXMANAGE=/Applications/VirtualBox.app/Contents/MacOS/VBoxManage
+VM=Kalabox2
+
+PATH=$PATH:/usr/local/bin
+TERM=xterm
+
+if [ ! -f "${DOCKER_COMPOSE}" ]; then
+  echo "Docker Compose is not installed. Please re-run the Kalabox Installer and try again."
+  exit 1
+fi
+
+KALABOX_IP=$(sudo -u "${CONSOLE_USER}" "${DOCKER_MACHINE}" ip "$VM")
+
+#todo: this is probably not the best way to do this
+sudo -u "${CONSOLE_USER}" \
+  DOCKER_TLS_VERIFY="1" \
+  DOCKER_HOST="tcp://${KALABOX_IP}:2376" \
+  DOCKER_CERT_PATH="${CONSOLE_USER_HOME}/.docker/machine/machines/${VM}" \
+  DOCKER_MACHINE_NAME="${VM}" \
+  KALABOX_ENGINE_HOME=$CONSOLE_USER_HOME \
+  KALABOX_DOMAIN=kbox \
+  KALABOX_ENGINE_IP="${KALABOX_IP}" \
+  "${DOCKER_COMPOSE}" \
+  -p kalabox \
+  -f $CONSOLE_USER_HOME/.kalabox/services/services.yml \
+  -f $CONSOLE_USER_HOME/.kalabox/services/syncthing.yml \
+  up \
+  -d \
+  --force-recreate
+
+COMPOSE_FAIL_CODE=$?
+if [ ! $COMPOSE_FAIL_CODE -eq 0 ]; then
+  echo "Something went wrong installing core Docker images"
+  exit 666
+fi
+
+
+# Setup DNS
+mkdir -p /etc/resolver
+echo "nameserver ${KALABOX_IP}" > /etc/resolver/kbox
+
+# Finish
+# @todo Put this in a finished.pkg at some point
+touch "${CONSOLE_USER_HOME}/.kalabox/provisioned"

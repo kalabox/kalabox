@@ -1,0 +1,8 @@
+#!/bin/bash
+
+docker build -t linux-installer -f Dockerfile.linux .
+CONTAINER="$(docker run -d linux-installer)"
+mkdir -p dist
+docker cp "${CONTAINER}":/kalabox.deb dist/
+docker cp "${CONTAINER}":/kalabox.rpm dist/
+docker rm "${CONTAINER}" 2>/dev/null || true
