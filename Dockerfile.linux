@@ -14,8 +14,8 @@ RUN apt-get update && apt-get -y install \
 RUN /usr/bin/gem install --verbose fpm
 
 # installer components
-ENV KALABOX_CLI_VERSION 0.12.0-alpha.15
-ENV KALABOX_GUI_VERSION 0.12.8
+ENV KALABOX_CLI_VERSION 0.12.0-alpha.18
+ENV KALABOX_GUI_VERSION 0.12.9
 ENV IMAGE_VERSION v0.12
 ENV DOCKER_ENGINE_VERSION 1.9.1
 ENV DOCKER_COMPOSE_VERSION 1.6.2
@@ -32,9 +32,9 @@ RUN chmod +x docker
 RUN chmod +x docker-compose
 
 # Download kalabox things
-RUN curl -fsSL -o kbox "https://github.com/kalabox/kalabox/releases/download/v$KALABOX_CLI_VERSION/kbox-linux-x64-v$KALABOX_CLI_VERSION"
+RUN curl -fsSL -o kbox "https://github.com/kalabox/kalabox-cli/releases/download/v$KALABOX_CLI_VERSION/kbox-linux-x64-v$KALABOX_CLI_VERSION"
 RUN chmod +x kbox
-RUN curl -fsSL -o services.yml "https://raw.githubusercontent.com/kalabox/kalabox/$IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
+RUN curl -fsSL -o services.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
 RUN curl -fsSL -o kalabox-ui.tar.gz "https://github.com/kalabox/kalabox-ui/releases/download/v$KALABOX_GUI_VERSION/kalabox-ui-linux64-v$KALABOX_GUI_VERSION.tar.gz" && \
     tar -xzvf kalabox-ui.tar.gz && \
     rm kalabox-ui.tar.gz

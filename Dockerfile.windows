@@ -18,8 +18,8 @@ RUN cd innosetup && \
 
 # installer components
 ENV INSTALLER_VERSION 0.12.0-alpha.1
-ENV KALABOX_CLI_VERSION 0.12.0-alpha.15
-ENV KALABOX_GUI_VERSION 0.12.8
+ENV KALABOX_CLI_VERSION 0.12.0-alpha.18
+ENV KALABOX_GUI_VERSION 0.12.9
 ENV IMAGE_VERSION v0.12
 ENV DOCKER_MACHINE_VERSION 0.6.0
 ENV DOCKER_COMPOSE_VERSION 1.6.2
@@ -38,9 +38,9 @@ RUN curl -fsSL -o docker-compose.exe "https://github.com/docker/compose/releases
 
 # Download kalabox things
 RUN curl -fsSL -o boot2docker.iso "https://github.com/kalabox/kalabox-iso/releases/download/v$BOOT2DOCKER_ISO_VERSION/kalabox.iso"
-RUN curl -fsSL -o kbox.exe "https://github.com/kalabox/kalabox/releases/download/v$KALABOX_CLI_VERSION/kbox-win-x64-v$KALABOX_CLI_VERSION.exe"
-RUN curl -fsSL -o services.yml "https://raw.githubusercontent.com/kalabox/kalabox/$IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
-RUN curl -fsSL -o syncthing.yml "https://raw.githubusercontent.com/kalabox/kalabox/$IMAGE_VERSION/plugins/kalabox-sharing/kalabox-compose.yml"
+RUN curl -fsSL -o kbox.exe "https://github.com/kalabox/kalabox-cli/releases/download/v$KALABOX_CLI_VERSION/kbox-win-x64-v$KALABOX_CLI_VERSION.exe"
+RUN curl -fsSL -o services.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
+RUN curl -fsSL -o syncthing.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$IMAGE_VERSION/plugins/kalabox-sharing/kalabox-compose.yml"
 RUN curl -fsSL -o kalabox-ui.zip "https://github.com/kalabox/kalabox-ui/releases/download/v$KALABOX_GUI_VERSION/kalabox-ui-win64-v$KALABOX_GUI_VERSION.zip" && \
     mkdir kalabox-ui && \
     cd kalabox-ui && \
@@ -48,7 +48,7 @@ RUN curl -fsSL -o kalabox-ui.zip "https://github.com/kalabox/kalabox-ui/releases
     rm ../kalabox-ui.zip
 
 # Download syncthing things
-RUN curl -fsSL -o config.xml "https://raw.githubusercontent.com/kalabox/kalabox/v0.10/dockerfiles/syncthing/config.xml"
+RUN curl -fsSL -o config.xml "https://raw.githubusercontent.com/kalabox/kalabox-cli/v0.10/dockerfiles/syncthing/config.xml"
 RUN curl -fsSL -o syncthing.zip "https://github.com/syncthing/syncthing/releases/download/v$SYNCTHING_VERSION/syncthing-windows-amd64-v$SYNCTHING_VERSION.zip" && \
     unzip syncthing.zip && \
     mv syncthing-windows-amd64-v$SYNCTHING_VERSION/syncthing.exe ./syncthing.exe && \
