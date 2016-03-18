@@ -48,7 +48,7 @@ RUN curl -fsSL -o kalabox-ui.zip "https://github.com/kalabox/kalabox-ui/releases
     rm ../kalabox-ui.zip
 
 # Download syncthing things
-RUN curl -fsSL -o config.xml "https://raw.githubusercontent.com/kalabox/kalabox-cli/v0.10/dockerfiles/syncthing/config.xml"
+RUN curl -fsSL -o config.xml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$IMAGE_VERSION/plugins/kalabox-sharing/dockerfiles/syncthing/config.xml"
 RUN curl -fsSL -o syncthing.zip "https://github.com/syncthing/syncthing/releases/download/v$SYNCTHING_VERSION/syncthing-windows-amd64-v$SYNCTHING_VERSION.zip" && \
     unzip syncthing.zip && \
     mv syncthing-windows-amd64-v$SYNCTHING_VERSION/syncthing.exe ./syncthing.exe && \

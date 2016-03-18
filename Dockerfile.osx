@@ -65,7 +65,7 @@ RUN curl -fsSL -o /services.yml "https://raw.githubusercontent.com/kalabox/kalab
 RUN curl -fsSL -o /syncthing.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$IMAGE_VERSION/plugins/kalabox-sharing/kalabox-compose.yml"
 
 # Download the syncthing parts
-RUN curl -fsSL -o /config.xml "https://raw.githubusercontent.com/kalabox/kalabox-cli/v0.10/dockerfiles/syncthing/config.xml"
+RUN curl -fsSL -o /config.xml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$IMAGE_VERSION/plugins/kalabox-sharing/dockerfiles/syncthing/config.xml"
 RUN curl -fsSL -o /syncthing.tar.gz "https://github.com/syncthing/syncthing/releases/download/v$SYNCTHING_VERSION/syncthing-macosx-amd64-v$SYNCTHING_VERSION.tar.gz" && \
 	tar -xzvf /syncthing.tar.gz && \
 	chmod +x /syncthing-macosx-amd64-v$SYNCTHING_VERSION/syncthing && \
