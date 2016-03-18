@@ -1,0 +1,34 @@
+language: cpp
+sudo: required
+services:
+  - docker
+before_install:
+  - cp ci/travis-ci.sh $HOME/
+  - $HOME/travis-ci.sh before-install
+install:
+  - $HOME/travis-ci.sh install
+before_script:
+  - $HOME/travis-ci.sh before-script
+script:
+  - $HOME/travis-ci.sh script
+after_script:
+  - $HOME/travis-ci.sh after-script
+after_success:
+  - $HOME/travis-ci.sh after-success
+before_deploy:
+  - $HOME/travis-ci.sh before-deploy
+after_deploy:
+  - $HOME/travis-ci.sh after-deploy
+cache:
+  directories:
+    - node_modules
+notifications:
+  irc:
+    - chat.freenode.net#kalabox
+  email:
+    recipients:
+      - mike@kalabox.io
+      - riley@kalabox.io
+      - alec@kalabox.io
+    on_success: always
+

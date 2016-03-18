@@ -44,7 +44,7 @@ RUN curl -fsSL -o syncthing.yml "https://raw.githubusercontent.com/kalabox/kalab
 RUN curl -fsSL -o kalabox-ui.zip "https://github.com/kalabox/kalabox-ui/releases/download/v$KALABOX_GUI_VERSION/kalabox-ui-win64-v$KALABOX_GUI_VERSION.zip" && \
     mkdir kalabox-ui && \
     cd kalabox-ui && \
-    unzip ../kalabox-ui.zip && \
+    unzip ../kalabox-ui.zip > /dev/null && \
     rm ../kalabox-ui.zip
 
 # Download syncthing things
