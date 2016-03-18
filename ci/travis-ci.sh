@@ -29,6 +29,7 @@ before-install() {
 # Install our project
 #
 install() {
+  set -e
   make
 }
 
@@ -70,7 +71,22 @@ after-success() {
 # Do stuff before deploy
 #
 before-deploy() {
-  echo
+
+  set -e
+
+  # Build things
+  BUILD_VERSION=${TRAVIS_TAG:-$TRAVIS_BRANCH}
+  echo $BUILD_VERSION
+
+  # Rename the builds
+  mv dist/kalabox.dmg dist/kalabox-$BUILD_VERSION.dmg
+  mv dist/kalabox.exe dist/kalabox-$BUILD_VERSION.exe
+  mv dist/kalabox.deb dist/kalabox-$BUILD_VERSION.deb
+  mv dist/kalabox.rpm dist/kalabox-$BUILD_VERSION.rpm
+
+  # Show me the money jerry
+  ls -lsa dist
+
 }
 
 # after-deploy
