@@ -5,5 +5,5 @@ set -e
 docker build -t windows-installer -f Dockerfile.windows .
 CONTAINER="$(docker run -d windows-installer)"
 mkdir -p dist
-docker cp "${CONTAINER}":/installer/Output/KalaboxInstaller.exe dist/
+docker cp "${CONTAINER}":/installer/Output/kalabox.exe dist/
 docker rm "${CONTAINER}" 2>/dev/null || true

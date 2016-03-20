@@ -57,7 +57,7 @@ RUN curl -fsSL -o /kbox "https://github.com/kalabox/kalabox-cli/releases/downloa
 RUN chmod +x /kbox
 
 RUN curl -fsSL -o /kalabox-gui.tar.gz "https://github.com/kalabox/kalabox-ui/releases/download/v$KALABOX_GUI_VERSION/kalabox-ui-osx64-v$KALABOX_GUI_VERSION.tar.gz" && \
-	tar -xzvf /kalabox-gui.tar.gz && \
+	tar -xzf /kalabox-gui.tar.gz && \
 	mv /Kalabox/Kalabox.app /Kalabox.app
 
 # Download the services parts
@@ -283,7 +283,7 @@ COPY osx/kalabox.icns dmg/.VolumeIcon.icns
 RUN chmod +x /dmg/uninstall.tool
 
 # Build the DMG
-RUN genisoimage -quiet -V Kalabox -D -R -apple -no-pad -o Kalabox.dmg /dmg && \
+RUN genisoimage -quiet -V Kalabox -D -R -apple -no-pad -o kalabox.dmg /dmg && \
 	dmg dmg Kalabox.dmg
 
 

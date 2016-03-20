@@ -3,5 +3,5 @@
 docker build -t osx-installer -f Dockerfile.osx .
 CONTAINER="$(docker run -d osx-installer)"
 mkdir -p dist
-docker cp "${CONTAINER}":/Kalabox.dmg dist/
+docker cp "${CONTAINER}":/kalabox.dmg dist/
 docker rm "${CONTAINER}" 2>/dev/null || true
