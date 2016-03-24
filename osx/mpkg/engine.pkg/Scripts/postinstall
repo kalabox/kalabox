@@ -33,6 +33,7 @@ if [ $VM_EXISTS_CODE -eq 1 ]; then
     --virtualbox-disk-size $(df -m / | awk '{if ($1 != "Filesystem") print $4}') \
     --virtualbox-hostonly-cidr 10.13.37.1/24 \
     --virtualbox-host-dns-resolver \
+    --virtualbox-dns-proxy \
     --engine-opt dns=172.17.0.1 \
     --engine-opt dns=208.67.222.222 \
     --engine-opt dns=208.67.220.220 \
