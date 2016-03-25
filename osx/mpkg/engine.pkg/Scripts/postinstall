@@ -27,10 +27,15 @@ sudo -u "${CONSOLE_USER}" "${VBOXMANAGE}" list vms | grep \""${VM}"\" &> /dev/nu
 VM_EXISTS_CODE=$?
 
 if [ $VM_EXISTS_CODE -eq 1 ]; then
-  #todo: this is probably not the best way to do this
+
+  # Get our free disk space, we will use MIN(freedisk, 150GB)
+  # @todo: add a KALABOX_DISK_SPACE env for customization?
+  FREE_DISK_SPACE=$(df -m / | awk '{if ($1 != "Filesystem") print $4}')
+
+  # @todo: this is probably not the best way to do this
   sudo -u "${CONSOLE_USER}" "${DOCKER_MACHINE}" create -d virtualbox \
     --virtualbox-memory 2048 \
-    --virtualbox-disk-size $(df -m / | awk '{if ($1 != "Filesystem") print $4}') \
+    --virtualbox-disk-size $(($FREE_DISK_SPACE<150000?$FREE_DISK_SPACE:150000)) \
     --virtualbox-hostonly-cidr 10.13.37.1/24 \
     --virtualbox-host-dns-resolver \
     --virtualbox-dns-proxy \
