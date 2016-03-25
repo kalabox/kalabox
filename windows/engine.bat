@@ -17,7 +17,15 @@ SET VM=Kalabox2
 :: Get the free disk space in MB
 wmic logicaldisk where (caption = "%SystemDrive%") get freespace>"%TEMP%\free.tmp"
 FOR /F %%A in ('TYPE "%TEMP%\free.tmp"') DO (SET free=%%A)
-SET VB_DISK=%free:~0,-6%
+SET FREE_DISK=%free:~0,-6%
+
+:: Set an upperbound to the VB disk at 150GB, 2TB is the VMDK MAX
+:: @todo: add a KALABOX_DISK_SPACE to customize this?
+IF %FREE_DISK% GTR 150000 (
+  SET VB_DISK=150000
+) ELSE (
+  SET VB_DISK=%FREE_DISK%
+)
 
 :: Check to see if DOCKER MACHINE is actually installed
 IF NOT EXIST "%DOCKER_MACHINE%" (
