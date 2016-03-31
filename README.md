@@ -12,7 +12,7 @@ With Kalabox you can
 * Easily customize or extend tooling, deployment options and basically any other functionality.
 * Free yourself from the tyranny of inferior local development products.
 
-For more info on how you can do some of the above check out the [wiki](https://kalabox.freshdesk.com)
+For more info on how you can do some of the above check out the [knowledge base](https://kalabox.freshdesk.com)
 
 ## Installing
 
@@ -21,6 +21,8 @@ For more info on how you can do some of the above check out the [wiki](https://k
 #### 1. Get a Keycode (During Alpha)
 
 We're distributing keycodes to introduce groups of developers to Kalabox until we have a more stable beta release. Request one and you should get an access keycode for our next release. [Sign up here](http://www.kalabox.io/download.html)
+
+Curious about what "Alpha" means? Read more [here](https://kalabox.freshdesk.com/solution/articles/14000011858).
 
 #### 2. Download Kalabox
 
