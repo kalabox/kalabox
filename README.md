@@ -16,7 +16,7 @@ For more info on how you can do some of the above check out the [wiki](https://k
 
 ## Installing
 
-**IMPORTANT NOTE:** If you have uninstalled a pre-0.12.x version of Kalabox you will want to uninstall using the platform appropriate legacy uninstall script. These are available [here](https://github.com/kalabox/kalabox-cli/tree/447fa1ebc88960f1134322fdef25e6995954f518/scripts).
+**IMPORTANT NOTE:** Kalabox versions pre-0.12.x may be impacted by breaking changes introduced in 0.12. If you have uninstalled a pre-0.12.x version of Kalabox you will want to uninstall using the platform appropriate legacy uninstall script. These are available [here](https://github.com/kalabox/kalabox-cli/tree/447fa1ebc88960f1134322fdef25e6995954f518/scripts).
 
 #### 1. Get a Keycode (During Alpha)
 
@@ -100,5 +100,5 @@ The resulting installers will be in the `dist` directory.
 * [Mountain climbing advice](https://www.youtube.com/watch?v=tkBVDh7my9Q)
 
 -------------------------------------------------------------------------------------
-(C) 2016 Kalabox Inc and friends and things
+(C) 2016 Kalabox Inc
 
