@@ -26,7 +26,7 @@ Curious about what "Alpha" means? Read more [here](https://kalabox.freshdesk.com
 
 #### 2. Download Kalabox
 
-Download the correct installer package for your OS from [www.kalabox.io](www.kalabox.io).
+Download the correct installer package for your OS from [http://www.kalabox.io](http://www.kalabox.io).
 
 #### 3. Run Installer
 
