@@ -5,7 +5,7 @@ PACKAGE_URL="https://www.kalabox.io/"
 PACKAGE_MAINTAINER="Mike Pirog <mike@kalabox.io>"
 PACKAGE_DESCRIPTION="The fastest and easiest local dev with docker."
 PACKAGE_LICENSE="MIT"
-INSTALLER_VERSION=0.12.0-alpha.2
+INSTALLER_VERSION=0.12.0-alpha.3
 EXTRA_PKGS=cgroup-lite
 
 # Get the script type
