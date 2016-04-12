@@ -14,8 +14,8 @@ RUN apt-get update && apt-get -y install \
 RUN /usr/bin/gem install --verbose fpm
 
 # installer components
-ENV KALABOX_CLI_VERSION 0.12.0-alpha.21
-ENV KALABOX_GUI_VERSION 0.12.13
+ENV KALABOX_CLI_VERSION 0.12.0-alpha.22
+ENV KALABOX_GUI_VERSION 0.12.14
 ENV IMAGE_VERSION v0.12
 ENV DOCKER_ENGINE_VERSION 1.9.1
 ENV DOCKER_COMPOSE_VERSION 1.6.2
