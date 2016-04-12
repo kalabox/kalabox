@@ -1,5 +1,10 @@
 language: cpp
 sudo: required
+env:
+  matrix:
+    - KALABOX_BUILD_PLATFORM=osx
+    - KALABOX_BUILD_PLATFORM=linux
+    - KALABOX_BUILD_PLATFORM=windows
 services:
 - docker
 before_install:

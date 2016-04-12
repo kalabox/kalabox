@@ -30,7 +30,7 @@ before-install() {
 #
 install() {
   set -e
-  make
+  make $KALABOX_BUILD_PLATFORM
 }
 
 
@@ -79,18 +79,23 @@ before-deploy() {
   echo $BUILD_VERSION
 
   # Rename the builds and generate latest versions
-  mv dist/kalabox.dmg dist/kalabox-$BUILD_VERSION.dmg
-  cp dist/kalabox-$BUILD_VERSION.dmg dist/kalabox-latest.dmg
+  if [ $KALABOX_BUILD_PLATFORM == "osx" ]; then
+    mv dist/kalabox.dmg dist/kalabox-$BUILD_VERSION.dmg
+    cp dist/kalabox-$BUILD_VERSION.dmg dist/kalabox-latest.dmg
+  fi
 
-  mv dist/kalabox.exe dist/kalabox-$BUILD_VERSION.exe
-  cp dist/kalabox-$BUILD_VERSION.exe dist/kalabox-latest.exe
+  if [ $KALABOX_BUILD_PLATFORM == "windows" ]; then
+    mv dist/kalabox.exe dist/kalabox-$BUILD_VERSION.exe
+    cp dist/kalabox-$BUILD_VERSION.exe dist/kalabox-latest.exe
+  fi
 
-  mv dist/kalabox.deb dist/kalabox-$BUILD_VERSION.deb
-  cp dist/kalabox-$BUILD_VERSION.deb dist/kalabox-latest.deb
+  if [ $KALABOX_BUILD_PLATFORM == "linux" ]; then
+    mv dist/kalabox.deb dist/kalabox-$BUILD_VERSION.deb
+    cp dist/kalabox-$BUILD_VERSION.deb dist/kalabox-latest.deb
 
-  mv dist/kalabox.rpm dist/kalabox-$BUILD_VERSION.rpm
-  cp dist/kalabox-$BUILD_VERSION.rpm dist/kalabox-latest.rpm
-
+    mv dist/kalabox.rpm dist/kalabox-$BUILD_VERSION.rpm
+    cp dist/kalabox-$BUILD_VERSION.rpm dist/kalabox-latest.rpm
+  fi
 
   # Show me the money jerry
   ls -lsa dist
