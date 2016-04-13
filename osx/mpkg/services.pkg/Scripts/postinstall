@@ -56,7 +56,6 @@ if [ ! $COMPOSE_FAIL_CODE -eq 0 ]; then
   exit 666
 fi
 
-
 # Setup DNS
 mkdir -p /etc/resolver
 echo "nameserver ${KALABOX_IP}" > /etc/resolver/kbox
