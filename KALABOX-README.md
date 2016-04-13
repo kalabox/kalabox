@@ -9,7 +9,7 @@ Kalabox is the fastest way to start developing Drupal and Wordpress sites on you
 1. Download the appropriate package from http://www.kalabox.io
 1. Uncompress the download.
 2. Double click the "Kalabox" application within the uncompressed folder.
-3. On Mac, you may have to allow access to the Kalabox program by vising your "Security & Privacy" settings in "System Preferences".
+3. On Mac, you may have to allow access to the Kalabox program by visiting your "Security & Privacy" settings in "System Preferences".
 4. Otherwise, you should see a welcome screen. Hit "Box Me" to start installation.
 5. Installation usually takes 5-10 minutes, but may take longer depending on your internet connection. Be prepared to enter your system credentials several times through the process.
 6. When you see a blank Kalabox dashboard, you're finished!
