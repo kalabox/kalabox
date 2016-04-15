@@ -67,34 +67,6 @@ Kalabox is an open-source project. As such, support is a community-lead effort. 
 
 **If you are interested in dedicated support or customizations, check out kalabox.io/support**
 
-## Development
-
-Installers are built using Docker, so you'll need a Docker host set up. For example, using [Docker Machine](https://github.com/docker/machine):
-
-```bash
-$ docker-machine create -d virtualbox installer
-$ eval "$(docker-machine env installer)"
-```
-
-Then to build the installer
-
-```bash
-# Builds for all platforms
-make
-
-# Builds for OSX
-make osx
-
-# Builds for Windows
-make windows
-
-# Builds for .deb/.rpm
-make linux
-```
-
-The resulting installers will be in the `dist` directory.
-
-
 ## Other Resources
 
 * [API docs](http://api.kalabox.io/)
