@@ -28,20 +28,40 @@ Give a brief description of what happened
 
 > Example: I tried to create a pantheon site but got a `LowerCase` not defined exception
 
-What steps can we take to recreate this bug?
+Can you recreate this bug?
 
-> Example: 1. Open up GUI
-2.
+> Yes
 
-What did it actually do?
+Please detail the steps we can take to replicate this bug. Be as detailed as possible.
 
+> Example: 
 
-Can you reproduce this issue?
-What steps can i take to reproduce this issue?
+> 1. Started up GUI
+> 2. Clicked on my Pantheon account in the sidebar
+> 3. Selected a site and an environment
+> 4. Kept the default create options and pressed submit
 
+**Tell us more**
 
-Could better documentation have prevented this issue?
-Does this require documentation updates? and if so what?
+Could better documentation have prevented this issue? if so what should we change?
+
+> Example: No
+
+Does this bug prevent you from using Kalabox?
+
+> Example: No
 
 Feature/Enhancement Request
 ===========================
+
+Please explain the reason for this feature request or enhancement
+
+> Example: I want to pull databases faster
+
+Please provide some detail on how Kalabox can help solve this problem
+
+> Example: Including a drushrc.php file that excludes common unneeded table data like caches*
+
+Why do you think it is important Kalabox include this new feature or enhancement?
+
+> Example: 
