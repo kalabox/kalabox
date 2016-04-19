@@ -4,13 +4,11 @@ Contributing to Kalabox
 Creating Issues
 ---------------
 
-*ALL* issues for the Kalabox should be created on the main Kalabox
+**ALL ISSUES** for the Kalabox should be created on the main Kalabox
 project page: https://github.com/kalabox/kalabox/issues
 
-If you create an issue there, please read the main
-[contribution guide](https://github.com/kalabox/kalabox/blob/HEAD/CONTRIBUTING.md)
-and follow issue guidelines that are posted as the first comment on your
-issue once it has been created.
+Once you create an issue please follow the guidelines that are posted as the
+first comment on your.
 
 Issue tags
 ----------
