@@ -64,8 +64,8 @@ Setting Up for Development
 Installers are built using Docker, so you'll need a Docker host set up. For example, using [Docker Machine](https://github.com/docker/machine):
 
 ```bash
-$ docker-machine create -d virtualbox installer
-$ eval "$(docker-machine env installer)"
+$ docker-machine create -d virtualbox kbox-installer
+$ eval "$(docker-machine env kbox-installer)"
 ```
 
 #### 2. Build installers
@@ -99,6 +99,13 @@ want to have node, npm and grunt installed. Right now tests are OS
 specific and can only be run locally due to VirtualBox inception problems on
 Travis.
 
+**IMPORTANT NOTE:** If you run tests on a machine that already has Kalabox
+installed it is most likely going to wipe away your currently installed
+version of Kalabox. For that reason please
+
+1. BE CAREFUL USING THIS!!!
+2. Make appropriate backups of your existing setup
+
 #### Running Tests
 
 Run all the tests via:
@@ -108,6 +115,12 @@ Run all the tests via:
 git clone https://github.com/kalabox/kalabox.git
 cd kalabox
 npm install
+
+# OS specific setup
+# POSIX
+# We need this because we need admin permission to install or uninstall
+# kalabox
+export KBOX_SUDO_PASSWORD=MY_USER_PASSWORD
 
 # Run the tests for my OS
 grunt test
