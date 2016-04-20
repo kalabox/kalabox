@@ -37,6 +37,14 @@ setup() {
 #
 @test "Install Kalabox with duplicate host-only adapters" {
 
+  #
+  # Skip this test until we have a resolution
+  #
+  # See: https://github.com/kalabox/kalabox/issues/1268
+  #      https://github.com/kalabox/kalabox/issues/1220
+  #
+  skip "See https://github.com/kalabox/kalabox/issues/1220"
+
   # Loop through our HOA
   for HOA in "${HOAS[@]}"
   do
@@ -63,7 +71,7 @@ teardown() {
   # Remove test adapters
   for HOA in "${HOAS[@]}"
   do
-    vboxmanage hostonlyif remove $HOA
+    vboxmanage hostonlyif remove $HOA || true
   done
 
 }
