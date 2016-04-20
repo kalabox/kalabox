@@ -15,3 +15,4 @@ profile
 *.moved-aside
 dist
 .sign
+node_modules
