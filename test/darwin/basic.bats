@@ -26,7 +26,7 @@ setup() {
   # Verify the install
   kbox-verify-install
 
-};
+}
 
 # Check that we can uninstall Kalabox.
 @test "Check that we can uninstall Kalabox successfully." {

@@ -48,6 +48,12 @@ fi
 : ${KBOX_UNINSTALL:=$(pwd)/osx/uninstall.sh}
 
 #
+# Get the "last" VBOX host only adapter
+# @todo: are their circumstances where VB will have no HOA?
+#
+: ${KBOX_LAST_HOA:=$(vboxmanage list hostonlyifs | grep "Name:            vboxnet" | tail -1 | cut -d: -f2 | tr -d ' ')}
+
+#
 # Print helpful debug information
 # Use the below line to get this to show up in your tests
 #
@@ -57,6 +63,9 @@ if [ $KBOX_INSTALLER_DEBUG ]; then
   echo "Docker binary        :   $DOCKER"
   echo "Machine binary       :   $DOCKER_MACHINE"
   echo "VBoxManage binary    :   $VBOX"
+  echo
   echo "Installer VM name    :   $KBOX_INSTALLER"
   echo "Uninstall script     :   $KBOX_UNINSTALL"
+  echo
+  echo "VirtualBox Last HOA  :   $KBOX_LAST_HOA"
 fi
