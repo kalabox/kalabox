@@ -8,8 +8,12 @@ module.exports = function(grunt) {
 
   // Helpers to make things cleaner
   var funcOpts = {execOptions: {maxBuffer: 20 * 1024 * 1024}};
-  var funcCommand = 'node_modules/bats/libexec/bats ${CI:+--tap}';
-  var platform = process.platform;
+  var funcPlatform = process.platform;
+  var funcCommand = [
+    'KBOX_TEST_PLATFORM=' + funcPlatform,
+    'node_modules/bats/libexec/bats',
+    '${CI:+--tap}'
+  ].join(' ');
 
   // setup task config
   var config = {
@@ -45,11 +49,19 @@ module.exports = function(grunt) {
       },
       darwin: {
         options: funcOpts,
-        command: funcCommand + ' ./test/darwin/*.bats'
+        command: [
+          funcCommand,
+          ' ./test/basic.bats',
+          ' ./test/darwin/*.bats'
+        ].join(' ')
       },
       linux: {
         options: funcOpts,
-        command: funcCommand + ' ./test/linux.bats'
+        command: [
+          funcCommand,
+          ' ./test/basic.bats',
+          ' ./test/linux/*.bats'
+        ].join(' ')
       }
     }
 
@@ -92,7 +104,7 @@ module.exports = function(grunt) {
    */
   // Verify the install
   grunt.registerTask('test', [
-    'shell:' + platform
+    'shell:' + funcPlatform
   ]);
 
 };

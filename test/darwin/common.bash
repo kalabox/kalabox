@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 #
-# Some helpful functions we can reuse across darwin tests
+# Some helpful functions we can reuse across tests
 #
 
 #

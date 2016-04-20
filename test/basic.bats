@@ -4,10 +4,12 @@
 # Some tests for install and some reported edge cases
 #
 
-# Load up environment
-load ../env
-# Load common OSX func
-load common
+# Load up common environment stuff
+load env
+
+# Load OS specific stuff
+load "$KBOX_TEST_PLATFORM/common"
+load "$KBOX_TEST_PLATFORM/env"
 
 #
 # Get us set up for all the tests
