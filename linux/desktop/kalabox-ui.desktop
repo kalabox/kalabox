@@ -2,7 +2,7 @@
 Name=Kalabox
 Comment=Fask local dev
 Keywords=development;
-OnlyShowIn=GNOME;KDE;LXDE;MATE;Razor;ROX;TDE;Unity;XFCE;EDE;Cinnamon;Old
+OnlyShowIn=GNOME;KDE;LXDE;MATE;Razor;ROX;TDE;Unity;XFCE;EDE;Cinnamon;Old;
 Path=/usr/share/kalabox/gui/Kalabox
 Exec=/usr/share/kalabox/gui/Kalabox/Kalabox
 Icon=/usr/share/kalabox/kalabox.png
