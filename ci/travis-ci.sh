@@ -30,7 +30,7 @@ before-install() {
 #
 install() {
   set -e
-  make $KALABOX_BUILD_PLATFORM
+  run_command make $KALABOX_BUILD_PLATFORM
 }
 
 

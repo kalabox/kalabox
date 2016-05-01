@@ -44,7 +44,7 @@ deploy:
     skip_cleanup: true
     on:
       repo: kalabox/kalabox
-      branch: v0.12
+      tags: true
   - provider: s3
     access_key_id: AKIAJO2C7GYG5GL5G74A
     secret_access_key:
@@ -56,4 +56,4 @@ deploy:
     skip_cleanup: true
     on:
       repo: kalabox/kalabox
-      branch: 1267-deployChanges
+      branch: v0.12
