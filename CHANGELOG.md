@@ -14,3 +14,4 @@ v0.12.0-alpha4
 
 * Added all [registered Desktop Environments](https://standards.freedesktop.org/menu-spec/latest/apb.html) so that Kalabox has the best chance of showing up in the app menu and [appended to the Category list](https://standards.freedesktop.org/menu-spec/latest/ar01s03.html) "Development" [#1272](https://github.com/kalabox/kalabox/issues/1272)
 * Fixed small bug where Kalabox install was failing on Travis [#1247](https://github.com/kalabox/kalabox/issues/1247)
+* Switched dependency on `cgroup-lite` to `cgroup-bin` for better debian based linux compatibility. [#1206](https://github.com/kalabox/kalabox/issues/1206)
