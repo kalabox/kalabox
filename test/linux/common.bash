@@ -31,7 +31,7 @@ kbox-install() {
   done
 
   # Install kalabox
-  echo "${KBOX_SUDO_PASSWORD}" | sudo -S $LINUX_PKG_INSTALL dist/kalabox.deb
+  echo "${KBOX_SUDO_PASSWORD}" | sudo -S $LINUX_PKG_INSTALL dist/$KALABOX_PKG
 
 }
 
@@ -88,7 +88,7 @@ kbox-uninstall() {
 kbox-verify-uninstall() {
 
   # Check that the app is removed
-  run stat /usr/share/kalabox/gui/Kalabox || \
+  run stat /usr/share/kalabox/docker.graph || \
   # Check that the CLI is gone
   run which kbox || \
   # Check that we cannot ping the IP
