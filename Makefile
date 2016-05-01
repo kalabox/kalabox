@@ -23,4 +23,3 @@ clean-windows:
 
 clean-linux:
 	rm -f dist/*.deb && rm -f dist/*.rpm
-

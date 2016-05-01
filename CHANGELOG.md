@@ -5,6 +5,8 @@ v0.12.0-alpha4
 
 #### Enhancements
 
+* Improved deploy to push dev and prod releases [#1267](https://github.com/kalabox/kalabox/issues/1267)
+
 #### New Features
 
 * Updated our development process with new contribution guidelines and standards [#1236](https://github.com/kalabox/kalabox/issues/1236)

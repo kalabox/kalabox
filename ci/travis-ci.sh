@@ -21,6 +21,8 @@ before-install() {
   echo "TRAVIS_BUILD_DIR: ${TRAVIS_BUILD_DIR}"
   echo "TRAVIS_OS_NAME: ${TRAVIS_OS_NAME}"
   echo "PATH: ${PATH}"
+  echo "KBOX_PKG_TYPE: $KBOX_PKG_TYPE"
+  echo "KBOX_BUILD_PLATFORM: $KBOX_BUILD_PLATFORM"
 
 }
 
@@ -30,7 +32,7 @@ before-install() {
 #
 install() {
   set -e
-  make $KALABOX_BUILD_PLATFORM
+  run_command make $KBOX_BUILD_PLATFORM
 }
 
 
@@ -39,7 +41,7 @@ install() {
 # Run before tests
 #
 before-script() {
-  if [ $KALABOX_BUILD_PLATFORM == "linux" ]; then
+  if [ $KBOX_PKG_TYPE == "deb" ]; then
     npm install
   fi
 }
@@ -49,7 +51,7 @@ before-script() {
 # Run the tests.
 #
 script() {
-  if [ $KALABOX_BUILD_PLATFORM == "linux" ]; then
+  if [ $KBOX_PKG_TYPE == "deb" ]; then
     grunt test
   fi
 }
@@ -78,31 +80,19 @@ before-deploy() {
 
   set -e
 
-  # Build things
-  BUILD_VERSION=${TRAVIS_TAG:-$TRAVIS_BRANCH}
-  echo $BUILD_VERSION
-
-  # Rename the builds and generate latest versions
-  if [ $KALABOX_BUILD_PLATFORM == "osx" ]; then
-    mv dist/kalabox.dmg dist/kalabox-$BUILD_VERSION.dmg
-    cp dist/kalabox-$BUILD_VERSION.dmg dist/kalabox-latest.dmg
-  fi
-
-  if [ $KALABOX_BUILD_PLATFORM == "windows" ]; then
-    mv dist/kalabox.exe dist/kalabox-$BUILD_VERSION.exe
-    cp dist/kalabox-$BUILD_VERSION.exe dist/kalabox-latest.exe
-  fi
-
-  if [ $KALABOX_BUILD_PLATFORM == "linux" ]; then
-    mv dist/kalabox.deb dist/kalabox-$BUILD_VERSION.deb
-    cp dist/kalabox-$BUILD_VERSION.deb dist/kalabox-latest.deb
-
-    mv dist/kalabox.rpm dist/kalabox-$BUILD_VERSION.rpm
-    cp dist/kalabox-$BUILD_VERSION.rpm dist/kalabox-latest.rpm
-  fi
-
+  # Create a dev build dir
+  mkdir -p prod_build
+  # Copy the prod release
+  cp dist/kalabox.$KBOX_PKG_TYPE prod_build/kalabox-$TRAVIS_TAG.$KBOX_PKG_TYPE
   # Show me the money jerry
-  ls -lsa dist
+  ls -lsa prod_build
+
+  # Create a dev build dir
+  mkdir -p dev_build
+  # Rename the build and generate latest versions
+  cp dist/kalabox.$KBOX_PKG_TYPE dev_build/kalabox-latest.$KBOX_PKG_TYPE
+  # Show me the money jerry
+  ls -lsa dev_build
 
 }
 
