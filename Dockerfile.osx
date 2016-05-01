@@ -285,5 +285,3 @@ RUN chmod +x /dmg/uninstall.tool
 # Build the DMG
 RUN genisoimage -quiet -V Kalabox -D -R -apple -no-pad -o kalabox.dmg /dmg && \
 	dmg dmg Kalabox.dmg
-
-

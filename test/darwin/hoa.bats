@@ -4,10 +4,12 @@
 # Some tests for install and some reported edge cases
 #
 
-# Load up environment
+# Load up common environment stuff
 load ../env
-# Load common OSX func
+
+# Load OS specific stuff
 load common
+load env
 
 #
 # Get us set up for all the tests

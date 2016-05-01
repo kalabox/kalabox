@@ -1,13 +1,15 @@
 #!/usr/bin/env bats
 
 #
-# Some helpful functions we can reuse across darwin tests
+# Some helpful functions we can reuse across tests
 #
 
 #
 # Make sure we are all set up to run tests
 #
 kbox-setup-preflight() {
+
+  set -e
 
   # Check if we need the installer
   : ${KBOX_NEEDS_INSTALLER:=$("$DOCKER_MACHINE" ls --filter name="$KBOX_INSTALLER" | grep "$KBOX_INSTALLER" > /dev/null && echo 0 || echo $?)}

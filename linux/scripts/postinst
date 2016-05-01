@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e -x
+
 KALABOX_ROOT=/usr/share/kalabox
 KALABOX_BIN=$KALABOX_ROOT/bin
 DOCKER_COMPOSE=$KALABOX_BIN/docker-compose
@@ -40,11 +41,11 @@ DOCKER_HOST="tcp://$KALABOX_IP:2375" \
 KALABOX_DOMAIN=kbox \
 KALABOX_ENGINE_IP="$KALABOX_IP" \
 "$DOCKER_COMPOSE" \
--p kalabox \
--f $KALABOX_ROOT/services/services.yml \
-up \
--d \
---force-recreate > /var/log/kalabox/compose.log
+  -p kalabox \
+  -f $KALABOX_ROOT/services/services.yml \
+  up \
+  -d \
+  --force-recreate > /var/log/kalabox/compose.log
 
 # Setup DNS
 mkdir -p /etc/resolver
