@@ -76,4 +76,7 @@ teardown() {
     vboxmanage hostonlyif remove $HOA || true
   done
 
+  # Sleep
+  sleep 1
+
 }
