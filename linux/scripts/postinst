@@ -56,6 +56,9 @@ XDG_DESKTOP_MENU="$(which xdg-desktop-menu 2> /dev/null)"
 if [ ! -x "$XDG_DESKTOP_MENU" ]; then
   echo "WARNING: Could not find xdg-desktop-menu" >&2
 else
+  # We need this directory to exist
+  mkdir -p /usr/share/desktop-directories/
+  # Set the menu things
   "$XDG_DESKTOP_MENU" install --mode system /usr/share/applications/kalabox-ui.desktop
   "$XDG_DESKTOP_MENU" forceupdate --mode system
 fi
