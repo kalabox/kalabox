@@ -44,5 +44,6 @@ setup() {
 # BURN IT TO THE GROUND!!!!
 #
 teardown() {
+  sleep 1
   echo "Test complete."
 }

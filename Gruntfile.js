@@ -59,7 +59,8 @@ module.exports = function(grunt) {
         options: funcOpts,
         command: [
           funcCommand,
-          ' ./test/basic.bats'
+          ' ./test/basic.bats',
+          ' ./test/linux/*.bats'
         ].join(' ')
       }
     }

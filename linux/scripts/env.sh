@@ -26,7 +26,7 @@ DEPS=( bridge-utils iptables )
 if [ "$1" == "rpm" ]; then
   DEPS+=('libcgroup')
 elif [ "$1" == "deb" ]; then
-  DEPS+=('cgroup-lite')
+  DEPS+=('cgroup-bin')
 fi
 
 # Loop through to build our PKG_DEPS
