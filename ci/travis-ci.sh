@@ -39,7 +39,9 @@ install() {
 # Run before tests
 #
 before-script() {
-  echo
+  if [ $KALABOX_BUILD_PLATFORM == "linux" ]; then
+    npm install
+  fi
 }
 
 # script
@@ -47,7 +49,9 @@ before-script() {
 # Run the tests.
 #
 script() {
-  echo
+  if [ $KALABOX_BUILD_PLATFORM == "linux" ]; then
+    grunt test
+  fi
 }
 
 # after-script

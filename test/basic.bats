@@ -22,7 +22,7 @@ setup() {
 @test "Check that we can install Kalabox successfully." {
 
   # Run our uninstaller first just in case
-  kbox-uninstall
+  kbox-uninstall || true
   # Run the install
   kbox-install
   # Verify the install

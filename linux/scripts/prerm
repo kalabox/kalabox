@@ -12,3 +12,12 @@ if [ -d /run/systemd/system ]; then
 else
   service kalabox stop 2>/dev/null || true
 fi
+
+# Wait until the process is killed
+while [ -f /usr/share/kalabox/docker.pid ]; do
+  echo "Waiting for process to end..."
+  sleep 1
+done
+
+# Remove other docker files
+rm -rf /usr/share/kalabox/docker.*

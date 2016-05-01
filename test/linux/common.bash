@@ -9,6 +9,8 @@
 #
 kbox-setup-preflight() {
 
+  set -e
+
   # Build our installer
   make linux
 
@@ -21,7 +23,16 @@ kbox-setup-preflight() {
 # Run the kalabox install
 #
 kbox-install() {
-  echo "${KBOX_SUDO_PASSWORD}" | sudo -S $LINUX_PKG_MANAGER ./dist/$KALABOX_PKG
+
+  # Loop through to install our DEPS
+  for i in "${DEPS[@]}"
+  do
+    echo "${KBOX_SUDO_PASSWORD}" | sudo -S $LINUX_DEP_INSTALL $i
+  done
+
+  # Install kalabox
+  echo "${KBOX_SUDO_PASSWORD}" | sudo -S $LINUX_PKG_INSTALL dist/kalabox.deb
+
 }
 
 #
@@ -29,8 +40,11 @@ kbox-install() {
 #
 kbox-verify-install() {
 
-   # Get our CLI binary
+  # Get our CLI binary
   KBOX=$(which kbox)
+
+  # Get our installed docker binary
+  KDOCKER=/usr/share/kalabox/bin/docker
 
   # Check some basic commands
   $KBOX config
@@ -40,16 +54,15 @@ kbox-verify-install() {
   $KBOX version
 
   # Some basic service checks
-  $DOCKER inspect kalabox_dns_1 | grep "\"Running\": true"
-  $DOCKER inspect kalabox_proxy_1 | grep "\"Running\": true"
+  DOCKER_HOST=tcp://10.13.37.100:2375 $KDOCKER inspect kalabox_dns_1 | grep "\"Running\": true"
+  DOCKER_HOST=tcp://10.13.37.100:2375 $KDOCKER inspect kalabox_proxy_1 | grep "\"Running\": true"
 
   # Check our IP address
-  KALABOX_IP=10.13.37.100
   cat /etc/resolver/kbox | grep $KALABOX_IP
   ping -c 1 $KALABOX_IP
 
-  # Check for app's existence
-  stat /usr/share/kalabox/gui/kalabox
+  # Check for NW app's existence
+  stat /usr/share/kalabox/gui/Kalabox
 
 }
 
@@ -57,7 +70,16 @@ kbox-verify-install() {
 # Run the Kalabox uninstall
 #
 kbox-uninstall() {
-  echo "${KBOX_SUDO_PASSWORD}" | sudo -S
+
+  # Loop through to remove our DEPS
+  #for i in "${DEPS[@]}"
+  #do
+  #  echo "${KBOX_SUDO_PASSWORD}" | sudo -S $LINUX_DEP_REMOVE $i
+  #done
+
+  # Uninstall kalabox as well
+  echo "${KBOX_SUDO_PASSWORD}" | sudo -S $LINUX_PKG_REMOVE kalabox
+
 }
 
 #
@@ -66,11 +88,12 @@ kbox-uninstall() {
 kbox-verify-uninstall() {
 
   # Check that the app is removed
-  run stat /Applications/Kalabox.app || \
+  run stat /usr/share/kalabox/gui/Kalabox || \
   # Check that the CLI is gone
   run which kbox || \
-  # Check that the VM is gone
-  run docker-machine ls | grep Kalabox2
+  # Check that we cannot ping the IP
+  ping -c 1 $KALABOX_IP
+  # Check
   [ "$status" -eq 1 ]
 
 }

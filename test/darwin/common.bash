@@ -9,6 +9,8 @@
 #
 kbox-setup-preflight() {
 
+  set -e
+
   # Check if we need the installer
   : ${KBOX_NEEDS_INSTALLER:=$("$DOCKER_MACHINE" ls --filter name="$KBOX_INSTALLER" | grep "$KBOX_INSTALLER" > /dev/null && echo 0 || echo $?)}
   if [ $KBOX_NEEDS_INSTALLER != 0 ]; then
