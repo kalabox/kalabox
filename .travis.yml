@@ -3,7 +3,8 @@ sudo: required
 env:
   matrix:
   - KALABOX_BUILD_PLATFORM=osx
-  - KALABOX_BUILD_PLATFORM=linux
+  - KALABOX_BUILD_PLATFORM=rpm
+  - KALABOX_BUILD_PLATFORM=deb
   - KALABOX_BUILD_PLATFORM=windows
   global:
   - KBOX_SUDO_PASSWORD=
@@ -39,7 +40,7 @@ deploy:
   - provider: releases
     api_key:
       secure: MDL8ub5md5MQFhcZrsX15qEJ9pJPrQ2jIzFQNergsXh3D0bEO3mNbeCcN9kI2S6chUIxpxwvoJnNXsN66ZNn3NzFVyf4QKQV6thBDFgapZN5sYk2u0QD6pyc9Q7RaRwGzqLXdRFdF0KRLPx0lH9DsA0RJ1t85vuBbUK9f/0ys1w=
-    file: prod_build/kbox-$TRAVIS_OS_NAME-x64-$TRAVIS_TAG
+    file: prod_build/kalabox-$BUILD_VERSION.$KBOX_PKG_TYPE
     skip_cleanup: true
     on:
       repo: kalabox/kalabox

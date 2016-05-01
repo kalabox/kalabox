@@ -15,6 +15,12 @@ windows: clean-windows
 linux: clean-linux
 	./script/build-linux
 
+deb: clean-linux
+	./script/build-linux
+
+rpm: clean-linux
+	./script/build-linux
+
 clean-osx:
 	rm -f dist/*.dmg
 
@@ -23,4 +29,3 @@ clean-windows:
 
 clean-linux:
 	rm -f dist/*.deb && rm -f dist/*.rpm
-

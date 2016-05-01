@@ -39,7 +39,7 @@ install() {
 # Run before tests
 #
 before-script() {
-  if [ $KALABOX_BUILD_PLATFORM == "linux" ]; then
+  if [ $KALABOX_BUILD_PLATFORM == "deb" ]; then
     npm install
   fi
 }
@@ -49,7 +49,7 @@ before-script() {
 # Run the tests.
 #
 script() {
-  if [ $KALABOX_BUILD_PLATFORM == "linux" ]; then
+  if [ $KALABOX_BUILD_PLATFORM == "deb" ]; then
     grunt test
   fi
 }
@@ -78,19 +78,30 @@ before-deploy() {
 
   set -e
 
+  # Get Deploy extension
+  if [ $KALABOX_BUILD_PLATFORM == "osx" ]; then
+    KBOX_PKG_TYPE=dmg
+  elif [ $KALABOX_BUILD_PLATFORM == "windows" ]; then
+    KBOX_PKG_TYPE=exe
+  elif [ $KALABOX_BUILD_PLATFORM == "deb" ]; then
+    KBOX_PKG_TYPE=deb
+  elif [ $KALABOX_BUILD_PLATFORM == "rpm" ]; then
+    KBOX_PKG_TYPE=rpm
+  fi
+
   # THis is a production release!
   if [ $TRAVIS_PULL_REQUEST == "false" ] &&
     [ ! -z "$TRAVIS_TAG" ] &&
     [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ]; then
 
+    # Create a dev build dir
+    mkdir -p prod_build
+
     # Get our prod version
     BUILD_VERSION=${TRAVIS_TAG:-$TRAVIS_BRANCH}
     echo $BUILD_VERSION
 
-    # cp dist/kalabox.dmg dist/kalabox-$BUILD_VERSION.dmg
-    # cp dist/kalabox.exe dist/kalabox-$BUILD_VERSION.exe
-    # cp dist/kalabox.deb dist/kalabox-$BUILD_VERSION.deb
-    # cp dist/kalabox.rpm dist/kalabox-$BUILD_VERSION.rpm
+    cp dist/kalabox.$KBOX_PKG_TYPE prod_build/kalabox-$BUILD_VERSION.$KBOX_PKG_TYPE
 
     # Show me the money jerry
     ls -lsa prod_build
@@ -99,21 +110,8 @@ before-deploy() {
 
   # Create a dev build dir
   mkdir -p dev_build
-
-  # Rename the builds and generate latest versions
-  if [ $KALABOX_BUILD_PLATFORM == "osx" ]; then
-    cp dist/kalabox.dmg dev_build/kalabox-latest.dmg
-  fi
-
-  if [ $KALABOX_BUILD_PLATFORM == "windows" ]; then
-    cp dist/kalabox.exe dev_build/kalabox-latest.exe
-  fi
-
-  if [ $KALABOX_BUILD_PLATFORM == "linux" ]; then
-    cp dist/kalabox.deb dev_build/kalabox-latest.deb
-    cp dist/kalabox.rpm dev_build/kalabox-latest.rpm
-  fi
-
+  # Rename the build and generate latest versions
+  cp dist/kalabox.$KBOX_PKG_TYPE dev_build/kalabox-latest.$KBOX_PKG_TYPE
   # Show me the money jerry
   ls -lsa dev_build
 
