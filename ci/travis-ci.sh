@@ -21,6 +21,8 @@ before-install() {
   echo "TRAVIS_BUILD_DIR: ${TRAVIS_BUILD_DIR}"
   echo "TRAVIS_OS_NAME: ${TRAVIS_OS_NAME}"
   echo "PATH: ${PATH}"
+  echo "KBOX_PKG_TYPE: $KBOX_PKG_TYPE"
+  echo "KBOX_BUILD_PLATFORM: $KBOX_BUILD_PLATFORM"
 
 }
 
@@ -30,7 +32,7 @@ before-install() {
 #
 install() {
   set -e
-  run_command make $KALABOX_BUILD_PLATFORM
+  run_command make $KBOX_BUILD_PLATFORM
 }
 
 
@@ -39,7 +41,7 @@ install() {
 # Run before tests
 #
 before-script() {
-  if [ $KALABOX_BUILD_PLATFORM == "deb" ]; then
+  if [ $KBOX_PKG_TYPE == "deb" ]; then
     npm install
   fi
 }
@@ -49,7 +51,7 @@ before-script() {
 # Run the tests.
 #
 script() {
-  if [ $KALABOX_BUILD_PLATFORM == "deb" ]; then
+  if [ $KBOX_PKG_TYPE == "deb" ]; then
     grunt test
   fi
 }
@@ -78,35 +80,12 @@ before-deploy() {
 
   set -e
 
-  # Get Deploy extension
-  if [ $KALABOX_BUILD_PLATFORM == "osx" ]; then
-    KBOX_PKG_TYPE=dmg
-  elif [ $KALABOX_BUILD_PLATFORM == "windows" ]; then
-    KBOX_PKG_TYPE=exe
-  elif [ $KALABOX_BUILD_PLATFORM == "deb" ]; then
-    KBOX_PKG_TYPE=deb
-  elif [ $KALABOX_BUILD_PLATFORM == "rpm" ]; then
-    KBOX_PKG_TYPE=rpm
-  fi
-
-  # THis is a production release!
-  if [ $TRAVIS_PULL_REQUEST == "false" ] &&
-    [ ! -z "$TRAVIS_TAG" ] &&
-    [ $TRAVIS_REPO_SLUG == "kalabox/kalabox" ]; then
-
-    # Create a dev build dir
-    mkdir -p prod_build
-
-    # Get our prod version
-    BUILD_VERSION=${TRAVIS_TAG:-$TRAVIS_BRANCH}
-    echo $BUILD_VERSION
-
-    cp dist/kalabox.$KBOX_PKG_TYPE prod_build/kalabox-$BUILD_VERSION.$KBOX_PKG_TYPE
-
-    # Show me the money jerry
-    ls -lsa prod_build
-
-  fi
+  # Create a dev build dir
+  mkdir -p prod_build
+  # Copy the prod release
+  cp dist/kalabox.$KBOX_PKG_TYPE prod_build/kalabox-$TRAVIS_TAG.$KBOX_PKG_TYPE
+  # Show me the money jerry
+  ls -lsa prod_build
 
   # Create a dev build dir
   mkdir -p dev_build

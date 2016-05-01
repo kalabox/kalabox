@@ -2,10 +2,10 @@ language: cpp
 sudo: required
 env:
   matrix:
-  - KALABOX_BUILD_PLATFORM=osx
-  - KALABOX_BUILD_PLATFORM=rpm
-  - KALABOX_BUILD_PLATFORM=deb
-  - KALABOX_BUILD_PLATFORM=windows
+  - KBOX_BUILD_PLATFORM=osx KBOX_PKG_TYPE=dmg
+  - KBOX_BUILD_PLATFORM=linux KBOX_PKG_TYPE=rpm
+  - KBOX_BUILD_PLATFORM=linux KBOX_PKG_TYPE=deb
+  - KBOX_BUILD_PLATFORM=windows KBOX_PKG_TYPE=exe
   global:
   - KBOX_SUDO_PASSWORD=
 services:
