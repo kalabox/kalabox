@@ -271,7 +271,7 @@ RUN cd /mpkg && \
 	xar -c --compression=none -f /dmg/KalaboxInstaller.pkg .
 
 # Copy in other stuff
-COPY osx/uninstall.sh dmg/uninstall.tool
+COPY osx/uninstall.sh dmg/uninstall.sh
 COPY KALABOX-README.md dmg/README.md
 COPY TERMS.md dmg/TERMS.md
 COPY LICENSE.md dmg/LICENSE.md
@@ -280,7 +280,7 @@ COPY SYNCTHING_LICENSE dmg/SYNCTHING_LICENSE
 COPY osx/kalabox.icns dmg/.VolumeIcon.icns
 
 # Make sure uninstall is executable
-RUN chmod +x /dmg/uninstall.tool
+RUN chmod +x /dmg/uninstall.sh
 
 # Build the DMG
 RUN genisoimage -quiet -V Kalabox -D -R -apple -no-pad -o kalabox.dmg /dmg && \
