@@ -1,3 +1,12 @@
+v0.12.0-beta1
+==================
+
+#### New Features
+
+#### Bug Fixes
+
+* Changed `uninstall.tool` to `uninstall.sh` [#1246](https://github.com/kalabox/kalabox/issues/1246)
+
 v0.12.0-alpha4
 ==================
 
