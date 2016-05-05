@@ -33,7 +33,7 @@ module.exports = function(grunt) {
         pushTo: 'origin',
         gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
         globalReplace: true,
-        prereleaseName: 'alpha',
+        prereleaseName: 'beta',
         metadata: '',
         regExp: false
       }
