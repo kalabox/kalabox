@@ -10,27 +10,19 @@ Bug Report
 
 **Tell us about your setup**
 
-What version of Kalabox are you using?
+What is your Kalabox version and operating system?
 
-> Example: v0.12.0-alpha3
-
-What operating system are you using?
-
-> Example: Windows 8.1 Profesional
+*Example: v0.12.0-beta1 on Windows 8.1 Professional*
 
 Have you previously installed Kalabox? If so, what version?
 
-> Example: Yes, 0.11.5
+*Example: Yes, I've installed Kalabox v0.12.0-alpha4*
 
 **Tell us about your bug**
 
-Give a brief description of what happened
+Give a brief description of what happened, including any error messages that appeared.
 
-> Example: I tried to create a pantheon site but got a `LowerCase` not defined exception
-
-Can you recreate this bug?
-
-> Yes
+*Example: I tried to create a pantheon site but got a `LowerCase` not defined exception*
 
 Please detail the steps we can take to replicate this bug. Be as detailed as possible.
 
@@ -45,23 +37,17 @@ Please detail the steps we can take to replicate this bug. Be as detailed as pos
 
 Could better documentation have prevented this issue? if so what should we change?
 
-> Example: No
 
 Does this bug prevent you from using Kalabox?
 
-> Example: No
 
 Feature/Enhancement Request
 ===========================
 
-Please explain the reason for this feature request or enhancement
+Please explain your request and its importance in the form of a user story.
 
-> Example: I want to pull databases faster
+*Example: As a Kalabox user who works with Drupal sites that have large databases, I want the option to exclude unnecessary database tables from being pulled when I update my site because I want faster "site pull" actions.*
 
 Please provide some detail on how Kalabox can help solve this problem
 
-> Example: Including a drushrc.php file that excludes common unneeded table data like caches*
-
-Why do you think it is important Kalabox include this new feature or enhancement?
-
-> Example: 
+*Example: Place an option on the "site pull" screen to exclude cache tables.*
