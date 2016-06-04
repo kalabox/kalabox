@@ -65,7 +65,7 @@ uninstall() {
 # Primary logic
 while true; do
   if [ $FORCE == false ]; then
-    read -p "Completely remove Kalabox? (Y/N): " yn
+    read -p "Completely remove Kalabox (including all sites)? (Y/N): " yn
   else
     yn=y
   fi
