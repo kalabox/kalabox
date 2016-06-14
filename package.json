@@ -1,5 +1,5 @@
 {
-  "name": "kalabox-cli",
+  "name": "kalabox",
   "description": "A framework to build reusable, super fast, highly customizable, extensible integrated workflow solutions for all kinds of apps.",
   "license": "MIT",
   "keywords": [
@@ -10,7 +10,7 @@
   ],
   "main": "lib/kbox.js",
   "preferGlobal": true,
-  "version": "0.12.0-beta.1",
+  "version": "0.13.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/kalabox/kalabox"
@@ -19,15 +19,12 @@
     "email": "mike@kalabox.io",
     "url": "https://github.com/kalabox/kalabox/issues"
   },
-  "directories": {
-    "lib": "./lib",
-    "bin": "./bin"
-  },
   "bin": {
     "kbox": "./bin/kbox.js"
   },
-  "scripts": {
-    "test": "istanbul cover _mocha"
+  "directories": {
+    "lib": "./lib",
+    "bin": "./bin"
   },
   "dependencies": {
     "bluebird": "^2.9.3",
