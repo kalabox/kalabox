@@ -1,5 +1,5 @@
 {
-  "name": "kalabox",
+  "name": "kalabox-cli",
   "description": "A framework to build reusable, super fast, highly customizable, extensible integrated workflow solutions for all kinds of apps.",
   "license": "MIT",
   "keywords": [
@@ -8,6 +8,8 @@
     "drupal",
     "wordpress"
   ],
+  "main": "lib/kbox.js",
+  "preferGlobal": true,
   "version": "0.12.0-beta.1",
   "repository": {
     "type": "git",
@@ -17,11 +19,67 @@
     "email": "mike@kalabox.io",
     "url": "https://github.com/kalabox/kalabox/issues"
   },
+  "directories": {
+    "lib": "./lib",
+    "bin": "./bin"
+  },
+  "bin": {
+    "kbox": "./bin/kbox.js"
+  },
+  "scripts": {
+    "test": "istanbul cover _mocha"
+  },
+  "dependencies": {
+    "bluebird": "^2.9.3",
+    "chalk": "~0.5.1",
+    "dockerode": "^2.2.7",
+    "download": "^4.4.3",
+    "fs-extra": "^0.18.2",
+    "inquirer": "^0.8.3",
+    "js-yaml": "^3.4.6",
+    "kalabox-app-pantheon": "https://github.com/kalabox/kalabox-app-pantheon/tarball/v0.12",
+    "kalabox-app-php": "https://github.com/kalabox/kalabox-app-php/tarball/v0.12",
+    "kalabox-stats-client": "^0.2.1",
+    "lodash": "^3.10.1",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.10.6",
+    "redis": "https://github.com/kalabox/node_redis/tarball/master",
+    "restler": "^3.2.2",
+    "sha1": "^1.1.0",
+    "shell-escape": "https://github.com/kalabox/node-shell-escape/tarball/master",
+    "shelljs": "^0.6.0",
+    "ssh-fingerprint": "0.0.1",
+    "ssh-keygen": "^0.2.1",
+    "sync-exec": "^0.6.2",
+    "uuid": "^2.0.1",
+    "verror": "1.6.x",
+    "winston": "^0.9.0",
+    "yargs": "^3.7.0"
+  },
   "devDependencies": {
     "bats": "git+https://github.com/sstephenson/bats.git#master",
+    "ben": "0.0.0",
+    "chai": "^3.4.1",
+    "chai-as-promised": "^5.3.0",
+    "documentation": "4.0.0-beta",
     "grunt": "^0.4.5",
     "grunt-bump": "0.7.0",
-    "grunt-shell": "^1.2.1",
-    "matchdep": "^0.3.0"
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-copy": "^0.7.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-jscs": "~0.8.1",
+    "grunt-jsdoc": "^0.5.7",
+    "grunt-mocha-cli": "^2.0.0",
+    "grunt-mocha-istanbul": "^3.0.1",
+    "grunt-shell": "^1.1.1",
+    "istanbul": "^0.3.2",
+    "jshint-stylish": "~1.0.0",
+    "matchdep": "^0.3.0",
+    "mocha": "^2.3.4",
+    "mock-fs": "^3.5.0",
+    "randomstring": "^1.0.5",
+    "rewire": "^2.1.0",
+    "sinon": "^1.10.3"
   }
 }

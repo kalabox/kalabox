@@ -1,0 +1,117 @@
+# Make sure we are using correct line endings for win
+init:
+  - git config --global core.autocrlf true
+
+# We only want things super fresh
+platform: x64
+
+# Test against this version of Node.js
+environment:
+  nodejs_version: "4.2"
+
+# Install scripts.
+install:
+  # Get the latest stable version of Node.js or io.js
+  - ps: Install-Product node $env:nodejs_version x64
+  - ps: >-
+      $temp_dir = $env:TMP;
+      $jx_url = "https://raw.githubusercontent.com/jxcore/jxcore-release/master/0311/jx_winsetup.zip";
+      $jx_dest = "$temp_dir\jx_winsetup.zip";
+      $jx_installer = "$temp_dir\jx_winsetup\JXcore_setup.exe";
+      $webclient = New-Object System.Net.WebClient;
+      $webclient.DownloadFile($jx_url, $jx_dest);
+      $shell = new-object -com shell.application;
+      New-Item -ItemType Directory -Force -Path $temp_dir -WarningAction SilentlyContinue;
+      $shell.namespace($temp_dir).copyhere($shell.namespace("$jx_dest").items());
+      Start-Process -Wait $jx_installer '/SP /SILENT /VERYSILENT /SUPRESSMSGBOXES /NOCANCEL /NOREBOOT /NORESTART /CLOSEAPPLICATIONS';
+      $env:PATH = $env:PATH + ";C:\Program Files (x86)\JXcore";
+      Write-Host $env:PATH;
+      [System.Reflection.Assembly]::LoadWithPartialName("System.Web.Extensions");
+      $ser = New-Object System.Web.Script.Serialization.JavaScriptSerializer;
+      $json = Get-Content "package.json" | Out-String;
+      $obj = $ser.DeserializeObject($json);
+      $env:KALABOX_VERSION = $obj['version'];
+      Write-Host $env:KALABOX_VERSION;
+      $env:KALABOX_HASH = git rev-parse --short HEAD | Out-String;
+      Write-Host $env:KALABOX_HASH;
+
+  # install relevant things
+  - npm install -g grunt-cli
+
+  # Sanity checks
+  - node --version
+  - npm --version
+  - grunt --version
+  - jx --version
+  - jx --jxversion
+
+  # Build the things
+  - npm install
+
+# Custom test script
+test_script:
+
+  # Run basic tests
+  - grunt test:code
+  - grunt test:unit
+
+# Custom build script
+build_script:
+
+  # Build dev releases
+  - grunt pkg --dev
+  - mkdir dev_build
+  #- copy "dist\kbox-win32-x64-v%KALABOX_VERSION%.exe" "dev_build\kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev.exe"
+  - copy "dist\kbox-win32-x64-v%KALABOX_VERSION%.exe" "dev_build\kbox-win-x64-latest-dev.exe"
+  #- cmd: "dev_build\\kbox-win-x64-v%KALABOX_VERSION%-%KALABOX_HASH%-dev version"
+  - cmd: "dev_build\\kbox-win-x64-latest-dev version"
+
+  # Build prod releases
+  - grunt pkg
+  - mkdir prod_build
+  - copy "dist\kbox-win32-x64-v%KALABOX_VERSION%.exe" "prod_build\kbox-win-x64-v%KALABOX_VERSION%.exe"
+  - cmd: "prod_build\\kbox-win-x64-v%KALABOX_VERSION%.exe version"
+
+# Where are our things
+artifacts:
+  - path: dev_build/*.exe
+    name: development
+  - path: prod_build/*.exe
+    name: production
+
+# Rename some stuff
+after_build:
+  - ps: Get-ChildItem .\dev_build\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName s3 }
+  - ps: Get-ChildItem .\prod_build\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName github }
+
+# Deploymentzzz
+deploy:
+  - provider: S3
+    access_key_id:
+      secure: t16g2geIvu5qJVSiPzqxzUnk4+p9X1psf6e8RmUJPDk=
+    secret_access_key:
+      secure: o/pYPIuDU8SPSrTB15BwzlLrDXGuhhTJUWdWMyvDLnsAwC6uJmASPEATUX9CFIEW
+    bucket: cli.kalabox.io
+    region: us-west-1
+    artifact: s3
+    on:
+      branch: v0.12
+  - provider: GitHub
+    description: v$(KALABOX_VERSION)
+    artifact: github
+    draft: false
+    auth_token:
+      secure: h95XRXK3tAJOZphssQ9dB3rpdK0y2I8VpakCR79+YwjZQOCW4YukAdCcwtBFdEoD
+    prerelease: false
+    on:
+      appveyor_repo_tag: true
+
+# Notify of build stati
+notifications:
+  # Email
+  - provider: Email
+    to:
+      - mike@kalabox.io
+      - riley@kalabox.io
+      - alec@kalabox.io
+    on_build_status_changed: true

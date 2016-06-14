@@ -1,0 +1,9 @@
+#
+# Token container attached to apps to communicate app state and events through
+# the docker events stream.
+#
+# Use tail -f /dev/null to make sure the container stays running until stopped.
+#
+token:
+  image: busybox
+  command: [tail, -f, /dev/null] 
