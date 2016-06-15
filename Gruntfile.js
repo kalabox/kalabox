@@ -2,298 +2,84 @@
 
 module.exports = function(grunt) {
 
-  // General helpers
-  var platform = process.platform;
-  var os = require('os');
-  var pkg = require('./package.json');
+  // loads all grunt-* tasks based on package.json definitions
+  require('matchdep').filterAll('grunt-*').forEach(grunt.loadNpmTasks);
 
-  // Shell helper
-  var shellOpts = {execOptions: {maxBuffer: 20 * 1024 * 1024}};
+  // Load in common information we can use across tasks
+  var common = require('./tasks/common.js');
 
-  // BATS helpers
-  var funcPlatform = process.platform;
-  var funcCommand = [
-    'KBOX_TEST_PLATFORM=' + funcPlatform,
-    'node_modules/bats/libexec/bats',
-    '${CI:+--tap}'
-  ].join(' ');
+  // Determine whether the dev flag is on or off
+  var dev = grunt.option('dev');
 
-  // JX helpers
-  var binBuild = ['kbox', platform, os.arch(), 'v' + pkg.version];
-  var binBase = binBuild.join('-');
-  var binName = (platform === 'win32') ? binBase + '.exe' : binBase;
-  var jxAddPatterns = [
-    '*.js',
-    '*.yml',
-    '*.json',
-    '*.cmd',
-    '*.vbs',
-    'version.lock'
-  ];
-  var jxSlimPatterns = [
-    '*.spec',
-    '*test/*',
-    '.git/*'
-  ];
-  var jxCmd = [
-    'jx package',
-    'bin/kbox.js',
-    'dist/' + binName,
-    '--add "' + jxAddPatterns.join(',') + '"',
-    '--slim "' + jxSlimPatterns.join(',') + '"',
-    '--native'
-  ];
-  var installCmd = ['npm', 'install', '--production'];
-  // Figure out whether we want to not version lock our build
-  if (!grunt.option('dev')) {
-    installCmd.push('&&');
-    if (platform === 'win32') {
-      installCmd.push('copy');
-    }
-    else {
-      installCmd.push('cp');
-    }
-    installCmd.push('package.json');
-    installCmd.push('version.lock');
-  }
-  var buildCmds = [
-    installCmd.join(' '),
-    'mkdir dist',
-    jxCmd.join(' ')
-  ];
+  // Load in delegated responsibilities because cleanliness => godliness
+  var fs = require('./tasks/fs.js')(common);
+  var shell = require('./tasks/shell.js')(common);
+  var style = require('./tasks/style.js')(common);
+  var unit = require('./tasks/unit.js')(common);
+  var util = require('./tasks/util.js')(common);
 
-  // Add additional build cmd for POSIX
-  if (platform !== 'win32') {
-    buildCmds.push('chmod +x dist/' + binName);
-    buildCmds.push('sleep 2');
-  }
-
-  // setup task config
+  // Our Grut config object
   var config = {
 
-    files: {
-      // All JS files
-      js: {
-        src: [
-          'lib/**/*.js',
-          'plugins/**/*.js',
-          'plugins/**/**/*.js',
-          'plugins/**/**/**/*.js',
-          'test/**/*.js',
-          'bin/kbox.js',
-          'scripts/*.js',
-          'Gruntfile.js'
-        ]
-      },
-      // Relevant build files
-      build: {
-        src: [
-          'bin/kbox.*',
-          'lib/**',
-          'plugins/**',
-          'scripts/lock.js',
-          '*.json',
-          'kalabox.yml'
-        ],
-      }
-    },
+    // Linting, standards and styles tasks
+    jshint: style.jshint,
+    jscs: style.jscs,
 
-    // Copy tasks
+    // Copying tasks
     copy: {
-      // Copy build files to build directory
-      build: {
-        src: '<%= files.build.src %>',
-        dest: 'build/'
-      },
-      // Copy build artifacts to dist directory
-      dist: {
-        src: 'build/dist/' + binNameExt,
-        dest: 'dist/' + binNameExt,
-        options: {
-          mode: true
-        }
-      }
+      cliBuild: fs.copy.cli.build,
+      cliDist: fs.copy.cli.dist
     },
 
-    // Clean pathzzz
+    // Copying tasks
     clean: {
-      coverage: ['coverage'],
-      build: ['build'],
-      dist: ['dist']
+      cliBuild: fs.clean.cli.build,
+      cliDist: fs.clean.cli.dist
     },
 
-    // Run unit tests
-    mochacli: {
-      options: {
-        bail: true,
-        reporter: 'nyan',
-        recursive: true,
-        env: {
-          WINSTON_SHUTUP: true
-        }
-      },
-      unit: ['./test/*.spec.js', './test/**/*.spec.js']
-    },
-
-    // Chech coverage and things
-    /* jshint ignore:start */
-    // jscs:disable
-    mocha_istanbul: {
-      coverage: {
-        src: './test',
-        options: {
-          mask: '*.spec.js',
-          coverage:true,
-          check: {
-            lines: 5,
-            statements: 5,
-            branches: 5,
-            functions: 5
-          },
-          root: './lib',
-          reportFormats: ['lcov','html']
-        }
-      }
-    },
-    /* jshint ignore:end */
-    // jscs:enable
+    // Unit test tasks
+    mochacli: unit.mochacli,
 
     // Shell tasks
     shell: {
-      // Shell tasks for building
-      build: {
-        options: {
-          execOptions: {
-            cwd: 'build',
-            maxBuffer: 20 * 1024 * 1024
-          }
-        },
-        command: buildCmds.join(' && ')
-      },
-      // Shell tasks for functional testing
-      install: {
-        options: shellOpts,
-        command: funcCommand + ' ./test/install.bats'
-      },
-      cmd: {
-        options: shellOpts,
-        command: funcCommand + ' ./test/kalabox-cmd.bats'
-      },
-      win32: {
-        options: funcOpts,
-        command: 'echo "OS not implemented yet"',
-      },
-      darwin: {
-        options: funcOpts,
-        command: [
-          funcCommand,
-          ' ./test/basic.bats',
-          ' ./test/darwin/*.bats'
-        ].join(' ')
-      },
-      linux: {
-        options: funcOpts,
-        command: [
-          funcCommand,
-          ' ./test/basic.bats',
-          ' ./test/linux/*.bats'
-        ].join(' ')
-      }
+      cliBats: shell.batsTask(common.files.cliBats),
+      cliPkg: shell.cliPkgTask(dev),
+      installerDarwin: shell.batsTask(common.files.installerDarwinBats),
+      installerLinux: shell.batsTask(common.files.installerLinuxBats)
     },
 
-    // Some linting
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc',
-        reporter: require('jshint-stylish')
-      },
-      all: ['Gruntfile.js', '<%= files.js.src %>']
-    },
-
-    // Some code standards
-    jscs: {
-      src: ['Gruntfile.js', '<%= files.js.src %>'],
-      options: {
-        config: '.jscsrc'
-      }
-    }
-
-    // This handles automatic version bumping in travis
-    bump: {
-      options: {
-        files: ['package.json'],
-        updateConfigs: [],
-        commit: true,
-        commitMessage: 'Release v%VERSION%',
-        commitFiles: ['package.json'],
-        createTag: true,
-        tagName: 'v%VERSION%',
-        tagMessage: 'Version %VERSION%',
-        push: true,
-        pushTo: 'origin',
-        gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
-        globalReplace: true,
-        prereleaseName: 'beta',
-        metadata: '',
-        regExp: false
-      }
-    }
+    // Utility tasks
+    bump: util.bump
 
   };
 
-  //--------------------------------------------------------------------------
-  // LOAD TASKS
-  //--------------------------------------------------------------------------
-
-  // load task config
+  // Load in all our task config
   grunt.initConfig(config);
 
-  // load external tasks
-  //grunt.loadTasks('tasks');
-
-  // load grunt-* tasks from package.json dependencies
-  require('matchdep').filterAll('grunt-*').forEach(grunt.loadNpmTasks);
-
-  //--------------------------------------------------------------------------
-  // SETUP WORKFLOWS
-  //--------------------------------------------------------------------------
-
-  /*
-   * Code tests
-   */
-  // Run just unit tests
-  grunt.registerTask('test:unit', [
-    'mochacli:unit'
-  ]);
-
-  // Run just coverage reports
-  grunt.registerTask('test:coverage', [
-    'mocha_istanbul:coverage'
-  ]);
-
-  // Run just code styles
+  // Check Linting, standards and styles
   grunt.registerTask('test:code', [
     'jshint',
     'jscs'
   ]);
 
-  /*
-   * Func tests
-   */
-  // Install verify tests
-  grunt.registerTask('test:install', [
-    'shell:install'
+  // Run unit tests
+  grunt.registerTask('test:unit', [
+    'mochacli:unit'
   ]);
 
-  // kalabox-cmd tests
-  grunt.registerTask('test:cmd', [
-    'shell:cmd'
+  // Run CLI BATS tests
+  grunt.registerTask('test:cli', [
+    'shell:cliBats'
   ]);
 
-  // All functional tests
-  grunt.registerTask('test:func', [
-    'test:install',
-    'test:cmd'
+  // Run Darwin installer BATS tests
+  grunt.registerTask('test:darwin', [
+    'shell:installerDarwin'
+  ]);
+
+  // Run Linux installer BATS tests
+  grunt.registerTask('test:darwin', [
+    'shell:installerDarwin'
   ]);
 
   // Bump our minor version
@@ -311,21 +97,13 @@ module.exports = function(grunt) {
     'bump:prerelease'
   ]);
 
-  // Build a binary
-  grunt.registerTask('pkg', [
-    'clean:build',
-    'clean:dist',
-    'copy:build',
-    'shell:build',
-    'copy:dist'
-  ]);
-
-  /*
-   * Functional tests
-   */
-  // Verify the install
-  grunt.registerTask('testinstall', [
-    'shell:' + funcPlatform
+  // Pkg the CLI binary
+  grunt.registerTask('pkgcli', [
+    'clean:cliBuild',
+    'clean:cliDist',
+    'copy:cliBuild',
+    'shell:cliPkg',
+    'copy:cliDist'
   ]);
 
 };
