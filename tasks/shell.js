@@ -32,6 +32,9 @@ module.exports = function(common) {
    */
   var cliPkgTask = function(dev) {
 
+    // Grab JXCore bin
+    var jxBin = require('jxcore').findpath();
+
     // "Constants"
     var platform = common.system.platform;
     var cpCmd = (platform === 'win32') ? 'copy' : 'cp';
@@ -51,7 +54,8 @@ module.exports = function(common) {
 
     // JX package command
     var jxCmd = [
-      'jx package',
+      jxBin,
+      'package',
       'bin/kbox.js',
       pkgName,
       '--add "' + jxAddPatterns.join(',') + '"',
