@@ -22,48 +22,16 @@ before-install() {
   echo "TRAVIS_OS_NAME: ${TRAVIS_OS_NAME}"
   echo "PATH: ${PATH}"
 
-  # Add our key
-  if [ $TRAVIS_PULL_REQUEST == "false" ] &&
-    [ -z "$TRAVIS_TAG" ] &&
-    [ $TRAVIS_REPO_SLUG == "kalabox/kalabox-cli" ] &&
-    [ $TRAVIS_OS_NAME == "linux" ]; then
-      openssl aes-256-cbc -K $encrypted_46abdd373e2c_key -iv $encrypted_46abdd373e2c_iv -in ci/travis.id_rsa.enc -out $HOME/.ssh/travis.id_rsa -d
-  fi
-
-  # Upgrade node per OS and set OS JX env
-  if [ $TRAVIS_OS_NAME == "linux" ]; then
-    rm -rf $HOME/.nvm
-    curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-    sudo apt-get install -y nodejs
-    JX_PLATFORM="jx_deb64v8"
-  else
-    JX_PLATFORM="jx_osx64v8"
-  fi
-
   # The code is old sir but it checks out
-  mkdir "${HOME}/.npm-global"
-  NPM_CONFIG_PREFIX="${HOME}/.npm-global" npm install -g grunt-cli
-
-  # Create the home bin dir since this already exists in the path by default
-  mkdir -p "${HOME}/bin"
-  ln -s "${HOME}/.npm-global/lib/node_modules/grunt-cli/bin/grunt" "${HOME}/bin/grunt"
-
-  # Install JX core
-  # Manually get and install JXCORE for each OS until
-  # https://github.com/jxcore/jxcore-release/issues/1 gets resolved
-  JX_VERSION="0311"
-  curl -fsSL -o /tmp/jxcore.zip "https://raw.githubusercontent.com/jxcore/jxcore-release/master/${JX_VERSION}/${JX_PLATFORM}.zip"
-  unzip /tmp/jxcore.zip -d /tmp/jx
-  mv "/tmp/jx/${JX_PLATFORM}/jx" "${HOME}/bin/jx"
-  chmod +x "${HOME}/bin/jx"
+  npm install -g grunt-cli
 
 }
 
-# install
+# before-script
 #
-# Install our project
+# Run before tests
 #
-install() {
+before-script() {
 
   # Sanity checks
   node --version
@@ -71,17 +39,6 @@ install() {
   grunt --version
   jx --version
   jx --jxversion
-
-  # Normal NPM install
-  npm install
-}
-
-
-# before-script
-#
-# Run before tests
-#
-before-script() {
 
   #
   # Install kalabox for functional tests if we are on linux
@@ -109,10 +66,6 @@ script() {
 
   # Unit tests
   run_command grunt test:unit
-
-  # Doc tests
-  run_command grunt test:coverage
-  run_command grunt docs
 
   #
   # Run functional tests if we are on linux
@@ -148,63 +101,7 @@ after-script() {
 # Clean up after the tests.
 #
 after-success() {
-
-  # Check for correct travis conditions when we have merged code
-  # 1. Is not a pull request
-  # 2. Is not a "travis" tag
-  # 3. Is correct slug
-  # 4. Is latest node version
-  # 5. Is on linux
-  if [ $TRAVIS_PULL_REQUEST == "false" ] &&
-    [ ! -z "$TRAVIS_TAG" ] &&
-    [ $TRAVIS_REPO_SLUG == "kalabox/kalabox-cli" ] &&
-    [ $TRAVIS_OS_NAME == "linux" ]; then
-
-    # DEPLOY API DOCS to API.KALABOX.ME
-    # Clean deploy directory and recreate before we start
-    rm -rf $TRAVIS_BUILD_DIR/deploy
-    mkdir $TRAVIS_BUILD_DIR/deploy
-
-    # Clone down our current API docs and switch to it
-    git clone git@github.com:kalabox/kalabox-api.git $TRAVIS_BUILD_DIR/deploy
-    cd $TRAVIS_BUILD_DIR/deploy
-
-    # Move generated docs into our deploy directory
-    rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/doc/ $TRAVIS_BUILD_DIR/deploy/
-
-    # Add, tag, commit and deploy our new API docs
-    # Push our generated docs to api.kalabox.me
-    # clean up again
-    git add --all
-    git commit -m "${COMMIT_MSG} API DOCS with ${DISCO_TAG}"
-    git tag $DISCO_TAG
-    git push origin master --tags
-    rm -rf $TRAVIS_BUILD_DIR/deploy
-
-    # DEPLOY TEST COVERAGE DOCS TO COVERAGE.KALABOX.ME
-    # Clean deploy directory and recreate before we start
-    rm -rf $TRAVIS_BUILD_DIR/deploy
-    mkdir $TRAVIS_BUILD_DIR/deploy
-
-    # Clone and enter
-    git clone git@github.com:kalabox/kalabox-coverage.git $TRAVIS_BUILD_DIR/deploy
-    cd $TRAVIS_BUILD_DIR/deploy
-
-    # Copy over generated coverage reports
-    # Deploy it!
-    # Clean up again
-    TRAVIS_REPO=$(echo $TRAVIS_REPO_SLUG | awk -F'/' '{print $2}')
-    mkdir -p $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
-    rsync -rt --exclude=.git --delete $TRAVIS_BUILD_DIR/coverage/ $TRAVIS_BUILD_DIR/deploy/$TRAVIS_REPO
-    git add --all
-    git commit -m "${COMMIT_MSG} COVERAGE DOCS with ${DISCO_TAG}"
-    git tag $DISCO_TAG
-    git push origin master --tags
-    rm -rf $TRAVIS_BUILD_DIR/deploy
-
-    # Switch back to build DIR
-    cd $TRAVIS_BUILD_DIR
-  fi
+ #
 }
 
 # before-deploy

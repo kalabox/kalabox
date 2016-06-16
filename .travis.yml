@@ -1,39 +1,60 @@
-language: cpp
+language: node_js
 sudo: required
-env:
-  matrix:
-  - KBOX_BUILD_PLATFORM=osx KBOX_PKG_TYPE=dmg
-  - KBOX_BUILD_PLATFORM=linux KBOX_PKG_TYPE=rpm
-  - KBOX_BUILD_PLATFORM=linux KBOX_PKG_TYPE=deb
-  - KBOX_BUILD_PLATFORM=windows KBOX_PKG_TYPE=exe
-  global:
-  - KBOX_SUDO_PASSWORD=
+matrix:
+  include:
+  - os: linux
+    env: KBOX_PKG_TYPE=rpm
+    node_js: '4.2'
+  - os: linux
+    env: KBOX_PKG_TYPE=deb KBOX_SUDO_PASSWORD= DOCKER_HOST=tcp://10.13.37.100:2375
+    node_js: '4.2'
+  - os: osx
+    env: KBOX_PKG_TYPE=dmg
+    node_js: '4.2'
 services:
-- docker
+  - docker
+
 before_install:
-- cp ci/travis-ci.sh $HOME/
-- $HOME/travis-ci.sh before-install
-install:
-- $HOME/travis-ci.sh install
+
+  # Nice dev helpers
+  - ./scripts/travis-env.sh
+
+  # Install some node deps
+  - npm install -g grunt-cli
+
 before_script:
-- $HOME/travis-ci.sh before-script
+
+  # Sanity checks
+  - node --version
+  - npm --version
+  - grunt --version
+  - node_modules/jxcore/bin/jx --version
+  - node_modules/jxcore/bin/jx --jxversion
+
 script:
-- $HOME/travis-ci.sh script
+
+  # Run code and styling
+  - grunt test:code
+  - grunt test:unit
+
+  # Pkg
+  - grunt pkg:cli --dev>/dev/null
+  - ./dist/cli/kbox-* version
+
 after_script:
-- $HOME/travis-ci.sh after-script
+  - echo "test"
 after_success:
-- $HOME/travis-ci.sh after-success
+  - echo "test"
 before_deploy:
-- $HOME/travis-ci.sh before-deploy
+  - echo "test"
 after_deploy:
-- $HOME/travis-ci.sh after-deploy
+  - echo "test"
 notifications:
   irc:
   - chat.freenode.net#kalabox
   email:
     recipients:
     - mike@kalabox.io
-    - riley@kalabox.io
     - alec@kalabox.io
     on_success: always
 deploy:
