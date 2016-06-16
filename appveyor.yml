@@ -24,7 +24,7 @@ install:
 
 test_script:
 
-  # Run basic tests
+  # Run basic testsf
   - grunt test:code
   - grunt test:unit
 
