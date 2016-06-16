@@ -19,29 +19,28 @@ install:
   - node --version
   - npm --version
   - grunt --version
-  - node_modules/jxcore/bin/jx --version
-  - node_modules/jxcore/bin/jx --jxversion
+  - cmd: node_modules\jxcore\bin\jx.exe --version
+  - cmd: node_modules\jxcore\bin\jx.exe --jxversion
 
-test_script:
-
-  # Run basic testsf
+  # Run basic tests
   - grunt test:code
   - grunt test:unit
 
 build_script:
 
   # Build dev releases
-  - grunt pkg --dev
+  - grunt pkg:cli --dev
+  - cmd: dist\cli\kbox-win32-x64-v0.13.0.exe version
 
-artifacts:
-  - path: dev_build/*.exe
-    name: development
-  - path: prod_build/*.exe
-    name: production
+#artifacts:
+  #- path: dev_build/*.exe
+  #  name: development
+  #- path: prod_build/*.exe
+  #  name: production
 
 after_build:
-  - ps: Get-ChildItem .\dev_build\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName s3 }
-  - ps: Get-ChildItem .\prod_build\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName github }
+  #- ps: Get-ChildItem .\dev_build\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName s3 }
+  #- ps: Get-ChildItem .\prod_build\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName github }
 deploy:
   - provider: S3
     access_key_id:

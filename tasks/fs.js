@@ -23,6 +23,21 @@ module.exports = function(common) {
             mode: true
           }
         }
+      },
+      installer: {
+        build: {
+          src: 'installer/**/*',
+          dest: 'build/'
+        },
+        dist: {
+          cwd: 'build/installer/dist',
+          src: ['**'],
+          dest: 'dist/',
+          expand: true,
+          options: {
+            mode: true
+          }
+        }
       }
     },
     clean: {
@@ -30,7 +45,15 @@ module.exports = function(common) {
         build: ['build/cli'],
         dist: ['dist/cli']
       },
-      dist: ['dist']
+      installer: {
+        build: ['build/installer'],
+        dist: [
+          'dist/*.exe',
+          'dist/*.dmg',
+          'dist/*.rpm',
+          'dist/*.deb'
+        ]
+      }
     }
   };
 

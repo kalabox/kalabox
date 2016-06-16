@@ -7,6 +7,22 @@
 module.exports = function(common) {
 
   /*
+   * Run a script
+   */
+  var scriptTask = function(file) {
+
+    // "Constants"
+    var shellOpts = {execOptions: {maxBuffer: 20 * 1024 * 1024}};
+
+    // Return our BATS task
+    return {
+      options: shellOpts,
+      command: file
+    };
+
+  };
+
+  /*
    * Returns a BATS task
    */
   var batsTask = function(files) {
@@ -38,7 +54,7 @@ module.exports = function(common) {
     // "Constants"
     var platform = common.system.platform;
     var cpCmd = (platform === 'win32') ? 'copy' : 'cp';
-    var pkgName = 'kbox-' + common.kalabox.pkgSuffix;
+    var pkgName = 'kbox-' + common.kalabox.pkgType;
     var shellOpts = {
       execOptions: {
         cwd: 'build/cli',
@@ -94,7 +110,8 @@ module.exports = function(common) {
   // Return our things
   return {
     batsTask: batsTask,
-    cliPkgTask: cliPkgTask
+    cliPkgTask: cliPkgTask,
+    scriptTask: scriptTask
   };
 
 };

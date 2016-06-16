@@ -28,13 +28,17 @@ module.exports = function(grunt) {
     // Copying tasks
     copy: {
       cliBuild: fs.copy.cli.build,
-      cliDist: fs.copy.cli.dist
+      cliDist: fs.copy.cli.dist,
+      installerBuild: fs.copy.installer.build,
+      installerDist: fs.copy.installer.dist,
     },
 
     // Copying tasks
     clean: {
       cliBuild: fs.clean.cli.build,
-      cliDist: fs.clean.cli.dist
+      cliDist: fs.clean.cli.dist,
+      installerBuild: fs.clean.installer.build,
+      installerDist: fs.clean.installer.dist
     },
 
     // Unit test tasks
@@ -44,8 +48,9 @@ module.exports = function(grunt) {
     shell: {
       cliBats: shell.batsTask(common.files.cliBats),
       cliPkg: shell.cliPkgTask(dev),
-      installerOsx: shell.batsTask(common.files.installerOsxBats),
-      installerLinux: shell.batsTask(common.files.installerLinuxBats)
+      installerPkgosx: shell.scriptTask('./scripts/build-osx.sh'),
+      installerosxBats: shell.batsTask(common.files.installerOsxBats),
+      installerlinuxBats: shell.batsTask(common.files.installerLinuxBats)
     },
 
     // Utility tasks
@@ -72,14 +77,9 @@ module.exports = function(grunt) {
     'shell:cliBats'
   ]);
 
-  // Run Osx installer BATS tests
-  grunt.registerTask('test:osx', [
-    'shell:installerOsx'
-  ]);
-
-  // Run Linux installer BATS tests
-  grunt.registerTask('test:osx', [
-    'shell:installerOsx'
+  // Run Installer BATS tests
+  grunt.registerTask('test:installer', [
+    'shell:installer' + common.system.platform + 'Bats'
   ]);
 
   // Bump our minor version
@@ -92,11 +92,6 @@ module.exports = function(grunt) {
     'bump:patch'
   ]);
 
-  // Do a prerelease version
-  grunt.registerTask('prerelease', [
-    'bump:prerelease'
-  ]);
-
   // Pkg the CLI binary
   grunt.registerTask('pkg:cli', [
     'clean:cliBuild',
@@ -104,6 +99,21 @@ module.exports = function(grunt) {
     'copy:cliBuild',
     'shell:cliPkg',
     'copy:cliDist'
+  ]);
+
+  // Do a prerelease version
+  grunt.registerTask('prerelease', [
+    'bump:prerelease'
+  ]);
+
+  // Build the installer
+  grunt.registerTask('pkg', [
+    'clean:installerBuild',
+    'clean:installerDist',
+    'copy:installerBuild',
+    'pkg:cli',
+    'shell:installerPkg' + common.system.platform,
+    'copy:installerDist'
   ]);
 
 };
