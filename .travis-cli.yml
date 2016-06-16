@@ -3,8 +3,9 @@ sudo: required
 matrix:
   include:
   - os: linux
+    env: KBOX_PKG_TYPE=rpm
   - os: linux
-    env: KALABOX_TEST_GROUP=cmd
+    env: KBOX_PKG_TYPE=rpm
   - os: osx
 before_install:
 - cp ci/travis-ci.sh $HOME/

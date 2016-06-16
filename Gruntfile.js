@@ -44,7 +44,7 @@ module.exports = function(grunt) {
     shell: {
       cliBats: shell.batsTask(common.files.cliBats),
       cliPkg: shell.cliPkgTask(dev),
-      installerDarwin: shell.batsTask(common.files.installerDarwinBats),
+      installerOsx: shell.batsTask(common.files.installerOsxBats),
       installerLinux: shell.batsTask(common.files.installerLinuxBats)
     },
 
@@ -72,14 +72,14 @@ module.exports = function(grunt) {
     'shell:cliBats'
   ]);
 
-  // Run Darwin installer BATS tests
-  grunt.registerTask('test:darwin', [
-    'shell:installerDarwin'
+  // Run Osx installer BATS tests
+  grunt.registerTask('test:osx', [
+    'shell:installerOsx'
   ]);
 
   // Run Linux installer BATS tests
-  grunt.registerTask('test:darwin', [
-    'shell:installerDarwin'
+  grunt.registerTask('test:osx', [
+    'shell:installerOsx'
   ]);
 
   // Bump our minor version

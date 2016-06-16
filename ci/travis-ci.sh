@@ -24,17 +24,38 @@ before-install() {
   echo "KBOX_PKG_TYPE: $KBOX_PKG_TYPE"
   echo "KBOX_BUILD_PLATFORM: $KBOX_BUILD_PLATFORM"
 
+  # The code is old sir but it checks out
+  npm install -g grunt-cli
+
 }
 
-# install
+# before-script
 #
-# Install our project
+# Run before tests
 #
-install() {
-  set -e
-  run_command make $KBOX_BUILD_PLATFORM
-}
+before-script() {
 
+  # Sanity checks
+  node --version
+  npm --version
+  grunt --version
+  jx --version
+  jx --jxversion
+
+  #
+  # Install kalabox for functional tests if we are on linux
+  #
+  if [ $TRAVIS_OS_NAME == "linux" ]; then
+
+    # Install kalabox
+    sudo apt-get -y update
+    sudo apt-get -y install iptables cgroup-bin bridge-utils curl
+    curl -fsSL -o /tmp/kalabox.deb "http://installer.kalabox.io/kalabox-latest.deb"
+    sudo dpkg -i /tmp/kalabox.deb || true
+
+  fi
+
+}
 
 # before-script
 #

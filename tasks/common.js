@@ -11,7 +11,7 @@ var pkg = require('./../package.json');
 
 // System info
 var system = {
-  platform: process.platform,
+  platform: (process.platform !== 'darwin') ? process.platform : 'osx',
   arch: os.arch(),
 };
 
@@ -78,10 +78,10 @@ var installerLinuxBatsFiles = [
   './test/installer/linux/*.bats'
 ];
 
-// Darwin installer BATS tests
-var installerDarwinBatsFiles = [
+// Osx installer BATS tests
+var installerOsxBatsFiles = [
   './test/installer/basic.bats',
-  './test/installer/darwin/*.bats'
+  './test/installer/osx/*.bats'
 ];
 
 // Return our objects
@@ -96,7 +96,7 @@ module.exports = {
   files: {
     cli: cliBuildFiles,
     cliBats: cliBatsFiles,
-    installerDarwinBats: installerDarwinBatsFiles,
+    installerOsxBats: installerOsxBatsFiles,
     installerLinuxBats: installerLinuxBatsFiles,
     js: jsFiles,
     jxAdd: jxAddFiles,

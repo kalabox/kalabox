@@ -28,6 +28,8 @@
   },
   "dependencies": {
     "bluebird": "^2.9.3",
+    "chai": "^3.4.1",
+    "chai-as-promised": "^5.3.0",
     "chalk": "~0.5.1",
     "dockerode": "^2.2.7",
     "download": "^4.4.3",
