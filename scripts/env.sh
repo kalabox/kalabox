@@ -5,19 +5,20 @@
 
 # Set some basic info
 PKG_NAME="kalabox"
-PKG_PKG="/kalabox.$PKG_TYPE"
+PKG_PKG="build/installer/dist/kalabox.$PKG_TYPE"
 PKG_DESCRIPTION="The fastest and easiest local dev with docker."
 PKG_MAINTAINER="Mike Pirog <mike@kalabox.io>"
 PKG_URL="https://www.kalabox.io/"
 PKG_LICENSE="MIT"
 PKG_EXTRA_OPTS="--force"
+PKG_SCRIPTS_DIR=build/installer/pkg/scripts
 
 # Set scripts
 PKG_SCRIPTS="\
---after-install /$PKG_TYPE/postinst \
---before-install /$PKG_TYPE/preinst \
---after-remove /$PKG_TYPE/postrm \
---before-remove /$PKG_TYPE/prerm"
+--after-install $PKG_SCRIPTS_DIR/$PKG_TYPE/postinst \
+--before-install $PKG_SCRIPTS_DIR/$PKG_TYPE/preinst \
+--after-remove $PKG_SCRIPTS_DIR/$PKG_TYPE/postrm \
+--before-remove $PKG_SCRIPTS_DIR/$PKG_TYPE/prerm"
 
 # Set our dependencies
 DEPS=( bridge-utils iptables )

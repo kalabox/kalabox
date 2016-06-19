@@ -26,8 +26,13 @@ module.exports = function(common) {
       },
       installer: {
         build: {
-          src: 'installer/**/*',
-          dest: 'build/'
+          cwd: 'installer/' + common.system.platform,
+          src: ['**'],
+          dest: 'build/installer',
+          expand: true,
+          options: {
+            mode: true
+          }
         },
         dist: {
           cwd: 'build/installer/dist',
