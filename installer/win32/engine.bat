@@ -49,9 +49,6 @@ IF %ERRORLEVEL% NEQ 0 (
     --virtualbox-disk-size "%VB_DISK%" ^
     --virtualbox-hostonly-cidr 10.13.37.1/24 ^
     --virtualbox-host-dns-resolver ^
-    --virtualbox-dns-proxy ^
-    --engine-opt dns=172.17.0.1 ^
-    --engine-opt dns=208.67.222.222 ^
     "%VM%"
 
 )

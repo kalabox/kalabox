@@ -3,18 +3,18 @@
 #define MyAppURL "https://kalabox.io"
 #define MyAppContact "https://kalabox.io"
 
-#define dockerMachineCli "..\bundle\docker-machine.exe"
-#define dockerComposeCli "..\bundle\docker-compose.exe"
-#define b2dIsoPath "..\bundle\boot2docker.iso"
-#define kalaboxCli "..\bundle\kbox.exe"
+#define dockerMachineCli "bundle\docker-machine.exe"
+#define dockerComposeCli "bundle\docker-compose.exe"
+#define b2dIsoPath "bundle\boot2docker.iso"
+#define kalaboxCli "bundle\kbox.exe"
 #define kalaboxDocs "docs"
-#define kalaboxGui "..\bundle\kalabox-ui\Kalabox"
+#define kalaboxGui "bundle\kalabox-ui\Kalabox"
 #define kboxIco "kalabox.ico"
-#define git "..\bundle\Git.exe"
-#define virtualBoxCommon "..\bundle\common.cab"
-#define virtualBoxMsi "..\bundle\VirtualBox_amd64.msi"
-#define syncthingCli "..\bundle\syncthing.exe"
-#define syncthingConfig "..\bundle\config.xml"
+#define git "bundle\Git.exe"
+#define virtualBoxCommon "bundle\common.cab"
+#define virtualBoxMsi "bundle\VirtualBox_amd64.msi"
+#define syncthingCli "bundle\syncthing.exe"
+#define syncthingConfig "bundle\config.xml"
 #define engineSetup "engine.bat"
 #define servicesSetup "services.bat"
 #define dnsSetup "dns.bat"
@@ -35,6 +35,7 @@ DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName=Kalabox
 DisableProgramGroupPage=yes
 DisableWelcomePage=no
+OutputDir=dist
 OutputBaseFilename=kalabox
 WizardSmallImageFile=kalabox.bmp
 WizardImageFile=kalabox-side.bmp
@@ -79,7 +80,7 @@ Source: "{#b2dIsoPath}"; DestDir: "{app}"; Flags: ignoreversion; Components: "Do
 Source: "{#virtualBoxCommon}"; DestDir: "{app}\installers\virtualbox"; Components: "VirtualBox"
 Source: "{#virtualBoxMsi}"; DestDir: "{app}\installers\virtualbox"; DestName: "virtualbox.msi"; AfterInstall: RunInstallVirtualBox(); Components: "VirtualBox"
 Source: "{#engineSetup}"; DestDir: "{userdocs}\..\.kalabox\setup"; Components: "EngineSetup"; AfterInstall: RunEngineSetup();
-Source: "..\bundle\*.yml"; DestDir: "{userdocs}\..\.kalabox\services"; Components: "KalaboxServices";
+Source: "bundle\*.yml"; DestDir: "{userdocs}\..\.kalabox\services"; Components: "KalaboxServices";
 Source: "{#servicesSetup}"; DestDir: "{userdocs}\..\.kalabox\setup"; Components: "KalaboxServices"; AfterInstall: RunServicesSetup();
 Source: "{#dnsSetup}"; DestDir: "{userdocs}\..\.kalabox\setup"; Components: "KalaboxServices"; AfterInstall: RunServicesSetup();
 Source: "{#kalaboxCli}"; DestDir: "{app}\bin"; Flags: ignoreversion; Components: "KalaboxCLI"

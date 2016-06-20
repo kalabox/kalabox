@@ -50,6 +50,7 @@ module.exports = function(grunt) {
       cliPkg: shell.cliPkgTask(dev),
       installerPkgosx: shell.scriptTask('./scripts/build-osx.sh'),
       installerPkglinux: shell.scriptTask('./scripts/build-linux.sh'),
+      installerPkgwin32: shell.psTask('./scripts/build-win32.ps1'),
       installerosxBats: shell.batsTask(common.files.installerOsxBats),
       installerlinuxBats: shell.batsTask(common.files.installerLinuxBats)
     },

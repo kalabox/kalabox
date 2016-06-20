@@ -7,9 +7,9 @@
 module.exports = function(common) {
 
   /*
-   * Run a script
+   * Run a default bash/sh/cmd script
    */
-  var scriptTask = function(file) {
+  var scriptTask = function(cmd) {
 
     // "Constants"
     var shellOpts = {execOptions: {maxBuffer: 20 * 1024 * 1024}};
@@ -17,7 +17,24 @@ module.exports = function(common) {
     // Return our BATS task
     return {
       options: shellOpts,
-      command: file
+      command: cmd
+    };
+
+  };
+
+  /*
+   * Run a ps script
+   */
+  var psTask = function(cmd) {
+
+    // "Constants"
+    var shellOpts = {execOptions: {maxBuffer: 20 * 1024 * 1024}};
+    var entrypoint = 'PowerShell -NoProfile -ExecutionPolicy Bypass -File';
+
+    // Return our BATS task
+    return {
+      options: shellOpts,
+      command: [entrypoint, cmd].join(' ')
     };
 
   };
@@ -111,7 +128,8 @@ module.exports = function(common) {
   return {
     batsTask: batsTask,
     cliPkgTask: cliPkgTask,
-    scriptTask: scriptTask
+    scriptTask: scriptTask,
+    psTask: psTask
   };
 
 };
