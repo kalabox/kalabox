@@ -51,7 +51,8 @@ curl -fsSL -o vbox.dmg "http://download.virtualbox.org/virtualbox/$VBOX_VERSION/
   xar -xf /tmp/VirtualBox.pkg && \
   hdiutil detach -force /tmp/kalabox/vb && \
   rm -f vbox.dmg && \
-  rm -rf Resources
+  rm -rf Resources && \
+  mv *.pkg mpkg/
 
 # Download the syncthing parts
 curl -fsSL -o config.xml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$KALABOX_IMAGE_VERSION/plugins/kalabox-sharing/dockerfiles/syncthing/config.xml"
@@ -61,15 +62,7 @@ curl -fsSL -o /tmp/syncthing.tar.gz "http://archive.syncthing.net/v$SYNCTHING_VE
   cp -rf syncthing-macosx-amd64-v$SYNCTHING_VERSION/syncthing syncthing && \
   rm -rf syncthing-macosx-amd64-v$SYNCTHING_VERSION
 
-# Start to assemble the package
-mkdir -p mpkg
-mv *.pkg mpkg/
-
-# Add Distrib file
-cp -rf osx/mpkg/Distribution mpkg/Distribution
-
 # Add dockermachine.pkg
-cp -rf osx/mpkg/dockermachine.pkg mpkg/dockermachine.pkg
 cd mpkg/dockermachine.pkg && \
   mkdir rootfs && \
   cd rootfs && \
@@ -92,7 +85,6 @@ cd mpkg/dockermachine.pkg && \
   cd ../..
 
 # Add dockercompose.pkg
-cp -rf osx/mpkg/dockercompose.pkg mpkg/dockercompose.pkg
 cd mpkg/dockercompose.pkg && \
   mkdir rootfs && \
   cd rootfs && \
@@ -115,7 +107,6 @@ cd mpkg/dockercompose.pkg && \
   cd ../..
 
 # Add boot2dockeriso.pkg
-cp -rf osx/mpkg/boot2dockeriso.pkg mpkg/boot2dockeriso.pkg
 cd mpkg/boot2dockeriso.pkg && \
   cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
   rm -r Scripts && mv Scripts.bin Scripts && \
@@ -138,7 +129,6 @@ cd mpkg/boot2dockeriso.pkg && \
   cd ../..
 
 # engine.pkg
-cp -rf osx/mpkg/engine.pkg mpkg/engine.pkg
 cd mpkg/engine.pkg && \
   cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
   rm -r Scripts && mv Scripts.bin Scripts && \
@@ -160,7 +150,6 @@ cd mpkg/engine.pkg && \
   cd ../..
 
 # services.pkg
-cp -rf osx/mpkg/services.pkg mpkg/services.pkg
 cd mpkg/services.pkg && \
   cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
   rm -r Scripts && mv Scripts.bin Scripts && \
@@ -186,14 +175,11 @@ cd mpkg/services.pkg && \
   cd ../..
 
 # kbox.pkg
-cp -rf osx/mpkg/kbox.pkg mpkg/kbox.pkg
-cp -rf osx/uninstall.sh uninstall.sh
 cd mpkg/kbox.pkg && \
   mkdir rootfs && \
   cd rootfs && \
   mkdir -p usr/local/bin && \
   mv ../../../kbox usr/local/bin/ && \
-  mv ../../../uninstall.sh usr/local/bin/kalabox-uninstall.sh && \
   ls -al /usr/local/bin/ && \
   find . | cpio -o --format odc | gzip -c > ../Payload && \
   mkbom . ../Bom && \
@@ -211,7 +197,6 @@ cd mpkg/kbox.pkg && \
   cd ../..
 
 # kbox-gui.pkg
-cp -rf osx/mpkg/kbox-gui.pkg mpkg/kbox-gui.pkg
 cd mpkg/kbox-gui.pkg && \
   mkdir ./rootfs && \
   cd ./rootfs && \
@@ -233,7 +218,6 @@ cd mpkg/kbox-gui.pkg && \
   cd ../..
 
 # syncthing.pkg
-cp -rf osx/mpkg/syncthing.pkg mpkg/syncthing.pkg
 cd mpkg/syncthing.pkg && \
   cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
   rm -r Scripts && mv Scripts.bin Scripts && \
@@ -258,14 +242,9 @@ cd mpkg/syncthing.pkg && \
   rm -rf rootfs && \
   cd ../..
 
-# Copy the metas
-cp -rf osx/mpkg/Resources mpkg/Resources
-cp -rf osx/mpkg/Plugins mpkg/Plugins
-
 # Add in more version info
-sed -i "" -e "s/%INSTALLER_VERSION%/$INSTALLER_VERSION/g" mpkg/Resources/en.lproj/welcome.rtfd/TXT.rtf
-sed -i "" -e "s/%VBOX_VERSION%/$VBOX_VERSION/g" Distribution
-sed -i "" -e "s/%VBOX_VERSION%/$VBOX_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
+sed -i "" -e "s/%INSTALLER_VERSION%/$INSTALLER_VERSION/g" mpkg/Resources/en.lproj/welcome.rtfd/TXT.rtf mpkg/Distribution
+sed -i "" -e "s/%VBOX_VERSION%/$VBOX_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings mpkg/Distribution
 sed -i "" -e "s/%DOCKERMACHINE_VERSION%/$DOCKER_MACHINE_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
 sed -i "" -e "s/%DOCKERCOMPOSE_VERSION%/$DOCKER_COMPOSE_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
 sed -i "" -e "s/%BOOT2DOCKER_ISO_VERSION%/$BOOT2DOCKER_ISO_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
@@ -276,10 +255,10 @@ sed -i "" -e "s/%ENGINE_VERSION%/$SYNCTHING_VERSION/g" mpkg/Resources/en.lproj/L
 sed -i "" -e "s/%SERVICES_VERSION%/$KALABOX_IMAGE_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
 
 # Build the package
-mkdir -p dmg && mkdir -p dist && \
-  xar -c --compression=none -f dmg/KalaboxInstaller.pkg mpkg/ && \
-  cp -rf osx/uninstall.sh dmg/uninstall.sh && \
-  cp -rf osx/kalabox.icns dmg/.VolumeIcon.icns
+mkdir -p dmg && mkdir -p dist && cd mpkg && \
+  xar -c --compression=none -f ../dmg/KalaboxInstaller.pkg . && cd .. && \
+  mv -f uninstall.sh dmg/uninstall.sh && \
+  mv -f kalabox.icns dmg/.VolumeIcon.icns && \
   cp -rf ../../README.md dmg/README.md && \
   cp -rf ../../TERMS.md dmg/TERMS.md && \
   cp -rf ../../LICENSE.md dmg/LICENSE.md && \
