@@ -10,15 +10,14 @@ $ErrorActionPreference = "Stop"
 
 # Get some ENV things
 $temp_dir = $env:TMP
-$programs = $env:ProgramFiles
 $installer_dir = "$pwd\build\installer"
 $bundle_dir = "$installer_dir\bundle"
 $docs_dir = "$installer_dir\docs"
 
 # Build dependencies
-$inno_url = "http://files.jrsoftware.org/is/5/isetup-5.5.8.exe"
+$inno_url = "http://files.jrsoftware.org/is/5/isetup-5.5.9.exe"
 $inno_dest = "$temp_dir\inno-installer.exe"
-$inno_bin = "$programs\Inno Setup 5\ISCC.exe"
+$inno_bin = "C:\Program Files (x86)\Inno Setup 5\ISCC.exe"
 
 # Kalabox version information
 $kbox_pkg = Get-Content "package.json" | Out-String | ConvertFrom-Json
@@ -76,7 +75,7 @@ function Download($url, $destination)
 }
 
 # Make sure our dependencies are metadatas
-If (!(Test-Path $inno_bin) -And !($env:CI)) {
+If (!(Test-Path $inno_bin)) {
   Write-Output "Grabbing and installing some needed dependencies..."
   Download -Url $inno_url -Destination $inno_dest
   InstallExe -File $inno_dest
@@ -117,6 +116,7 @@ Copy-Item "$temp_dir\common.cab" "$bundle_dir\common.cab" -force
 Copy-Item "$temp_dir\syncthing-windows-amd64-v$syncthing_version\syncthing.exe" "$bundle_dir\syncthing.exe" -force
 
 # Copy over some other assets
+Write-Output "Copying over static assets..."
 New-Item $docs_dir -type directory -force
 Copy-Item "$pwd\README.md" "$docs_dir\README.md" -force
 Copy-Item "$pwd\TERMS.md" "$docs_dir\TERMS.md" -force
@@ -125,10 +125,5 @@ Copy-Item "$pwd\ORACLE_VIRTUALBOX_LICENSE" "$docs_dir\ORACLE_VIRTUALBOX_LICENSE"
 Copy-Item "$pwd\SYNCTHING_LICENSE" "$docs_dir\SYNCTHING_LICENSE" -force
 
 # Create our inno-installer
-cd $installer_dir
-If (!($env:CI)) {
-  Start-Process -Wait "$inno_bin" -ArgumentList "Kalabox.iss /DMyAppVersion=$installer_version"
-}
-Else {
-  iscc Kalabox.iss /DMyAppVersion=$installer_version
-}
+Write-Output "Creating our package..."
+Start-Process -Wait "$inno_bin" -ArgumentList "$installer_dir\Kalabox.iss /DMyAppVersion=$installer_version"

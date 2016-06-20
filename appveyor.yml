@@ -11,11 +11,13 @@ install:
 
   # Install InnoSetup
   - choco install -y InnoSetup
+  - set PATH=%PATH%;"C:\Program Files (x86)\Inno Setup 5"
 
   # install relevant things
   - npm install -g grunt-cli
 
   # Build the things
+  # Need to do this first because it installs JX for us
   - npm install
 
   # Sanity checks
@@ -24,25 +26,31 @@ install:
   - grunt --version
   - cmd: node_modules\jxcore\bin\jx.exe --version
   - cmd: node_modules\jxcore\bin\jx.exe --jxversion
+  # Iscc has no version option and returns exit code 1 by default
+  # This can never fail but at least we can check the output to verify
+  - iscc | echo
+
+build_script:
+
+  # Build dev and production releases
+  - grunt pkg --dev
+  - mkdir dev_build
+  - copy dist\kalabox.exe dev_build\kalabox-latest-dev.exe
+
+test_script:
 
   # Run basic tests
   - grunt test:code
   - grunt test:unit
 
-build_script:
-
-  # Build dev releases
-  - grunt pkg
-  #- cmd: dist\cli\kbox-win32-x64-v0.13.0.exe version
-
-#artifacts:
-  #- path: dev_build/*.exe
-  #  name: development
-  #- path: prod_build/*.exe
-  #  name: production
+artifacts:
+  - path: dev_build\kalabox-latest-dev.exe
+    name: development
+  #- path: prod_build/kalabox-latest-dev.exe
+  # name: production
 
 after_build:
-  #- ps: Get-ChildItem .\dev_build\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName s3 }
+  - ps: Get-ChildItem .\dev_build\kalabox-latest-dev.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName s3 }
   #- ps: Get-ChildItem .\prod_build\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName github }
 deploy:
   - provider: S3
@@ -50,8 +58,8 @@ deploy:
       secure: t16g2geIvu5qJVSiPzqxzUnk4+p9X1psf6e8RmUJPDk=
     secret_access_key:
       secure: o/pYPIuDU8SPSrTB15BwzlLrDXGuhhTJUWdWMyvDLnsAwC6uJmASPEATUX9CFIEW
-    bucket: cli.kalabox.io
-    region: us-west-1
+    bucket: installer.kalabox.io
+    region: us-west-2
     artifact: s3
     on:
       branch: 1repo2ruleThemAll

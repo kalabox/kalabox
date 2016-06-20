@@ -41,7 +41,6 @@ script:
 
   # Run the build
   - ./scripts/build-travis.sh
-  - ls -lsa dist/
 
 before_deploy:
 

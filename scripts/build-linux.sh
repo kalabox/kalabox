@@ -42,11 +42,11 @@ chmod +x docker-compose
 
 # Extract DNS
 curl -fsSL -o dns.rpm "https://github.com/azukiapp/libnss-resolver/releases/download/v0.3.0/fedora20-libnss-resolver-0.3.0-1.x86_64.rpm" && \
-  alien -d dns.rpm --scripts || fakeroot -- alien -d dns.rpm --scripts && \
+  fakeroot -- alien -d dns.rpm --scripts && \
   mkdir -p dns/rpm/data && mkdir -p dns/rpm/control && cd dns/rpm && \
   ar x ./../../libnss-resolver_0.3.0-2_amd64.deb && \
   tar -xzvf control.tar.gz -C control && \
-  tar -xvf data.tar.xz -C data && \
+  tar -xvf data.tar.gz -C data && \
   cd ../.. && \
   rm -f libnss-resolver_0.3.0-2_amd64.deb && \
   rm -f dns.rpm
