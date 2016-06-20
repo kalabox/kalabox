@@ -30,6 +30,8 @@ before_script:
   - grunt --version
   - node_modules/jxcore/bin/jx --version
   - node_modules/jxcore/bin/jx --jxversion
+  - ruby --version
+  - gem --version
 
 script:
 
@@ -37,18 +39,15 @@ script:
   - grunt test:code
   - grunt test:unit
 
-  # Pkg
-  - grunt pkg:cli --dev>/dev/null
-  - ./dist/cli/kbox-* version
+  # Run the build
+  - ./scripts/build-travis.sh
+  - ls -lsa dist/
 
-after_script:
-  - echo "test"
-after_success:
-  - echo "test"
 before_deploy:
+
+  # Do some basic tests of our build
   - echo "test"
-after_deploy:
-  - echo "test"
+
 notifications:
   irc:
   - chat.freenode.net#kalabox
@@ -77,4 +76,4 @@ deploy:
     skip_cleanup: true
     on:
       repo: kalabox/kalabox
-      branch: v0.12
+      branch: 1repo2ruleThemAll

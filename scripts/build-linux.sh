@@ -8,6 +8,7 @@ set -e
 if [ ! $(type -p fpm) ] || [ ! $(type -p alien) ]; then
   echo "You do not have the correct dependencies installed to build Kalabox. Trying to install them..."
   sudo ./scripts/install-deps.sh
+  gem install --verbose fpm || sudo gem install --verbose fpm
 fi
 
 # Kalabox things
@@ -41,7 +42,7 @@ chmod +x docker-compose
 
 # Extract DNS
 curl -fsSL -o dns.rpm "https://github.com/azukiapp/libnss-resolver/releases/download/v0.3.0/fedora20-libnss-resolver-0.3.0-1.x86_64.rpm" && \
-  fakeroot -- alien -d dns.rpm --scripts && \
+  alien -d dns.rpm --scripts || fakeroot -- alien -d dns.rpm --scripts && \
   mkdir -p dns/rpm/data && mkdir -p dns/rpm/control && cd dns/rpm && \
   ar x ./../../libnss-resolver_0.3.0-2_amd64.deb && \
   tar -xzvf control.tar.gz -C control && \
@@ -71,5 +72,6 @@ mkdir -p pkg/docs && mkdir -p dist && \
 
 # Build our two packages
 cd ../..
+ls -lsa
 ./scripts/build-pkg.sh deb $INSTALLER_VERSION
 ./scripts/build-pkg.sh rpm $INSTALLER_VERSION

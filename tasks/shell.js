@@ -14,7 +14,7 @@ module.exports = function(common) {
     // "Constants"
     var shellOpts = {execOptions: {maxBuffer: 20 * 1024 * 1024}};
 
-    // Return our BATS task
+    // Return our shell task
     return {
       options: shellOpts,
       command: cmd
@@ -29,12 +29,12 @@ module.exports = function(common) {
 
     // "Constants"
     var shellOpts = {execOptions: {maxBuffer: 20 * 1024 * 1024}};
-    var entrypoint = 'PowerShell -NoProfile -ExecutionPolicy Bypass -File';
+    var entrypoint = 'PowerShell -NoProfile -ExecutionPolicy Bypass -Command';
 
-    // Return our BATS task
+    // Return our ps task
     return {
       options: shellOpts,
-      command: [entrypoint, cmd].join(' ')
+      command: [entrypoint, cmd, '&& EXIT /B %errorlevel%'].join(' ')
     };
 
   };

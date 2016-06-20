@@ -45,14 +45,11 @@ echo "Mmmmm this ${FLAVOR} flavor is so delcious"
 # Do stuff on each distro
 case $FLAVOR in
   debian)
-    dpkg --add-architecture i386
     apt-get update && apt-get -y --force-yes install \
       curl file \
-      ruby-dev ruby \
       build-essential \
       fakeroot \
       alien
-    gem install --verbose fpm
     ;;
   fedora)
     echo "Not implemented yet!"

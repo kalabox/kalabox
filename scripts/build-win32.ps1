@@ -6,6 +6,8 @@
 # A script to build Kalabox on win32
 #
 
+$ErrorActionPreference = "Stop"
+
 # Get some ENV things
 $temp_dir = $env:TMP
 $programs = $env:ProgramFiles
@@ -54,6 +56,16 @@ function Unzip($file, $destination)
   Write-Output "Unzip complete."
 }
 
+# Install helper
+function InstallExe($file)
+{
+  Write-Output "Installing $file..."
+  #Start-Process -Wait $file $arguments
+  $arguments = '/SP /SILENT /VERYSILENT /SUPRESSMSGBOXES /NOCANCEL /NOREBOOT /NORESTART /CLOSEAPPLICATIONS'
+  Start-Process -Wait $file $arguments
+  Write-Output "Installed with $file"
+}
+
 # Download helper
 function Download($url, $destination)
 {
@@ -64,7 +76,7 @@ function Download($url, $destination)
 }
 
 # Make sure our dependencies are metadatas
-If (!(Test-Path $inno_bin)) {
+If (!(Test-Path $inno_bin) -And !($env:CI)) {
   Write-Output "Grabbing and installing some needed dependencies..."
   Download -Url $inno_url -Destination $inno_dest
   InstallExe -File $inno_dest
@@ -75,7 +87,7 @@ New-Item $bundle_dir -type directory -force
 Write-Output "Grabbing the files we need..."
 
 # Kalabox things
-Copy-Item "dist\cli\kbox-win32-ia32-v$kbox_cli_version.exe" "$bundle_dir\kbox.exe" -force
+Copy-Item "dist\cli\kbox-win32-x64-v$kbox_cli_version.exe" "$bundle_dir\kbox.exe" -force
 Download -Url "https://github.com/kalabox/kalabox-ui/releases/download/v$kbox_gui_version/kalabox-ui-win64-v$kbox_gui_version.zip" -Destination "$temp_dir\kalabox-ui.zip"
 Download -Url "https://raw.githubusercontent.com/kalabox/kalabox-cli/$kbox_image_version/plugins/kalabox-sharing/kalabox-compose.yml" -Destination "$bundle_dir\syncthing.yml"
 Download -Url "https://raw.githubusercontent.com/kalabox/kalabox-cli/$kbox_image_version/plugins/kalabox-services-kalabox/kalabox-compose.yml" -Destination "$bundle_dir\services.yml"
@@ -114,4 +126,9 @@ Copy-Item "$pwd\SYNCTHING_LICENSE" "$docs_dir\SYNCTHING_LICENSE" -force
 
 # Create our inno-installer
 cd $installer_dir
-Start-Process -Wait "$inno_bin" -ArgumentList "Kalabox.iss /DMyAppVersion=$installer_version"
+If (!($env:CI)) {
+  Start-Process -Wait "$inno_bin" -ArgumentList "Kalabox.iss /DMyAppVersion=$installer_version"
+}
+Else {
+  iscc Kalabox.iss /DMyAppVersion=$installer_version
+}

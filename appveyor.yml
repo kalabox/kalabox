@@ -9,6 +9,9 @@ install:
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version x64
 
+  # Install InnoSetup
+  - choco install -y InnoSetup
+
   # install relevant things
   - npm install -g grunt-cli
 
@@ -29,8 +32,8 @@ install:
 build_script:
 
   # Build dev releases
-  - grunt pkg:cli --dev
-  - cmd: dist\cli\kbox-win32-x64-v0.13.0.exe version
+  - grunt pkg
+  #- cmd: dist\cli\kbox-win32-x64-v0.13.0.exe version
 
 #artifacts:
   #- path: dev_build/*.exe
@@ -51,7 +54,7 @@ deploy:
     region: us-west-1
     artifact: s3
     on:
-      branch: v0.12
+      branch: 1repo2ruleThemAll
   - provider: GitHub
     description: v$(KALABOX_VERSION)
     artifact: github
