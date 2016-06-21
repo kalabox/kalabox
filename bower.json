@@ -1,0 +1,23 @@
+{
+  "name": "Kalabox",
+  "version": "0.12.16",
+  "license": "N/A",
+  "private": true,
+  "dependencies": {
+    "angular": "~1.4.0",
+    "angular-bluebird-promises": "~1.0.1",
+    "angular-bootstrap": "~0.14.3",
+    "angular-ui-router": "~0.2.0",
+    "bootstrap-sass": "~3.3.0",
+    "jasny-bootstrap": "~3.2.0",
+    "d3": "~3.4.11",
+    "font-awesome": "~4.1.0",
+    "lodash": "~2.4.1",
+    "loaders.css": "~0.1.2",
+    "angular-ui-switch": "~0.1.1"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.4.0",
+    "ngMidwayTester": "*"
+  }
+}

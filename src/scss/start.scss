@@ -1,0 +1,22 @@
+.start {
+  .top.row {
+    margin-top: 40px;
+  }
+  .speech-bubble {
+    @include speech-bubble(10px, $alert-info-bg);
+    width: 60%;
+    color: $alert-info-text;
+    border-color: $alert-info-border;
+    padding: 25px;
+  }
+  .logo {
+    img {
+      width: 100%;
+    }
+  }
+  .btn-massive {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1em;
+  }
+}

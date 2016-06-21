@@ -1,0 +1,197 @@
+// Loading animation.
+@mixin ellipsis-keyframes($width) {
+  @-webkit-keyframes ellipsis {
+    to {width: $width;}
+  }
+  @keyframes ellipsis {
+  to {width: $width;}
+  }
+}
+
+@include ellipsis-keyframes(1.25em);
+
+.loading:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  -webkit-animation: ellipsis steps(4,end) 1800ms infinite;
+  animation: ellipsis steps(4,end) 1800ms infinite;
+  content: "\2026"; /* ascii code for the ellipsis character */
+  width: 0px;
+  position: absolute;
+}
+
+// Site pull/push animations.
+@mixin arrow-keyframes($name, $y-position) {
+  @-webkit-keyframes #{$name} {
+    to {transform: translateY($y-position);}
+  }
+  @keyframes #{$name} {
+    to {transform: translateY($y-position);}
+  }
+}
+
+@include arrow-keyframes(site-pull, 60px);
+@include arrow-keyframes(site-push, -60px);
+
+@mixin roll-over-button($width, $width-expanded) {
+  text-align: left;
+  width: $width;
+  transition: width .2s ease;
+  text-transform: uppercase;
+  overflow: hidden;
+  span {
+    transition: display .2s ease;
+    display: none;
+  }
+  &:hover {
+    width: $width-expanded;
+    span {
+      display: inline;
+    }
+  }
+}
+
+// Site styling.
+
+.site-wrapper {
+  margin: 10px 0px;
+}
+.site.site-up {
+  .image img, h3 {
+    transition: filter 4s ease;
+    -webkit-filter: grayscale(0%);
+    filter: grayscale(0%);
+  }
+}
+
+.site {
+  height: 200px;
+  border-radius: 3px;
+  box-shadow: 0 0px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  position: relative;
+  .push-pull {
+    display: none;
+  }
+  .btn {
+    font-size: 11px;
+  }
+  .image {
+    height: 120px;
+    overflow: hidden;
+    opacity: .7;
+    cursor: pointer;
+    img {
+      -webkit-filter: grayscale(100%);
+      filter: grayscale(100%);
+    }
+  }
+  .site-info {
+    h3 {
+      opacity: .7;
+      margin: 5px 0 15px;
+      font-size: 18px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+      cursor: pointer;
+    }
+    .site-actions {
+      margin: 10px;
+      .fa-2 {
+        font-size: 1.5em;
+      }
+      a.site-power, div.site-actions-dropdown {
+        @include roll-over-button(40px, 80px);
+      }
+      a.site-power:hover {
+        background-color: $btn-primary-bg;
+        border-color: $btn-primary-bg;
+        color: $btn-primary-color;
+      }
+      div.site-actions-dropdown:hover {
+        width: 90px;
+        background-color: $btn-info-bg;
+        border-color: $btn-info-bg;
+        color: $btn-info-color;
+      }
+      a.site-up {
+        color: $brand-success;
+        i {
+          color: $brand-success;
+        }
+      }
+      .dropdown-menu li {
+        a {
+          padding: 3px 15px;
+          color: $gray-light;
+        }
+        .fa-2 {
+          text-align: center;
+          width: 20px;
+        }
+      }
+      li span {
+        position: absolute;
+        left: 48px;
+      }
+      .dropdown-menu li:hover span {
+        color: $text-color;
+      }
+      .dropdown-menu li a:hover {
+        background-color: $body-bg;
+        cursor: pointer;
+      }
+    }
+  }
+
+  #overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: aliceblue;
+    z-index: 10;
+    opacity: .95;
+  }
+
+  h3.site-action {
+    z-index: 100;
+    position: relative;
+    text-align: center;
+    top: 40px;
+    opacity: 1;
+    font-weight: 400;
+    font-size: 1.5em;
+    padding: .5em;
+  }
+}
+
+.site.add {
+  text-align: center;
+  border: 2px dashed #bbb;
+  box-shadow: none;
+  a {
+    div {
+      font-size: 6em;
+      margin-top: -40px;
+    }
+    &:hover {
+      text-decoration: none;
+    }
+    display: block;
+    position: relative;
+    padding: 20px;
+    p {
+      color: $text-color;
+    }
+  }
+  h3 {
+    margin-top: -10px;
+  }
+}
+
+.progress-bar {
+  background: linear-gradient(to left, #4CB8C4 , #3CD3AD);
+  height: .5em;
+}

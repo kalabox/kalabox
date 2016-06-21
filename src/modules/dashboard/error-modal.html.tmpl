@@ -1,0 +1,34 @@
+<div class="error-modal">
+  <div class="modal-body">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-1">
+          <img class="logo" src="images/kalabox-blue.svg" alt="Really good looking logo of Kalabox" />
+        </div>
+        <div class="col-xs-11">
+          <p class="speech-bubble">DANGER WILL ROBINSON!</p>
+        </div>
+      </div>
+      <div class="row">
+        <p>Looks like something went wrong with Kalabox:</p>
+      </div>
+      <div class="row error" ng-repeat="err in errors track by $index">
+        <textarea class="col-xs-12" ng-bind="err.message"></textarea>
+      </div>
+      <div class="row">
+        <h3>What do I do now?</h3>
+      </div>
+      <ol>
+        <li><browser link="https://support.kalabox.io/support/solutions">Browse wiki</browser> for common issues</li>
+        <li><browser link="https://github.com/kalabox/kalabox/issues">Search existing issues</browser></li>
+      </ol>
+      <p>If you don't find an answer, post an issue according to <a href="">
+        Kalabox guidelines.</a> Kalabox is open-source software supported
+        by the community on a best-effort basis. If you're a team looking
+        for professional support, contact inquiries@kalabox.io</p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+  </div>
+</div>

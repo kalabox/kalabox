@@ -1,0 +1,33 @@
+
+<div class="app-create-pantheon">
+  <h4 ng-bind="'Pull ' + site.name + ' from ' + provider.name"></h4>
+  <div class="alert alert-danger" ng-bind="errorMessage" ng-if="errorMessage"></div>
+  <form name="siteAdd">
+    <div class="form-group" show-errors>
+      <label for="appName">Name Your App:</label>
+      <input type="text" class="form-control" id="appName" placeholder="Your New App Name" ng-model="app.name" ng-pattern="/^[a-zA-Z0-9\-]*$/" ng-trim="false" name="appName" required>
+      <p class="help-block">This will be the URL and directory name of your app on Kalabox. No spaces or any characters other than dashes.</p>
+    </div>
+    <div class="form-group" show-errors>
+      <label for="appEnv">Which environment?</label>
+      <select class="form-control" id="appEnv" ng-model="app.env" required>
+        <option label="-- Select Environment --" hidden></option>
+        <option ng-repeat="env in site.environments" value="{{env}}">{{env}}</option>
+      </select>
+    </div>
+    <div class="form-group show-labels" show-errors>
+      <div class="switch-group">
+        <label for="pullFiles">Pull Files?</label>
+        <switch id="pullFiles" name="pullFiles" ng-model="app.pullFiles" class="green"></switch>
+      </div>
+      <div class="switch-group">
+        <label for="pullDatabase">Pull Database?</label>
+        <switch id="pullDatabase" name="pullDatabase" ng-model="app.pullDatabase" class="green"></switch>
+      </div>
+    </div>
+  </form>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="button" ng-disabled="siteAdd.$invalid" ng-click="ok(app); $event.stopPropagation();">Submit</button>
+    <button class="btn btn-default" type="button" ui-sref="dashboard.sidebar">Cancel</button>
+  </div>
+</div>

@@ -32,7 +32,7 @@ install:
 
 build_script:
 
-  # Build dev and production releases
+  # Build dev releases
   - grunt pkg --dev
   - mkdir dev_build
   - copy dist\kalabox.exe dev_build\kalabox-latest-dev.exe

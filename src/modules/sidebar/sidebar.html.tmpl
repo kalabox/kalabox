@@ -1,0 +1,53 @@
+<div class="container sidebar">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="pull-right close" data-toggle="offcanvas" data-target="#addSite">
+        <i class="fa fa-times"></i>
+      </div>
+    </div>
+  </div>
+  <div class="row" ui-view>
+    <div class="alert alert-danger" ng-if="sidebar.errorMessage" ng-bind="sidebar.errorMessage"></div>
+    <h4 class="add-account">Add Account</h4>
+    <ul class="nav navmenu-nav navmenu-inverse providers-next">
+      <li class="provider integration" ng-repeat="provider in $root.providers | filter : { username : '!' }" ng-controller="ProviderCtrl" ng-class="providerClasses(provider)">
+        <a ng-href="" ng-bind="provider.displayName" provider-click></a>
+        <i ng-class="provider.name"></i>
+      </li>
+    </ul>
+    <h4 class="add-site">Add Site</h4>
+    <ul class="nav navmenu-nav navmenu-inverse providers-existing">
+      <li class="app" ng-repeat="app in $root.apps | filter:{ name : '!pantheon' }" ng-controller="AppCtrl">
+        <a ng-bind="appDisplayName(app)" app-click></a>
+        <i ng-class="app.name"></i>
+      </li>
+    </ul>
+    <h4 ng-if="" class="add-pantheon-site">Add Site From Pantheon</h4>
+    <ul class="nav navmenu-nav navmenu-inverse providers-existing">
+      <li class="provider" ng-repeat="provider in $root.providers | filter : { username : '!!' }" ng-class="providerClasses(provider)" ng-controller="ProviderCtrl" uib-dropdown auto-close="outsideClick">
+        <a ng-href="" ng-bind="provider.displayName" class="provider-name dropdown-toggle" provider-click uib-dropdown-toggle></a>
+        <i ng-class="provider.name"></i>
+        <ul class="dropdown-menu navmenu-nav provider-sites" role="menu" uib-dropdown-menu>
+          <li>
+            <div ng-if="provider.refreshing" class="loader">
+              <div class="loader-inner ball-clip-rotate">
+                <span>Refreshing site list </span> <div></div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <form ng-hide="!provider.sites.length" class="form-inline provider-search">
+              <div class="form-group">
+                <label class="sr-only" for="siteAvailableSearch">Site search</label>
+                <input type="search" ng-model="siteAvailableSearch.name" class="form-control" id="siteAvailableSearch" placeholder="Type site name">
+              </div>
+            </form>
+          </li>
+          <li ng-repeat="site in provider.sites | filter:siteAvailableSearch" class="new-site">
+            <a ng-bind="site.name" pantheon-app-click></a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>

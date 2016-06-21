@@ -1,0 +1,174 @@
+@mixin provider-pic($provider-name) {
+  background: url(../images/providers/#{$provider-name}) no-repeat;
+  background-size: 20px;
+  background-position: center;
+  color: $gray-lightest;
+  fill: $gray-lightest;
+  width: 50px;
+  height: 39px;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#addSite{
+  box-shadow: -5px 1px 3px rgba(0, 0, 0, 0.12), -1px 1px 2px rgba(0, 0, 0, 0.24);
+  border: none;
+  color: $gray-lightest;
+  width: 280px;
+  text-align: right;
+  z-index: 20;
+  .close {
+    color: $gray-lightest;
+    opacity: .7;
+    margin: 10px 0px;
+  }
+  h4 {
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding-right: 15px;
+  }
+  ul.providers-next {
+
+  }
+  ul.providers-existing {
+    li a {
+      padding: 10px 10px;
+      margin-right: -10px;
+    }
+  }
+  li {
+    &.integration a{
+      text-transform: capitalize;
+    }
+    a {
+      vertical-align: middle;
+      display: inline-block;
+      padding: 10px 0px;
+      cursor: pointer;
+    }
+    .loader {
+      margin-top: 0px;
+      display: inline-block;
+      vertical-align: middle;
+      padding: 10px 0px;
+      div {
+        vertical-align: middle;
+        margin-left: 10px;
+        margin-right: 15px;
+      }
+      span {
+        vertical-align: middle;
+      }
+    }
+  }
+
+  ul.providers-existing > li > ul > li {
+    a {
+      padding: 10px 20px;
+      margin-right: 0px;
+      text-align: right;
+    }
+    text-align: right;
+  }
+
+  form .form-group.show-labels label {
+    display: inline-block;
+    vertical-align: top;
+    margin-bottom: 0px;
+    margin-right: 5px;
+  }
+  form.provider-search .form-group .form-control {
+    background: #1D2E3D;
+  }
+  form {
+    padding: 15px;
+    .form-group {
+      label {
+        display: none;
+      }
+      .form-control {
+        border: none;
+        border-bottom: 1px grey solid;
+        background: #23374A;
+        box-shadow: none;
+        border-radius: 0px;
+        color: #ccc;
+      }
+    }
+  }
+  .form-actions {
+    padding: 15px;
+    .btn {
+      border: none;
+      border-radius: 1px;
+    }
+    .btn-default {
+      &:hover {
+        background-color: $gray-light;
+        color: $gray-dark;
+      }
+      background-color: $gray-lighter;
+    }
+  }
+  .loader {
+    text-align: center;
+    margin-top: 80px;
+    h4 {
+      text-align: center;
+    }
+    .line-scale>div {
+      background-color: $gray-lightest;
+    }
+  }
+}
+
+.authForm, .app-create-pantheon, .app-create {
+  .alert {
+    margin: 15px;
+    text-align: left;
+  }
+}
+
+i.pantheon {
+  @include provider-pic('pantheon.svg');
+}
+i.drupal7 {
+  @include provider-pic('drupal7.png');
+}
+i.drupal8 {
+  @include provider-pic('drupal8.png');
+}
+i.wordpress {
+  @include provider-pic('wordpress.png');
+}
+i.backdrop {
+  @include provider-pic('backdrop.png');
+}
+
+.connection-info {
+  h2 {
+    font-size: 1.5em;
+  }
+  input {
+    width: 40%;
+  }
+}
+
+.switch-group {
+  height: 1.5em;
+  margin-bottom: 1em;
+}
+.switch {
+  vertical-align: top;
+  width: 30px;
+  height: 20px;
+}
+.switch small {
+  width: 20px;
+  height: 20px;
+}
+.switch.checked small {
+  left: 11px;
+}

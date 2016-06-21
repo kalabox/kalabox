@@ -1,0 +1,30 @@
+<div class="pantheon-authorization">
+  <div ng-if="authorizing" class="loader">
+    <div class="loader-inner line-scale">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <h4>Authenticating</h4>
+  </div>
+    <div ng-if="!authorizing" class="authForm">
+    <h4 ng-bind="'Authenticate with ' + provider.name"></h4>
+    <div class="alert alert-danger" ng-if="errorMessage">Are your Pantheon email and password correct? Gotta check'em all!</div>
+    <form name="authForm">
+      <div class="form-group">
+        <label for="authEmail">Email</label>
+        <input type="email" class="form-control" id="authEmail" placeholder="Email" ng-model="email" required>
+      </div>
+      <div class="form-group">
+        <label for="authPassword">Password</label>
+        <input type="password" class="form-control" id="authPassword" placeholder="Password" ng-model="password" ng-enter="ok(email, password)" required>
+      </div>
+    </form>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="button" ng-disabled="authForm.$invalid" ng-click="ok(email, password); $event.stopPropagation();">Submit</button>
+      <button class="btn btn-default" type="button" ui-sref="dashboard.sidebar">Cancel</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,221 @@
+body.initialize, body.dashboard-shutdown {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+body.initialize {
+  background: $body-bg;
+  -webkit-animation: bgChange 80s;
+          animation: bgChange 80s;
+  h1 {
+    -webkit-animation: headerChange 80s;
+            animation: headerChange 80s;
+  }
+
+  h2 {
+    -webkit-animation: subHeaderChange 80s;
+            animation: subHeaderChange 80s;
+  }
+}
+
+body.dashboard-shutdown {
+  background: $dark-bg;
+  -webkit-animation: bgChangeInverted 60s;
+          animation: bgChangeInverted 60s;
+  h1 {
+    -webkit-animation: headerChangeInverted 60s;
+            animation: headerChangeInverted 60s;
+  }
+  h2 {
+    -webkit-animation: subHeaderChangeInverted 60s;
+            animation: subHeaderChangeInverted 60s;
+  }
+
+}
+
+.initialize, .shutdown {
+  text-align: center;
+  margin: 80px 0px;
+
+  .col-xs-12 {
+    z-index: 20;
+  }
+
+  h1, h2 {
+    display: inline-block;
+    display: inline-block;
+    width: 450px;
+  }
+
+  h1 {
+    font-weight: 500;
+    font-size: $font-size-h2;
+    color: #4295D1;
+  }
+
+  h2 {
+    font-size: $font-size-h3;
+    font-weight: 200;
+    line-height: $headings-line-height + .7;
+    transition: opacity .25s ease-in-out;
+    margin: 10px 0px;
+    color: $gray-light;
+  }
+  .detail {
+    z-index: 10010;
+    bottom: -210px;
+    position: relative;
+    color: $gray;
+    text-align: center;
+  }
+}
+
+@mixin animation($string) {
+  -webkit-animation: $string;
+     -moz-animation: $string;
+       -o-animation: $string;
+          animation: $string;
+}
+
+@mixin moveclouds-keyframes($name, $start, $middle, $end) {
+  @-webkit-keyframes #{$name} {
+    0% {-webkit-transform: translateX($start);}
+    50% {-webkit-transform: translateX($middle);}
+    100% {-webkit-transform: translateX($end);}
+  }
+  @keyframes #{$name} {
+    0% {transform: translateX($start);}
+    50% {transform: translateX($middle);}
+    100% {transform: translateX($end);}
+  }
+}
+
+@mixin kala-cloud($cloud-image, $cloud-bottom, $cloud-height, $cloud-bg-pos, $cloud-zindex, $cloud-anim){
+  background: url(../images/kalabox/#{$cloud-image}.svg) no-repeat;
+  background-repeat: repeat-x;
+  bottom: $cloud-bottom;
+  height: $cloud-height;
+  background-position: $cloud-bg-pos;
+  z-index: $cloud-zindex;
+  @include animation($cloud-anim);
+}
+
+
+@include moveclouds-keyframes(cloudsfront, 0, 40%, 0);
+@include moveclouds-keyframes(cloudsdark, 0, -10%, 0);
+@include moveclouds-keyframes(cloudslight, 0, -8%, 0);
+@include moveclouds-keyframes(cloudswhite, 0, 6%, 0);
+@include moveclouds-keyframes(cloudsgray, 0, -2%, 0);
+
+
+.clouds {
+  background-size: contain;
+  height: 300px;
+  display: block;
+  i.cloud {
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    background-position: left top;
+  }
+
+  i#cloud-front {
+    @include kala-cloud(clouds-front, 0, 300px, left bottom, 10, cloudsfront 200s linear infinite);
+    left: -100%;
+  }
+
+  i#cloud-dark {
+    @include kala-cloud(clouds-dark, 50px, 100px, 90% top, 9, cloudsdark 200s linear infinite);
+    background-repeat: no-repeat;
+  }
+
+  i#cloud-light {
+    @include kala-cloud(clouds-light, 50px, 200px, 50% top, 8, cloudslight 25s ease-in-out infinite);
+    background-repeat: no-repeat;
+  }
+
+  i#cloud-white {
+    @include kala-cloud(clouds-white, 35px, 200px, 50% bottom, 7, cloudswhite 50s linear infinite);
+  }
+
+  i#cloud-gray {
+    @include kala-cloud(clouds-gray, 80px, 200px, 50% top, 6, cloudsgray 25s linear infinite);
+     &:before {
+       content: 'asdf';
+       display: block;
+       height: 100%;
+       position: absolute;
+       bottom: -50%;
+       left: 0;
+       right: 0;
+       background-color: #E8E8E8;
+     }
+  }
+}
+
+@mixin bgChange-keyframes($name, $startColor, $middleColor, $endColor) {
+  @keyframes #{$name} {
+    0% {background-color:$startColor;}
+    100% {background-color:$endColor;}
+  }
+
+  @-webkit-keyframes #{$name} {
+    0% {background-color:$startColor;}
+    50% {background-color:$middleColor;}
+    100% {background-color:$endColor;}
+  }
+}
+
+@mixin colorChange-keyframes($name, $startColor, $middleColor, $endColor) {
+  @keyframes #{$name} {
+    0% {color:$startColor;}
+    100% {color:$endColor;}
+  }
+
+  @-webkit-keyframes #{$name} {
+    0% {color:$startColor;}
+    50% {color:$middleColor;}
+    100% {color:$endColor;}
+  }
+}
+
+@include bgChange-keyframes(bgChange, $dark-bg, #C9EBFA, white);
+@include bgChange-keyframes(bgChangeInverted, white, #C9EBFA, $dark-bg);
+@include colorChange-keyframes(headerChange, #9ECBEA, #3B85BA, #4295D1);
+@include colorChange-keyframes(subHeaderChange, $gray-lighter, $gray, $gray);
+@include colorChange-keyframes(headerChangeInverted, #4295D1, #9ECBEA, #4295D1);
+@include colorChange-keyframes(subHeaderChangeInverted, $gray-light, $gray-lighter, $gray-light);
+
+.theSun {
+  width:100px;
+  height:100px;
+  z-index: 7;
+  position:absolute;
+  animation:sunRising 300s infinite;
+  border-radius:50%;
+  -moz-border-radius:50%;
+  /* Safari and Chrome */
+  -webkit-animation:sunRising 300s infinite;
+  background-image: -moz-radial-gradient(45px 45px 45deg, circle cover, yellow 0%, orange 100%, red 95%);
+  background-image: -webkit-radial-gradient(45px 45px, circle cover, yellow, orange);
+  background-image: radial-gradient(45px 45px 45deg, circle cover, yellow 0%, orange 100%, red 95%);
+}
+
+@keyframes sunRising
+{
+  0%   {top:70%;left:-10%;}
+  25%  {top:30%;left:25%;}
+  50%  {top:5%;left:50%;}
+  75%  {top:30%;left:75%;}
+  100% {top:70%;left:110%;}
+}
+
+@-webkit-keyframes sunRising /* Safari and Chrome */{
+  0%   {top:70%;left:-10%;}
+  25%  {top:30%;left:25%;}
+  50%  {top:5%;left:50%;}
+  75%  {top:30%;left:75%;}
+  100% {top:70%;left:110%;}
+}

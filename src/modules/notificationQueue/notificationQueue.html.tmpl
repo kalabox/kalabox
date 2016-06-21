@@ -1,0 +1,14 @@
+<button uib-dropdown-toggle class="btn btn-default" type="button" id="notification-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-click="queue.markAllRead();">
+  <i class="fa fa-bell-o"></i>
+</button>
+<div class="notifier" ng-class="{'unread' : queue.unread}"></div>
+<ul uib-dropdown-menu aria-labelledby="notification-dropdown" class="container">
+  <li ng-if="queue.notifications.length === 0">
+    <span>There are no new notifications.</span>
+  </li>
+  <li class="notification" ng-repeat="notification in queue.notifications" ng-class="{'new' : !notification.read}">
+    <i class="fa fa-exclamation-triangle"></i>
+    <p class="" ng-bind="notification.message"></p>
+    <a class="" ng-click="queue.delete(notification.id); $event.stopPropagation();"><i class="fa fa-times-circle-o"></i></a>
+  </li>
+</ul>

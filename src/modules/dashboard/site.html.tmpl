@@ -1,0 +1,38 @@
+<div class="site-wrapper col-xs-4" ng-class="{'overlay-active': site.busy}">
+  <div class="site" ng-class="siteClasses()">
+    <div id="overlay" ng-if="site.busy">
+      <div class="progress">
+        <div class="progress-bar" role="progressbar"
+        ng-style="{'width': (site.progress * 100) + '%'}">
+        </div>
+      </div>
+      <h3 class="site-action" ng-bind="site.status"></h3>
+    </div>
+    <h3 ng-if="site.currentActionName" ng-bind="site.currentActionName" class="site-action"></h3>
+    <div class="row image">
+      <a ng-href="" site-browser><img class="col-xs-12 img-responsive" alt="Snapshot of your site"  ng-src="{{site.image}}"/></a>
+    </div>
+    <div class="row">
+      <div class="site-info col-xs-12">
+        <h3 ng-bind="site.name" class="site-name" site-browser></h3>
+        <div class="site-actions">
+          <a ng-href="" site-toggle class="btn btn-default site-power" ng-class="{'site-up': ui.states[site.machineName]}"><i class="fa fa-power-off fa-2"></i><span ng-if="!ui.states[site.machineName]"> Start</span><span ng-if="ui.states[site.machineName]"> Stop</span></a>
+          <div class="btn-group dropdown" uib-dropdown auto-close="outsideClick">
+            <div class="btn btn-default site-actions-dropdown" uib-dropdown-toggle>
+              <i class="fa fa-cog fa-2"></i>
+              <span> Actions</span>
+            </div>
+            <ul uib-dropdown-menu>
+              <li><a ng-href="" site-code><i class="fa fa-folder-o fa-2"></i> <span>Code</span></a></li>
+              <li><a ng-href="" ng-hide="ui.meta.platform === 'win32'" site-terminal><i class="fa fa-terminal fa-2"></i> <span>Terminal</span></a></li>
+              <li ng-if="ui.states[site.machineName]"><a ng-href="" class="site-connection" site-connection><i class="fa fa-info-circle fa-2l"></i> <span>Connection Info</span></a></li>
+              <li ng-if="site.providerInfo.env"><a ng-href="" site-pull><i class="fa fa-cloud-download fa-2"></i> <span>Pull</span></a></li>
+              <li ng-if="site.providerInfo.env"><a ng-href="" site-push><i class="fa fa-cloud-upload fa-2"></i> <span>Push</span></a></li>
+              <li><a ng-href="" site-remove><i class="fa fa-trash-o fa-2"></i> <span>Delete</span></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

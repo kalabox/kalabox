@@ -1,0 +1,16 @@
+
+<div class="app-create">
+  <h4 ng-bind="'Create a ' + app.displayName + ' Site'"></h4>
+  <div class="alert alert-danger" ng-bind="errorMessage" ng-if="errorMessage"></div>
+  <form name="siteAdd">
+    <div class="form-group" show-errors>
+      <label for="siteName">Name Your App:</label>
+      <input type="text" class="form-control" id="siteName" placeholder="Your New App Name" ng-model="app.siteName" ng-pattern="/^[a-zA-Z0-9\-]*$/" ng-trim="false" name="siteName" required>
+      <p class="help-block">This will be the URL and directory name of your app on Kalabox. No spaces or any characters other than dashes.</p>
+    </div>
+  </form>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="button" ng-disabled="siteAdd.$invalid" ng-click="ok(app.siteName); $event.stopPropagation();">Submit</button>
+    <button class="btn btn-default" type="button" ui-sref="dashboard.sidebar">Cancel</button>
+  </div>
+</div>

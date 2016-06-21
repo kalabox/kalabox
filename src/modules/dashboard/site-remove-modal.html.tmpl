@@ -1,0 +1,16 @@
+<div class="modal-header">
+  <h3 class="modal-title" ng-bind="'Remove ' + site.name + '?'"></h3>
+</div>
+<div class="modal-body">
+  <!--<div class="alert alert-error" ng-bind="errorMessage" ng-if="errorMessage"></div>-->
+  <form>
+    <div class="form-group">
+      <label for="appName">Enter the name of the app to confirm:</label>
+      <input type="text" class="form-control" id="appNameRemove" placeholder="Enter Your App Name" ng-model="app.name" required>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" type="button" ng-disabled="app.name !== site.name" ng-click="ok(app)">Remove</button>
+  <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>

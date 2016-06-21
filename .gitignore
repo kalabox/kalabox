@@ -1,3 +1,4 @@
+# Common sys files
 .*.swp
 ._*
 .git
@@ -6,15 +7,31 @@
 .lock-wscript
 .svn
 .wafpickle-*
-CVS
-npm-debug.log
 .DS_Store
 .idea/
-*.log
-node_modules
-build
 *.tar
 *.jxp
 *.sublime-*
+
+# Logs
+*.log
+
+# NPM files
+npm-debug.log
+node_modules
+.sass-cache
+style.css
+html-angular*
+vendor
+nw
+CVS
+cache
+downloads
+generated
+test/support
+deps
+
+# Kalabox
+build
 dist
 version.lock

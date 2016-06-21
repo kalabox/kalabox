@@ -1,0 +1,32 @@
+<div class="modal-header">
+  <h3 class="modal-title" ng-bind="'Push ' + site.name"></h3>
+</div>
+<div class="modal-body">
+  <div class="alert alert-error" ng-bind="errorMessage" ng-if="errorMessage"></div>
+  <form name="sitePush">
+    <div class="form-group">
+      <label for="sitePushMessage">Commit message</label>
+      <input type="text" class="form-control" id="sitePushMessage" placeholder="Message" ng-model="message" required>
+    </div>
+    <div class="form-group">
+      <label for="pushDatabase">Push database to</label>
+      <select class="form-control" id="pushDatabase" placeholder="Database" ng-model="database" required>
+        <option label="-- Push Database to? --" hidden></option>
+        <option value="none">I'm good! (Don't push my database)</option>
+        <option value="dev">Development Environment</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="pushFiles">Push files to</label>
+      <select class="form-control" id="pushFiles" placeholder="Files" ng-model="files" required>
+        <option label="-- Push files to? --" hidden></option>
+        <option value="none">I'm good! (Don't push my files)</option>
+        <option value="dev">Development Environment</option>
+      </select>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+	<button class="btn btn-primary" type="button" ng-disabled="sitePush.$invalid" ng-click="ok(message, database, files)">Submit</button>
+  <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>

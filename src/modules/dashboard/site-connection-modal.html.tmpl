@@ -1,0 +1,75 @@
+<div class="connection-info container">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="ok()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" ng-bind="'Connection Info for ' + site.name"></h3>
+  </div>
+  <div class="modal-body">
+    <div ng-repeat="service in services" class="row">
+      <div class="service appserver col-xs-4" ng-if="service.name == 'appserver'">
+        <label>Site URL(s)</label>
+        <div ng-repeat="url in service.url">
+          <br>
+          <input ng-model="url" readonly select-on-click>
+          <br>
+        </div>
+      </div>
+      <div class="service database col-xs-6" ng-if="service.name == 'db' && service.external_connection_info">
+        <h2>Database Browsing Connection Info</h2>
+        <p>Use to connect with your database via a SQL browser like SequelPro or the command line.</p>
+        <label>Command Line</label>
+        <br>
+        <input ng-model="'mysql -u ' + service.external_connection_info.user
+        + ' -p' + service.external_connection_info.password + ' -h ' +
+        service.external_connection_info.host + ' -P ' +
+        service.external_connection_info.port + ' ' +
+        service.external_connection_info.database" readonly select-on-click>
+        <br>
+        <label>Host</label>
+        <br>
+        <input ng-model="service.external_connection_info.host" readonly select-on-click>
+        <br>
+        <label>Username</label>
+        <br>
+        <input ng-model="service.external_connection_info.user" readonly select-on-click>
+        <br>
+        <label>Password</label>
+        <br>
+        <input ng-model="service.external_connection_info.password" readonly select-on-click>
+        <br>
+        <label>Port</label>
+        <br>
+        <input ng-model="service.external_connection_info.port" readonly select-on-click>
+        <br>
+        <label>DB Name</label>
+        <br>
+        <input ng-model="service.external_connection_info.database" readonly select-on-click>
+      </div>
+      <div class="service database col-xs-6" ng-if="service.name == 'db' && service.internal_connection_info">
+        <h2>Database Credentials</h2>
+        <p>Use when installing your Drupal, Wordpress, or Backdrop on Kalabox.</p>
+        <label>Host</label>
+        <br>
+        <input ng-model="service.internal_connection_info.host" readonly select-on-click>
+        <br>
+        <label>Username</label>
+        <br>
+        <input ng-model="service.internal_connection_info.user" readonly select-on-click>
+        <br>
+        <label>Password</label>
+        <br>
+        <input ng-model="service.internal_connection_info.password" readonly select-on-click>
+        <br>
+        <label>Port</label>
+        <br>
+        <input ng-model="service.internal_connection_info.port" readonly select-on-click>
+        <br>
+        <label>DB Name</label>
+        <br>
+        <input ng-model="service.internal_connection_info.database" readonly select-on-click>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">Got it, Thanks!</button>
+  </div>
+</div>

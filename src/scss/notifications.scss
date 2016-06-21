@@ -1,0 +1,35 @@
+@mixin speech-bubble($size, $background)
+{
+  background: $background;
+  display: inline-block;
+  padding: $size;
+  position: relative;
+  margin-left: $size;
+  border-radius: 2px;
+
+  &:before
+  {
+    content: '';
+    position: absolute;
+    left: -$size;
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    border-top: ($size / 2) solid transparent;
+    border-right: $size solid $background;
+    border-bottom: ($size / 2) solid transparent;
+  }
+}
+
+.speech-bubble {
+  @include speech-bubble(15px, $alert-danger-bg);
+  width: 60%;
+  color: $alert-danger-text;
+  border-color: $alert-danger-border;
+}
+
+textarea {
+  margin: 5px 0px;
+  max-height: 100px;
+  overflow-y: scroll;
+}

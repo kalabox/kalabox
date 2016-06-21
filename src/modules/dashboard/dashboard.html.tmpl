@@ -1,0 +1,41 @@
+<div>
+  <nav id="addSite" class="navmenu navmenu-default navmenu-fixed-right navmenu-inverse offcanvas">
+    <div ui-view="integrations"></div>
+  </nav>
+
+  <div class="container">
+    <div class="row header">
+      <div ng-if="ui.devMode" class="col-xs-12 dev-mode">
+        <div class="alert alert-danger" role="alert">WARNING FOOL, DEV MODE IS ACTIVE!!!</div>
+      </div>
+      <div class="col-xs-1">
+        <img class="logo" src="images/kalabox-blue.svg" alt="Really good looking logo of Kalabox" />
+      </div>
+      <div class="col-xs-4">
+        <form class="form-inline">
+          <div class="form-group">
+            <label class="sr-only" for="siteSearch">Site search</label>
+            <input type="search" ng-model="siteSearch" class="form-control" id="siteSearch" placeholder="Filter by site name">
+          </div>
+        </form>
+      </div>
+      <div class="col-xs-7 site-actions">
+        <a href="" ui-sref='dashboard.sidebar' ui-sref-opts='{location: false}' class="btn btn-default site-add pull-right" data-toggle="offcanvas" data-target="#addSite"><i class="fa fa-plus fa-2"></i><span> Add Site</span></a>
+        <div notification-center uib-dropdown auto-close="outsideClick" class="notification-center pull-right"></div>
+      </div>
+    </div>
+    <div class="sites row">
+      <div class="site-wrapper col-xs-4">
+        <div class="site add">
+          <a href="" ui-sref='dashboard.sidebar' ui-sref-opts='{location: false}' data-toggle="offcanvas" data-target="#addSite" data-autohide="false">
+            <div class="plus">+</div>
+            <h3>Add new site</h3>
+            <p>Insert your Pantheon credentials, pull a site, and enjoy!</p>
+          </a>
+        </div>
+      </div>
+      <div ng-repeat="site in ui.sites | filter:siteSearch" ng-controller="SiteCtrl" site>
+      </div>
+    </div>
+  </div>
+</div>

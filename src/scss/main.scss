@@ -1,0 +1,33 @@
+/* Copyright 2013 Kalamuna LLC */
+@import "../lib/vendor/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+@import "_customVariables.scss";
+@import "../lib/vendor/jasny-bootstrap/scss/jasny-bootstrap.scss";
+@import "initialize-installer.scss";
+@import "site.scss";
+@import "dashboard.scss";
+@import "sidebar.scss";
+@import "notifications.scss";
+@import "start.scss";
+
+.btn {
+  border: 1px solid #dfe2e6;
+  border-radius: 3px;
+}
+
+textarea {
+  resize: none;
+}
+
+body {
+  width: 700px;
+  height: 520px;
+  overflow-x: hidden;
+}
+
+.error textarea {
+  height: 100px;
+}
+
+browser {
+  @extend a;
+}

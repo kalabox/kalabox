@@ -22,10 +22,20 @@
   "loopfunc": true,
   "globals": {
     "describe": false,
+    "angular": true,
     "it": false,
+    "xit": false,
     "before": false,
+    "beforeAll": false,
     "beforeEach": false,
     "afterEach": false,
-    "Promise": true
+    "Promise": true,
+    "browser": false,
+    "$": false,
+    "expect": false,
+    "by": false,
+    "element": false,
+    "protractor": false,
+    "RC": false
   }
 }
