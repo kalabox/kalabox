@@ -12,11 +12,11 @@ module.exports = function() {
   return {
     bump: {
       options: {
-        files: ['package.json', 'bower.json'],
+        files: ['package.json', 'bower.json', 'package.gui.json'],
         updateConfigs: [],
         commit: true,
         commitMessage: 'Release v%VERSION%',
-        commitFiles: ['package.json', 'bower.json'],
+        commitFiles: ['package.json', 'bower.json', 'package.gui.json'],
         createTag: true,
         tagName: 'v%VERSION%',
         tagMessage: 'Version %VERSION%',
@@ -24,7 +24,7 @@ module.exports = function() {
         pushTo: 'origin',
         gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
         globalReplace: false,
-        prereleaseName: 'alpha',
+        prereleaseName: 'unstable',
         metadata: '',
         regExp: false
       }

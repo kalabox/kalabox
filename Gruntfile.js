@@ -24,6 +24,7 @@ module.exports = function(grunt) {
     // Linting, standards and styles tasks
     jshint: style.jshint,
     jscs: style.jscs,
+    htmlangular: style.htmlangular,
 
     // Copying tasks
     copy: {
@@ -66,7 +67,8 @@ module.exports = function(grunt) {
   // Check Linting, standards and styles
   grunt.registerTask('test:code', [
     'jshint',
-    'jscs'
+    'jscs',
+    'htmlangular'
   ]);
 
   // Run unit tests

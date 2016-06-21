@@ -1,15 +1,14 @@
 'use strict';
 /* global ngMidwayTester */
 
-
-describe('Kalabox Angular app', function () {
+describe('Kalabox Angular app', function() {
   var tester;
 
   /**
    * Remove after each test.
    */
 
-  afterEach(function () {
+  afterEach(function() {
     tester.destroy();
     tester = null;
   });
@@ -18,7 +17,7 @@ describe('Kalabox Angular app', function () {
     module('app', 'templates');
     tester = ngMidwayTester('app');
   });
-  it('redirects paths to "/installer"', function (done) {
+  it('redirects paths to "/installer"', function(done) {
     tester.visit('/', function() {
       expect(tester.path()).to.equal('/installer');
       done();

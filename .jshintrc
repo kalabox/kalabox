@@ -32,7 +32,7 @@
     "Promise": true,
     "browser": false,
     "$": false,
-    "expect": false,
+    "expect": true,
     "by": false,
     "element": false,
     "protractor": false,

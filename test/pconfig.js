@@ -1,8 +1,8 @@
 'use strict';
 
-var _ = require('lodash'),
-  platform = require('os').platform(),
-  raw_config = require('./platform.json');
+var _ = require('lodash');
+var platform = require('os').platform();
+var rawConfig = require('./platform.json');
 
 // findIndex callback to get platform
 var getIndex = function(val) {
@@ -11,11 +11,11 @@ var getIndex = function(val) {
 
 // map callback to set a specific platform config.
 var getConfig = function(options, key, config) {
-  return [key, key == 'index' ? config.index : options[config.index]];
+  return [key, key === 'index' ? config.index : options[config.index]];
 };
 
 // set index
-raw_config.index = _.findIndex(raw_config.platform, getIndex);
+rawConfig.index = _.findIndex(rawConfig.platform, getIndex);
 
 // export a processed config
-module.exports = _.object(_.map(raw_config, getConfig));
+module.exports = _.object(_.map(rawConfig, getConfig));

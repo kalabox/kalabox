@@ -8,7 +8,6 @@ module.exports = function(grunt) {
   /**
    * Load in our build configuration filez
    */
-  var code = require('./grunt/code.js');
   var files = require('./grunt/files.js');
   var frontend = require('./grunt/frontend.js');
   var nw = require('./grunt/nw.js');
@@ -130,13 +129,6 @@ module.exports = function(grunt) {
       build: frontend.index.build,
       compile: frontend.index.compile
     },
-
-    // Jslinting
-    jshint: code.jshint,
-    // Some code standards
-    jscs: code.jscs,
-    // Angular html validate
-    htmlangular: code.htmlangular,
     // Compress built NW assets
     compress: nw.compress(grunt),
     // Build the NW binaries

@@ -1,8 +1,12 @@
+'use strict';
+
 describe('gui starts successfully', function() {
   it('should show loading messages', function() {
     browser.get('https://angularjs.org');
 
-    element(by.model('todoList.todoText')).sendKeys('write first protractor test');
+    element(by.model('todoList.todoText'))
+    .sendKeys('write first protractor test');
+
     element(by.css('[value="add"]')).click();
 
     var todoList = element.all(by.repeater('todo in todoList.todos'));

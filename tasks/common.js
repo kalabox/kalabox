@@ -21,17 +21,30 @@ var pkgType = [system.platform, system.arch, 'v' + version].join('-');
 var pkgExt = (system.platform === 'win32') ? '.exe' : '';
 var pkgSuffix = pkgType + pkgExt;
 
-// All JS files
-var jsFiles = [
-  'Gruntfile.js',
+// All CLI js Files
+var cliJsFiles = [
   'bin/kbox.js',
   'lib/**/*.js',
-  'tasks/**/*.js',
-  'test/**/*.js',
   'plugins/**/*.js',
   'plugins/**/**/*.js',
-  'plugins/**/**/**/*.js',
-  'scripts/*.js'
+  'plugins/**/**/**/*.js'
+];
+
+// All GUI js Files
+var guiJsFiles = [
+  'src/**/*.js'
+];
+
+// All auxilary js Files
+var auxJsFiles = [
+  'Gruntfile.js',
+  'tasks/**/*.js',
+  'test/**/*.js'
+];
+
+// All html templates
+var htmlTplFiles = [
+  'src/**/*.html.tmpl'
 ];
 
 // CLI Build assets
@@ -94,11 +107,14 @@ module.exports = {
     pkgSuffix: pkgSuffix
   },
   files: {
+    auxJs: auxJsFiles,
     cli: cliBuildFiles,
     cliBats: cliBatsFiles,
+    cliJs: cliJsFiles,
+    guiJs: guiJsFiles,
+    htmlTpl: htmlTplFiles,
     installerOsxBats: installerOsxBatsFiles,
     installerLinuxBats: installerLinuxBatsFiles,
-    js: jsFiles,
     jxAdd: jxAddFiles,
     jxSlim: jxSlimFiles,
     mochaTests: mochaTestFiles
