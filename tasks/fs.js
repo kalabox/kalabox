@@ -10,6 +10,8 @@ module.exports = function(common) {
   var cliPkgName = 'kbox-' + common.kalabox.pkgSuffix;
 
   return {
+
+    // Our copy tasks
     copy: {
       cli: {
         build: {
@@ -43,12 +45,74 @@ module.exports = function(common) {
             mode: true
           }
         }
+      },
+      gui: {
+        build: {
+          files: [
+            {
+              src: ['**'],
+              dest: 'build/gui/images/',
+              cwd: 'src/images',
+              expand: true
+            },
+            {
+              src: ['package.gui.json'],
+              dest: 'build/gui/package.json'
+            },
+            {
+              src: ['**'],
+              dest: 'build/gui/fonts/',
+              cwd: 'src/lib/vendor/font-awesome/fonts',
+              expand: true
+            },
+            {
+              src: ['**'],
+              dest: 'build/gui/lib',
+              cwd: 'lib',
+              expand: true
+            },
+            {
+              src: ['**'],
+              dest: 'build/gui/plugins',
+              cwd: 'plugins',
+              expand: true
+            },
+            {
+              src: ['kalabox.yml'],
+              dest: 'build/gui/kalabox.yml'
+            },
+            {
+              src: common.files.guiJs,
+              dest: 'build/gui',
+              cwd: '.',
+              expand: true
+            },
+            {
+              src: common.files.vendorJs,
+              dest: 'build/gui',
+              cwd: '.',
+              expand: true
+            },
+            {
+              src: common.files.vendorCss,
+              dest: 'build/gui',
+              cwd: '.',
+              expand: true
+            }
+          ]
+        }
       }
     },
+
+    // Our clean tasks
     clean: {
       cli: {
         build: ['build/cli'],
         dist: ['dist/cli']
+      },
+      gui: {
+        build: ['build/gui'],
+        dist: ['dist/gui']
       },
       installer: {
         build: ['build/installer'],

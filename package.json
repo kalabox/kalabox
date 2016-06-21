@@ -73,7 +73,6 @@
     "grunt-jscs": "~0.8.1",
     "grunt-jsdoc": "^0.5.7",
     "grunt-mocha-cli": "^2.0.0",
-    "grunt-ng-annotate": "^1.0.1",
     "grunt-nw-builder": "kalabox/grunt-nw-builder.git",
     "grunt-protractor-runner": "^3.2.0",
     "grunt-shell": "^1.1.1",

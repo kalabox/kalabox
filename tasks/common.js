@@ -21,6 +21,9 @@ var pkgType = [system.platform, system.arch, 'v' + version].join('-');
 var pkgExt = (system.platform === 'win32') ? '.exe' : '';
 var pkgSuffix = pkgType + pkgExt;
 
+// Other helpers
+var vendorDir = 'src/lib/vendor/';
+
 // All CLI js Files
 var cliJsFiles = [
   'bin/kbox.js',
@@ -32,19 +35,27 @@ var cliJsFiles = [
 
 // All GUI js Files
 var guiJsFiles = [
-  'src/**/*.js'
+  'src/**/*.js',
+  '!src/lib/vendor/**/*',
+  '!src/modules/**/*.spec.js',
 ];
 
 // All auxilary js Files
 var auxJsFiles = [
   'Gruntfile.js',
   'tasks/**/*.js',
-  'test/**/*.js'
+  'test/**/*.js',
+  'src/modules/**/*.spec.js'
 ];
 
 // All html templates
 var htmlTplFiles = [
   'src/**/*.html.tmpl'
+];
+
+// All html files
+var htmlFiles = [
+  'src/**/*.html'
 ];
 
 // CLI Build assets
@@ -97,6 +108,33 @@ var installerOsxBatsFiles = [
   './test/installer/osx/*.bats'
 ];
 
+// Our vendor JS files
+var vendorJsFiles = [
+  vendorDir + 'bluebird/js/browser/bluebird.js',
+  vendorDir + 'jquery/dist/jquery.js',
+  vendorDir + 'd3/d3.js',
+  vendorDir + 'angular-ui-utils/modules/route/route.js',
+  vendorDir + 'angular/angular.js',
+  vendorDir + 'angular-ui-router/release/angular-ui-router.min.js',
+  vendorDir + 'angular-bootstrap/ui-bootstrap.min.js',
+  vendorDir + 'angular-bootstrap/ui-bootstrap-tpls.min.js',
+  vendorDir + 'angular-bluebird-promises/dist/angular-bluebird-promises.js',
+  vendorDir + 'jasny-bootstrap/dist/js/jasny-bootstrap.min.js',
+  vendorDir + 'angular-ui-switch/angular-ui-switch.min.js'
+];
+
+// Our vendor CSS files
+var vendorCssFiles = [
+  vendorDir + 'font-awesome/css/font-awesome.min.css',
+  vendorDir + 'angular-ui-switch/angular-ui-switch.min.css',
+  vendorDir + 'loaders.css/loaders.min.css'
+];
+
+var vendorAssetFiles = [
+  vendorDir + 'font-awesome/fonts/fontawesome-webfont.woff',
+  vendorDir + 'font-awesome/fonts/fontawesome-webfont.ttf'
+];
+
 // Return our objects
 module.exports = {
   system: system,
@@ -112,11 +150,15 @@ module.exports = {
     cliBats: cliBatsFiles,
     cliJs: cliJsFiles,
     guiJs: guiJsFiles,
+    html: htmlFiles,
     htmlTpl: htmlTplFiles,
     installerOsxBats: installerOsxBatsFiles,
     installerLinuxBats: installerLinuxBatsFiles,
     jxAdd: jxAddFiles,
     jxSlim: jxSlimFiles,
-    mochaTests: mochaTestFiles
+    mochaTests: mochaTestFiles,
+    vendorAssets: vendorAssetFiles,
+    vendorCss: vendorCssFiles,
+    vendorJs: vendorJsFiles
   }
 };

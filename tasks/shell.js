@@ -4,7 +4,27 @@
  * This file/module contains all our shell based Grunt tasks
  */
 
+// Find the NW path
+
 module.exports = function(common) {
+
+  /*
+   * Run a nw command
+   */
+  var nwCmd = function(path) {
+
+    // "Constants"
+    // @todo: Should we restrict infinity?
+    var nw = require('nw');
+    var shellOpts = {execOptions: {maxBuffer: Infinity}};
+
+    // Return our shell task
+    return {
+      options: shellOpts,
+      command: [nw.findpath(), path].join(' '),
+    };
+
+  };
 
   /*
    * Run a default bash/sh/cmd script
@@ -128,8 +148,9 @@ module.exports = function(common) {
   return {
     batsTask: batsTask,
     cliPkgTask: cliPkgTask,
+    nwCmd: nwCmd,
     scriptTask: scriptTask,
-    psTask: psTask
+    psTask: psTask,
   };
 
 };
