@@ -8,21 +8,29 @@
 
 module.exports = function(common) {
 
+  // Get the platform
+  var platform = common.system.platform;
+
   /*
-   * Run a nw command
+   * Helper function to do the correct npm install
    */
-  var nwCmd = function(path) {
+  var npmInstallCmd = function(dev) {
 
-    // "Constants"
-    // @todo: Should we restrict infinity?
-    var nw = require('nw');
-    var shellOpts = {execOptions: {maxBuffer: Infinity}};
+    // Start a command collector
+    var cmd = [];
 
-    // Return our shell task
-    return {
-      options: shellOpts,
-      command: [nw.findpath(), path].join(' '),
-    };
+    // Normal CMDz
+    cmd.push('npm install --production');
+
+    // Add a version lock command if we are in production mode
+    if (!dev) {
+      var cpCmd = (platform === 'win32') ? 'copy' : 'cp';
+      var lockCmd = [cpCmd, 'package.json', 'version.lock'].join(' ');
+      cmd.push(lockCmd);
+    }
+
+    // Return the command as a string
+    return cmd.join(' && ');
 
   };
 
@@ -81,6 +89,27 @@ module.exports = function(common) {
   };
 
   /*
+   * Helper function to do the correct npm install
+   */
+  var guiInstallTask = function(dev) {
+
+    // "Constants"
+    var shellOpts = {
+      execOptions: {
+        cwd: 'build/gui',
+        maxBuffer: 20 * 1024 * 1024
+      }
+    };
+
+    // Return the CLI build task
+    return {
+      options: shellOpts,
+      command: npmInstallCmd(dev)
+    };
+
+  };
+
+  /*
    * Constructs the CLI PKG task
    */
   var cliPkgTask = function(dev) {
@@ -89,8 +118,6 @@ module.exports = function(common) {
     var jxBin = require('jxcore').findpath();
 
     // "Constants"
-    var platform = common.system.platform;
-    var cpCmd = (platform === 'win32') ? 'copy' : 'cp';
     var pkgName = 'kbox-' + common.kalabox.pkgType;
     var shellOpts = {
       execOptions: {
@@ -116,19 +143,10 @@ module.exports = function(common) {
       '--native'
     ].join(' ');
 
-    // NPM install command
-    var npmCmd = ['npm', 'install', '--production'].join(' ');
-
     // Start to build the command
     var cmd = [];
-    cmd.push(npmCmd);
+    cmd.push(npmInstallCmd(dev));
     cmd.push(jxCmd);
-
-    // Add a version lock command if we are in production mode
-    if (!dev) {
-      var lockCmd = [cpCmd, 'package.json', 'version.lock'].join(' ');
-      cmd.push(lockCmd);
-    }
 
     // Add executable perms on POSIX
     if (platform !== 'win32') {
@@ -148,9 +166,9 @@ module.exports = function(common) {
   return {
     batsTask: batsTask,
     cliPkgTask: cliPkgTask,
-    nwCmd: nwCmd,
-    scriptTask: scriptTask,
+    guiInstallTask: guiInstallTask,
     psTask: psTask,
+    scriptTask: scriptTask
   };
 
 };

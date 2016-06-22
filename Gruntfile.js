@@ -9,11 +9,12 @@ module.exports = function(grunt) {
   var common = require('./tasks/common.js');
 
   // Determine whether the dev flag is on or off
-  var dev = grunt.option('dev');
+  common.mode = grunt.option('dev');
 
   // Load in delegated responsibilities because cleanliness => godliness
   var frontend = require('./tasks/frontend.js')(common);
   var fs = require('./tasks/fs.js')(common);
+  var nwjs = require('./tasks/nw.js')(common);
   var shell = require('./tasks/shell.js')(common);
   var style = require('./tasks/style.js')(common);
   var unit = require('./tasks/unit.js')(common);
@@ -74,6 +75,12 @@ module.exports = function(grunt) {
     // Installs bower deps
     'bower-install-simple': frontend.bower,
 
+    // Nwjs
+    nwjs: {
+      pkg: nwjs.pkg,
+      run: nwjs.run
+    },
+
     // The `index` task compiles the `index.html` file as a Grunt template.r.
     index: {
       build: frontend.index.build
@@ -93,13 +100,13 @@ module.exports = function(grunt) {
     // Shell tasks
     shell: {
       cliBats: shell.batsTask(common.files.cliBats),
-      cliPkg: shell.cliPkgTask(dev),
+      cliPkg: shell.cliPkgTask(common.mode),
+      guiInstall: shell.guiInstallTask(common.mode),
       installerPkgosx: shell.scriptTask('./scripts/build-osx.sh'),
       installerPkglinux: shell.scriptTask('./scripts/build-linux.sh'),
       installerPkgwin32: shell.psTask('./scripts/build-win32.ps1'),
       installerosxBats: shell.batsTask(common.files.installerOsxBats),
-      installerlinuxBats: shell.batsTask(common.files.installerLinuxBats),
-      nwGui: shell.nwCmd('./build/gui')
+      installerlinuxBats: shell.batsTask(common.files.installerLinuxBats)
     },
 
     // Utility tasks
@@ -187,7 +194,21 @@ module.exports = function(grunt) {
     'concat:buildCss',
     'copy:guiBuild',
     'index:build',
-    'shell:nwGui'
+    'nwjs:run'
+  ]);
+
+  // Pkg the NWJS app
+  grunt.registerTask('pkg:gui', [
+    'test:code',
+    'clean:guiBuild',
+    'bower-install-simple:install',
+    'html2js',
+    'sass:compile',
+    'concat:buildCss',
+    'copy:guiBuild',
+    'index:build',
+    'shell:guiInstall',
+    'nwjs:pkg'
   ]);
 
   // Pkg the CLI binary

@@ -48,6 +48,21 @@ module.exports = function(common) {
       },
       gui: {
         build: {
+          options: {
+            process: function(content, srcPath) {
+              switch (srcPath) {
+                // Switch CLI entrypoint to NWJS one
+                case 'package.json':
+                  return content.replace(
+                    '"main": "lib/kbox.js"',
+                    '"main": "index.html"'
+                  );
+                // Return the same
+                default:
+                  return content;
+              }
+            }
+          },
           files: [
             {
               src: ['**'],
@@ -56,8 +71,8 @@ module.exports = function(common) {
               expand: true
             },
             {
-              src: ['package.gui.json'],
-              dest: 'build/gui/package.json'
+              src: ['package.json'],
+              dest: 'build/gui/package.json',
             },
             {
               src: ['**'],
