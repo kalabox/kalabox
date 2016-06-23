@@ -16,14 +16,20 @@ services:
 
 before_install:
 
-  # Nice dev helpers
-  - ./scripts/travis-env.sh
-
   # Install some node deps
   - npm install -g grunt-cli bower
 
   # We need sass to build the GUI
   - gem install sass
+
+  # Edit the package.json if this isn't an official release
+  - if [ -z "$TRAVIS_TAG" ]; then node ./scripts/dev-version.js; fi
+
+  # Define the travis tag as "latest-dev" if its not already defined
+  - : ${TRAVIS_TAG:=latest-dev}
+
+  # Nice dev helpers to verify our env
+  - ./scripts/travis-env.sh
 
 before_script:
 
@@ -37,6 +43,7 @@ before_script:
   - gem --version
   - bower --version
   - sass --version
+  - node bin/kbox.js version
 
 script:
 
@@ -45,12 +52,14 @@ script:
   - grunt test:unit
 
   # Run the build
-  - ./scripts/build-travis.sh
+  - mkdir -p release
+  - grunt pkg
+  - cp -rf dist/kalabox.$KBOX_PKG_TYPE release/kalabox-$TRAVIS_TAG.$KBOX_PKG_TYPE
 
 before_deploy:
 
   # Do some basic tests of our build
-  - echo "test"
+  - echo "Need to add tests still"
 
 notifications:
   irc:
@@ -64,7 +73,7 @@ deploy:
   - provider: releases
     api_key:
       secure: MDL8ub5md5MQFhcZrsX15qEJ9pJPrQ2jIzFQNergsXh3D0bEO3mNbeCcN9kI2S6chUIxpxwvoJnNXsN66ZNn3NzFVyf4QKQV6thBDFgapZN5sYk2u0QD6pyc9Q7RaRwGzqLXdRFdF0KRLPx0lH9DsA0RJ1t85vuBbUK9f/0ys1w=
-    file: prod_build/kalabox-$TRAVIS_TAG.$KBOX_PKG_TYPE
+    file: release/kalabox-$TRAVIS_TAG.$KBOX_PKG_TYPE
     skip_cleanup: true
     on:
       repo: kalabox/kalabox
@@ -74,7 +83,7 @@ deploy:
     secret_access_key:
       secure: Sr0cMoJ6ZtRSh4H6xwu/CV1pj5xaYgtE5vup80r4fDygfi5C/mFqzCOODWN928nzZHOXWkG13myhLgTztMYDkIkN+TIVP9BmHXpIqWaZsHeytrdLUJMSNsL1Dc8Ixm4kqJBqla9mRgjZaWYceDhbHFvdUZNA7s9Mr1fUUmGyYyI=
     bucket: installer.kalabox.io
-    local-dir: dev_build
+    local-dir: release
     acl: public_read
     region: us-west-2
     skip_cleanup: true

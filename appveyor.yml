@@ -21,6 +21,15 @@ install:
   # Need to do this first because it installs JX for us
   - npm install
 
+  # Edit the package.json if this isn't an official release
+  - IF NOT DEFINED APPVEYOR_REPO_TAG_NAME (node .\scripts\dev-version.js)
+
+  # Define the travis tag as "latest-dev" if its not already defined
+  - IF NOT DEFINED APPVEYOR_REPO_TAG_NAME (SET APPVEYOR_REPO_TAG_NAME=latest-dev)
+
+  # Nice dev helpers to verify our env
+  - scripts\appveyor-env.bat
+
   # Sanity checks
   - node --version
   - npm --version
@@ -31,32 +40,28 @@ install:
   - gem --version
   - bower --version
   - sass --version
+  - node bin\kbox.js version
   # Iscc has no version option and returns exit code 1 by default
   # This can never fail but at least we can check the output to verify
   - iscc | echo
-
-build_script:
-
-  # Build dev releases
-  - grunt pkg --dev
-  - mkdir dev_build
-  - copy dist\kalabox.exe dev_build\kalabox-latest-dev.exe
-
-test_script:
 
   # Run basic tests
   - grunt test:code
   - grunt test:unit
 
+build_script:
+
+  # Build dev releases
+  - grunt pkg
+  - mkdir release
+  - copy dist\kalabox.exe release\kalabox-%APPVEYOR_REPO_TAG_NAME%.exe
+
 artifacts:
-  - path: dev_build\kalabox-latest-dev.exe
-    name: development
-  #- path: prod_build/kalabox-latest-dev.exe
-  # name: production
+  - path: release\kalabox-%APPVEYOR_REPO_TAG_NAME%.exe
+    name: release
 
 after_build:
-  - ps: Get-ChildItem .\dev_build\kalabox-latest-dev.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName s3 }
-  #- ps: Get-ChildItem .\prod_build\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName github }
+  - ps: Get-ChildItem .\release\kalabox-%APPVEYOR_REPO_TAG_NAME%.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName weezer }
 deploy:
   - provider: S3
     access_key_id:
@@ -65,12 +70,12 @@ deploy:
       secure: o/pYPIuDU8SPSrTB15BwzlLrDXGuhhTJUWdWMyvDLnsAwC6uJmASPEATUX9CFIEW
     bucket: installer.kalabox.io
     region: us-west-2
-    artifact: s3
+    artifact: weezer
     on:
       branch: 1repo2ruleThemAll
   - provider: GitHub
     description: v$(KALABOX_VERSION)
-    artifact: github
+    artifact: weezer
     draft: false
     auth_token:
       secure: h95XRXK3tAJOZphssQ9dB3rpdK0y2I8VpakCR79+YwjZQOCW4YukAdCcwtBFdEoD

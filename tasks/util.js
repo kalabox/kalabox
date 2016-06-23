@@ -12,11 +12,11 @@ module.exports = function() {
   return {
     bump: {
       options: {
-        files: ['package.json', 'bower.json', 'package.gui.json'],
+        files: ['package.json', 'bower.json'],
         updateConfigs: [],
         commit: true,
         commitMessage: 'Release v%VERSION%',
-        commitFiles: ['package.json', 'bower.json', 'package.gui.json'],
+        commitFiles: ['package.json', 'bower.json'],
         createTag: true,
         tagName: 'v%VERSION%',
         tagMessage: 'Version %VERSION%',

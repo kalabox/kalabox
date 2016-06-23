@@ -1,8 +1,7 @@
 {
   "name": "Kalabox",
-  "version": "0.12.16",
+  "version": "0.13.0-unstable.1",
   "license": "N/A",
-  "private": true,
   "dependencies": {
     "angular": "~1.4.0",
     "angular-bluebird-promises": "~1.0.1",

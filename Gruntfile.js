@@ -8,9 +8,6 @@ module.exports = function(grunt) {
   // Load in common information we can use across tasks
   var common = require('./tasks/common.js');
 
-  // Determine whether the dev flag is on or off
-  common.mode = grunt.option('dev');
-
   // Load in delegated responsibilities because cleanliness => godliness
   var delta = require('./tasks/delta.js')(common);
   var frontend = require('./tasks/frontend.js')(common);
@@ -105,8 +102,8 @@ module.exports = function(grunt) {
     // Shell tasks
     shell: {
       cliBats: shell.batsTask(common.files.cliBats),
-      cliPkg: shell.cliPkgTask(common.mode),
-      guiInstall: shell.guiInstallTask(common.mode),
+      cliPkg: shell.cliPkgTask(),
+      guiInstall: shell.guiInstallTask(),
       installerPkgosx: shell.scriptTask('./scripts/build-osx.sh'),
       installerPkglinux: shell.scriptTask('./scripts/build-linux.sh'),
       installerPkgwin32: shell.psTask('./scripts/build-win32.ps1'),

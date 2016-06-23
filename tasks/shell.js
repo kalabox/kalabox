@@ -14,23 +14,10 @@ module.exports = function(common) {
   /*
    * Helper function to do the correct npm install
    */
-  var npmInstallCmd = function(dev) {
-
-    // Start a command collector
-    var cmd = [];
-
-    // Normal CMDz
-    cmd.push('npm install --production');
-
-    // Add a version lock command if we are in production mode
-    if (!dev) {
-      var cpCmd = (platform === 'win32') ? 'copy' : 'cp';
-      var lockCmd = [cpCmd, 'package.json', 'version.lock'].join(' ');
-      cmd.push(lockCmd);
-    }
+  var npmInstallCmd = function() {
 
     // Return the command as a string
-    return cmd.join(' && ');
+    return 'npm install --production'
 
   };
 
@@ -91,7 +78,7 @@ module.exports = function(common) {
   /*
    * Helper function to do the correct npm install
    */
-  var guiInstallTask = function(dev) {
+  var guiInstallTask = function() {
 
     // "Constants"
     var shellOpts = {
@@ -104,7 +91,7 @@ module.exports = function(common) {
     // Return the CLI build task
     return {
       options: shellOpts,
-      command: npmInstallCmd(dev)
+      command: npmInstallCmd()
     };
 
   };
@@ -112,7 +99,7 @@ module.exports = function(common) {
   /*
    * Constructs the CLI PKG task
    */
-  var cliPkgTask = function(dev) {
+  var cliPkgTask = function() {
 
     // Grab JXCore bin
     var jxBin = require('jxcore').findpath();
@@ -145,7 +132,7 @@ module.exports = function(common) {
 
     // Start to build the command
     var cmd = [];
-    cmd.push(npmInstallCmd(dev));
+    cmd.push(npmInstallCmd());
     cmd.push(jxCmd);
 
     // Add executable perms on POSIX
