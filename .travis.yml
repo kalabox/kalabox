@@ -20,7 +20,10 @@ before_install:
   - ./scripts/travis-env.sh
 
   # Install some node deps
-  - npm install -g grunt-cli
+  - npm install -g grunt-cli bower
+
+  # We need sass to build the GUI
+  - gem install sass
 
 before_script:
 
@@ -32,6 +35,8 @@ before_script:
   - node_modules/jxcore/bin/jx --jxversion
   - ruby --version
   - gem --version
+  - bower --version
+  - sass --version
 
 script:
 

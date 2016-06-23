@@ -5,11 +5,10 @@ set -x
 set -e
 
 # Check to see that we have the correct dependencies
-if [ ! $(type -p fpm) ] || [ ! $(type -p alien) ] || [ ! $(type -p sass) ]; then
+if [ ! $(type -p fpm) ] || [ ! $(type -p alien) ]; then
   echo "You do not have the correct dependencies installed to build Kalabox. Trying to install them..."
   sudo ./scripts/install-deps.sh
   gem install --verbose fpm || sudo gem install --verbose fpm
-  gem install --verbose sass || sudo gem install sass --verbose fpm
 fi
 
 # Kalabox things
