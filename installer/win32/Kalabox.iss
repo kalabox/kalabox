@@ -8,7 +8,7 @@
 #define b2dIsoPath "bundle\boot2docker.iso"
 #define kalaboxCli "bundle\kbox.exe"
 #define kalaboxDocs "docs"
-#define kalaboxGui "bundle\kalabox-ui\Kalabox"
+#define kalaboxGui "bundle"
 #define kboxIco "kalabox.ico"
 #define git "bundle\Git.exe"
 #define virtualBoxCommon "bundle\common.cab"

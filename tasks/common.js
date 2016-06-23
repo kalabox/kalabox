@@ -6,18 +6,16 @@
  */
 
 // Grab needed dataz
-var os = require('os');
 var pkg = require('./../package.json');
 
 // System info
 var system = {
-  platform: (process.platform !== 'darwin') ? process.platform : 'osx',
-  arch: os.arch(),
+  platform: (process.platform !== 'darwin') ? process.platform : 'osx'
 };
 
 // Kalabox info
 var version = pkg.version;
-var pkgType = [system.platform, system.arch, 'v' + version].join('-');
+var pkgType = [system.platform, 'x64', 'v' + version].join('-');
 var pkgExt = (system.platform === 'win32') ? '.exe' : '';
 var pkgSuffix = pkgType + pkgExt;
 
