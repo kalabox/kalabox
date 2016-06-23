@@ -17,7 +17,7 @@ module.exports = function(common) {
   var npmInstallCmd = function() {
 
     // Return the command as a string
-    return 'npm install --production'
+    return 'npm install --production';
 
   };
 
