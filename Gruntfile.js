@@ -186,12 +186,17 @@ module.exports = function(grunt) {
   ]);
 
   // Build the installer
+  //
+  // @NOTE: for reasons that make me want to stab my eyes out with a fucking
+  // spoon, you need to grun pkg:gui BEFORE pkg:cli or sass:compile will
+  // hang on Windows. THOU HATH BEEN WARNED.
+  //
   grunt.registerTask('pkg', [
     'clean:installerBuild',
     'clean:installerDist',
     'copy:installerBuild',
-    'pkg:cli',
     'pkg:gui',
+    'pkg:cli',
     'shell:installerPkg' + common.system.platform,
     'copy:installerDist'
   ]);

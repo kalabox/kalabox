@@ -28,7 +28,7 @@ before_script:
   - if [ -z "$TRAVIS_TAG" ]; then node ./scripts/dev-version.js; fi
 
   # Define the travis tag as "latest-dev" if its not already defined
-  - if [ -z "$TRAVIS_TAG" ]; TRAVIS_TAG=latest-dev; fi
+  - if [ -z "$TRAVIS_TAG" ]; then export TRAVIS_TAG=latest-dev; fi
 
   # Nice dev helpers to verify our env
   - ./scripts/travis-env.sh
