@@ -54,14 +54,17 @@ build_script:
   # Build dev releases
   - grunt pkg
   - mkdir release
-  - copy dist\kalabox.exe release\kalabox-%APPVEYOR_REPO_TAG_NAME%.exe
+  - copy "dist\kalabox.exe" "release\kalabox-%APPVEYOR_REPO_TAG_NAME%.exe"
+  - cd release
+  - dir
+  - cd ..
 
 artifacts:
-  - path: release\kalabox-%APPVEYOR_REPO_TAG_NAME%.exe
+  - path: release\*.exe
     name: release
 
 after_build:
-  - ps: Get-ChildItem .\release\kalabox-%APPVEYOR_REPO_TAG_NAME%.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName weezer }
+  - ps: Get-ChildItem .\release\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName weezer }
 deploy:
   - provider: S3
     access_key_id:
