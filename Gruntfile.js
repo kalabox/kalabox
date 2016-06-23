@@ -12,6 +12,7 @@ module.exports = function(grunt) {
   common.mode = grunt.option('dev');
 
   // Load in delegated responsibilities because cleanliness => godliness
+  var delta = require('./tasks/delta.js')(common);
   var frontend = require('./tasks/frontend.js')(common);
   var fs = require('./tasks/fs.js')(common);
   var nwjs = require('./tasks/nw.js')(common);
@@ -92,6 +93,9 @@ module.exports = function(grunt) {
       common: frontend.html2js.common
     },
 
+    // And now our watch has started
+    watch: delta,
+
     // Sassify
     sass: {
       compile: frontend.sass.compile
@@ -147,6 +151,51 @@ module.exports = function(grunt) {
     });
   });
 
+  // Build the gui
+  // NOTE: doesnt really do anything, just a common task
+  grunt.registerTask('gui:build', [
+    'test:code',
+    'clean:guiBuild',
+    'bower-install-simple:install',
+    'html2js',
+    'sass:compile',
+    'concat:buildCss',
+    'copy:guiBuild',
+    'index:build'
+  ]);
+
+  // Run the gui from source
+  grunt.registerTask('gui', [
+    'gui:build',
+    'nwjs:run'
+  ]);
+
+  // Pkg the NWJS app
+  grunt.registerTask('pkg:gui', [
+    'gui:build',
+    'shell:guiInstall',
+    'nwjs:pkg'
+  ]);
+
+  // Pkg the CLI binary
+  grunt.registerTask('pkg:cli', [
+    'clean:cliBuild',
+    'clean:cliDist',
+    'copy:cliBuild',
+    'shell:cliPkg',
+    'copy:cliDist'
+  ]);
+
+  // Build the installer
+  grunt.registerTask('pkg', [
+    'clean:installerBuild',
+    'clean:installerDist',
+    'copy:installerBuild',
+    'pkg:cli',
+    'shell:installerPkg' + common.system.platform,
+    'copy:installerDist'
+  ]);
+
   // Check Linting, standards and styles
   grunt.registerTask('test:code', [
     'jshint',
@@ -182,52 +231,6 @@ module.exports = function(grunt) {
   // Do a prerelease version
   grunt.registerTask('prerelease', [
     'bump:prerelease'
-  ]);
-
-  // Run the gui from source
-  grunt.registerTask('gui', [
-    'test:code',
-    'clean:guiBuild',
-    'bower-install-simple:install',
-    'html2js',
-    'sass:compile',
-    'concat:buildCss',
-    'copy:guiBuild',
-    'index:build',
-    'nwjs:run'
-  ]);
-
-  // Pkg the NWJS app
-  grunt.registerTask('pkg:gui', [
-    'test:code',
-    'clean:guiBuild',
-    'bower-install-simple:install',
-    'html2js',
-    'sass:compile',
-    'concat:buildCss',
-    'copy:guiBuild',
-    'index:build',
-    'shell:guiInstall',
-    'nwjs:pkg'
-  ]);
-
-  // Pkg the CLI binary
-  grunt.registerTask('pkg:cli', [
-    'clean:cliBuild',
-    'clean:cliDist',
-    'copy:cliBuild',
-    'shell:cliPkg',
-    'copy:cliDist'
-  ]);
-
-  // Build the installer
-  grunt.registerTask('pkg', [
-    'clean:installerBuild',
-    'clean:installerDist',
-    'copy:installerBuild',
-    'pkg:cli',
-    'shell:installerPkg' + common.system.platform,
-    'copy:installerDist'
   ]);
 
 };

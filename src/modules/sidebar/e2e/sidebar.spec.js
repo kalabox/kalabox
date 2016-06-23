@@ -3,7 +3,7 @@
 var EC = protractor.ExpectedConditions;
 var username = process.env.PANTHEON_USER;
 var password = process.env.PANTHEON_PASSWORD;
-var util = require('./sidebar.util.js');
+var util = require('./sidebar.util.spec.js');
 
 describe('sidebar module tests', function() {
 

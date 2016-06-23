@@ -101,7 +101,6 @@
     "grunt-jsdoc": "^0.5.7",
     "grunt-mocha-cli": "^2.0.0",
     "grunt-nwjs-builder": "kalabox/grunt-nwjs-builder.git",
-    "grunt-protractor-runner": "^3.2.0",
     "grunt-shell": "^1.1.1",
     "jshint-stylish": "~1.0.0",
     "jxcore": "file:./modules/jxcore",
@@ -111,6 +110,7 @@
     "randomstring": "^1.0.5",
     "regenerator": "^0.8.42",
     "rewire": "^2.1.0",
-    "sinon": "^1.10.3"
+    "sinon": "^1.10.3",
+    "unzip": "^0.1.11"
   }
 }

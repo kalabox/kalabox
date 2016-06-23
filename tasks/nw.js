@@ -35,7 +35,7 @@ module.exports = function() {
     run: {
       src: ['./build/gui'],
       options: {
-        version: '0.14.5-sdk',
+        version: '0.14.6-sdk',
         run: true,
         winIco: './installer/win32/kalabox.ico',
         macIcns: './installer/osx/kalabox.icns'
@@ -44,7 +44,7 @@ module.exports = function() {
     pkg: {
       src: ['./build/gui'],
       options: {
-        version: '0.14.5',
+        version: '0.14.6',
         outputDir: './dist/gui',
         outputName: 'kalabox-ui',
         executableName: 'Kalabox',
