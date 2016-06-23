@@ -5,17 +5,18 @@ set -x
 set -e
 
 # Check to see that we have the correct dependencies
-if [ ! $(type -p fpm) ] || [ ! $(type -p alien) ]; then
+if [ ! $(type -p fpm) ] || [ ! $(type -p alien) ] || [ ! $(type -p sass) ]; then
   echo "You do not have the correct dependencies installed to build Kalabox. Trying to install them..."
   sudo ./scripts/install-deps.sh
   gem install --verbose fpm || sudo gem install --verbose fpm
+  gem install --verbose sass || sudo gem install sass --verbose fpm
 fi
 
 # Kalabox things
 KBOX_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat package.json)")
 INSTALLER_VERSION="$KBOX_VERSION"
 KALABOX_CLI_VERSION="$KBOX_VERSION"
-KALABOX_GUI_VERSION="0.12.16"
+KALABOX_GUI_VERSION="$KBOX_VERSION"
 KALABOX_IMAGE_VERSION="v0.12"
 
 # Docker things
@@ -28,11 +29,10 @@ cd build/installer/pkg
 
 # Get our Kalabox dependencies
 cp -rf "../../../dist/cli/kbox-linux-x64-v${KALABOX_CLI_VERSION}" kbox
-curl -fsSL -o kalabox-ui.tar.gz "https://github.com/kalabox/kalabox-ui/releases/download/v$KALABOX_GUI_VERSION/kalabox-ui-linux64-v$KALABOX_GUI_VERSION.tar.gz" && \
-  tar -xzvf kalabox-ui.tar.gz && \
-  rm kalabox-ui.tar.gz
+cp -rf "../../../dist/gui/kalabox-ui" gui
 curl -fsSL -o services.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$KALABOX_IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
 chmod +x kbox
+chmod 755 -Rv gui
 
 # Get our Docker dependencies
 curl -fsSL -o docker "https://get.docker.com/builds/Linux/x86_64/docker-$DOCKER_ENGINE_VERSION"
@@ -46,7 +46,7 @@ curl -fsSL -o dns.rpm "https://github.com/azukiapp/libnss-resolver/releases/down
   mkdir -p dns/rpm/data && mkdir -p dns/rpm/control && cd dns/rpm && \
   ar x ./../../libnss-resolver_0.3.0-2_amd64.deb && \
   tar -xzvf control.tar.gz -C control && \
-  tar -xvf data.tar.gz -C data && \
+  tar -xvf data.tar.gz -C data || tar -xvf data.tar.xz -C data && \
   cd ../.. && \
   rm -f libnss-resolver_0.3.0-2_amd64.deb && \
   rm -f dns.rpm
@@ -72,6 +72,5 @@ mkdir -p pkg/docs && mkdir -p dist && \
 
 # Build our two packages
 cd ../..
-ls -lsa
 ./scripts/build-pkg.sh deb $INSTALLER_VERSION
 ./scripts/build-pkg.sh rpm $INSTALLER_VERSION

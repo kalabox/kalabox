@@ -23,7 +23,7 @@ $inno_bin = "C:\Program Files (x86)\Inno Setup 5\ISCC.exe"
 $kbox_pkg = Get-Content "package.json" | Out-String | ConvertFrom-Json
 $installer_version = $kbox_pkg.version
 $kbox_cli_version = $kbox_pkg.version
-$kbox_gui_version = "0.12.16"
+$kbox_gui_version = $kbox_pkg.version
 $kbox_image_version = "v0.12"
 
 # Docekr version information
@@ -87,7 +87,7 @@ Write-Output "Grabbing the files we need..."
 
 # Kalabox things
 Copy-Item "dist\cli\kbox-win32-x64-v$kbox_cli_version.exe" "$bundle_dir\kbox.exe" -force
-Download -Url "https://github.com/kalabox/kalabox-ui/releases/download/v$kbox_gui_version/kalabox-ui-win64-v$kbox_gui_version.zip" -Destination "$temp_dir\kalabox-ui.zip"
+Copy-Item "dist\gui\kalabox-ui" "$bundle_dir" -force
 Download -Url "https://raw.githubusercontent.com/kalabox/kalabox-cli/$kbox_image_version/plugins/kalabox-sharing/kalabox-compose.yml" -Destination "$bundle_dir\syncthing.yml"
 Download -Url "https://raw.githubusercontent.com/kalabox/kalabox-cli/$kbox_image_version/plugins/kalabox-services-kalabox/kalabox-compose.yml" -Destination "$bundle_dir\services.yml"
 
@@ -108,7 +108,6 @@ Download -Url "https://github.com/git-for-windows/git/releases/download/v$git_ve
 
 # Do some needed unpacking
 Write-Output "Unpacking..."
-Unzip -File "$temp_dir\kalabox-ui.zip" -Destination "$bundle_dir\kalabox-ui"
 Start-Process -Wait "$temp_dir\virtualbox.exe" -ArgumentList "-extract -silent -path $temp_dir"
 Unzip -File "$temp_dir\syncthing.zip" -Destination "$temp_dir"
 Copy-Item "$temp_dir\VirtualBox-$virtualbox_version-r$virtualbox_revision-MultiArch_amd64.msi" "$bundle_dir\VirtualBox_amd64.msi" -force

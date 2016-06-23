@@ -33,7 +33,7 @@ fpm -s dir -t $PKG_TYPE \
   init/upstart/kalabox.conf=/etc/init/kalabox.conf \
   init/sysv/kalabox=/etc/init.d/kalabox \
   init/systemd/kalabox.service=/lib/systemd/system/kalabox.service \
-  Kalabox=/usr/share/kalabox/gui \
+  gui=/usr/share/kalabox \
   docker-compose=/usr/share/kalabox/bin/docker-compose \
   docker=/usr/share/kalabox/bin/docker \
   kbox=/usr/local/bin/kbox \
