@@ -14,7 +14,8 @@ install:
   - set PATH=%PATH%;"C:\Program Files (x86)\Inno Setup 5"
 
   # install relevant things
-  - npm install -g grunt-cli
+  - npm install -g grunt-cli bower
+  - gem install sass
 
   # Build the things
   # Need to do this first because it installs JX for us
@@ -26,6 +27,10 @@ install:
   - grunt --version
   - cmd: node_modules\jxcore\bin\jx.exe --version
   - cmd: node_modules\jxcore\bin\jx.exe --jxversion
+  - ruby --version
+  - gem --version
+  - bower --version
+  - sass --version
   # Iscc has no version option and returns exit code 1 by default
   # This can never fail but at least we can check the output to verify
   - iscc | echo
