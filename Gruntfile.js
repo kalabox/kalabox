@@ -66,6 +66,7 @@ module.exports = function(grunt) {
       cliBuild: fs.clean.cli.build,
       cliDist: fs.clean.cli.dist,
       guiBuild: fs.clean.gui.build,
+      guiDist: fs.clean.gui.dist,
       installerBuild: fs.clean.installer.build,
       installerDist: fs.clean.installer.dist
     },
@@ -172,6 +173,7 @@ module.exports = function(grunt) {
 
   // Pkg the NWJS app
   grunt.registerTask('pkg:gui', [
+    'clean:guiDist',
     'gui:build',
     'shell:guiInstall',
     'nwjs:pkg'
@@ -192,6 +194,7 @@ module.exports = function(grunt) {
     'clean:installerDist',
     'copy:installerBuild',
     'pkg:cli',
+    'pkg:gui',
     'shell:installerPkg' + common.system.platform,
     'copy:installerDist'
   ]);

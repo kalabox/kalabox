@@ -7,7 +7,7 @@ set -xe
 KBOX_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat package.json)")
 INSTALLER_VERSION="$KBOX_VERSION"
 KALABOX_CLI_VERSION="$KBOX_VERSION"
-KALABOX_GUI_VERSION="0.12.16"
+KALABOX_GUI_VERSION="$KBOX_VERSION"
 KALABOX_IMAGE_VERSION="v0.12"
 
 # Docker things
@@ -28,10 +28,7 @@ cd build/installer
 
 # Get our Kalabox dependencies
 cp -rf "../../dist/cli/kbox-osx-x64-v${KALABOX_CLI_VERSION}" kbox
-curl -fsSL -o /tmp/kalabox-gui.tar.gz "https://github.com/kalabox/kalabox-ui/releases/download/v$KALABOX_GUI_VERSION/kalabox-ui-osx64-v$KALABOX_GUI_VERSION.tar.gz" && \
-  tar -xzf /tmp/kalabox-gui.tar.gz && \
-  cp -rf Kalabox/Kalabox.app Kalabox.app && \
-  rm -rf Kalabox
+cp -rf "../../dist/gui/kalabox-ui/Kalabox.app" Kalabox.app
 curl -fsSL -o services.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$KALABOX_IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
 curl -fsSL -o syncthing.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$KALABOX_IMAGE_VERSION/plugins/kalabox-sharing/kalabox-compose.yml"
 chmod +x kbox
