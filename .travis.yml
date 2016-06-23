@@ -22,6 +22,8 @@ before_install:
   # We need sass to build the GUI
   - gem install sass
 
+before_script:
+
   # Edit the package.json if this isn't an official release
   - if [ -z "$TRAVIS_TAG" ]; then node ./scripts/dev-version.js; fi
 
@@ -30,8 +32,6 @@ before_install:
 
   # Nice dev helpers to verify our env
   - ./scripts/travis-env.sh
-
-before_script:
 
   # Sanity checks
   - node --version
