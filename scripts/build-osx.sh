@@ -260,5 +260,10 @@ mkdir -p dmg && mkdir -p dist && cd mpkg && \
   cp -rf ../../TERMS.md dmg/TERMS.md && \
   cp -rf ../../LICENSE.md dmg/LICENSE.md && \
   cp -rf ../../ORACLE_VIRTUALBOX_LICENSE dmg/ORACLE_VIRTUALBOX_LICENSE && \
-  cp -rf ../../SYNCTHING_LICENSE dmg/SYNCTHING_LICENSE && \
-  hdiutil create -volname Kalabox -srcfolder dmg -ov -format UDZO dist/kalabox.dmg
+  cp -rf ../../SYNCTHING_LICENSE dmg/SYNCTHING_LICENSE
+
+# This seems to fail on travis periodically so lets add a retry to it
+NEXT_WAIT_TIME=0
+until hdiutil create -volname Kalabox -srcfolder dmg -ov -format UDZO dist/kalabox.dmg || [ $NEXT_WAIT_TIME -eq 5 ]; do
+  sleep $(( NEXT_WAIT_TIME++ ))
+done
