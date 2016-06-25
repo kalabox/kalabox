@@ -39,10 +39,6 @@ uninstall() {
   echo "Removing kalabox binaries..."
   rm -f /usr/local/bin/kbox
 
-  echo "Removing syncthing binaries and files..."
-  rm -f "${CONSOLE_USER_HOME}"/.kalabox/bin/syncthing
-  rm -rf "${CONSOLE_USER_HOME}"/.kalabox/syncthing
-
   echo "Removing services files..."
   rm -rf "${CONSOLE_USER_HOME}"/.kalabox/services
 

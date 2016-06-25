@@ -19,9 +19,6 @@ BOOT2DOCKER_ISO_VERSION="1.11.2"
 VBOX_VERSION="5.0.20"
 VBOX_REVISION="106931"
 
-# Syncthing things
-SYNCTHING_VERSION="0.11.26"
-
 # Start up our build directory and go into it
 mkdir -p build/installer
 cd build/installer
@@ -30,7 +27,6 @@ cd build/installer
 cp -rf "../../dist/cli/kbox-osx-x64-v${KALABOX_CLI_VERSION}" kbox
 cp -rf "../../dist/gui/kalabox-ui/Kalabox.app" Kalabox.app
 curl -fsSL -o services.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$KALABOX_IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
-curl -fsSL -o syncthing.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$KALABOX_IMAGE_VERSION/plugins/kalabox-sharing/kalabox-compose.yml"
 chmod +x kbox
 
 # Get our Docker dependencies
@@ -50,14 +46,6 @@ curl -fsSL -o vbox.dmg "http://download.virtualbox.org/virtualbox/$VBOX_VERSION/
   rm -f vbox.dmg && \
   rm -rf Resources && \
   mv *.pkg mpkg/
-
-# Download the syncthing parts
-curl -fsSL -o config.xml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$KALABOX_IMAGE_VERSION/plugins/kalabox-sharing/dockerfiles/syncthing/config.xml"
-curl -fsSL -o /tmp/syncthing.tar.gz "http://archive.syncthing.net/v$SYNCTHING_VERSION/syncthing-macosx-amd64-v$SYNCTHING_VERSION.tar.gz" && \
-  tar -xzvf /tmp/syncthing.tar.gz && \
-  chmod +x syncthing-macosx-amd64-v$SYNCTHING_VERSION/syncthing && \
-  cp -rf syncthing-macosx-amd64-v$SYNCTHING_VERSION/syncthing syncthing && \
-  rm -rf syncthing-macosx-amd64-v$SYNCTHING_VERSION
 
 # Add dockermachine.pkg
 cd mpkg/dockermachine.pkg && \
@@ -153,7 +141,6 @@ cd mpkg/services.pkg && \
   mkdir ./rootfs && \
   cd ./rootfs && \
   mkdir -p tmp && \
-  mv ../../../syncthing.yml tmp/ && \
   mv ../../../services.yml tmp/ && \
   ls -al tmp/ && \
   find . | cpio -o --format odc | gzip -c > ../Payload && \
@@ -214,31 +201,6 @@ cd mpkg/kbox-gui.pkg && \
   rm -rf rootfs && \
   cd ../..
 
-# syncthing.pkg
-cd mpkg/syncthing.pkg && \
-  cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
-  rm -r Scripts && mv Scripts.bin Scripts && \
-  mkdir rootfs && \
-  cd rootfs && \
-  mkdir -p tmp && \
-  mv ../../../syncthing tmp/ && \
-  mv ../../../config.xml tmp/ && \
-  ls -al tmp/ && \
-  find . | cpio -o --format odc | gzip -c > ../Payload && \
-  mkbom . ../Bom && \
-  sed -i "" \
-    -e "s/%SYNCTHING_NUMBER_OF_FILES%/`find . | wc -l`/g" \
-    ../PackageInfo && \
-  sed -i "" \
-    -e "s/%SYNCTHING_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
-    ../PackageInfo ../../Distribution && \
-  sed -i "" \
-    -e "s/%SYNCTHING_VERSION%/$SYNCTHING_VERSION/g" \
-    ../PackageInfo ../../Distribution && \
-  cd .. && \
-  rm -rf rootfs && \
-  cd ../..
-
 # Add in more version info
 sed -i "" -e "s/%INSTALLER_VERSION%/$INSTALLER_VERSION/g" mpkg/Resources/en.lproj/welcome.rtfd/TXT.rtf mpkg/Distribution
 sed -i "" -e "s/%VBOX_VERSION%/$VBOX_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings mpkg/Distribution
@@ -259,8 +221,7 @@ mkdir -p dmg && mkdir -p dist && cd mpkg && \
   cp -rf ../../README.md dmg/README.md && \
   cp -rf ../../TERMS.md dmg/TERMS.md && \
   cp -rf ../../LICENSE.md dmg/LICENSE.md && \
-  cp -rf ../../ORACLE_VIRTUALBOX_LICENSE dmg/ORACLE_VIRTUALBOX_LICENSE && \
-  cp -rf ../../SYNCTHING_LICENSE dmg/SYNCTHING_LICENSE
+  cp -rf ../../ORACLE_VIRTUALBOX_LICENSE dmg/ORACLE_VIRTUALBOX_LICENSE
 
 # This seems to fail on travis periodically so lets add a retry to it
 NEXT_WAIT_TIME=0

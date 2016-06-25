@@ -38,9 +38,6 @@ $virtualbox_revision = "106931"
 # Git version information
 $git_version ="2.7.0"
 
-# Syncthing version information
-$syncthing_version = "0.11.26"
-
 # Unzip helper
 function Unzip($file, $destination)
 {
@@ -88,7 +85,6 @@ Write-Output "Grabbing the files we need..."
 # Kalabox things
 Copy-Item "dist\cli\kbox-win32-x64-v$kbox_cli_version.exe" "$bundle_dir\kbox.exe" -force
 Copy-Item "dist\gui\kalabox-ui" "$bundle_dir" -force
-Download -Url "https://raw.githubusercontent.com/kalabox/kalabox-cli/$kbox_image_version/plugins/kalabox-sharing/kalabox-compose.yml" -Destination "$bundle_dir\syncthing.yml"
 Download -Url "https://raw.githubusercontent.com/kalabox/kalabox-cli/$kbox_image_version/plugins/kalabox-services-kalabox/kalabox-compose.yml" -Destination "$bundle_dir\services.yml"
 
 # Docker things
@@ -99,20 +95,14 @@ Download -Url "https://github.com/boot2docker/boot2docker/releases/download/v$bo
 # Virtualbox
 Download -Url "http://download.virtualbox.org/virtualbox/$virtualbox_version/VirtualBox-$virtualbox_version-$virtualbox_revision-Win.exe" -Destination "$temp_dir\virtualbox.exe"
 
-# Syncthing
-Download -Url "https://raw.githubusercontent.com/kalabox/kalabox-cli/$kbox_image_version/plugins/kalabox-sharing/dockerfiles/syncthing/config.xml" -Destination "$bundle_dir\config.xml"
-Download -Url "http://archive.syncthing.net/v$syncthing_version/syncthing-windows-amd64-v$syncthing_version.zip" -Destination "$temp_dir\syncthing.zip"
-
 # Git
 Download -Url "https://github.com/git-for-windows/git/releases/download/v$git_version.windows.1/Git-$git_version-64-bit.exe" -Destination "$bundle_dir\Git.exe"
 
 # Do some needed unpacking
 Write-Output "Unpacking..."
 Start-Process -Wait "$temp_dir\virtualbox.exe" -ArgumentList "-extract -silent -path $temp_dir"
-Unzip -File "$temp_dir\syncthing.zip" -Destination "$temp_dir"
 Copy-Item "$temp_dir\VirtualBox-$virtualbox_version-r$virtualbox_revision-MultiArch_amd64.msi" "$bundle_dir\VirtualBox_amd64.msi" -force
 Copy-Item "$temp_dir\common.cab" "$bundle_dir\common.cab" -force
-Copy-Item "$temp_dir\syncthing-windows-amd64-v$syncthing_version\syncthing.exe" "$bundle_dir\syncthing.exe" -force
 
 # Copy over some other assets
 Write-Output "Copying over static assets..."
@@ -121,7 +111,6 @@ Copy-Item "$pwd\README.md" "$docs_dir\README.md" -force
 Copy-Item "$pwd\TERMS.md" "$docs_dir\TERMS.md" -force
 Copy-Item "$pwd\LICENSE.md" "$docs_dir\LICENSE.md" -force
 Copy-Item "$pwd\ORACLE_VIRTUALBOX_LICENSE" "$docs_dir\ORACLE_VIRTUALBOX_LICENSE" -force
-Copy-Item "$pwd\SYNCTHING_LICENSE" "$docs_dir\SYNCTHING_LICENSE" -force
 
 # Create our inno-installer
 Write-Output "Creating our package..."

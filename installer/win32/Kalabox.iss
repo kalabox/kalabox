@@ -13,8 +13,6 @@
 #define git "bundle\Git.exe"
 #define virtualBoxCommon "bundle\common.cab"
 #define virtualBoxMsi "bundle\VirtualBox_amd64.msi"
-#define syncthingCli "bundle\syncthing.exe"
-#define syncthingConfig "bundle\config.xml"
 #define engineSetup "engine.bat"
 #define servicesSetup "services.bat"
 #define dnsSetup "dns.bat"
@@ -88,8 +86,6 @@ Source: "{#kalaboxGui}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 Source: "{#kalaboxDocs}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: "KalaboxGUI"
 Source: "{#git}"; DestDir: "{app}\installers\git"; DestName: "git.exe"; AfterInstall: RunInstallGit();  Components: "Git"
 Source: "{#kboxIco}"; DestDir: "{app}"; DestName: "kalabox.ico"; Components: "KalaboxGUI"
-Source: "{#syncthingCli}"; DestDir: "{userdocs}\..\.kalabox\bin"; Components: "KalaboxCLI"
-Source: "{#syncthingConfig}"; DestDir: "{userdocs}\..\.kalabox\syncthing"; Components: "KalaboxCLI"
 
 [Icons]
 Name: "{userprograms}\Kalabox"; WorkingDir: "{app}"; Filename: "{app}\kalabox.exe"; Components: "KalaboxGUI"; IconFilename: "{app}\kalabox.ico"

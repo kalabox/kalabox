@@ -24,13 +24,6 @@ Oracle VirtualBox – A powerful virtualization product for enterprise as well a
 
 Oracle VirtualBox is licensed under GPL 2.0 license. See [ORACLE VIRTUALBOX LICENSE](https://github.com/docker/toolbox/blob/master/LICENSE/ORACLE_VIRTUALBOX_LICENSE) for the full license text.
 
-Syncthing - This is the Syncthing project which pursues the following goals:
-Define a protocol for synchronization of a folder between a number of collaborating devices. This protocol should be well defined, unambiguous, easily understood, free to use, efficient, secure and language neutral. This is called the Block Exchange Protocol.
-Provide the reference implementation to demonstrate the usability of said protocol. This is the syncthing utility. We hope that alternative, compatible implementations of the protocol will arise.
-The two are evolving together; the protocol is not to be considered stable until Syncthing 1.0 is released, at which point it is locked down for incompatible changes.
-
-Syncthing is licensed under Mozilla Public License Version 2.0. See [SYNCTHING LICENSE](https://github.com/docker/toolbox/blob/master/LICENSE/SYNCTHING_LICENSE) for the full license text.
-
 ## Privacy Notices
 
 The Software automatically communicates with to send error reports and collect usage data so we may improve the Software. You may opt out of sending the usage data and error reports by following instructions provided in relevant Software documentation.
