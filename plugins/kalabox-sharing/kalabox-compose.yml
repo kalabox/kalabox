@@ -1,25 +1,25 @@
 #
-# Basic dns service.
+# unison service.
 #
-# This is a small alpine linux container that contains syncthing
+# This is a small unison container to help work around file sharing issues
+# on OSX and WINDOWS
 #
-syncthing:
+unison:
+
   # Comment this and uncomment 'build' below if you want to edit your
   # local dockerfile and build from there. This is useful for development
-  image: kalabox/syncthing:stable
+  # image: kalabox/unison:stable
 
   # Uncomment this and comment 'image' above if you want to edit your
   # local dockerfile and build from there. This is useful for development
   #
-  # build: ./dockerfiles/syncthing
-
+  build: dockerfiles/unison
   restart: always
+  environment:
+    UNISON_WEBROOT: $KALABOX_SHARING_WEBROOT
+    UNISON_CODEROOT: $KALABOX_SHARING_CODEROOT
+    UNISON_OPTIONS: $KALABOX_SHARING_OPTIONS
   volumes:
-    - /config
-    - /var/lib/docker/code:/code
-    - $KALABOX_ENGINE_HOME:/src
-  ports:
-    - "$KALABOX_ENGINE_IP:60008:60008/tcp"
-    - "$KALABOX_ENGINE_IP:22000:22000/tcp"
-    - "$KALABOX_ENGINE_IP:21025:21025/udp"
-    - "$KALABOX_ENGINE_IP:21026:21026/udp"
+    - $KALABOX_APP_ROOT_BIND:/src
+  volumes_from:
+    - $KALABOX_SHARING_VOLUME_FROM

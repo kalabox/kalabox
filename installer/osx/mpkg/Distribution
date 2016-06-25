@@ -12,7 +12,6 @@
         <line choice="choiceKboxServices"/>
         <line choice="choiceKboxCLI"/>
         <line choice="choiceKboxGUI"/>
-        <line choice="choiceSyncthingCLI"/>
     </choices-outline>
     <choice id="choiceDockerComposeCLI" title="choiceDockerComposeCLI_title" description="choiceDockerComposeCLI_msg" start_selected="true" start_enabled="false" start_visible="true">
         <pkg-ref id="io.docker.pkg.dockercompose"/>
@@ -82,13 +81,6 @@
     </choice>
     <pkg-ref id="io.kalabox.pkg.kalabox" auth="Root" version="%KBOXGUI_VERSION%" installKBytes="%KBOXGUI_INSTALL_KBYTES%">#kbox-gui.pkg</pkg-ref>
     <pkg-ref id="io.kalabox.pkg.kalabox">
-        <bundle-version/>
-    </pkg-ref>
-    <choice id="choiceSyncthingCLI" title="choiceSyncthingCLI_title" description="choiceSyncthingCLI_msg" start_selected="true" start_enabled="false" start_visible="true">
-        <pkg-ref id="io.kalabox.pkg.syncthing"/>
-    </choice>
-    <pkg-ref id="io.kalabox.pkg.syncthing" auth="Root" version="%SYNCTHING_VERSION%" installKBytes="%SYNCTHING_INSTALL_KBYTES%">#syncthing.pkg</pkg-ref>
-    <pkg-ref id="io.kalabox.pkg.syncthing">
         <bundle-version/>
     </pkg-ref>
 

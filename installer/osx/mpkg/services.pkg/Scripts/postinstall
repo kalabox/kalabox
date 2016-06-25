@@ -7,12 +7,10 @@ unset DYLD_LIBRARY_PATH
 unset LD_LIBRARY_PATH
 
 # Fix permissions on binaries
-chown -R $CONSOLE_USER:admin /tmp/syncthing.yml || true
 chown -R $CONSOLE_USER:admin /tmp/services.yml || true
 
 # Move docker binaries to correct location
 mkdir -p $CONSOLE_USER_HOME/.kalabox/services
-mv -f /tmp/syncthing.yml $CONSOLE_USER_HOME/.kalabox/services/syncthing.yml
 mv -f /tmp/services.yml $CONSOLE_USER_HOME/.kalabox/services/services.yml
 
 chown -R $CONSOLE_USER:staff $CONSOLE_USER_HOME/.kalabox
@@ -45,7 +43,6 @@ sudo -u "${CONSOLE_USER}" \
   "${DOCKER_COMPOSE}" \
   -p kalabox \
   -f $CONSOLE_USER_HOME/.kalabox/services/services.yml \
-  -f $CONSOLE_USER_HOME/.kalabox/services/syncthing.yml \
   up \
   -d \
   --force-recreate

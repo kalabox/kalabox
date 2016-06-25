@@ -38,7 +38,6 @@ SET KALABOX_ENGINE_IP=%KALABOX_IP%
 "%DOCKER_COMPOSE%" ^
   -p kalabox ^
   -f "%USERPROFILE%"/.kalabox/services/services.yml ^
-  -f "%USERPROFILE%"/.kalabox/services/syncthing.yml ^
   up ^
   -d ^
   --force-recreate
