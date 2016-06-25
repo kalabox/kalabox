@@ -25,7 +25,7 @@ module.exports = function(kbox) {
 
     return {
       unison: {
-        image: 'unison:test',
+        image: 'kalabox/unison:stable',
         restart: 'always',
         environment: {
           'UNISON_WEBROOT': webRoot,

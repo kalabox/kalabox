@@ -55,9 +55,6 @@ build_script:
   - grunt pkg
   - mkdir release
   - copy "dist\kalabox.exe" "release\kalabox-%APPVEYOR_REPO_TAG_NAME%.exe"
-  - cd release
-  - dir
-  - cd ..
 
 artifacts:
   - path: release\*.exe
@@ -66,16 +63,6 @@ artifacts:
 after_build:
   - ps: Get-ChildItem .\release\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName weezer }
 deploy:
-  - provider: S3
-    access_key_id:
-      secure: t16g2geIvu5qJVSiPzqxzUnk4+p9X1psf6e8RmUJPDk=
-    secret_access_key:
-      secure: o/pYPIuDU8SPSrTB15BwzlLrDXGuhhTJUWdWMyvDLnsAwC6uJmASPEATUX9CFIEW
-    bucket: installer.kalabox.io
-    region: us-west-2
-    artifact: weezer
-    on:
-      branch: 1repo2ruleThemAll
   - provider: GitHub
     description: v$(KALABOX_VERSION)
     artifact: weezer
@@ -85,6 +72,16 @@ deploy:
     prerelease: false
     on:
       appveyor_repo_tag: true
+  - provider: S3
+    access_key_id:
+      secure: t16g2geIvu5qJVSiPzqxzUnk4+p9X1psf6e8RmUJPDk=
+    secret_access_key:
+      secure: o/pYPIuDU8SPSrTB15BwzlLrDXGuhhTJUWdWMyvDLnsAwC6uJmASPEATUX9CFIEW
+    bucket: installer.kalabox.io
+    region: us-west-2
+    artifact: weezer
+    on:
+      branch: v0.13
 notifications:
   - provider: Email
     to:
