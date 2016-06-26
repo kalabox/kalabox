@@ -27,9 +27,6 @@ before_script:
   # Edit the package.json if this isn't an official release
   - if [ -z "$TRAVIS_TAG" ]; then node ./scripts/dev-version.js; fi
 
-  # Define the travis tag as "latest-dev" if its not already defined
-  - if [ -z "$TRAVIS_TAG" ]; then export TRAVIS_TAG=latest-dev; fi
-
   # Nice dev helpers to verify our env
   - ./scripts/travis-env.sh
 
@@ -54,7 +51,10 @@ script:
   # Run the build
   - mkdir -p release
   - grunt pkg
-  - cp -rf dist/kalabox.$KBOX_PKG_TYPE release/kalabox-$TRAVIS_TAG.$KBOX_PKG_TYPE
+
+  # Name the release depending on whether it is an official release or not
+  - if [ -z "$TRAVIS_TAG" ]; then cp -rf dist/kalabox.$KBOX_PKG_TYPE release/kalabox-latest-dev.$KBOX_PKG_TYPE; fi
+  - if [ ! -z "$TRAVIS_TAG" ]; then cp -rf dist/kalabox.$KBOX_PKG_TYPE release/kalabox-$TRAVIS_TAG.$KBOX_PKG_TYPE; fi
 
 before_deploy:
 

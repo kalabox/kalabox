@@ -9,7 +9,8 @@ v0.13.0-unstable.2
 * Fixed CLI falsely reporting "Where is everything!?!?!" on Windows [#1348](https://github.com/kalabox/kalabox/issues/1348)
 * Removed usage of {userdocs} for {localappdata} in Windows installer [#1186](https://github.com/kalabox/kalabox/issues/1186)
 * Simplified Windows installer [#1245](https://github.com/kalabox/kalabox/issues/1245)
-
+* Fixed issue where Kalabox apps would not work while offline. [#1227](https://github.com/kalabox/kalabox/issues/1227)
+* Fixed TRAVIS_TAG=latest-dev triggering GitHub deployment. [#1412](https://github.com/kalabox/kalabox/issues/1412)
 
 v0.13.0-unstable.1
 ==================
