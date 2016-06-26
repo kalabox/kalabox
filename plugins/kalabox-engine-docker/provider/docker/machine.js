@@ -238,9 +238,16 @@ module.exports = function(kbox) {
     // set the machine env
     env.setDockerEnv();
 
+    // Get the system returned path for the machine BIN
+    // NOTE: on windows this is returns in all upper case
+    var sysPath = kbox.util.shell.which(MACHINE_EXECUTABLE);
+
     // We have the machine executable now return whether we have the
     // vm or not
-    if (kbox.util.shell.which(MACHINE_EXECUTABLE) === MACHINE_EXECUTABLE) {
+    if (process.platform !== 'win32' && sysPath === MACHINE_EXECUTABLE) {
+      return Promise.resolve(vmExists());
+    }
+    else if (sysPath === MACHINE_EXECUTABLE.toUpperCase()) {
       return Promise.resolve(vmExists());
     }
 

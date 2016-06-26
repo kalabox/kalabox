@@ -74,12 +74,11 @@ sudo -u "${CONSOLE_USER}" \
   DOCKER_HOST="tcp://${KALABOX_IP}:2376" \
   DOCKER_CERT_PATH="${CONSOLE_USER_HOME}/.docker/machine/machines/${VM}" \
   DOCKER_MACHINE_NAME="${VM}" \
-  KALABOX_ENGINE_HOME=$CONSOLE_USER_HOME \
   KALABOX_DOMAIN=kbox \
   KALABOX_ENGINE_IP="${KALABOX_IP}" \
   "${DOCKER_COMPOSE}" \
   -p kalabox \
-  -f $APPLICATION/services/services.yml \
+  -f "$APPLICATION/services/services.yml" \
   up \
   -d \
   --force-recreate
