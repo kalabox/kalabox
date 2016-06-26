@@ -10,7 +10,7 @@ CLS
 ::
 
 :: Set out environment
-SET DOCKER_MACHINE=%USERPROFILE%\.kalabox\bin\docker-machine.exe
+SET DOCKER_MACHINE=%ProgramFiles%\Kalabox\bin\docker-machine.exe
 SET VBOXMANAGE=%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe
 SET VM=Kalabox2
 SET KALABOX_DEFAULT_HOA=VirtualBox Host-Only Network

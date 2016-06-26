@@ -10,9 +10,21 @@ CLS
 ::
 
 :: Load in some env
-SET DOCKER_MACHINE=%USERPROFILE%\.kalabox\bin\docker-machine.exe
+SET DOCKER_MACHINE=%ProgramFiles%\Kalabox\bin\docker-machine.exe
 SET VBOXMANAGE=%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe
 SET VM=Kalabox2
+
+:: Check to see if DOCKER MACHINE is actually installed
+IF NOT EXIST "%DOCKER_MACHINE%" (
+  ECHO "Docker Machine is not installed. Please re-run the Kalabox Installer and try again."
+  EXIT /B 1
+)
+
+:: CHeck to see if VBMANAGE is actually installed
+IF NOT EXIST "%VBOXMANAGE%" (
+  ECHO "VirtualBox is not installed. Please re-run the Kalabox Installer and try again."
+  EXIT /B 1
+)
 
 :: Get the free disk space in MB
 wmic logicaldisk where (caption = "%SystemDrive%") get freespace>"%TEMP%\free.tmp"
@@ -25,18 +37,6 @@ IF %FREE_DISK% GTR 150000 (
   SET VB_DISK=150000
 ) ELSE (
   SET VB_DISK=%FREE_DISK%
-)
-
-:: Check to see if DOCKER MACHINE is actually installed
-IF NOT EXIST "%DOCKER_MACHINE%" (
-  ECHO "Docker Machine is not installed. Please re-run the Kalabox Installer and try again."
-  EXIT /B 1
-)
-
-:: CHeck to see if VBMANAGE is actually installed
-IF NOT EXIST "%VBOXMANAGE%" (
-  ECHO "VirtualBox is not installed. Please re-run the Kalabox Installer and try again."
-  EXIT /B 1
 )
 
 :: If the Kalabox2 VM does not exist then create it

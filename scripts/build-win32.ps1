@@ -10,9 +10,12 @@ $ErrorActionPreference = "Stop"
 
 # Get some ENV things
 $temp_dir = $env:TMP
-$installer_dir = "$pwd\build\installer"
+$base_dir = "$pwd\build\installer"
 $bundle_dir = "$installer_dir\bundle"
-$docs_dir = "$installer_dir\docs"
+$docs_dir = "$installer_dir\bundle\docs"
+$bin_dir = "$installer_dir\bundle\bin"
+$services_dir = "$installer_dir\bundle\services"
+$installers_dir = "$installer_dir\bundle\installer"
 
 # Build dependencies
 $inno_url = "http://files.jrsoftware.org/is/5/isetup-5.5.9.exe"
@@ -20,11 +23,9 @@ $inno_dest = "$temp_dir\inno-installer.exe"
 $inno_bin = "C:\Program Files (x86)\Inno Setup 5\ISCC.exe"
 
 # Kalabox version information
-$kbox_pkg = Get-Content "package.json" | Out-String | ConvertFrom-Json
-$installer_version = $kbox_pkg.version
-$kbox_cli_version = $kbox_pkg.version
-$kbox_gui_version = $kbox_pkg.version
-$kbox_image_version = "v0.12"
+$kalabox_pkg = Get-Content "package.json" | Out-String | ConvertFrom-Json
+$kalabox_version = $kalabox_pkg.version
+$kalabox_image_version = "v0.12"
 
 # Docekr version information
 $docker_machine_version = "0.7.0"
@@ -83,26 +84,26 @@ New-Item $bundle_dir -type directory -force
 Write-Output "Grabbing the files we need..."
 
 # Kalabox things
-Copy-Item "dist\cli\kbox-win32-x64-v$kbox_cli_version.exe" "$bundle_dir\kbox.exe" -force
 Copy-Item "dist\gui\kalabox-ui" "$bundle_dir" -force
-Download -Url "https://raw.githubusercontent.com/kalabox/kalabox-cli/$kbox_image_version/plugins/kalabox-services-kalabox/kalabox-compose.yml" -Destination "$bundle_dir\services.yml"
+Copy-Item "dist\cli\kbox-win32-x64-v$kalabox_version.exe" "$bundle_dir\kbox.exe" -force
+Download -Url "https://raw.githubusercontent.com/kalabox/kalabox-cli/$kalabox_image_version/plugins/kalabox-services-kalabox/kalabox-compose.yml" -Destination "$services_dir\services.yml"
 
 # Docker things
-Download -Url "https://github.com/docker/machine/releases/download/v$docker_machine_version/docker-machine-Windows-x86_64.exe" -Destination "$bundle_dir\docker-machine.exe"
-Download -Url "https://github.com/docker/compose/releases/download/$docker_compose_version/docker-compose-Windows-x86_64.exe" -Destination "$bundle_dir\docker-compose.exe"
-Download -Url "https://github.com/boot2docker/boot2docker/releases/download/v$boot2docker_iso_version/boot2docker.iso" -Destination "$bundle_dir\boot2docker.iso"
+Download -Url "https://github.com/docker/machine/releases/download/v$docker_machine_version/docker-machine-Windows-x86_64.exe" -Destination "$bin_dir\docker-machine.exe"
+Download -Url "https://github.com/docker/compose/releases/download/$docker_compose_version/docker-compose-Windows-x86_64.exe" -Destination "$bin_dir\docker-compose.exe"
+Download -Url "https://github.com/boot2docker/boot2docker/releases/download/v$boot2docker_iso_version/boot2docker.iso" -Destination "$base_dir\boot2docker.iso"
 
 # Virtualbox
 Download -Url "http://download.virtualbox.org/virtualbox/$virtualbox_version/VirtualBox-$virtualbox_version-$virtualbox_revision-Win.exe" -Destination "$temp_dir\virtualbox.exe"
 
 # Git
-Download -Url "https://github.com/git-for-windows/git/releases/download/v$git_version.windows.1/Git-$git_version-64-bit.exe" -Destination "$bundle_dir\Git.exe"
+Download -Url "https://github.com/git-for-windows/git/releases/download/v$git_version.windows.1/Git-$git_version-64-bit.exe" -Destination "$base_dir\Git.exe"
 
 # Do some needed unpacking
 Write-Output "Unpacking..."
 Start-Process -Wait "$temp_dir\virtualbox.exe" -ArgumentList "-extract -silent -path $temp_dir"
-Copy-Item "$temp_dir\VirtualBox-$virtualbox_version-r$virtualbox_revision-MultiArch_amd64.msi" "$bundle_dir\VirtualBox_amd64.msi" -force
-Copy-Item "$temp_dir\common.cab" "$bundle_dir\common.cab" -force
+Copy-Item "$temp_dir\VirtualBox-$virtualbox_version-r$virtualbox_revision-MultiArch_amd64.msi" "$base_dir\virtualbox.msi" -force
+Copy-Item "$temp_dir\common.cab" "$base_dir\common.cab" -force
 
 # Copy over some other assets
 Write-Output "Copying over static assets..."
@@ -114,4 +115,4 @@ Copy-Item "$pwd\ORACLE_VIRTUALBOX_LICENSE" "$docs_dir\ORACLE_VIRTUALBOX_LICENSE"
 
 # Create our inno-installer
 Write-Output "Creating our package..."
-Start-Process -Wait "$inno_bin" -ArgumentList "$installer_dir\Kalabox.iss /DMyAppVersion=$installer_version"
+Start-Process -Wait "$inno_bin" -ArgumentList "$base_dir\Kalabox.iss /DMyAppVersion=$installer_version"

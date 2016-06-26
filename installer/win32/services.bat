@@ -10,8 +10,8 @@ CLS
 ::
 
 :: Load our environment
-SET DOCKER_MACHINE=%USERPROFILE%\.kalabox\bin\docker-machine.exe
-SET DOCKER_COMPOSE=%USERPROFILE%\.kalabox\bin\docker-compose.exe
+SET DOCKER_MACHINE=%ProgramFiles%\Kalabox\bin\docker-machine.exe
+SET DOCKER_COMPOSE=%ProgramFiles%\Kalabox\bin\docker-compose.exe
 SET VBOXMANAGE=%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe
 SET VM=Kalabox2
 
@@ -37,7 +37,7 @@ SET KALABOX_ENGINE_IP=%KALABOX_IP%
 :: Spin up needed core services
 "%DOCKER_COMPOSE%" ^
   -p kalabox ^
-  -f "%USERPROFILE%"/.kalabox/services/services.yml ^
+  -f "%ProgramFiles%"/Kalabox/services/services.yml ^
   up ^
   -d ^
   --force-recreate
