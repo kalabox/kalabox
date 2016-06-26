@@ -28,31 +28,11 @@ uninstall() {
   echo "Removing Kalabox VM..."
   sudo -u "${CONSOLE_USER}" "${CONSOLE_USER_HOME}/.kalabox/bin/docker-machine" rm -f Kalabox2
 
-  echo "Removing Applications..."
+  echo "Removing Application..."
   rm -rf /Applications/Kalabox.app
-
-  echo "Removing docker binaries..."
-  rm -f "${CONSOLE_USER_HOME}"/.kalabox/bin/docker-machine
-  rm -f "${CONSOLE_USER_HOME}"/.kalabox/bin/docker-compose
-  rm -rf "${CONSOLE_USER_HOME}"/.docker/machine/machines/Kalabox2
-
-  echo "Removing kalabox binaries..."
-  rm -f /usr/local/bin/kbox
-
-  echo "Removing services files..."
-  rm -rf "${CONSOLE_USER_HOME}"/.kalabox/services
-
-  echo "Removing boot2docker.iso"
-  rm -rf /usr/local/share/boot2docker
 
   echo "Removing DNS"
   rm -f /etc/resolver/kbox
-
-  echo "Removing provisioned flag"
-  rm -f "${CONSOLE_USER_HOME}"/.kalabox/provisioned
-
-  echo "Removing other Kalabox2 files"
-  rm -rf "${CONSOLE_USER_HOME}"/.kalabox
 
   echo "All Done!"
 

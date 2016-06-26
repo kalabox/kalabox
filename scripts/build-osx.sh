@@ -5,9 +5,7 @@ set -xe
 
 # Kalabox things
 KBOX_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat package.json)")
-INSTALLER_VERSION="$KBOX_VERSION"
-KALABOX_CLI_VERSION="$KBOX_VERSION"
-KALABOX_GUI_VERSION="$KBOX_VERSION"
+KALABOX_VERSION="$KBOX_VERSION"
 KALABOX_IMAGE_VERSION="v0.12"
 
 # Docker things
@@ -19,22 +17,28 @@ BOOT2DOCKER_ISO_VERSION="1.11.2"
 VBOX_VERSION="5.0.20"
 VBOX_REVISION="106931"
 
+# Move dependencies into the application bundle
+APP_CONTENTS="Kalabox.app/Contents/MacOS"
+APP_BIN="$APP_CONTENTS/bin"
+APP_SERVICES="$APP_CONTENTS/services"
+
 # Start up our build directory and go into it
 mkdir -p build/installer
 cd build/installer
 
 # Get our Kalabox dependencies
-cp -rf "../../dist/cli/kbox-osx-x64-v${KALABOX_CLI_VERSION}" kbox
 cp -rf "../../dist/gui/kalabox-ui/Kalabox.app" Kalabox.app
-curl -fsSL -o services.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$KALABOX_IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
-chmod +x kbox
+mkdir -p $APP_BIN $APP_SERVICES
+cp -rf "../../dist/cli/kbox-osx-x64-v${KALABOX_VERSION}" $APP_BIN/kbox
+curl -fsSL -o $APP_SERVICES/services.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$KALABOX_IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
+chmod +x $APP_BIN/kbox
 
 # Get our Docker dependencies
-curl -fsSL -o docker-compose "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Darwin-x86_64"
-curl -fsSL -o docker-machine "https://github.com/docker/machine/releases/download/v$DOCKER_MACHINE_VERSION/docker-machine-Darwin-x86_64"
-curl -fsSL -o boot2docker.iso "https://github.com/boot2docker/boot2docker/releases/download/v$BOOT2DOCKER_ISO_VERSION/boot2docker.iso"
-chmod +x docker-compose
-chmod +x docker-machine
+curl -fsSL -o $APP_BIN/docker-compose "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Darwin-x86_64"
+curl -fsSL -o $APP_BIN/docker-machine "https://github.com/docker/machine/releases/download/v$DOCKER_MACHINE_VERSION/docker-machine-Darwin-x86_64"
+curl -fsSL -o $APP_CONTENTS/boot2docker.iso "https://github.com/boot2docker/boot2docker/releases/download/v$BOOT2DOCKER_ISO_VERSION/boot2docker.iso"
+chmod +x $APP_BIN/docker-compose
+chmod +x $APP_BIN/docker-machine
 
 # Get Virtualbox
 curl -fsSL -o vbox.dmg "http://download.virtualbox.org/virtualbox/$VBOX_VERSION/VirtualBox-$VBOX_VERSION-$VBOX_REVISION-OSX.dmg" && \
@@ -47,141 +51,10 @@ curl -fsSL -o vbox.dmg "http://download.virtualbox.org/virtualbox/$VBOX_VERSION/
   rm -rf Resources && \
   mv *.pkg mpkg/
 
-# Add dockermachine.pkg
-cd mpkg/dockermachine.pkg && \
-  mkdir rootfs && \
-  cd rootfs && \
-  mkdir -p tmp && \
-  mv ../../../docker-machine tmp/ && \
-  ls -al tmp/ && \
-  find . | cpio -o --format odc | gzip -c > ../Payload && \
-  mkbom . ../Bom && \
-  sed -i "" \
-    -e "s/%DOCKERMACHINE_NUMBER_OF_FILES%/`find . | wc -l`/g" \
-    ../PackageInfo && \
-  sed -i "" \
-    -e "s/%DOCKERMACHINE_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
-    ../PackageInfo ../../Distribution && \
-  sed -i "" \
-    -e "s/%DOCKERMACHINE_VERSION%/$DOCKER_MACHINE_VERSION/g" \
-    ../PackageInfo ../../Distribution && \
-  cd .. && \
-  rm -rf rootfs && \
-  cd ../..
-
-# Add dockercompose.pkg
-cd mpkg/dockercompose.pkg && \
-  mkdir rootfs && \
-  cd rootfs && \
-  mkdir -p tmp && \
-  mv ../../../docker-compose tmp/ && \
-  ls -al tmp/ && \
-  find . | cpio -o --format odc | gzip -c > ../Payload && \
-  mkbom . ../Bom && \
-  sed -i "" \
-    -e "s/%DOCKERCOMPOSE_NUMBER_OF_FILES%/`find . | wc -l`/g" \
-    ../PackageInfo && \
-  sed -i "" \
-    -e "s/%DOCKERCOMPOSE_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
-    ../PackageInfo ../../Distribution && \
-  sed -i "" \
-    -e "s/%DOCKERCOMPOSE_VERSION%/$DOCKER_COMPOSE_VERSION/g" \
-    ../PackageInfo ../../Distribution && \
-  cd .. && \
-  rm -rf rootfs && \
-  cd ../..
-
-# Add boot2dockeriso.pkg
-cd mpkg/boot2dockeriso.pkg && \
-  cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
-  rm -r Scripts && mv Scripts.bin Scripts && \
-  mkdir ./rootfs && \
-  cd ./rootfs && \
-  mv ../../../boot2docker.iso . && \
-  find . | cpio -o --format odc | gzip -c > ../Payload && \
-  mkbom . ../Bom && \
-  sed -i "" \
-    -e "s/%BOOT2DOCKER_ISO_NUMBER_OF_FILES%/`find . | wc -l`/g" \
-    ../PackageInfo && \
-  sed -i "" \
-    -e "s/%BOOT2DOCKER_ISO_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
-    ../PackageInfo ../../Distribution && \
-  sed -i "" \
-    -e "s/%BOOT2DOCKER_ISO_VERSION%/$BOOT2DOCKER_ISO_VERSION/g" \
-    ../PackageInfo ../../Distribution && \
-  cd .. && \
-  rm -rf rootfs && \
-  cd ../..
-
-# engine.pkg
-cd mpkg/engine.pkg && \
-  cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
-  rm -r Scripts && mv Scripts.bin Scripts && \
-  mkdir ./rootfs && \
-  cd ./rootfs && \
-  find . | cpio -o --format odc | gzip -c > ../Payload && \
-  mkbom . ../Bom && \
-  sed -i "" \
-    -e "s/%ENGINE_NUMBER_OF_FILES%/`find . | wc -l`/g" \
-    ../PackageInfo && \
-  sed -i "" \
-    -e "s/%ENGINE_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
-    ../PackageInfo ../../Distribution && \
-  sed -i "" \
-    -e "s/%ENGINE_VERSION%/$BOOT2DOCKER_ISO_VERSION/g" \
-    ../PackageInfo ../../Distribution && \
-  cd .. && \
-  rm -rf rootfs && \
-  cd ../..
-
-# services.pkg
-cd mpkg/services.pkg && \
-  cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
-  rm -r Scripts && mv Scripts.bin Scripts && \
-  mkdir ./rootfs && \
-  cd ./rootfs && \
-  mkdir -p tmp && \
-  mv ../../../services.yml tmp/ && \
-  ls -al tmp/ && \
-  find . | cpio -o --format odc | gzip -c > ../Payload && \
-  mkbom . ../Bom && \
-  sed -i "" \
-    -e "s/%SERVICES_NUMBER_OF_FILES%/`find . | wc -l`/g" \
-    ../PackageInfo && \
-  sed -i "" \
-    -e "s/%SERVICES_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
-    ../PackageInfo ../../Distribution && \
-  sed -i "" \
-    -e "s/%SERVICES_VERSION%/$KALABOX_IMAGE_VERSION/g" \
-    ../PackageInfo ../../Distribution && \
-  cd .. && \
-  rm -rf rootfs && \
-  cd ../..
-
 # kbox.pkg
 cd mpkg/kbox.pkg && \
-  mkdir rootfs && \
-  cd rootfs && \
-  mkdir -p usr/local/bin && \
-  mv ../../../kbox usr/local/bin/ && \
-  ls -al /usr/local/bin/ && \
-  find . | cpio -o --format odc | gzip -c > ../Payload && \
-  mkbom . ../Bom && \
-  sed -i "" \
-    -e "s/%KBOXCLI_NUMBER_OF_FILES%/`find . | wc -l`/g" \
-    ../PackageInfo && \
-  sed -i "" \
-    -e "s/%KBOXCLI_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
-    ../PackageInfo ../../Distribution && \
-  sed -i "" \
-    -e "s/%KBOXCLI_VERSION%/$KALABOX_CLI_VERSION/g" \
-    ../PackageInfo ../../Distribution && \
-  cd .. && \
-  rm -rf rootfs && \
-  cd ../..
-
-# kbox-gui.pkg
-cd mpkg/kbox-gui.pkg && \
+  cd Scripts && find . | cpio -o --format odc | gzip -c > ../Scripts.bin && cd .. && \
+  rm -r Scripts && mv Scripts.bin Scripts && \
   mkdir ./rootfs && \
   cd ./rootfs && \
   mv ../../../Kalabox.app . && \
@@ -189,29 +62,21 @@ cd mpkg/kbox-gui.pkg && \
   find . | cpio -o --format odc | gzip -c > ../Payload && \
   mkbom . ../Bom && \
   sed -i "" \
-    -e "s/%KBOXGUI_NUMBER_OF_FILES%/`find . | wc -l`/g" \
+    -e "s/%KBOX_NUMBER_OF_FILES%/`find . | wc -l`/g" \
     ../PackageInfo && \
   sed -i "" \
-    -e "s/%KBOXGUI_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
+    -e "s/%KBOX_INSTALL_KBYTES%/`du -sk | cut -f1`/g" \
     ../PackageInfo ../../Distribution && \
   sed -i "" \
-    -e "s/%KBOXGUI_VERSION%/$KALABOX_GUI_VERSION/g" \
+    -e "s/%KBOX_VERSION%/$KALABOX_VERSION/g" \
     ../PackageInfo ../../Distribution && \
   cd .. && \
   rm -rf rootfs && \
   cd ../..
 
 # Add in more version info
-sed -i "" -e "s/%INSTALLER_VERSION%/$INSTALLER_VERSION/g" mpkg/Resources/en.lproj/welcome.rtfd/TXT.rtf mpkg/Distribution
+sed -i "" -e "s/%KALABOX_VERSION%/$KALABOX_VERSION/g" mpkg/Resources/en.lproj/welcome.rtfd/TXT.rtf mpkg/Distribution
 sed -i "" -e "s/%VBOX_VERSION%/$VBOX_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings mpkg/Distribution
-sed -i "" -e "s/%DOCKERMACHINE_VERSION%/$DOCKER_MACHINE_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
-sed -i "" -e "s/%DOCKERCOMPOSE_VERSION%/$DOCKER_COMPOSE_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
-sed -i "" -e "s/%BOOT2DOCKER_ISO_VERSION%/$BOOT2DOCKER_ISO_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
-sed -i "" -e "s/%KBOXCLI_VERSION%/$KALABOX_CLI_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
-sed -i "" -e "s/%KBOXGUI_VERSION%/$KALABOX_GUI_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
-sed -i "" -e "s/%SYNCTHING_VERSION%/$SYNCTHING_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
-sed -i "" -e "s/%ENGINE_VERSION%/$SYNCTHING_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
-sed -i "" -e "s/%SERVICES_VERSION%/$KALABOX_IMAGE_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
 
 # Build the package
 mkdir -p dmg && mkdir -p dist && cd mpkg && \
