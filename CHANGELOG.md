@@ -5,7 +5,8 @@ v0.13.0-unstable.2
 * Removed `syncthing` in favor of `unison`. [#1374](https://github.com/kalabox/kalabox/issues/1374)
 * Fixed GUI memory leak. [#1368](https://github.com/kalabox/kalabox/issues/1368)
 * Removed legacy DNS options. [#1330](https://github.com/kalabox/kalabox/issues/1330)
-# Fixed issue where Kalabox apps would not work while offline [#1227](https://github.com/kalabox/kalabox/issues/1227)
+* Fixed issue where Kalabox apps would not work while offline. [#1227](https://github.com/kalabox/kalabox/issues/1227)
+* Fixed TRAVIS_TAG=latest-dev triggering GitHub deployment. [#1412](https://github.com/kalabox/kalabox/issues/1412)
 
 v0.13.0-unstable.1
 ==================
