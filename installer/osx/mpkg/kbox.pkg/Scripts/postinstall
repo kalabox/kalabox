@@ -97,6 +97,6 @@ echo "nameserver ${KALABOX_IP}" > /etc/resolver/kbox
 
 # Symlink the KBOX binary
 mkdir -p /usr/local/bin
-ln -s "$APPLICATION/bin/kbox" /usr/local/bin/kbox
+ln -sF "$APPLICATION/bin/kbox" /usr/local/bin/kbox
 
 # Fin
