@@ -51,34 +51,32 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 
 [Tasks]
 Name: desktopicon; Description: "{cm:CreateDesktopIcon}"
-Name: modifypath; Description: "Add kbox binary to &PATH"
+Name: modifypath; Description: "Add kbox binary to PATH"
 Name: upgradevm; Description: "Upgrade Boot2Docker VM"
 
 [Components]
 Name: "VirtualBox"; Description: "VirtualBox"; Types: full custom; Flags: disablenouninstallwarning fixed
-Name: "Git"; Description: "Git for Windows"; Types: full custom; Flags: disablenouninstallwarning fixed
-Name: "Kalabox"; Description: "Kalabox" ; Types: full custom
+Name: "Git"; Description: "Git for Windows"; Types: full custom;
+Name: "Kalabox"; Description: "Kalabox" ; Types: full custom; Flags: disablenouninstallwarning fixed
 
 [Files]
-Source: "{#b2dIsoPath}"; DestDir: "{app}"; Flags: ignoreversion; Components: "Kalabox"; AfterInstall: CopyBoot2DockerISO()
 Source: "{#virtualBoxCommon}"; DestDir: "{app}\installers\virtualbox"; Components: "VirtualBox"
 Source: "{#virtualBoxMsi}"; DestDir: "{app}\installers\virtualbox"; DestName: "virtualbox.msi"; AfterInstall: RunInstallVirtualBox(); Components: "VirtualBox"
+Source: "{#b2dIsoPath}"; DestDir: "{app}"; Flags: ignoreversion; Components: "Kalabox"; AfterInstall: CopyBoot2DockerISO()
+Source: "{#kalabox}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: "Kalabox"
+Source: "{#kboxIco}"; DestDir: "{app}"; DestName: "kalabox.ico"; Components: "Kalabox"
 Source: "{#engineSetup}"; DestDir: "{app}"; Components: "Kalabox"; AfterInstall: RunEngineSetup();
 Source: "{#servicesSetup}"; DestDir: "{app}"; Components: "Kalabox"; AfterInstall: RunServicesSetup();
 Source: "{#dnsSetup}"; DestDir: "{app}"; Components: "Kalabox"; AfterInstall: RunServicesSetup();
-Source: "{#kalabox}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: "Kalabox"
 Source: "{#git}"; DestDir: "{app}\installers\git"; DestName: "git.exe"; AfterInstall: RunInstallGit(); Components: "Git"
-Source: "{#kboxIco}"; DestDir: "{app}"; DestName: "kalabox.ico"; Components: "KalaboxGUI"
 
 [Icons]
 Name: "{userprograms}\Kalabox"; WorkingDir: "{app}"; Filename: "{app}\kalabox.exe"; Components: "Kalabox"; IconFilename: "{app}\kalabox.ico"
 Name: "{commondesktop}\Kalabox"; WorkingDir: "{app}"; Filename: "{app}\kalabox.exe"; Tasks: desktopicon; Components: "Kalabox"; IconFilename: "{app}\kalabox.ico"
 
 [UninstallRun]
+Filename: "{app}\bin\docker-machine.exe"; Parameters: "stop Kalabox2";
 Filename: "{app}\bin\docker-machine.exe"; Parameters: "rm -f Kalabox2";
-
-[UninstallDelete]
-Type: filesandordirs; Name: "{app}"
 
 [Registry]
 Root: HKCU; Subkey: "Environment"; ValueType:string; ValueName:"KALABOX_INSTALL_PATH"; ValueData:"{app}" ; Flags: preservestringtype ;
@@ -122,25 +120,20 @@ var
   ResultCode: Integer;
 begin
   WizardForm.FilenameLabel.Caption := 'Activating the engine...'
-  ExecAsOriginalUser(ExpandConstant('{app}\engine.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode)
-  if ResultCode <> 0 then begin
-    exit
-  end
+  if not ExecAsOriginalUser(ExpandConstant('{app}\engine.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    MsgBox('Engine activation failed', mbInformation, MB_OK);
 end;
 
 procedure RunServicesSetup();
 var
   ResultCode: Integer;
 begin
-  WizardForm.FilenameLabel.Caption := 'Starting the services and configuring DNS...'
-  ExecAsOriginalUser(ExpandConstant('{app}\services.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode)
-  if ResultCode <> 0 then begin
-    exit
-  end;
-  Exec(ExpandConstant('{app}\dns.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode)
-  if ResultCode <> 0 then begin
-    exit
-  end;
+  WizardForm.FilenameLabel.Caption := 'Starting the proxy and dns services...'
+  if not ExecAsOriginalUser(ExpandConstant('{app}\services.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    MsgBox('Service activation failed', mbInformation, MB_OK);
+  WizardForm.FilenameLabel.Caption := 'Configuring DNS...'
+  if not Exec(ExpandConstant('{app}\dns.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    MsgBox('DNS configuration failed', mbInformation, MB_OK);
 end;
 
 procedure RunInstallGit();

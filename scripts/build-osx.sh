@@ -6,7 +6,6 @@ set -xe
 # Kalabox things
 KBOX_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat package.json)")
 KALABOX_VERSION="$KBOX_VERSION"
-KALABOX_IMAGE_VERSION="v0.12"
 
 # Docker things
 DOCKER_MACHINE_VERSION="0.7.0"
@@ -27,10 +26,10 @@ mkdir -p build/installer
 cd build/installer
 
 # Get our Kalabox dependencies
-cp -rf "../../dist/gui/kalabox-ui/Kalabox.app" Kalabox.app
 mkdir -p $APP_BIN $APP_SERVICES
+cp -rf "../../dist/gui/kalabox-ui/Kalabox.app" Kalabox.app
 cp -rf "../../dist/cli/kbox-osx-x64-v${KALABOX_VERSION}" $APP_BIN/kbox
-curl -fsSL -o $APP_SERVICES/services.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$KALABOX_IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
+cp -rf "../../plugins/kalabox-services-kalabox/kalabox-compose.yml" $APP_SERVICES/services.yml
 chmod +x $APP_BIN/kbox
 
 # Get our Docker dependencies

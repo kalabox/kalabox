@@ -29,7 +29,7 @@ cd build/installer/pkg
 # Get our Kalabox dependencies
 cp -rf "../../../dist/cli/kbox-linux-x64-v${KALABOX_CLI_VERSION}" kbox
 cp -rf "../../../dist/gui/kalabox-ui" gui
-curl -fsSL -o services.yml "https://raw.githubusercontent.com/kalabox/kalabox-cli/$KALABOX_IMAGE_VERSION/plugins/kalabox-services-kalabox/kalabox-compose.yml"
+cp -rf "../../../plugins/kalabox-services-kalabox/kalabox-compose.yml" services.yml
 chmod +x kbox
 chmod 755 -Rv gui
 

@@ -10,9 +10,12 @@ CLS
 ::
 
 :: Load in some env
-SET DOCKER_MACHINE=%ProgramFiles%\Kalabox\bin\docker-machine.exe
+SET DOCKER_MACHINE=%~dp0bin\docker-machine.exe
 SET VBOXMANAGE=%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe
 SET VM=Kalabox2
+
+echo %DOCKER_MACHINE%
+echo %VBOXMANAGE%
 
 :: Check to see if DOCKER MACHINE is actually installed
 IF NOT EXIST "%DOCKER_MACHINE%" (

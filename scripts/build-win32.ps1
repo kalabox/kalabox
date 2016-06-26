@@ -11,11 +11,10 @@ $ErrorActionPreference = "Stop"
 # Get some ENV things
 $temp_dir = $env:TMP
 $base_dir = "$pwd\build\installer"
-$bundle_dir = "$installer_dir\bundle"
-$docs_dir = "$installer_dir\bundle\docs"
-$bin_dir = "$installer_dir\bundle\bin"
-$services_dir = "$installer_dir\bundle\services"
-$installers_dir = "$installer_dir\bundle\installer"
+$bundle_dir = "$base_dir\bundle"
+$docs_dir = "$bundle_dir\docs"
+$bin_dir = "$bundle_dir\bin"
+$services_dir = "$bundle_dir\services"
 
 # Build dependencies
 $inno_url = "http://files.jrsoftware.org/is/5/isetup-5.5.9.exe"
@@ -25,7 +24,6 @@ $inno_bin = "C:\Program Files (x86)\Inno Setup 5\ISCC.exe"
 # Kalabox version information
 $kalabox_pkg = Get-Content "package.json" | Out-String | ConvertFrom-Json
 $kalabox_version = $kalabox_pkg.version
-$kalabox_image_version = "v0.12"
 
 # Docekr version information
 $docker_machine_version = "0.7.0"
@@ -80,13 +78,13 @@ If (!(Test-Path $inno_bin)) {
 }
 
 # Get the things we need
-New-Item $bundle_dir -type directory -force
+New-Item -type directory -force -path $bundle_dir, $docs_dir, $bin_dir, $services_dir
 Write-Output "Grabbing the files we need..."
 
 # Kalabox things
-Copy-Item "dist\gui\kalabox-ui" "$bundle_dir" -force
-Copy-Item "dist\cli\kbox-win32-x64-v$kalabox_version.exe" "$bundle_dir\kbox.exe" -force
-Download -Url "https://raw.githubusercontent.com/kalabox/kalabox-cli/$kalabox_image_version/plugins/kalabox-services-kalabox/kalabox-compose.yml" -Destination "$services_dir\services.yml"
+Copy-Item "dist\gui\kalabox-ui\*" "$bundle_dir" -force -recurse
+Copy-Item "dist\cli\kbox-win32-x64-v$kalabox_version.exe" "$bin_dir\kbox.exe" -force
+Copy-Item "plugins\kalabox-services-kalabox\kalabox-compose.yml" "$services_dir\services.yml" -force
 
 # Docker things
 Download -Url "https://github.com/docker/machine/releases/download/v$docker_machine_version/docker-machine-Windows-x86_64.exe" -Destination "$bin_dir\docker-machine.exe"
@@ -115,4 +113,4 @@ Copy-Item "$pwd\ORACLE_VIRTUALBOX_LICENSE" "$docs_dir\ORACLE_VIRTUALBOX_LICENSE"
 
 # Create our inno-installer
 Write-Output "Creating our package..."
-Start-Process -Wait "$inno_bin" -ArgumentList "$base_dir\Kalabox.iss /DMyAppVersion=$installer_version"
+Start-Process -Wait "$inno_bin" -ArgumentList "$base_dir\Kalabox.iss /DMyAppVersion=$kalabox_version"
