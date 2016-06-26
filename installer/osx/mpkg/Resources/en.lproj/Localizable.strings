@@ -1,28 +1,7 @@
 'kalabox_title' = 'Kalabox';
 
-'choiceDockerMachineCLI_title' = 'Docker Machine %DOCKERMACHINE_VERSION%';
-'choiceDockerMachineCLI_msg' = 'Installs the Docker Machine binaries into ~/.kalabox/bin/';
-
-'choiceDockerComposeCLI_title' = 'Docker Compose %DOCKERCOMPOSE_VERSION%';
-'choiceDockerComposeCLI_msg' = 'Installs the Docker Compose binary into ~/.kalabox/bin/';
-
-'choiceKboxCLI_title' = 'Kalabox CLI %KBOXCLI_VERSION%';
-'choiceKboxCLI_msg' = 'Installs the Kalabox CLI binary into /usr/local/bin/';
-
-'choiceKboxGUI_title' = 'Kalabox GUI %KBOXGUI_VERSION%';
-'choiceKboxGUI_msg' = 'Installs the Kalabox GUI into /Applications/';
-
-'choiceKboxEngine_title' = 'Kalabox Engine';
-'choiceKboxEngine_msg' = 'Installs the Kalabox engine as a VM called Kalabox2';
-
-'choiceKboxServices_title' = 'Kalabox Services';
-'choiceKboxServices_msg' = 'Installs some services in the Kalabox Engine';
-
-'choiceSyncthingCLI_title' = 'Syncthing CLI %SYNCTHING_VERSION%';
-'choiceSyncthingCLI_msg' = 'Installs the Syncthing CLI binary into ~/.kalabox/bin/';
-
-'choiceBoot2DockerISO_title' = 'Boot2Docker ISO %BOOT2DOCKER_ISO_VERSION%';
-'choiceBoot2DockerISO_msg' = 'Installs the boot2docker.iso into /usr/local/share/';
+'choiceKalabox_title' = 'Kalabox %KBOX_VERSION%';
+'choiceKalabox_msg' = 'Installs Kalabox into /Applications/';
 
 'choiceVBox_title' = 'Oracle VM VirtualBox %VBOX_VERSION%';
 'choiceVBox_msg' = 'Installs or Upgrades the Oracle VM VirtualBox application into /Applications if it is not already installed.';

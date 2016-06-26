@@ -4,22 +4,9 @@
     <options customize="allow" allow-external-scripts="yes" rootVolumeOnly="true" hostArchitectures="x86_64"/>
     <welcome file="welcome.rtfd" mime-type="text/rtfd"/>
     <choices-outline>
-        <line choice="choiceDockerMachineCLI"/>
-        <line choice="choiceDockerComposeCLI"/>
         <line choice="choiceVBox"/>
-        <line choice="choiceBoot2DockerISO"/>
-        <line choice="choiceKboxEngine"/>
-        <line choice="choiceKboxServices"/>
-        <line choice="choiceKboxCLI"/>
-        <line choice="choiceKboxGUI"/>
+        <line choice="choiceKalabox"/>
     </choices-outline>
-    <choice id="choiceDockerComposeCLI" title="choiceDockerComposeCLI_title" description="choiceDockerComposeCLI_msg" start_selected="true" start_enabled="false" start_visible="true">
-        <pkg-ref id="io.docker.pkg.dockercompose"/>
-    </choice>
-    <pkg-ref id="io.docker.pkg.dockercompose" auth="Root" version="%DOCKERCOMPOSE_VERSION%" installKBytes="%DOCKERCOMPOSE_INSTALL_KBYTES%">#dockercompose.pkg</pkg-ref>
-    <pkg-ref id="io.docker.pkg.dockercompose">
-        <bundle-version/>
-    </pkg-ref>
     <choice id="choiceVBox" title="choiceVBox_title" description="choiceVBox_msg" start_selected="vboxNeedsUpgrade()" start_enabled="vboxNeedsUpgrade()" start_visible="vboxNeedsUpgrade()">
         <pkg-ref id="org.virtualbox.pkg.vboxkexts" auth="Root" version="%VBOX_VERSION%" installKBytes="935">#VBoxKEXTs.pkg</pkg-ref>
         <pkg-ref id="org.virtualbox.pkg.virtualbox" auth="Root" version="%VBOX_VERSION%" installKBytes="247220">#VirtualBox.pkg</pkg-ref>
@@ -41,50 +28,15 @@
     <pkg-ref id="org.virtualbox.pkg.virtualboxcli">
         <bundle-version/>
     </pkg-ref>
-    <choice id="choiceBoot2DockerISO" title="choiceBoot2DockerISO_title" description="choiceBoot2DockerISO_msg" start_selected="true" start_enabled="true" start_visible="false">
-        <pkg-ref id="io.boot2dockeriso.pkg.boot2dockeriso"/>
-    </choice>
-    <pkg-ref id="io.boot2dockeriso.pkg.boot2dockeriso" auth="Root" version="%BOOT2DOCKER_ISO_VERSION%" installKBytes="%BOOT2DOCKER_ISO_INSTALL_KBYTES%">#boot2dockeriso.pkg</pkg-ref>
-    <pkg-ref id="io.boot2dockeriso.pkg.boot2dockeriso">
-        <bundle-version/>
-    </pkg-ref>
-    <choice id="choiceDockerMachineCLI" title="choiceDockerMachineCLI_title" description="choiceDockerMachineCLI_msg" start_enabled="false" start_selected="true" start_visible="true">
-        <pkg-ref id="io.docker.pkg.dockermachine"/>
-    </choice>
-    <pkg-ref id="io.docker.pkg.dockermachine" auth="Root" version="%DOCKERMACHINE_VERSION%" installKBytes="%DOCKERMACHINE_INSTALL_KBYTES%">#dockermachine.pkg</pkg-ref>
-    <pkg-ref id="io.docker.pkg.dockermachine">
-        <bundle-version/>
-    </pkg-ref>
-    <choice id="choiceKboxEngine" title="choiceKboxEngine_title" description="choiceKboxEngine_msg" start_enabled="false" start_selected="true" start_visible="true">
-        <pkg-ref id="io.kalabox.pkg.engine"/>
-    </choice>
-    <pkg-ref id="io.kalabox.pkg.engine" version="%ENGINE_VERSION%" installKBytes="%ENGINE_INSTALL_KBYTES%">#engine.pkg</pkg-ref>
-    <pkg-ref id="io.kalabox.pkg.engine">
-        <bundle-version/>
-    </pkg-ref>
-    <choice id="choiceKboxServices" title="choiceKboxServices_title" description="choiceKboxServices_msg" start_enabled="false" start_selected="true" start_visible="true">
-        <pkg-ref id="io.kalabox.pkg.services"/>
-    </choice>
-    <pkg-ref id="io.kalabox.pkg.services" version="%SERVICES_VERSION%" installKBytes="%SERVICES_INSTALL_KBYTES%">#services.pkg</pkg-ref>
-    <pkg-ref id="io.kalabox.pkg.services">
-        <bundle-version/>
-    </pkg-ref>
-    <choice id="choiceKboxCLI" title="choiceKboxCLI_title" description="choiceKboxCLI_msg" start_selected="true" start_enabled="true" start_visible="true">
-        <pkg-ref id="io.kalabox.pkg.kbox"/>
-    </choice>
-    <pkg-ref id="io.kalabox.pkg.kbox" auth="Root" version="%KBOXCLI_VERSION%" installKBytes="%KBOXCLI_INSTALL_KBYTES%">#kbox.pkg</pkg-ref>
-    <pkg-ref id="io.kalabox.pkg.kbox">
-        <bundle-version/>
-    </pkg-ref>
-    <choice id="choiceKboxGUI" title="choiceKboxGUI_title" description="choiceKboxGUI_msg" start_selected="true" start_enabled="true" start_visible="true">
+    <choice id="choiceKalabox" title="choiceKalabox_title" description="choiceKalabox_msg" start_selected="true" start_enabled="true" start_visible="true">
         <pkg-ref id="io.kalabox.pkg.kalabox"/>
     </choice>
-    <pkg-ref id="io.kalabox.pkg.kalabox" auth="Root" version="%KBOXGUI_VERSION%" installKBytes="%KBOXGUI_INSTALL_KBYTES%">#kbox-gui.pkg</pkg-ref>
+    <pkg-ref id="io.kalabox.pkg.kalabox" auth="Root" version="%KBOX_VERSION%" installKBytes="%KBOX_INSTALL_KBYTES%">#kbox.pkg</pkg-ref>
     <pkg-ref id="io.kalabox.pkg.kalabox">
         <bundle-version/>
     </pkg-ref>
 
-    <product id="io.kalabox.mpkg.kalabox" version="%INSTALLER_VERSION%"/>
+    <product id="io.kalabox.mpkg.kalabox" version="%KALABOX_VERSION%"/>
 
     <!-- Manually imported VBox Stuff -->
     <installation-check script="checkPrerequisite()"/>
