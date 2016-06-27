@@ -54,7 +54,7 @@ script:
 
   # Run a few tests on the installer
   # @todo: OSX
-  - if [ $KBOX_PKG_TYPE == "rpm" ]; then rm -f dist/*.deb && fakeroot -- alien -dc kalabox.rpm && mv *.deb kalabox.deb; fi
+  - if [ $KBOX_PKG_TYPE == "rpm" ]; then rm -f dist/*.deb && fakeroot -- alien -dc dist/kalabox.rpm && mv *.deb dist/kalabox.deb; fi
   - if [ $KBOX_PKG_TYPE != "dmg" ]; then grunt func; fi
 
   # Name the release depending on whether it is an official release or not
