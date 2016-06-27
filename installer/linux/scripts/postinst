@@ -51,6 +51,10 @@ KALABOX_ENGINE_IP="$KALABOX_IP" \
 mkdir -p /etc/resolver
 echo "nameserver ${KALABOX_IP}:53" > /etc/resolver/kbox
 
+# Symlink the KBOX binary
+mkdir -p /usr/local/bin
+ln -sf "$KALABOX_ROOT/bin/kbox" /usr/local/bin/kbox
+
 # Add an entry to the system menu
 XDG_DESKTOP_MENU="$(which xdg-desktop-menu 2> /dev/null)"
 if [ ! -x "$XDG_DESKTOP_MENU" ]; then
@@ -59,9 +63,6 @@ else
   # We need this directory to exist
   mkdir -p /usr/share/desktop-directories/
   # Set the menu things
-  "$XDG_DESKTOP_MENU" install --mode system /usr/share/applications/kalabox-ui.desktop
+  "$XDG_DESKTOP_MENU" install --novendor --mode system /usr/share/applications/kalabox.desktop
   "$XDG_DESKTOP_MENU" forceupdate --mode system
 fi
-
-# Set provisioned file
-touch /usr/share/kalabox/provisioned

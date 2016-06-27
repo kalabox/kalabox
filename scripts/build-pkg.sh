@@ -25,19 +25,14 @@ fpm -s dir -t $PKG_TYPE \
   $PKG_EXTRA_OPTS \
   $PKG_SCRIPTS \
   $PKG_DEPS \
-  -C build/installer/pkg \
-  desktop/kalabox-ui.desktop=/usr/share/applications/kalabox-ui.desktop \
+  -C build/installer \
+  kalabox=/usr/share \
+  desktop/kalabox.desktop=/usr/share/applications/kalabox.desktop \
   desktop/kalabox.png=/usr/share/kalabox/kalabox.png \
   network/bridgeup=/usr/share/kalabox/scripts/bridgeup \
   daemon/daemonup=/usr/share/kalabox/scripts/daemonup \
   init/upstart/kalabox.conf=/etc/init/kalabox.conf \
   init/sysv/kalabox=/etc/init.d/kalabox \
   init/systemd/kalabox.service=/lib/systemd/system/kalabox.service \
-  gui=/usr/share/kalabox \
-  docker-compose=/usr/share/kalabox/bin/docker-compose \
-  docker=/usr/share/kalabox/bin/docker \
-  kbox=/usr/local/bin/kbox \
-  docs=/usr/share/kalabox \
-  services.yml=/usr/share/kalabox/services/services.yml \
   dns/$PKG_TYPE/data/etc=/ \
   dns/$PKG_TYPE/data/usr=/

@@ -3,10 +3,10 @@ sudo: required
 matrix:
   include:
   - os: linux
-    env: KBOX_PKG_TYPE=rpm
+    env: KBOX_PKG_TYPE=rpm KBOX_SUDO_PASSWORD=
     node_js: '4.2'
   - os: linux
-    env: KBOX_PKG_TYPE=deb KBOX_SUDO_PASSWORD= DOCKER_HOST=tcp://10.13.37.100:2375
+    env: KBOX_PKG_TYPE=deb KBOX_SUDO_PASSWORD=
     node_js: '4.2'
   - os: osx
     env: KBOX_PKG_TYPE=dmg
@@ -51,6 +51,11 @@ script:
   # Run the build
   - mkdir -p release
   - grunt pkg
+
+  # Run a few tests on the installer
+  # @todo: OSX
+  #- if [ $KBOX_PKG_TYPE == "rpm" ]; then rm -f dist/*.deb && fakeroot -- alien -dc dist/kalabox.rpm && mv *.deb dist/kalabox.deb; fi
+  - if [ $KBOX_PKG_TYPE == "deb" ]; then grunt func; fi
 
   # Name the release depending on whether it is an official release or not
   - if [ -z "$TRAVIS_TAG" ]; then cp -rf dist/kalabox.$KBOX_PKG_TYPE release/kalabox-latest-dev.$KBOX_PKG_TYPE; fi

@@ -101,7 +101,6 @@ module.exports = function(grunt) {
 
     // Shell tasks
     shell: {
-      cliBats: shell.batsTask(common.files.cliBats),
       cliPkg: shell.cliPkgTask(),
       guiInstall: shell.guiInstallTask(),
       installerPkgosx: shell.scriptTask('./scripts/build-osx.sh'),
@@ -213,13 +212,8 @@ module.exports = function(grunt) {
     'mochacli:unit'
   ]);
 
-  // Run CLI BATS tests
-  grunt.registerTask('test:cli', [
-    'shell:cliBats'
-  ]);
-
-  // Run Installer BATS tests
-  grunt.registerTask('test:installer', [
+  // Run Installer tests
+  grunt.registerTask('func', [
     'shell:installer' + common.system.platform + 'Bats'
   ]);
 

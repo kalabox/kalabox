@@ -11,6 +11,8 @@ v0.13.0-unstable.2
 * Simplified Windows installer [#1245](https://github.com/kalabox/kalabox/issues/1245)
 * Fixed issue where Kalabox apps would not work while offline. [#1227](https://github.com/kalabox/kalabox/issues/1227)
 * Fixed TRAVIS_TAG=latest-dev triggering GitHub deployment. [#1412](https://github.com/kalabox/kalabox/issues/1412)
+* Simplified debian and fedora installers. [#1408](https://github.com/kalabox/kalabox/issues/1408)
+
 
 v0.13.0-unstable.1
 ==================
