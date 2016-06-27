@@ -9,12 +9,24 @@ load ../env
 
 # Load OS specific stuff
 load common
-load env
 
 #
 # Get us set up for all the tests
 #
 setup() {
+
+  # Dont allow us to continue without vboxmanage in the path
+  : ${VBOX:=$(which vboxmanage)}
+  if [ ! -f "${VBOX}" ]; then
+    echo "VBoxManage is not installed. Please install it in your PATH before continuing"
+    exit 1
+  fi
+
+  #
+  # Get the "last" VBOX host only adapter
+  # @todo: are their circumstances where VB will have no HOA?
+  #
+  : ${KBOX_LAST_HOA:=$(vboxmanage list hostonlyifs | grep "Name:            vboxnet" | tail -1 | cut -d: -f2 | tr -d ' ')}
 
   # Do the preflight
   kbox-setup-preflight
@@ -55,13 +67,10 @@ setup() {
   done
 
   # Run our uninstaller first just in case
-  kbox-uninstall
+  kbox-uninstall || true
 
   # Run the install
   kbox-install
-
-  # Verify the install
-  kbox-verify-install
 
 }
 

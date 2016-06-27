@@ -4,8 +4,28 @@
 # Basic tests to verify that Kalabox has been installed
 #
 
-# Load up environment
+# Load up common environment stuff
 load env
+
+# Load OS specific stuff
+load "$UNIX_TYPE/common"
+
+#
+# Get us set up for all the tests
+#
+setup() {
+  kbox-setup-preflight
+  # Location of our dockerfiles
+  CMD_DOCKERFILES_DIR=${TRAVIS_BUILD_DIR}/plugins/kalabox-cmd/dockerfiles/
+}
+
+# Check that we can install Kalabox.
+@test "Check that we can install Kalabox successfully." {
+  # Run our uninstaller first just in case
+  kbox-uninstall || true
+  # Run the install
+  kbox-install
+}
 
 # Check that the Kalabox CLI is in the PATH
 @test "Check that kalabox-cli is in PATH" {
@@ -56,6 +76,7 @@ load env
 
 # Check that core dns container exists
 @test "Check that core dns container exists and is running." {
+  echo $DOCKER
   $DOCKER inspect kalabox_dns_1 | grep "\"Running\": true"
 }
 
@@ -72,4 +93,34 @@ load env
 # Check that '10.13.37.100' can be pinged
 @test "Check that '10.13.37.100' can be pinged" {
   ping -c 1 10.13.37.100
+}
+
+# Check that we can build the cli image without an error.
+@test "Check that we can build the cli image without an error." {
+  run kbox-docker-build-retry kalabox/cli testing $CMD_DOCKERFILES_DIR/cli
+  [ "$status" -eq 0 ]
+}
+
+# Check that our image version is the stable tag
+@test "Check that our image version is the stable tag." {
+  cat ${TRAVIS_BUILD_DIR}/plugins/kalabox-cmd/kalabox-compose.yml | grep "image: kalabox/cli:" | grep "stable"
+}
+
+# Check that we can compile native stuff with node-gyp.
+@test "Check that we can compile native stuff with node-gyp." {
+  run $DOCKER run --entrypoint npm kalabox/cli:testing install -g node-sass
+  [ "$status" -eq 0 ]
+}
+
+# Check that we can uninstall Kalabox.
+@test "Check that we can uninstall Kalabox successfully." {
+  kbox-uninstall
+}
+
+#
+# BURN IT TO THE GROUND!!!!
+#
+teardown() {
+  sleep 1
+  echo "Test complete."
 }

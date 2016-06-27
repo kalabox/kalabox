@@ -9,13 +9,11 @@
 #
 kbox-setup-preflight() {
 
-  set -e
-
-  # Build our installer
-  make linux
-
-  # Check it exists
-  stat ./dist/$KALABOX_PKG
+  # Dont allow us to continue without a packge to install
+  if [ ! -f "./dist/$KALABOX_PKG" ]; then
+    echo "You dont have a kalabox installer to use. Please run 'grunt pkg' first."
+    exit 1
+  fi
 
 }
 
@@ -36,37 +34,6 @@ kbox-install() {
 }
 
 #
-# Verify the Kakabox install
-#
-kbox-verify-install() {
-
-  # Get our CLI binary
-  KBOX=$(which kbox)
-
-  # Get our installed docker binary
-  KDOCKER=/usr/share/kalabox/bin/docker
-
-  # Check some basic commands
-  $KBOX config
-  $KBOX create | grep drupal7
-  $KBOX env
-  $KBOX list
-  $KBOX version
-
-  # Some basic service checks
-  DOCKER_HOST=tcp://10.13.37.100:2375 $KDOCKER inspect kalabox_dns_1 | grep "\"Running\": true"
-  DOCKER_HOST=tcp://10.13.37.100:2375 $KDOCKER inspect kalabox_proxy_1 | grep "\"Running\": true"
-
-  # Check our IP address
-  cat /etc/resolver/kbox | grep $KALABOX_IP
-  ping -c 1 $KALABOX_IP
-
-  # Check for NW app's existence
-  stat /usr/share/kalabox/gui/Kalabox
-
-}
-
-#
 # Run the Kalabox uninstall
 #
 kbox-uninstall() {
@@ -83,17 +50,28 @@ kbox-uninstall() {
 }
 
 #
-# Verify the Kalabox uninstall
+# Function to rety docker builds if they fail
 #
-kbox-verify-uninstall() {
+kbox-docker-build-retry() {
 
-  # Check that the app is removed
-  run stat /usr/share/kalabox/docker.graph || \
-  # Check that the CLI is gone
-  run which kbox || \
-  # Check that we cannot ping the IP
-  ping -c 1 $KALABOX_IP
-  # Check
-  [ "$status" -eq 1 ]
+  # Get args
+  IMAGE=$1
+  TAG=$2
+  DOCKERFILE=$3
+
+  # Try a few times
+  NEXT_WAIT_TIME=0
+  until $DOCKER build -t $IMAGE:$TAG $DOCKERFILE || [ $NEXT_WAIT_TIME -eq 5 ]; do
+    sleep $(( NEXT_WAIT_TIME++ ))
+  done
+
+  # If our final try has been met we assume failure
+  #
+  # @todo: this can be better since this could false negative
+  #        on the final retry
+  #
+  if [ $NEXT_WAIT_TIME -eq 5 ]; then
+    exit 666
+  fi
 
 }

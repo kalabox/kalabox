@@ -9,7 +9,6 @@ load ../env
 
 # Load OS specific stuff
 load common
-load env
 
 #
 # Get us set up for all the tests
@@ -43,9 +42,6 @@ setup() {
 
   # Run the install
   kbox-install
-
-  # Verify the install
-  kbox-verify-install
 
 }
 

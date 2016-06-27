@@ -88,21 +88,15 @@ var mochaTestFiles = [
   './test/**/*.spec.js'
 ];
 
-// CLI BATS tests
-var cliBatsFiles = [
-  './test/cli/install.bats',
-  './test/cli/cmd.bats'
-];
-
 // Linux installer BATS tests
 var installerLinuxBatsFiles = [
-  './test/installer/basic.bats',
+  './test/installer/install.bats',
   './test/installer/linux/*.bats'
 ];
 
 // Osx installer BATS tests
 var installerOsxBatsFiles = [
-  './test/installer/basic.bats',
+  './test/installer/install.bats',
   './test/installer/osx/*.bats'
 ];
 
@@ -145,7 +139,6 @@ module.exports = {
   files: {
     auxJs: auxJsFiles,
     cli: cliBuildFiles,
-    cliBats: cliBatsFiles,
     cliJs: cliJsFiles,
     guiJs: guiJsFiles,
     html: htmlFiles,
