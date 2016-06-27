@@ -56,8 +56,6 @@
     "fs-extra": "^0.18.2",
     "inquirer": "^0.8.3",
     "js-yaml": "^3.4.6",
-    "kalabox-app-pantheon": "https://github.com/kalabox/kalabox-app-pantheon/tarball/v0.12",
-    "kalabox-app-php": "https://github.com/kalabox/kalabox-app-php/tarball/v0.12",
     "kalabox-stats-client": "^0.2.1",
     "lodash": "^3.10.1",
     "lpad-align": "^1.0.0",
