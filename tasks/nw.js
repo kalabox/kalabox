@@ -48,7 +48,7 @@ module.exports = function() {
         outputDir: './dist/gui',
         outputName: 'kalabox-ui',
         executableName: 'Kalabox',
-        sideBySide: true,
+        sideBySide: (process.platform === 'win32'),
         winIco: './installer/win32/kalabox.ico',
         macIcns: './installer/osx/kalabox.icns'
       }

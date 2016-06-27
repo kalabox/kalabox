@@ -13,33 +13,37 @@ fi
 
 # Kalabox things
 KBOX_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat package.json)")
-INSTALLER_VERSION="$KBOX_VERSION"
-KALABOX_CLI_VERSION="$KBOX_VERSION"
-KALABOX_GUI_VERSION="$KBOX_VERSION"
-KALABOX_IMAGE_VERSION="v0.12"
+KALABOX_VERSION="$KBOX_VERSION"
 
 # Docker things
 DOCKER_ENGINE_VERSION="1.9.1"
-DOCKER_COMPOSE_VERSION="1.7.1"
+DOCKER_COMPOSE_VERSION="1.6.2"
 
 # Start up our build directory and go into it
-mkdir -p build/installer/pkg
-cd build/installer/pkg
+mkdir -p build/installer
+mkdir -p build/installer/kalabox
+mkdir -p build/installer/kalabox/bin
+mkdir -p build/installer/kalabox/services
+mkdir -p build/installer/kalabox/docs
+cd build/installer/kalabox
 
 # Get our Kalabox dependencies
-cp -rf "../../../dist/cli/kbox-linux-x64-v${KALABOX_CLI_VERSION}" kbox
-cp -rf "../../../dist/gui/kalabox-ui" gui
-cp -rf "../../../plugins/kalabox-services-kalabox/kalabox-compose.yml" services.yml
-chmod +x kbox
-chmod 755 -Rv gui
+cp -rf ../../../dist/gui/kalabox-ui/* ./
+# Clean source files
+# @todo: i think this is an issue with NWJS-BUILDER
+chmod 755 -Rv ./
+cp -rf ../../../dist/cli/kbox-linux-x64-v${KALABOX_VERSION} bin/kbox
+cp -rf ../../../plugins/kalabox-services-kalabox/kalabox-compose.yml services/services.yml
+chmod +x bin/kbox
 
 # Get our Docker dependencies
-curl -fsSL -o docker "https://get.docker.com/builds/Linux/x86_64/docker-$DOCKER_ENGINE_VERSION"
-curl -fsSL -o docker-compose "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Linux-x86_64"
-chmod +x docker
-chmod +x docker-compose
+curl -fsSL -o bin/docker "https://get.docker.com/builds/Linux/x86_64/docker-$DOCKER_ENGINE_VERSION"
+curl -fsSL -o bin/docker-compose "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Linux-x86_64"
+chmod +x bin/docker
+chmod +x bin/docker-compose
 
 # Extract DNS
+cd ..
 curl -fsSL -o dns.rpm "https://github.com/azukiapp/libnss-resolver/releases/download/v0.3.0/fedora20-libnss-resolver-0.3.0-1.x86_64.rpm" && \
   fakeroot -- alien -d dns.rpm --scripts && \
   mkdir -p dns/rpm/data && mkdir -p dns/rpm/control && cd dns/rpm && \
@@ -58,18 +62,12 @@ curl -fsSL -o dns.deb "https://github.com/azukiapp/libnss-resolver/releases/down
   rm -f dns.deb
 
 # Back out to install root
-cd ..
-mkdir -p pkg/docs && mkdir -p dist && \
-  cp -rf scripts pkg/scripts && \
-  cp -rf network pkg/network && \
-  cp -rf daemon pkg/daemon && \
-  cp -rf desktop pkg/desktop && \
-  cp -rf init pkg/init && \
-  cp -rf ../../README.md pkg/docs/README.md && \
-  cp -rf ../../TERMS.md pkg/docs/TERMS.md && \
-  cp -rf ../../LICENSE.md pkg/docs/LICENSE.md
+mkdir -p dist && \
+  cp -rf ../../README.md kalabox/docs/README.md && \
+  cp -rf ../../TERMS.md kalabox/docs/TERMS.md && \
+  cp -rf ../../LICENSE.md kalabox/docs/LICENSE.md
 
 # Build our two packages
 cd ../..
-./scripts/build-pkg.sh deb $INSTALLER_VERSION
-./scripts/build-pkg.sh rpm $INSTALLER_VERSION
+./scripts/build-pkg.sh deb $KALABOX_VERSION
+./scripts/build-pkg.sh rpm $KALABOX_VERSION
