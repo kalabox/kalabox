@@ -1,15 +1,16 @@
 #!/bin/bash
 
 # Uncomment to debug
-set -xe
+set -x
+set -e
 
 # Kalabox things
 KBOX_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat package.json)")
 KALABOX_VERSION="$KBOX_VERSION"
 
 # Apps
-PLUGIN_PANTHEON_VERSION="0.13.0-unstable.1"
-PLUGIN_PHP_VERSION="0.13.0-unstable.1"
+PLUGIN_PANTHEON_VERSION="0.13.0-unstable.3"
+PLUGIN_PHP_VERSION="0.13.0-unstable.3"
 
 # Docker things
 DOCKER_MACHINE_VERSION="0.7.0"

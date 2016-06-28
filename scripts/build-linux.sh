@@ -16,8 +16,8 @@ KBOX_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat package.jso
 KALABOX_VERSION="$KBOX_VERSION"
 
 # Apps
-PLUGIN_PANTHEON_VERSION="0.13.0-unstable.1"
-PLUGIN_PHP_VERSION="0.13.0-unstable.1"
+PLUGIN_PANTHEON_VERSION="0.13.0-unstable.3"
+PLUGIN_PHP_VERSION="0.13.0-unstable.3"
 
 # Docker things
 DOCKER_ENGINE_VERSION="1.9.1"
@@ -40,9 +40,9 @@ chmod +x bin/kbox
 
 # Get our app dependencies
 mkdir -p plugins/kalabox-app-pantheon plugins/kalabox-app-php
-curl -fsSL "https://github.com/kalabox/kalabox-app-pantheon/releases/download/v$PLUGIN_PANTHEON_VERSION/kalabox-app-pantheon-v$PLUGIN_PANTHEON_VERSION.tar.gz" | tar -xf- -C plugins/kalabox-app-pantheon
-curl -fsSL "https://github.com/kalabox/kalabox-app-php/releases/download/v$PLUGIN_PHP_VERSION/kalabox-app-php-v$PLUGIN_PHP_VERSION.tar.gz" | tar -xf- -C plugins/kalabox-app-php
-cp -rf "../../installer/kalabox.yml" kalabox.yml
+curl -fsSL "https://github.com/kalabox/kalabox-app-pantheon/releases/download/v$PLUGIN_PANTHEON_VERSION/kalabox-app-pantheon-v$PLUGIN_PANTHEON_VERSION.tar.gz" | tar -xz -C plugins/kalabox-app-pantheon
+curl -fsSL "https://github.com/kalabox/kalabox-app-php/releases/download/v$PLUGIN_PHP_VERSION/kalabox-app-php-v$PLUGIN_PHP_VERSION.tar.gz" | tar -xz -C plugins/kalabox-app-php
+cp -rf ../../../installer/kalabox.yml kalabox.yml
 
 # Get our Docker dependencies
 curl -fsSL -o bin/docker "https://get.docker.com/builds/Linux/x86_64/docker-$DOCKER_ENGINE_VERSION"
