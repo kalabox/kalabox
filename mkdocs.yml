@@ -1,0 +1,12 @@
+site_name: Kalabox Docs
+theme: readthedocs
+repo_url: https://github.com/kalabox/kalabox
+include_search: true
+pages:
+- Getting Started: index.md
+- Style tips: styles.md
+#- General:
+#  - Install: install.md
+#  - Install (alternatives): install-alternative.md
+#- Writing commands:
+#  - Context system: context.md
