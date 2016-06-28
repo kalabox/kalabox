@@ -1,11 +1,16 @@
 #!/bin/bash
 
 # Uncomment to debug
-set -xe
+set -x
+set -e
 
 # Kalabox things
 KBOX_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat package.json)")
 KALABOX_VERSION="$KBOX_VERSION"
+
+# Apps
+PLUGIN_PANTHEON_VERSION="0.13.0-unstable.3"
+PLUGIN_PHP_VERSION="0.13.0-unstable.3"
 
 # Docker things
 DOCKER_MACHINE_VERSION="0.7.0"
@@ -20,17 +25,24 @@ VBOX_REVISION="106931"
 APP_CONTENTS="Kalabox.app/Contents/MacOS"
 APP_BIN="$APP_CONTENTS/bin"
 APP_SERVICES="$APP_CONTENTS/services"
+APP_PLUGINS="$APP_CONTENTS/plugins"
 
 # Start up our build directory and go into it
 mkdir -p build/installer
 cd build/installer
 
 # Get our Kalabox dependencies
-mkdir -p $APP_BIN $APP_SERVICES
 cp -rf "../../dist/gui/kalabox-ui/Kalabox.app" Kalabox.app
+mkdir -p $APP_BIN $APP_SERVICES
 cp -rf "../../dist/cli/kbox-osx-x64-v${KALABOX_VERSION}" $APP_BIN/kbox
 cp -rf "../../plugins/kalabox-services-kalabox/kalabox-compose.yml" $APP_SERVICES/services.yml
 chmod +x $APP_BIN/kbox
+
+# Get our Apps
+mkdir -p $APP_PLUGINS/kalabox-app-pantheon $APP_PLUGINS/kalabox-app-php
+curl -fsSL "https://github.com/kalabox/kalabox-app-pantheon/releases/download/v$PLUGIN_PANTHEON_VERSION/kalabox-app-pantheon-v$PLUGIN_PANTHEON_VERSION.tar.gz" | tar -xf- -C $APP_PLUGINS/kalabox-app-pantheon
+curl -fsSL "https://github.com/kalabox/kalabox-app-php/releases/download/v$PLUGIN_PHP_VERSION/kalabox-app-php-v$PLUGIN_PHP_VERSION.tar.gz" | tar -xf- -C $APP_PLUGINS/kalabox-app-php
+cp -rf "../../installer/kalabox.yml" $APP_CONTENTS/kalabox.yml
 
 # Get our Docker dependencies
 curl -fsSL -o $APP_BIN/docker-compose "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Darwin-x86_64"

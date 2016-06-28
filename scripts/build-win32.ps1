@@ -15,6 +15,7 @@ $bundle_dir = "$base_dir\bundle"
 $docs_dir = "$bundle_dir\docs"
 $bin_dir = "$bundle_dir\bin"
 $services_dir = "$bundle_dir\services"
+$plugins_dir = "$bundle_dir\plugins"
 
 # Build dependencies
 $inno_url = "http://files.jrsoftware.org/is/5/isetup-5.5.9.exe"
@@ -25,7 +26,11 @@ $inno_bin = "C:\Program Files (x86)\Inno Setup 5\ISCC.exe"
 $kalabox_pkg = Get-Content "package.json" | Out-String | ConvertFrom-Json
 $kalabox_version = $kalabox_pkg.version
 
-# Docekr version information
+# Kalabox plugins
+$plugin_pantheon_version = "0.13.0-unstable.3"
+$plugin_php_version = "0.13.0-unstable.3"
+
+# Docker version information
 $docker_machine_version = "0.7.0"
 $docker_compose_version = "1.7.1"
 $boot2docker_iso_version = "1.11.2"
@@ -78,13 +83,17 @@ If (!(Test-Path $inno_bin)) {
 }
 
 # Get the things we need
-New-Item -type directory -force -path $bundle_dir, $docs_dir, $bin_dir, $services_dir
+New-Item -type directory -force -path $bundle_dir, $docs_dir, $bin_dir, $services_dir, $plugins_dir
 Write-Output "Grabbing the files we need..."
 
 # Kalabox things
 Copy-Item "dist\gui\kalabox-ui\*" "$bundle_dir" -force -recurse
 Copy-Item "dist\cli\kbox-win32-x64-v$kalabox_version.exe" "$bin_dir\kbox.exe" -force
 Copy-Item "plugins\kalabox-services-kalabox\kalabox-compose.yml" "$services_dir\services.yml" -force
+
+# App plugin things
+Download -Url "https://github.com/kalabox/kalabox-app-pantheon/releases/download/v$plugin_pantheon_version/kalabox-app-pantheon-v$plugin_pantheon_version.zip" -Destination "$temp_dir\kalabox-app-pantheon.zip"
+Download -Url "https://github.com/kalabox/kalabox-app-php/releases/download/v$plugin_php_version/kalabox-app-php-v$plugin_php_version.zip" -Destination "$temp_dir\kalabox-app-php.zip"
 
 # Docker things
 Download -Url "https://github.com/docker/machine/releases/download/v$docker_machine_version/docker-machine-Windows-x86_64.exe" -Destination "$bin_dir\docker-machine.exe"
@@ -103,6 +112,10 @@ Start-Process -Wait "$temp_dir\virtualbox.exe" -ArgumentList "-extract -silent -
 Copy-Item "$temp_dir\VirtualBox-$virtualbox_version-r$virtualbox_revision-MultiArch_amd64.msi" "$base_dir\virtualbox.msi" -force
 Copy-Item "$temp_dir\common.cab" "$base_dir\common.cab" -force
 
+New-Item -type directory -force -path $plugins_dir\kalabox-app-pantheon, $plugins_dir\kalabox-app-php
+Unzip -File "$temp_dir\kalabox-app-pantheon.zip" -Destination "$plugins_dir\kalabox-app-pantheon"
+Unzip -File "$temp_dir\kalabox-app-php.zip" -Destination "$plugins_dir\kalabox-app-php"
+
 # Copy over some other assets
 Write-Output "Copying over static assets..."
 New-Item $docs_dir -type directory -force
@@ -110,6 +123,7 @@ Copy-Item "$pwd\README.md" "$docs_dir\README.md" -force
 Copy-Item "$pwd\TERMS.md" "$docs_dir\TERMS.md" -force
 Copy-Item "$pwd\LICENSE.md" "$docs_dir\LICENSE.md" -force
 Copy-Item "$pwd\ORACLE_VIRTUALBOX_LICENSE" "$docs_dir\ORACLE_VIRTUALBOX_LICENSE" -force
+Copy-Item "$pwd\installer\kalabox.yml" "$bundle_dir\kalabox.yml" -force
 
 # Create our inno-installer
 Write-Output "Creating our package..."

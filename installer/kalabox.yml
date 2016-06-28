@@ -1,0 +1,10 @@
+# This file lives in the sysConfRoot so that we can add
+# the external PHP and PANTHEON apps to the situation
+globalPlugins:
+  - kalabox-core
+  - kalabox-cmd
+  - kalabox-services-kalabox
+  - kalabox-sharing
+  - kalabox-ui
+  - kalabox-app-pantheon
+  - kalabox-app-php

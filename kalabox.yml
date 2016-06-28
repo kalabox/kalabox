@@ -51,8 +51,6 @@
 #     - kalabox-ui
 #
 globalPlugins:
-  - kalabox-app-pantheon
-  - kalabox-app-php
   - kalabox-core
   - kalabox-cmd
   - kalabox-services-kalabox
