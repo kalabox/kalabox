@@ -14,11 +14,12 @@ chmod +x "$PKG_SCRIPTS_DIR/$2/$SCRIPT_TYPE"
 
 # Check for DNS script
 if [ -f "${DNS_SCRIPTS_DIR}/${SCRIPT_TYPE}" ]; then
+  echo '' >> "$PKG_SCRIPTS_DIR/$2/$SCRIPT_TYPE"
   cat "${DNS_SCRIPTS_DIR}/${SCRIPT_TYPE}" >> "$PKG_SCRIPTS_DIR/$2/$SCRIPT_TYPE"
 fi
 
 # Check for kbox script
 if [ -f "${KALABOX_SCRIPTS_DIR}/${SCRIPT_TYPE}" ]; then
-  echo
+  echo '' >> "$PKG_SCRIPTS_DIR/$2/$SCRIPT_TYPE"
   cat "${KALABOX_SCRIPTS_DIR}/${SCRIPT_TYPE}" >> "$PKG_SCRIPTS_DIR/$2/$SCRIPT_TYPE"
 fi
