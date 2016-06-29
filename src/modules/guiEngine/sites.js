@@ -376,6 +376,7 @@ angular.module('kalabox.sites', [])
         opts.needsFramework = opts.needsFramework || false;
         opts._type = opts.provider.name;
         opts.dir = opts.dir || config.appsRoot;
+        process.chdir(opts.dir);
         // Get app.
         var app = kbox.create.get(opts.provider.name);
         // Create app.
