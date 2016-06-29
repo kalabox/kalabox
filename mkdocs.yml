@@ -28,4 +28,4 @@ pages:
     - 'Configuration': 'developers/config.md'
     - 'Plugins': 'developers/plugins.md'
     - 'Kalabox API': 'developers/api.md'
-
+  - 'Troubleshooting': 'troubleshooting.md'

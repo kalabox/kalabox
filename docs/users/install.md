@@ -13,6 +13,8 @@ Preinstall Checks
 Mac OSX
 -------
 
+### Installation
+
 1. Download the `.dmg` package from [kalabox.io/download](http://kalabox.io/download)
 2. Mount the DMG by double-clicking it
 3. Double-click on the `KalaboxInstaller.pkg`
@@ -21,14 +23,23 @@ Mac OSX
 !!! warning "Installaton Failed"
     Please check out our two most common OSX installation issues
     * [Duplicate host only adapter]()
-    * [Using a different default shell than BASH]
+    * [Using a different default shell than BASH](https://github.com/kalabox/kalabox/issues/1343)
 
 Windows
 -------
 
+!!! note "Install in default location"
+    It is currently recommended to install Kalabox in the default location
+    of `C:\Program Files` if possible.
+
 1. Download the Windows `.exe` package from [kalabox.io/download](http://kalabox.io/download)
 2. Double click on the download `kalabox.exe`
 3. Approve various UAC prompts during install
+
+!!! warning "Installation Failed"
+    Please check out our two most common OSX installation issues
+    * [Duplicate host only adapter]()
+    * [Using a different default shell than BASH](https://github.com/kalabox/kalabox/issues/1343)
 
 !!! tip "White list *.kbox domains"
     White list *.kbox domains in relevant security software that may be interfering with our custom DNS. See this [github issue](https://github.com/kalabox/kalabox/issues/891) for more information on the topic.
