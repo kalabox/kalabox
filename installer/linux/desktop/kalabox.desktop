@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Kalabox
-Comment=Fask local dev
+Comment=Fast local dev
 Keywords=development;
 OnlyShowIn=GNOME;KDE;LXDE;MATE;Razor;ROX;TDE;Unity;XFCE;EDE;Cinnamon;Old;
 Path=/usr/share/kalabox/
