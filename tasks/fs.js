@@ -49,6 +49,8 @@ module.exports = function(common) {
       gui: {
         build: {
           options: {
+            noProcess: ['**/*.{png,gif,jpg,ico,psd,svg,ttf,otf,woff,' +
+            'woff2,eot}'],
             process: function(content, srcPath) {
               switch (srcPath) {
                 // Switch CLI entrypoint to NWJS one
