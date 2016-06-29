@@ -47,6 +47,9 @@
     "companyName": "Kalabox Inc."
   },
   "chromium-args": "--enable-threaded-compositing",
+  "web_accessible_resources": [
+    "*.png"
+  ],
   "dependencies": {
     "bluebird": "^2.9.3",
     "chalk": "~0.5.1",
