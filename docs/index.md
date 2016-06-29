@@ -1,5 +1,8 @@
 # Kalabox
 
+!!! important ""
+    This is a admonition box without a title.
+
 Welcome friend to Kalabox!
 
 Kalabox is the fastest way for professionals to start developing Drupal and Wordpress sites on your local computer. If you haven't already, go to http://www.kalabox.io to download the appropriate version of Kalabox for your operating system.
