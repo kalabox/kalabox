@@ -17,8 +17,12 @@ while getopts 'f' flag; do
 done
 
 # Find out our user
+APPLICATION="/Applications/Kalabox.app/Contents/MacOS"
+
 CONSOLE_USER=$(stat -f '%Su' /dev/console)
 CONSOLE_USER_HOME=$(su $CONSOLE_USER -c 'echo $HOME')
+
+DOCKER_MACHINE="$APPLICATION/bin/docker-machine"
 
 #
 # Uninstall function
@@ -26,7 +30,7 @@ CONSOLE_USER_HOME=$(su $CONSOLE_USER -c 'echo $HOME')
 uninstall() {
 
   echo "Removing Kalabox VM..."
-  sudo -u "${CONSOLE_USER}" "${CONSOLE_USER_HOME}/.kalabox/bin/docker-machine" rm -f Kalabox2
+  sudo -u "${CONSOLE_USER}" "${DOCKER_MACHINE}" rm -f Kalabox2 || "${DOCKER_MACHINE}" rm -f Kalabox2
 
   echo "Removing Application..."
   rm -rf /Applications/Kalabox.app
