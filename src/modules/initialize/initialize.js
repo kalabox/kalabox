@@ -10,10 +10,6 @@ angular.module('kalabox.initialize', [
     url: '/initialize',
     templateUrl: 'modules/initialize/initialize.html.tmpl',
     controller: 'InitializeCtrl'
-  })
-  .state('installer-error', {
-    url: '/installer-error',
-    templateUrl: 'modules/initialize/installer-error.html.tmpl',
   });
   $urlRouterProvider.otherwise('/initialize');
 })
@@ -28,26 +24,18 @@ angular.module('kalabox.initialize', [
     }
     gui.Window.get().menu = mb;
 
-    // Decide on next location.
-    globalConfig.then(function(globalConfig) {
-      if (globalConfig.provisioned) {
-        // Bring engine up then navigate to dashboard.
-        return kbox.then(function(kbox) {
-          // Bring engine up.
-          return kbox.engine.up()
-          // Pre-load sites.
-          .then(function() {
-            return sites.get();
-          })
-        // Navigate to dashboard.
-          .then(function() {
-            $state.go('dashboard');
-          });
-        });
-      } else {
-        // Install hasn't run.
-        $state.go('installer-error');
-      }
+    // Take us to the Dashboard.
+    kbox.then(function(kbox) {
+      // Bring engine up.
+      return kbox.engine.up()
+      // Pre-load sites.
+      .then(function() {
+        return sites.get();
+      })
+    // Navigate to dashboard.
+      .then(function() {
+        $state.go('dashboard');
+      });
     });
 
   }]);
