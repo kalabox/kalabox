@@ -1,0 +1,27 @@
+site_name: Kalabox Documentation
+theme: readthedocs
+repo_url: https://github.com/kalabox/kalabox
+include_search: true
+markdown_extensions:
+  - markdown.extensions.toc
+  - markdown.extensions.admonition
+  - markdown.extensions.smarty
+  - markdown.extensions.nl2br
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - pymdownx.extra
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.tilde
+  - pymdownx.caret
+  - pymdownx.smartsymbols
+  - pymdownx.githubemoji
+  - pymdownx.tasklist
+  - pymdownx.progressbar
+  - pymdownx.headeranchor
+  - pymdownx.arithmatex
+  - pymdownx.mark
+  - pymdownx.critic
+pages:
+  - 'Homepage': 'index.md'
+
