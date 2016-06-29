@@ -9,3 +9,23 @@ markdown_extensions:
   - markdown.extensions.nl2br
 pages:
   - 'Homepage': 'index.md'
+  - 'General Information':
+    - 'System Requirements': 'general/sysreq.md'
+    - 'How it works': 'general/how.md'
+    - 'Architecture': 'general/arch.md'
+  - 'For Users':
+    - 'Installation': 'users/install.md'
+    - 'Getting Started': 'users/started.md'
+    - 'Using the Kalabox CLI': 'users/cli.md'
+    - 'Using the Kalabox GUI': 'users/gui.md'
+    - 'Sharing a Kalabox app': 'users/share.md'
+    - 'Core plugins': 'users/coreplugins.md'
+    - 'Configuration': 'users/config.md'
+    - 'Uninstallation': 'users/uninstall.md'
+  - 'For Developers':
+    - 'Installation from Source': 'developers/install.md'
+    - 'Contributing': 'developers/contrib.md'
+    - 'Testing': 'developers/testing.md'
+    - 'Building': 'developers/building.md'
+    - 'Custom Plugins': 'developers/plugins.md'
+    - 'Kalabox API': 'developers/api.md'
