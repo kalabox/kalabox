@@ -1,6 +1,9 @@
 FROM debian:jessie
 
 ENV UNISON_VERSION=2.48.4
+ENV UNISON_CODEROOT=/code
+ENV UNISON_WEBROOT=/var/www
+ENV UNISON_OPTIONS=
 
 RUN apt-get update  && apt-get install -y \
     curl \
@@ -24,7 +27,4 @@ RUN apt-get update  && apt-get install -y \
   && apt-get autoremove -y \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
 
-COPY sync.profile /root/.unison/default.prf
-COPY run.sh /run.sh
-
-CMD ["/run.sh"]
+CMD ["unison $UNISON_CODEROOT $UNISON_WEBROOT $UNISON_OPTIONS"]
