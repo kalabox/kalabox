@@ -65,8 +65,9 @@ module.exports = function(common) {
       },
       files: {
         src: common.files.htmlTpl
-      }
-    }
+      },
+    },
+    mdlint: ['docs/**/*.md']
   };
 
 };
