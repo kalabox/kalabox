@@ -1,3 +1,8 @@
+v0.13.0-alpha.2
+==================
+
+* Rebooted our documentation [#1322](https://github.com/kalabox/kalabox/issues/1322)
+
 v0.13.0-alpha.1
 ==================
 
