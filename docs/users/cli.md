@@ -131,8 +131,17 @@ Options:
 !!! tip "Good to resolve random issues"
     Sometimes if your Kalabox is giving you a tough go, doing a simple restart can flush out the issue.
 
+services
+--------
+
+Displays relevant connection information for your apps services. Like `kbox create` this command also must be implemented by the app itself.
+
+`kbox create`
+
+See the plugin-specific documentation for how the [Pantheon plugin](http://pantheon.kalabox.io) and the [PHP plugin](http://php.kalabox.io) implement this command.
+
 start
--------
+-----
 
 Start an app. It will also build the app if this is the first time you've started it. You need to have an app context to run this command. You need to have an app context to run this command.
 
@@ -160,7 +169,7 @@ kbox app55 start
     This could take a bit of time depending on constitution of the app. For this reason we recommend using the `--verbose` flag your first time starting an app so you can see what is going on.
 
 stop
--------
+----
 
 Stop your Kalabox app. You need to have an app context to run this command.
 
