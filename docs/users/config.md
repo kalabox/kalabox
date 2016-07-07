@@ -4,11 +4,9 @@ Configuration
 Sharing
 -------
 
-Kalabox seeks to mitigate the **HARDEST PROBLEM** in VM based local development solutions: quickly sharing files from your host machine into the VM while still maintaining fast page loads.
+Kalabox seeks to mitigate the **HARDEST PROBLEM** in VM-based local development: quickly sharing files from your host machine into the VM while maintaining fast page loads. This is a longstanding issue and no project has a perfect solution; for a longer discussion on filesharing, see the [Tradeoffs](/#tradeoffs) section below.
 
-Please see below the examples for more information about this problem and its future in local dev and Kalabox in particular.
-
-That said, you can easily turn on file sharing by adding a `sharing` object to the `pluginconfig` of your app's `kalabox.yml` file.
+With Kalabox, you can easily enable file sharing by adding a `sharing` object to the `pluginconfig` of your app's `kalabox.yml` file:
 
 ### Example 1: Directly share your webroot.
 
@@ -40,16 +38,16 @@ pluginconfig:
 
 #### Tradeoffs
 
-When it comes to file sharing in Virtual Machine based local development environments there are essentially two major things to consider:
+When it comes to file sharing in Virtual Machine-based local development environments there are essentially two major things to consider:
 
   1. How fast can my code change get from my host to my VM?
   2. How fast will my app/site load?
 
 **Fast code changes**
 
-Solutions like `vbfs` or `nfs` which mount files over the network provide instantaneous changes. They also require the remote machine "check in" to see if there are any changes to a file before it is read or written. For a site or app with a few files this is no big deal. However, when you have an app using a modern CMS like Drupal with thousands of files this "checking in" can substantial slow a page load from less than a second to 5, 10, 40 or never seconds depending on the load.
+Solutions like `vbfs` or `nfs`, which mount files over the network, provide instantaneous changes. They also require the remote machine to "check in" to see if there are any changes to a file before it is read or written. For a site or app with a few files this is no big deal. However, when you have an app using a modern CMS like Drupal with thousands of files, this "checking in" can substantially slow a page load from less than a second to 5, 10, 40 or never seconds, depending on the load.
 
-If you are a sitebuilder who does a lot of things through the UI instead of directly in code these solutions can burn a lot of time.
+If you are a sitebuilder who works through the UI instead of directly in code, these solutions can burn a lot of time.
 
 **Fast page loads**
 
@@ -72,11 +70,11 @@ The sharing process works like this
 
 #### The Downside
 
-While this produces `nfs` speed file change propogation along with "native" page loads the speed of propogation does lower with the amount of files you are scanning. **We are planning to add various config options to sharing so that you can target the paths the make the most sense for file sharing.**
+While this produces `nfs` speed file change propogation along with "native" page loads, the speed of propogation does slow with the amount of files you are scanning. **We are planning to add various config options to sharing so that you can target the paths the make the most sense for file sharing.** For example, on a Drupal site you could share your "sites/all" directory, instead of the entire Drupal codebase.
 
 #### The Roadmap Forward
 
-We **really, really hope** that the above is a stop-gap solution. Docker is currently working on "native" filesharing for both OSX and Windows. Once those are complete and perform better than what we have we will switch our sharing over to use them. You can track the progress of that issue over here
+We **really, really hope** that the above is a stop-gap solution. Docker is currently working on "native" filesharing for both OSX and Windows. Once those are complete and perform better than what we have we will switch our sharing over to use them. You can track the progress of that issue over here:
 
  * [https://forums.docker.com/t/file-access-in-mounted-volumes-extremely-slow-cpu-bound/8076/108](https://forums.docker.com/t/file-access-in-mounted-volumes-extremely-slow-cpu-bound/8076/108)
 
