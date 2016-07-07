@@ -6,8 +6,7 @@ Kalabox has a few different log layers to help you diagnose any issues you might
 Install Logs
 ------------
 
-If you have a failed installation you should be able to find logs in the following
-locations
+If you have a failed installation you should be able to find logs in the following locations...
 
 * **Windows** - `%TEMP%\Setup Log**.txt
 * **MacOSX** - `/var/log/install.log`
@@ -16,10 +15,8 @@ locations
 Runtime Logs
 ------------
 
-If you encounter an error during runtime there are a few things you can do to get more
-information.
+If you encounter an error during runtime check out the runtime log at...
 
-2. Check out the runtime log at
   * **OSX/LINUX** - `~/.kalabox/logs/kalabox.log`
   * **Windows** - `C:\Users\{ME}\.kalabox\logs\kalabox.log`
 
@@ -66,11 +63,7 @@ Fortunately, removing these duplicates is fairly easy:
 
 1. Open VirtualBox.
 2. Look at each of your virtual machines and record the value for their "Host-only Adapter" under the "Network" section:
-
 ![Kalabox2 in VirtualBox](./images/kalabox2vb.png)
-
 3. Now go to Preferences -> Network -> Host-only Network to see a list of all your adapters:
-
 ![List of host only adapter in VirtualBox](./images/hostonlyadapters.png)
-
 4. Delete any of the adapters that aren't being used by one of your virtual machines.

@@ -1,8 +1,11 @@
+!!! warning "Looking for pre-made Drupal, Wordpress and Backdrop apps?"
+    If you aren't interested in making your own apps, check out the documentation on...
+
+    * [Our Pantheon plugin](http://pantheon.kalabox.io) - Allows you to pull Drupal, Wordpress and Backdrop sites from Pantheon
+    * [Our PHP plugin](http://php.kalabox.io) - Allows you to spin up brand-new Drupal, Wordpress, and Backdrop sites.
+
 Getting Started
 ===============
-
-!!! warning "Looking for pre-made Drupal and Wordpress apps?"
-    If you aren't interested in making your own apps, check out our documentation on our [Pantheon app](http://pantheon.kalabox.io/en/stable) (which allows you to pull Drupal and Wordpress sites from Pantheon) and our [PHP app](http://php.kalabox.io/en/stable) (which allows you to spin up brand-new Drupal, Wordpress, and Backdrop sites).
 
 Now that you've [succesfully installed](./install.md) Kalabox you can start creating your own apps. Kalabox apps are completely isolated development environments which means on a high level they contain the following things:
 
@@ -35,7 +38,7 @@ Example 1: Static HTML site
 You can find the code for this example over [here](https://github.com/kalabox/kalabox-app-examples/tree/master/html1). Let's clone the repo and then start up the app.
 
 ```bash
-git clone git@github.com:kalabox/kalabox-app-examples.git && cd kalabox-app-examples/html1
+git clone https://github.com/kalabox/kalabox-app-examples && cd kalabox-app-examples/html1
 kbox start
 ```
 
@@ -83,7 +86,7 @@ pluginconfig:
 
 **kalabox-compose.yml**
 
-This is a simple `docker-compose` file that tells Kalabox to spin up a container called `examplehtml1_web_1`, which should be built using the latest official image of `nginx` and whose port 80 should be exposed to the outside world so we can communicate with it.
+This is a simple `docker-compose` file that tells Kalabox to spin up a container called `examplehtml1_web_1`, which should be built using the latest official image of `nginx` and whose port `80` should be exposed to the outside world so we can communicate with it.
 
 ```yaml
 web:

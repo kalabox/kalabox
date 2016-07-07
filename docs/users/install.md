@@ -17,7 +17,8 @@ Mac OSX
 1. Download the `.dmg` package from [kalabox.io/download](http://kalabox.io/download)
 2. Mount the DMG by double-clicking it
 3. Double-click on the `KalaboxInstaller.pkg`
-4. Enter your username and password
+4. Go through the setup workflow
+5. Enter your username and password when prompted
 
 Windows
 -------
@@ -29,6 +30,7 @@ Windows
 
 1. Download the Windows `.exe` package from [kalabox.io/download](http://kalabox.io/download)
 2. Double-click on `kalabox.exe`
+3. Go through the setup workflow
 3. Approve various UAC prompts during install
 
 !!! tip "White list *.kbox domains"
@@ -63,7 +65,7 @@ Fedora/RedHat
 2. Double-click on the `.rpm` package to launch Software Center
 3. Click the "Install" button and enter your password when prompted
 
-!!! Note "Kalabox binds to port 80"
+!!! note "Kalabox binds to port 80"
     Kalabox uses port 80 on your machine, so make sure it is free before you attempt an install.
 
 If you do not have the GUI-based Software Center you can install the `.rpm` pkg on the command line.

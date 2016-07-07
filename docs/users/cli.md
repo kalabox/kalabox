@@ -113,7 +113,7 @@ create
 
 This command can only be run from a global context.
 
-See the app-specific documentation for how the [Pantheon app](http://pantheon.kalabox.io) and the [PHP app](http://php.kalabox.io) implement this command.
+See the plugin-specific documentation for how the [Pantheon plugin](http://pantheon.kalabox.io) and the [PHP plugin](http://php.kalabox.io) implement this command.
 
 destroy
 -------

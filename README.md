@@ -1,50 +1,50 @@
 Kalabox
 =======
 
-Kalabox is a free and open source local development environment and workflow tool based on (docker) container technology. Kalabox allows users to spin up hyper-customized, super-fast development environments and to integrate those environments with their hosting or continuous integration workflows.
+Kalabox is a free and open source local development environment and workflow tool based on (Docker) container technology. Kalabox allows users to spin up hyper-customized, super-fast development environments and to integrate those environments with their hosting provider or continuous integration workflows.
 
-With Kalabox you can
+With Kalabox you can...
 
-  * Easily mimic your production environment on local
+  * Easily mimic your production environment on local.
   * Setup, develop, pull and deploy your sites super fast.
   * Standardize your teams dev environments and tools on OSX, Windows and Linux.
   * Easily customize or extend tooling, deployment options and basically any other functionality.
   * Free yourself from the tyranny of inferior local development products.
 
-For more info on how you can do some of the above, and for general Kalabox information check out [our docs](http://docs.kalabox.io).
+Learn more and get general Kalabox information by visting [our docs](http://docs.kalabox.io).
 
 Getting Started
 ---------------
 
 Kalabox ships as native installer packages for Windows, OSX, Debian and Fedora. Officially supported versions are available on our [releases page](https://github.com/kalabox/kalabox/releases). To get informed of new Kalabox releases and project updates we encourage you to [sign up for our newsletter](http://www.kalabox.io/).
 
-Once you've [installed Kalabox](http://docs.kalabox.io/users/install/#installation) you should have
+Once you've [installed Kalabox](http://docs.kalabox.io/users/install/#installation) you should have...
 
   * The Kalabox GUI in your applications folder, linux menu or Windows start menu.
   * The Kalabox CLI available in your terminal. Type `kbox` on a terminal to see.
   * The Kalabox engine running a docker daemon.
 
-Kalabox also packages two kinds of apps for you to get started right away on your Drupal, Wordpress, Backdrop or Pantheon based projects. Read about them below.
+Kalabox also packages two kinds of special external plugins that generate Drupal, Wordpress, Backdrop or Pantheon based projects. Read about them below.
 
 ### Creating Pantheon Apps
 
-The Kalabox Pantheon app allows users to
+The Kalabox Pantheon app generating plugin allows users to...
 
-1. Create the Pantheon environment locally. This means access to power services like solr and redis.
-2. Pull down sites they have spun up on their Pantheon dashboard.
-3. Push changes back up to their Pantheon site.
-4. Get Pantheon specific power tools such as Terminus, Drush and WP-CLI.
+  1. Pull down sites they have spun up on their Pantheon dashboard.
+  2. Achieve parity with the Pantheon environment locally, including access to power services like Solr and Redis.
+  3. Push changes back up to their Pantheon site.
+  4. Get Pantheon specific power tools such as Terminus, Drush and WP-CLI.
 
-To read more about the Pantheon app check out both the [Pantheon docs](http://pantheon.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-pantheon).
+To read more about the Pantheon plugin check out both the [docs](http://pantheon.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-pantheon).
 
 ### Creating PHP Apps
 
-The Kalabox PHP  app allows users to
+The Kalabox PHP app allows users to...
 
-1. Create basic Drupal, Wordpress and Backdrop sites.
-2. Get some nice power tools to go with their apps like Drush.
+  1. Create basic Drupal, Wordpress and Backdrop sites.
+  2. Get some nice power tools to go with their apps like Drush.
 
-To read more about the PHP app check out both the [PHP docs](http://php.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-php).
+To read more about the PHP app check out both the [docs](http://php.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-php).
 
 ### Creating Custom Apps
 
@@ -55,7 +55,7 @@ Support
 
 To get help...
 
-  1. Make sure your question isn't answered in either the core [docs](http://support.kalabox.io/solution/categories) or in the [Pantheon](http://pantheon.kalabox.io/) or [PHP](http://php.kalabox.io/) docs.
+  1. Make sure your question isn't answered in either the [core docs](http://support.kalabox.io/solution/categories), the [Pantheon app docs](http://pantheon.kalabox.io/), or the [PHP docs](http://php.kalabox.io/).
   2. Thoroughly search the [Github issue queue](https://github.com/kalabox/kalabox/issues) for any existing issues similar to yours.
   3. If all else fails, create an issue and follow the pre-populated guidelines and the [CONTRIB.MD](https://raw.githubusercontent.com/kalabox/kalabox/v0.13/CONTRIBUTING.md) as best as possible.
 
@@ -71,7 +71,7 @@ Kalabox is an open-source project. As such, support is a community-lead effort. 
 Development Releases
 --------------------
 
-We also produce development releases for every commit merged into our `v0.13` branch. **These releases are not officially supported** but we have made them available to intrepid users who want to try the bleeding edge or are interested in trying out a recent bug fix before
+We produce development releases for every commit merged into our `v0.13` branch. **These releases are not officially supported** but we have made them available to intrepid users who want to try the bleeding edge or are interested in trying out a recent bug fix before
 an official release is rolled.
 
   * **Windows** - [http://installer.kalabox.io/kalabox-latest-dev.exe](http://installer.kalabox.io/kalabox-latest-dev.exe)

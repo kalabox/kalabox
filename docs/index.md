@@ -10,8 +10,8 @@ With Kalabox you can...
   * Standardize your teams dev environments and tools on OSX, Windows and Linux.
   * Easily customize or extend tooling, deployment options and basically any other functionality.
   * Free yourself from the tyranny of inferior local development products.
- 
-For more info and for general Kalabox information check out [our docs](http://docs.kalabox.io).
+
+Learn more and get general Kalabox information by visting [our docs](http://docs.kalabox.io).
 
 Getting Started
 ---------------
@@ -24,27 +24,27 @@ Once you've [installed Kalabox](http://docs.kalabox.io/users/install/#installati
   * The Kalabox CLI available in your terminal. Type `kbox` on a terminal to see.
   * The Kalabox engine running a docker daemon.
 
-Kalabox also packages two kinds of apps for you to get started right away on your Drupal, Wordpress, Backdrop or Pantheon based projects. Read about them below.
+Kalabox also packages two kinds of special external plugins that generate Drupal, Wordpress, Backdrop or Pantheon based projects. Read about them below.
 
 ### Creating Pantheon Apps
 
-The Kalabox Pantheon app allows users to...
+The Kalabox Pantheon app generating plugin allows users to...
 
-1. Pull down sites they have spun up on their Pantheon dashboard.
-2. Achieve parity with the Pantheon environment locally, including access to power services like Solr and Redis.
-3. Push changes back up to their Pantheon site.
-4. Get Pantheon specific power tools such as Terminus, Drush and WP-CLI.
+  1. Pull down sites they have spun up on their Pantheon dashboard.
+  2. Achieve parity with the Pantheon environment locally, including access to power services like Solr and Redis.
+  3. Push changes back up to their Pantheon site.
+  4. Get Pantheon specific power tools such as Terminus, Drush and WP-CLI.
 
-To read more about the Pantheon app check out both the [Pantheon docs](http://pantheon.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-pantheon).
+To read more about the Pantheon plugin check out both the [docs](http://pantheon.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-pantheon).
 
 ### Creating PHP Apps
 
-The Kalabox PHP  app allows users to...
+The Kalabox PHP app allows users to...
 
-1. Create basic Drupal, Wordpress and Backdrop sites.
-2. Get some nice power tools to go with their apps like Drush.
+  1. Create basic Drupal, Wordpress and Backdrop sites.
+  2. Get some nice power tools to go with their apps like Drush.
 
-To read more about the PHP app check out both the [PHP docs](http://php.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-php).
+To read more about the PHP app check out both the [docs](http://php.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-php).
 
 ### Creating Custom Apps
 

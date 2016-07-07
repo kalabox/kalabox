@@ -1,10 +1,12 @@
 Configuration
 =============
 
+Kalabox has a sophisticated plugin system that allows users to extend core functionality and provide easy configuration options around many things. Here we will detail some of the configuration options provides by core Kalabox plugins.
+
 Sharing
 -------
 
-Kalabox seeks to mitigate the **HARDEST PROBLEM** in VM-based local development: quickly sharing files from your host machine into the VM while maintaining fast page loads. This is a longstanding issue and no project has a perfect solution; for a longer discussion on filesharing, see the [Tradeoffs](/#tradeoffs) section below.
+Kalabox seeks to mitigate the **HARDEST PROBLEM** in VM-based local development: quickly sharing files from your host machine into the VM while maintaining fast page loads. This is a longstanding issue and no project has a perfect solution; for a longer discussion on filesharing, see the [Advanced file sharing topics](#advanced-file-sharing-topics) section below.
 
 With Kalabox, you can easily enable file sharing by adding a `sharing` object to the `pluginconfig` of your app's `kalabox.yml` file:
 
@@ -51,7 +53,7 @@ If you are a sitebuilder who works through the UI instead of directly in code, t
 
 **Fast page loads**
 
-Solutions like `rsync` or `syncthing` will try to keep two directories synced. This lowers the speed of your code changes to seconds and can often burn a lot of resources on your machine but it will preserve "native" speed page loads.
+Solutions like `rsync` or `syncthing` will try to keep two directories synced. This lowers the speed that your code change propogates to seconds and can often burn a lot of resources on your machine but it will preserve "native" speed page loads.
 
 If you are someone who is writing and changing code a lot these solutions can burn a lot of time.
 
@@ -131,23 +133,30 @@ pluginconfig:
 ```
 
 Tooling
-=======
+-------
 
-You can easily add additional tooling commands to any Kalabox app using our backed in `kalabox-cmd` plugin. You can turn on the cli plugin in your app pretty easily by adding the following into your app's `kalabox.yml` plugin config
+You can easily add additional tooling commands to any Kalabox app using our baked in `kalabox-cmd` plugin. This allows users to couple development tools like `grunt`, `bower` and `drush` to a given app, standardizing the tools your team uses on a project-to-project basis and eliminating the chaos of installing on your local machine.
+
+!!! danger "Experimental feature"
+    There may be instances where it's still easier to use tools on your native host machine. For example you may be more comfortable using Tower or your native git for ease-of-use or speed instead of `kbox git`. Do what's best for you! Especially while we continue to work out the kinks with tooling.
+
+You can turn on the cli plugin in your app pretty easily by adding the following into your app's `kalabox.yml` plugin config
 
 ```yaml
 pluginconfig:
   cli: 'on'
 ```
 
-Once you turn this on and restart your app Kalabox will look for two additional configuration files inside your app root directory
+Once you turn this on and restart your app Kalabox will look for two additional configuration files inside your app's root directory
 
   * `kalabox-cli.yml`
   * `cli.yml`
 
-The former is another `docker-compose` file that contains additional "tooling" containers you want to use and the latter contains metadata about how to set up specific "commands" you can run. Here is an example that adds a "git" command to your app.
+The former is another `docker-compose` file that contains additional "tooling" containers and the latter contains metadata about how to map new `kbox commands`to those tooling containers.
 
-**kalabox-cli.yml**
+### Example 1: Add `kbox git` to an app
+
+#### kalabox-cli.yml
 
 ```yaml
 cli:
@@ -181,43 +190,126 @@ cli:
   tty: true
 ```
 
-**cli.yml**
-
-This is a special Kalabox file that helps you map `kbox cmd` to a specific services. It provides a few additional options as
-well.
-
-Here is a abstract description of a task object
+#### cli.yml
 
 ```yaml
-commandname:
-  service: [service] - The service on which to run the command.
- stripfirst: [true|false] - If your commandname key is different from the
-entrypoint you might want to strip the commandname aka running `kgit git`
-     vs `kgit`.
-
-entrypoint: [string|array] - The binary to use. This will default to the
-   entrypoint of the service.
-
-description: [string] - A human readable description that will show up
-     on the CLI.
-
-precmdopts: [string] - A string of options to insert between the entrypoint
-     and the command the user types.
-
-postcmdopts: [string] - A string to append to the user entered command.
-
-
- NOTE: You will want to make sure your services correctly set relevant options
- such as sharing config files or the working directory.
-
-
-
- Adds a git command to your app.
-
-
 git:
   service: cli
   description: Run a git command on your codebase
 ```
-Now run kbox inside your app and you should see kbox git as an available command.
 
+#### Usage
+
+If you run `kbox` inside of your app you should now be able to see `kbox git` listed as a command. This command works as though `git` were installed locally.
+
+```bash
+# Check the status of my git repo
+kbox git status
+
+# Stage all changes
+kbox git add --all
+
+# Commit all changes
+kbox git commit -m "My amazing commit"
+
+# Push master branch changes to some remote called origin
+kbox git push origin master
+```
+
+### Example 2: Add Drupal power tools to your app
+
+#### kalabox-cli.yml
+
+```yaml
+drush:
+
+  # Grab a premade image with php, composer and drush installed
+  image: drush/drush:8-php5
+
+  # Share some directories
+  volumes:
+    - $KALABOX_ENGINE_HOME:/user
+    - $KALABOX_APP_ROOT:/src
+    - $KALABOX_APP_ROOT/config/scripts/usermap.sh:/usr/local/bin/usermap
+    - $KALABOX_APP_ROOT/config/drush:/home/$KALABOX_ENGINE_ID/.drush
+
+  # Mount our application code from a data container
+  volumes_from:
+    - data
+
+  # Pass in environmental variables to tell our container how to handle permissions and databases
+  environment:
+    HOME: /home/$KALABOX_ENGINE_ID
+    MYSQL_HOST: database
+    TERM: xterm-color
+    HOSTNAME: $KALABOX_APP_HOSTNAME
+    KALABOX_UID: $KALABOX_ENGINE_ID
+    KALABOX_GID: $KALABOX_ENGINE_GID
+
+  # Link to our database container so drush can work
+  links:
+    - db:database
+
+  # Map the users local CWD to the correct location inside the container
+  working_dir: $KALABOX_CLI_WORKING_DIR
+
+  # You will want this on so you can handle interactive commands
+  stdin_open: true
+  tty: true
+```
+
+#### cli.yml
+
+```yaml
+mysql:
+  service: drush
+  precmdopts: -uroot
+  entrypoint: mysql
+  description: Drop into a mysql shell
+  mapping: <config.sharing.codeDir>:/var/www/html
+drush:
+  service: drush
+  entrypoint: usermap
+  description: Run a drush command on your codebase
+  mapping: <config.sharing.codeDir>:/var/www/html
+php:
+  service: drush
+  entrypoint: usermap
+  description: Run a php cli command
+  mapping: <config.sharing.codeDir>:/var/www/html
+composer:
+  service: drush
+  entrypoint: usermap
+  description: Run a composer cli command
+  mapping: <config.sharing.codeDir>:/var/www/html
+```
+
+!!! tip "Notice the `precmdopts` used in `kbox mysql`"
+    This will automatically prepend options before the user entered part of the command, in this case connecting you to mysql before anything else happens.
+
+    `postcmdopts` can also be used in the same way, for example to always run a command in verbose mode using `-v`.
+
+#### Usage
+
+You should now be able to run `kbox` and see the following commands listed...
+
+  * `kbox mysql`
+  * `kbox drush`
+  * `kbox php`
+  * `kbox composer`
+
+These commands should all work like they normally do with the exception of `mysql` which will drop you directly to the `mysql` prompt.
+
+```bash
+# Drop into a myqsl shell connected to my app's database container
+kbox mysql
+
+# Run an arbitrary piece of php
+kbox php -e "phpinfo();"
+
+# Flush my drupal caches
+kbox drush cc all
+
+# Check the composer version
+kbox composer --version
+```

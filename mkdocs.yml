@@ -20,11 +20,7 @@ pages:
     - 'Configuring Apps': 'users/config.md'
     - 'Uninstallation': 'users/uninstall.md'
   - 'For Developers':
-    - 'Installation from Source': 'developers/install.md'
-    - 'Contributing': 'developers/contrib.md'
+    - 'Getings Started': 'developers/contrib.md'
     - 'Testing': 'developers/testing.md'
-    - 'Building': 'developers/building.md'
-    - 'Configuration': 'developers/config.md'
-    - 'Plugins': 'developers/plugins.md'
-    - 'Kalabox API': 'developers/api.md'
+    - 'Shipping': 'developers/shipping.md'
   - 'Troubleshooting': 'troubleshooting.md'
