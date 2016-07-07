@@ -86,13 +86,17 @@ pluginconfig:
 
 **kalabox-compose.yml**
 
-This is a simple `docker-compose` file that tells Kalabox to spin up a container called `examplehtml1_web_1`, which should be built using the latest official image of `nginx` and whose port `80` should be exposed to the outside world so we can communicate with it.
+This is a simple `docker-compose` file that tells Kalabox to spin up a container called `examplehtml1_web_1`, which should be built using the latest official image of `nginx` and whose port `80` should be exposed to the outside world so we can communicate with it. It also sets the containers hostname based on the environmental variable `$KALABOX_APP_HOSTNAME`. Read more about that in the tip below.
 
 ```yaml
 web:
   image: nginx:latest
+  hostname: $KALABOX_APP_HOSTNAME
   ports:
     - "80"
 ```
+
+!!! tip "PRO TIP: Level up your `kalabox-compose.yml`"
+    You can use variables found in `kbox env` when constructing your `kalabox-compose.yml` such as `$KALABOX_APP_HOSTNAME`. This can give you a lot of power and flexibilty when crafting your app.
 
 

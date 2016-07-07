@@ -1,34 +1,7 @@
-Usage
-=====
+Kalabox CLI
+===========
 
-The Kalabox CLI is accessible via your terminal by typing `kbox` at the prompt, which will display the list of commands you can run.
-
-```bash
-kbox
-Usage: kbox.dev <command> [-- <options>]
-
-Global commands that can be run from anywhere
-  create
-      backdrop     Creates a backdrop app
-      drupal7      Creates a drupal7 app
-      drupal8      Creates a drupal8 app
-      pantheon     Creates a Pantheon app.
-      wordpress    Creates a wordpress app
-  env              Stop and then start a running kbox application.
-  list             Display list of apps.
-  version          Display the kbox version.
-
-Actions that can be performed on this app
-  config           Display the kbox application configuration.
-  destroy          Completely destroys and removes an app.
-  rebuild          Rebuilds your app while maintaining your app data.
-  restart          Stop and then start a running kbox application.
-  services         Display connection info for services.
-  start            Start an installed kbox application.
-  stop             Stop a running kbox application.
-```
-
-Kalabox operates in one of two contexts:
+The Kalabox CLI is accessible via your terminal by typing `kbox` at the prompt, which will display the list of commands you can run. Kalabox operates in one of two contexts:
 
   * **Global** - This is any directory that does not contain a Kalabox app.
   * **App** - This is any directory which does contain an app.
@@ -38,98 +11,45 @@ The context will determine the list of commands you can run. If you have app con
 !!! tip "Easily switch contexts"
     If you are in a different app or global context you can easily run a command against another app using the `kbox <APPNAME> command` syntax.
 
-Here are all the core commands provided by the Kalabox CLI out of the box and without using a special app generating plugin:
-
 config
 ------
 
-`kbox config` will print out the currently active Kalabox configuration. If you are inside of an app context, Kalabox will merge your app config into your global config.
+Prints out the currently active Kalabox configuration. If you are inside of an app context, Kalabox will merge your app config into your global config.
 
-### Usage
-
-Runs from either an app or global context.
+`kbox config`
 
 ```bash
-# From a global context
-kbox config
-{
-  "appRegistry": "/Users/pirog/.kalabox/appRegistry.json",
-  "appsRoot": "/Users/pirog/.kalabox/apps",
-  "configSources": [
-    "/Applications/Kalabox.app/Contents/MacOS/kalabox.yml",
-    "/Users/pirog/Desktop/work/kalabox/kalabox.yml",
-    "DEFAULT_GLOBAL_CONFIG",
-    "ENV_CONFIG"
-  ],
-  "devMode": true,
-  "domain": "kbox",
-  "downloadsRoot": "/Users/pirog/.kalabox/downloads",
-  "engine": "kalabox-engine-docker",
-  "engineGid": 50,
-  "engineId": 1000,
-  "engineRepo": "kalabox",
-  "globalPlugins": [
-    "kalabox-core",
-    "kalabox-cmd",
-    "kalabox-services-kalabox",
-    "kalabox-sharing",
-    "kalabox-ui",
-    "kalabox-app-pantheon",
-    "kalabox-app-php"
-  ],
-  "home": "/Users/pirog",
-  "imgVersion": "latest",
-  "isBinary": false,
-  "isNW": false,
-  "logLevel": "debug",
-  "logLevelConsole": "none",
-  "logRoot": "/Users/pirog/.kalabox/logs",
-  "os": {
-    "type": "Darwin",
-    "platform": "darwin",
-    "release": "15.5.0",
-    "arch": "x64"
-  },
-  "srcRoot": "/Users/pirog/Desktop/work/kalabox",
-  "stats": {
-    "report": true,
-    "url": "http://stats-v2.kalabox.io"
-  },
-  "sysConfRoot": "/Applications/Kalabox.app/Contents/MacOS",
-  "sysPluginRoot": "/Applications/Kalabox.app/Contents/MacOS",
-  "userConfRoot": "/Users/pirog/.kalabox",
-  "userPluginRoot": "/Users/pirog/.kalabox",
-  "version": "0.13.0-alpha.1"
-}
-
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  --debug        Use debug output.                                     [boolean]
 ```
 
 create
 ------
 
-`kbox create` is a special kind of command that allows app-generating plugins such as the [Pantheon](http://pantheon.kalabox.io) and [PHP](http://php.kalabox.io) plugins to automatically build certain kinds of apps with either a nice CLI questionnaire or GUI pointy-clicky workflow.
+Automatically generates apps using a special kind of app-generating plugins like the [Pantheon](http://pantheon.kalabox.io) and [PHP](http://php.kalabox.io) plugins. The user gets a nice CLI questionnaire or GUI pointy-clicky workflow and then the commands builds out your app. This command can only be run from a global context.
 
-### Usage
-
-This command can only be run from a global context.
+`kbox create`
 
 See the plugin-specific documentation for how the [Pantheon plugin](http://pantheon.kalabox.io) and the [PHP plugin](http://php.kalabox.io) implement this command.
 
 destroy
 -------
 
-`kbox destroy` will completely remove an app and its code. This means that after you run this command the containers, services, tooling and all local files for this app will be gone.
+Completely removes an app and its code. This means that after you run this command the containers, services, tooling and all local files for this app will be gone. You need to have an app context to run this command.
 
-### Usage
-
-You need to have an app context to run this command.
+`kbox destroy`
 
 ```bash
-# Print available options for this command
-kbox.dev destroy -- -h
 Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  --debug        Use debug output.                                     [boolean]
   -y, --yes      Automatically answer affirmitive                      [boolean]
+```
 
+```bash
 # Destroy an app without a confirmation prompt
 cd /to/app1
 kbox destroy -- -y
@@ -144,106 +64,45 @@ kbox app2 destroy
 env
 ---
 
-`kbox env` will print out a list of environmental variables that Kalabox sets dynamically. This list will be different depending on whether you are in a global or app context. Some apps, such as Pantheon apps, will add additional variables for you to use.
+Prints out a list of environmental variables that Kalabox sets dynamically. This list will be different depending on whether you are in a global or app context. Some apps, such as Pantheon apps, will add additional variables for you to use.
 
-### Usage
+`kbox env`
 
 ```bash
-# Run from a basic HTML app
-# This is a non-exhaustive list
-KALABOX_DEV=true
-KALABOX_APP_REGISTRY=/Users/pirog/.kalabox/appRegistry.json
-KALABOX_APPS_ROOT=/Users/pirog/.kalabox/apps
-KALABOX_DEV_MODE=false
-KALABOX_DOMAIN=kbox
-KALABOX_ENGINE=kalabox-engine-docker
-KALABOX_ENGINE_GID=50
-KALABOX_ENGINE_ID=1000
-KALABOX_ENGINE_REPO=kalabox
-KALABOX_HOME=/Users/pirog
-KALABOX_IMG_VERSION=latest
-KALABOX_SRC_ROOT=/Users/pirog/Desktop/work/kalabox
-KALABOX_VERSION=0.13.0-alpha.1
-KALABOX_ENGINE_IP=10.13.37.100
-KALABOX_ENGINE_REMOTE_IP=10.13.37.1
-KALABOX_ENGINE_HOME=/Users/pirog
-KALABOX_APP_NAME=html1.example
-KALABOX_APP_DOMAIN=kbox
-KALABOX_APP_HOSTNAME=html1.example.kbox
-KALABOX_APP_URL=http://html1.example.kbox
-KALABOX_APP_ROOT=/Users/pirog/Desktop/apps/kalabox-app-examples/html1
-KALABOX_APP_ROOT_BIND=/Users/pirog/Desktop/apps/kalabox-app-examples/html1
-KALABOX_APP_SERVICES={}
-```
-
-!!! tip "PRO TIP: Level up your `kalabox-compose.yml`"
-    You can use these environmental variables when constructing your `kalabox-compose.yml` file. This can give you a lot of power and flexibilty when crafting your app.
-
-### Example: Kalabox Compose file using custom Kalabox environmental variables
-
-```yml
-web:
-  image: nginx:stable
-
-  # Set our hostname dynamically
-  hostname: $KALABOX_APP_HOSTNAME
-
-  # Share our apps config directory into the web container at /src
-  volumes:
-    - $KALABOX_APP_ROOT_BIND/config:/src
-
-  # Pass in the local user UID/GID
-  environment:
-    KALABOX_UID: $KALABOX_ENGINE_ID
-    KALABOX_GID: $KALABOX_ENGINE_GID
-
-  ports:
-    - "80"
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  --debug        Use debug output.                                     [boolean]
 ```
 
 list
 ----
 
-`kbox list` will display a list of your apps with some summary information about them.
+Prints a JSON object of your apps with some summary information about them. Runs from either an app or global context.
 
-### Usage
-
-Runs from either an app or global context.
+`kbox list`
 
 ```bash
-# Print available options for this command
-kbox list -- -h
 Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  --debug        Use debug output.                                     [boolean]
   -n, --names    Only display app names.                               [boolean]
-
-# List my apps
-kbox list
-{
-  "name": "html1.example",
-  "url": "http://html1.example.kbox",
-  "type": "example",
-  "version": "0.13.0-alpha.1",
-  "location": "/Users/pirog/Desktop/apps/kalabox-app-examples/html1",
-  "running": false
-}
-{
-  "name": "playbox",
-  "url": "http://playbox.kbox",
-  "type": "pantheon",
-  "version": "0.13.0-alpha.1",
-  "location": "/Users/pirog/Desktop/apps/playbox",
-  "running": true
-}
 ```
 
 rebuild
 -------
 
-`kbox rebuild` is a powerful command which will completely rebuild the containers and services you use to run your app. This command is great for developing, tweaking or updating your app.
+Completely rebuilds the containers and services you use to run your app. This command is great for developing, tweaking or updating your app. You need to have an app context to run this command.
 
-### Usage
+`kbox rebuild`
 
-You need to have an app context to run this command.
+```bash
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  --debug        Use debug output.                                     [boolean]
+```
 
 ```bash
 # Rebuild my app with verbose mode on so I can see WTF is happening!
@@ -258,19 +117,15 @@ kbox rebuild -- -v
 restart
 -------
 
-`kbox restart` is a simple wrapper that runs `kbox stop` and `kbox start` in succession.
+Stops and then starts an app. You need to have an app context to run this command.
 
-### Usage
-
-You need to have an app context to run this command.
+`kbox restart`
 
 ```bash
-# Restart my app
-cd /to/app
-kbox restart
-
-# restart another app
-kbox app3 restart
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  --debug        Use debug output.                                     [boolean]
 ```
 
 !!! tip "Good to resolve random issues"
@@ -279,11 +134,16 @@ kbox app3 restart
 start
 -------
 
-`kbox restart` will start your Kalabox app. It will also build the app if this is the first time you've started it.
+Start an app. It will also build the app if this is the first time you've started it. You need to have an app context to run this command. You need to have an app context to run this command.
 
-### Usage
+`kbox start`
 
-You need to have an app context to run this command.
+```bash
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  --debug        Use debug output.                                     [boolean]
+```
 
 ```bash
 # Start my app using verbose mode, good to use on the first start
@@ -302,15 +162,16 @@ kbox app55 start
 stop
 -------
 
-`kbox stop` will stop your Kalabox app.
+Stop your Kalabox app. You need to have an app context to run this command.
 
-### Usage
 
-You need to have an app context to run this command.
+`kbox`
 
 ```bash
-# Stop my app
-kbox stop
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  --debug        Use debug output.                                     [boolean]
 ```
 
 !!! tip "Good to stop apps you aren't using"
@@ -319,21 +180,21 @@ kbox stop
 version
 -------
 
-`kbox version` will print out the current version of Kalabox you are using.
+Prints out the current version of Kalabox you are using. Runs from either an app or global context.
 
-### Usage
-
-Runs from either an app or global context.
+`kbox version`
 
 ```bash
-kbox version
-0.13.0-alpha.1
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  --debug        Use debug output.                                     [boolean]
 ```
 
 Additional Commands
 -------------------
 
-Please consult the [configuration](./config.md) and [customization](./custom.md) pages to learn more about adding your own custom commmands. Custom commands allow you to do some of the following things.
+Please consult the [configuration](./config.md) page to learn more about adding your own custom commmands. Custom commands allow you to do some of the following things.
 
   1. Pull down sites from a hosting provider.
   2. Add additional tools to your app like `npm`, `grunt` or `gulp`.
@@ -343,6 +204,8 @@ Please consult the [configuration](./config.md) and [customization](./custom.md)
 
 Using Options
 -------------
+
+Kalabox uses the `--` separator for options. The reason for this is we need a way to differentiate between options that might be intended for a subcommand vs options that are for Kalabox itself. Consider the difference between `kbox npm install -v` vs `kbox npm install -- -v`. The former tells `npm` to give us verbose output whereas the latter tells `kbox` to give us verbose output.
 
 ### Global options
 
@@ -363,6 +226,3 @@ kbox create pantheon -- -h
 # Rebuilds a kalabox app with verbose output
 kbox rebuild -- --verbose
 ```
-
-!!! attention "Note the `--` separator."
-    Kalabox uses the `--` separator for options. The reason for this is we need a way to differentiate between options that might be intended for a subcommand vs options that are for Kalabox itself. Consider the difference between `kbox npm install -v` vs `kbox npm install -- -v`. The former tells `npm` to give us verbose output whereas the latter tells `kbox` to give us verbose output.
