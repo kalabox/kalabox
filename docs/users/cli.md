@@ -38,12 +38,12 @@ The context will determine the list of commands you can run. If you have app con
 !!! tip "Easily switch contexts"
     If you are in a different app or global context you can easily run a command against another app using the `kbox <APPNAME> command` syntax.
 
-Here are all the core commands provided by the Kalabox CLI out of the box and without using a special app generating plugin.
+Here are all the core commands provided by the Kalabox CLI out of the box and without using a special app generating plugin:
 
 config
 ------
 
-`kbox config` will print out the currently active Kalabox configuration. If you are inside of an app context then Kalabox will merge in your app config into your global config.
+`kbox config` will print out the currently active Kalabox configuration. If you are inside of an app context, Kalabox will merge your app config into your global config.
 
 ### Usage
 
@@ -107,13 +107,13 @@ kbox config
 create
 ------
 
-`kbox create` is a special kind of command that allows app generating plugins such as the [Pantheon](http://pantheon.kalabox.io) and [PHP](http://php.kalabox.io) plugins to automatically build certain kinds of apps with either a nice CLI questionarire or GUI pointy-clicky workflow.
+`kbox create` is a special kind of command that allows app-generating plugins such as the [Pantheon](http://pantheon.kalabox.io) and [PHP](http://php.kalabox.io) plugins to automatically build certain kinds of apps with either a nice CLI questionnaire or GUI pointy-clicky workflow.
 
 ### Usage
 
 This command can only be run from a global context.
 
-Please consult the respective documentation for the implementing apps for more details on this commands usage.
+See the app-specific documentation for how the [Pantheon app](http://pantheon.kalabox.io) and the [PHP app](http://php.kalabox.io) implement this command.
 
 destroy
 -------
@@ -251,11 +251,11 @@ kbox rebuild -- -v
 ```
 
 !!! danger "Be careful using this command! It rebuilds EVERYTHING"
-    If you have application data or code stored in a web or database container this data will be lost as well unless you have properly volumed it or written a plugin to ensure the data sensitive container is not included in the rebuild.
+    If you have application data or code stored in a web or database container, this data will be lost as well unless you have properly volumed it or written a plugin to ensure the data sensitive container is not included in the rebuild.
 
-    For example the [Pantheon](http://github.com/kalabox/kalabox-app-pantheon) and [PHP](http://github.com/kalabox/kalabox-app-php) plugins store all application data in a `data` container which is removed during rebuilds for those apps.
+    For example, the [Pantheon](http://github.com/kalabox/kalabox-app-pantheon) and [PHP](http://github.com/kalabox/kalabox-app-php) plugins store all application data in a `data` container which is preserved through a rebuild.
 
-  restart
+restart
 -------
 
 `kbox restart` is a simple wrapper that runs `kbox stop` and `kbox start` in succession.
@@ -274,7 +274,7 @@ kbox app3 restart
 ```
 
 !!! tip "Good to resolve random issues"
-    Sometimes if your Kalabox is giving you a tough go doing a simple restart can flush out the issue.
+    Sometimes if your Kalabox is giving you a tough go, doing a simple restart can flush out the issue.
 
 start
 -------
@@ -297,7 +297,7 @@ kbox app55 start
 !!! note "First run could take a bit"
     If this is the first time you are starting your Kalabox app it will try to setup all the services and containers you need to run and develop your app.
 
-    This could take a bit of time depending on constitution of the app. For this reason we recommend first starts use the `--verbose` flag so users can see what is going on.
+    This could take a bit of time depending on constitution of the app. For this reason we recommend using the `--verbose` flag your first time starting an app so you can see what is going on.
 
 stop
 -------
