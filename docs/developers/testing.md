@@ -12,7 +12,7 @@ Running Tests
 
 ### Code linting and standards
 
-Kalabox implements some basic linting and code standards to make sure things remain consistent between developers and syntax errors are not pushed back upstream. You can easily check whether your code matches these standards using grunt.
+Kalabox implements some basic linting and code standards to make sure things remain consistent between developers and to prevent syntax errors. You can easily check whether your code matches these standards using grunt.
 
 ```bash
 grunt test:code
@@ -20,7 +20,7 @@ grunt test:code
 
 ### Unit tests
 
-The unit tests use mocha and chai. They primarily test the CLI.
+The unit tests use [Mocha](https://mochajs.org/) and [Chai](http://chaijs.com/). They primarily test the CLI.
 
 ```bash
 grunt test:unit
@@ -31,7 +31,7 @@ grunt test:unit
 !!! danger "USE EXTREME CAUTION"
     If you run these tests on a machine that already has Kalabox installed it is most likely going to wipe away your currently installed version of Kalabox. For that reason please **BE CAREFUL USING THIS!!!**
 
-The installer tests use the BATS framework.
+The installer tests use the [BATS framework](https://github.com/sstephenson/bats).
 
 ```bash
 grunt func

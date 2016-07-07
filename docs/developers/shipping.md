@@ -27,7 +27,7 @@ Rolling a release
 -----------------
 
 !!! attention "Test installers first"
-    Until our CI can run cross platform installer tests it's recommended to [run these tests manually](./testing/#installer-tests) before rolling a new release.
+    Until our CI can run cross platform installer tests, it's recommended to [run these tests manually](./testing/#installer-tests) before rolling a new release.
 
 If you are an administrator of the Kalabox repo you can push various releases using the following...
 

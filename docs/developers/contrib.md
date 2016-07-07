@@ -1,6 +1,9 @@
 Getting Started
 ===============
 
+!!! warning "For Developers Working on Kalabox Only"
+    If you're looking for documentation on how to use Kalabox, see the [Getting Started](./../users/started) guide in the "For Users" section.
+
 You should be able to use this guide to...
 
 1. Install Kalabox from source
@@ -28,13 +31,13 @@ We have the latest Kalabox engine but we want to run the CLI and GUI from source
 so we can hack on them. Let's grab and install the source.
 
 ```bash
-git clone https://gith1ub.com/kalabox/kalabox.git && cd kalabox
+git clone https://github.com/kalabox/kalabox.git && cd kalabox
 npm install
 ```
 
 ### 3. Set up a symlink to run the dev version of the Kalabox CLI
 
-This is optional but makes things a lot easier
+This is optional, but makes things a lot easier.
 
 ```bash
 # Set up a symlink so you can use `kbox.dev` to run the CLI from source
@@ -43,8 +46,7 @@ which kbox.dev
 kbox.dev
 ```
 
-!!! note "Prod and dev side by side"
-    This means that you can still run your production CLI `kbox` normally while relying on `kbox.dev` for development.
+With the symlink, you can still run your production CLI `kbox` normally while relying on `kbox.dev` for development.
 
 Code locations
 --------------
