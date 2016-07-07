@@ -23,6 +23,6 @@ Harware Requirements
   * 4GB RAM
   * Modern processor (~last 3 years)
 
-!!! note "Storage Requirements for Virtual Disk"
+!!! note "Storage Requirements for OSX/Windows Virtual Disk"
     Note that Kalabox itself does not take up 20GB of hard drive space, but reserves that space for your sites in a virtual disk.
 

@@ -1,8 +1,7 @@
 Kalabox
 =======
 
-Kalabox is a free and open source local development environment and workflow tool based on (docker) container technology. Kalabox allows users to spin up hyper-customized, super-fast development environments and to integrate those environments with their hosting or continuous
-integration workflows.
+Kalabox is a free and open source local development environment and workflow tool based on (docker) container technology. Kalabox allows users to spin up hyper-customized, super-fast development environments and to integrate those environments with their hosting or continuous integration workflows.
 
 With Kalabox you can
 
@@ -17,8 +16,7 @@ For more info on how you can do some of the above, and for general Kalabox infor
 Getting Started
 ---------------
 
-Kalabox ships as native installer packages for Windows, OSX, Debian and Fedora. Officially supported versions are available on our [releases page](https://github.com/kalabox/kalabox/releases). To get informed of new Kalabox releases and project updates we encourage you
-to [sign up for our newsletter](http://www.kalabox.io/).
+Kalabox ships as native installer packages for Windows, OSX, Debian and Fedora. Officially supported versions are available on our [releases page](https://github.com/kalabox/kalabox/releases). To get informed of new Kalabox releases and project updates we encourage you to [sign up for our newsletter](http://www.kalabox.io/).
 
 Once you've [installed Kalabox](http://docs.kalabox.io/users/install/#installation) you should have
 
@@ -26,16 +24,31 @@ Once you've [installed Kalabox](http://docs.kalabox.io/users/install/#installati
   * The Kalabox CLI available in your terminal. Type `kbox` on a terminal to see.
   * The Kalabox engine running a docker daemon.
 
-Kalabox also packages two kinds of apps for you to get started right away on your Drupal, Wordpress, Backdrop or Pantheon based projects.
+Kalabox also packages two kinds of apps for you to get started right away on your Drupal, Wordpress, Backdrop or Pantheon based projects. Read about them below.
 
-  **Pantheon** - Allows users to create the Pantheon environment locally, and to pull a site down from their Pantheon account. Users will
-  also be able to push changes back up to their Pantheon site. To read more about the Pantheon app check out both the [Pantheon docs](http://pantheon.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-pantheon).
+### Creating Pantheon Apps
 
-  **PHP** - Allows the users to create basic Drupal, Wordpress and Backdrop sites. To read more about the PHP app check out both the [PHP docs](http://php.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-php).
+The Kalabox Pantheon app allows users to
 
-You can also easily create your own kinds of apps to develop in Node, Django, Ruby, Python, Frontpage 97, etc. To learn about creating
-your own apps check out [our docs](http://docs.kalabox.io). **SPOILER ALERT:** Kalabox uses Docker Compose and another small `kalabox.yml`
-to spin up apps.
+1. Create the Pantheon environment locally. This means access to power services like solr and redis.
+2. Pull down sites they have spun up on their Pantheon dashboard.
+3. Push changes back up to their Pantheon site.
+4. Get Pantheon specific power tools such as Terminus, Drush and WP-CLI.
+
+To read more about the Pantheon app check out both the [Pantheon docs](http://pantheon.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-pantheon).
+
+### Creating PHP Apps
+
+The Kalabox PHP  app allows users to
+
+1. Create basic Drupal, Wordpress and Backdrop sites.
+2. Get some nice power tools to go with their apps like Drush.
+
+To read more about the PHP app check out both the [PHP docs](http://php.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-php).
+
+### Creating Custom Apps
+
+You can also easily create your own kinds of apps to develop in Node, Django, Ruby, Python, Frontpage 97, etc. To learn about creating your own apps check out [our docs](http://docs.kalabox.io).
 
 Support
 -------
@@ -65,6 +78,10 @@ an official release is rolled.
   * **Debian** - [http://installer.kalabox.io/kalabox-latest-dev.deb](http://installer.kalabox.io/kalabox-latest-dev.deb)
   * **Fedora** - [http://installer.kalabox.io/kalabox-latest-dev.rpm](http://installer.kalabox.io/kalabox-latest-dev.rpm)
   * **MacOSX** - [http://installer.kalabox.io/kalabox-latest-dev.dmg](http://installer.kalabox.io/kalabox-latest-dev.dmg)
+
+**NOTE:** Releases can take some time to build after we merge in commits. For that reason you might want to check the time of the last commit and if it is within a few hours you might want to hold off a bit before trying the new latest release.
+
+You can also easily verify that the release you downloaded matches the latest commit. All development releases look something like `0.13.0-alpha.1-4-g63b0db0`. This means 4 commits after the `0.13.0-alpha.1` tag and with commit hash `g63b0db0`. You should make sure this commit hash matches or comes before the latest commit.
 
 Other Resources
 ---------------

@@ -1,7 +1,10 @@
-Kalabox Logs
-============
+Logs
+====
 
-### Install logs
+Kalabox has a few different log layers to help you diagnose any issues you might be having.
+
+Install Logs
+------------
 
 If you have a failed installation you should be able to find logs in the following
 locations
@@ -10,11 +13,11 @@ locations
 * **MacOSX** - `/var/log/install.log`
 * **Linux** - Differs per system but check common `apt` or `dnf/yum` logs
 
-### Runtime Logs
+Runtime Logs
+------------
 
 If you encounter an error during runtime there are a few things you can do to get more
 information.
-
 
 2. Check out the runtime log at
   * **OSX/LINUX** - `~/.kalabox/logs/kalabox.log`
@@ -24,55 +27,17 @@ information.
     Run the failing command again with the `-- -v` option to get more useful
     debug output.
 
-Accessing the Kalabox engine
-============================
+Docker Logs
+-----------
 
-One of the best ways to troubleshoot an issue is to get access to the Kalabox Docker daemon and start hacking around. Here is the easiest way to do that on each OS.
+One of the best ways to troubleshoot an issue is to get access to the Kalabox Engine and start hacking around.
 
-!!! warn "Make sure the Kalabox Engine is on!""
-    Make sure you've [activated]() the Kalabox engine before attempting the
-    below.
+!!! attention "Make sure you are ready to run Docker commands on the engine"
+    Follow the instructions for [OSX/Windows](./general/engine/#engine-for-osxwin) or [Linux](./general/engine/#engine-for-linux)
 
-### OSX
+**Some basic Docker commands**
 
-```bash
-# You might want to consider adding this to your PATH variable
-export DOCKER_MACHINE=/Applications/Kalabox.app/Contents/MacOS/bin/docker-machine
-
-# This will drop you into the Kalabox2 VM
-$DOCKER_MACHINE ssh Kalabox2
-```
-
-### Windows
-
-!!! note "Install Directory"
-    This assumes you have installed Kalabox at `C:\Program Files\Kalabox`. Replace
-    that directory below if your location is different.
-
-```bash
-# You might want to consider adding this to your PATH variable
-set DOCKER_MACHINE="C:\Program Files\Kalabox\bin\docker-machine-exe"
-
-# This will drop you into the Kalabox2 VM
-%DOCKER_MACHINE% ssh Kalabox2
-```
-
-### Linux
-
-```
-# Set your DOCKER_HOST to point to Kalabox
-export DOCKER_HOST=tcp://10.13.37.100:2375
-
-# Might want to consider adding this to your path
-export DOCKER=/usr/share/kalabox/bin/docker
-$DOCKER info
-```
-
-### Some basic Docker commands
-
-Once you've completed the above you should be able to communicate with your
-containers. Here are a few helpful commands but please consult the official
-[Docker documentation](https://docs.docker.com/engine/) for a full spec of commands.
+Once you've completed the above you should be able to communicate with your containers. Here are a few helpful commands but please consult the official [Docker documentation](https://docs.docker.com/engine/) for a full spec of commands.
 
 **List all my containers**
 `docker ps --all`
