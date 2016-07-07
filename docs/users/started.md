@@ -2,7 +2,7 @@ Getting Started
 ===============
 
 !!! warning "Looking for pre-made Drupal and Wordpress apps?"
-    If you aren't interested in making your own apps, check out our documentation on our [Pantheon app](pantheon.kalabox.io/en/stable) (which allows you to pull Drupal and Wordpress sites from Pantheon) and our [PHP app](http://php.kalabox.io/en/stable) (which allows you to spin up brand-new Drupal, Wordpress, and Backdrop sites).
+    If you aren't interested in making your own apps, check out our documentation on our [Pantheon app](http://pantheon.kalabox.io/en/stable) (which allows you to pull Drupal and Wordpress sites from Pantheon) and our [PHP app](http://php.kalabox.io/en/stable) (which allows you to spin up brand-new Drupal, Wordpress, and Backdrop sites).
 
 Now that you've [succesfully installed](./install.md) Kalabox you can start creating your own apps. Kalabox apps are completely isolated development environments which means on a high level they contain the following things:
 
