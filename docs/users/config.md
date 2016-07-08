@@ -135,7 +135,15 @@ pluginconfig:
 Tooling
 -------
 
-You can easily add additional tooling commands to any Kalabox app using our baked in `kalabox-cmd` plugin. This allows users to couple development tools like `grunt`, `bower` and `drush` to a given app, standardizing the tools your team uses on a project-to-project basis and eliminating the chaos of installing on your local machine.
+You can easily add additional development tools to any Kalabox app using our baked in `kalabox-cmd` plugin. This allows users to couple development tools like `grunt`, `bower` and `drush` to a given app, standardizing the tools your team uses on a project-to-project basis and eliminating the chaos of installing on your local machine.
+
+Tooling works by installing and associating additional Docker containers to your app. These containers should contain the development commands you wish to run and should be set up to mount relevant local assets like `ssh keys`, config or code. While well constructed tooling containers should feel like "natively" running the same commands there are a few things that can be different. Here are some general guidelines to help you construct good tooling containers:
+
+  1. Mount your webroot into the tooling container so you have access to your code.
+  2. Use a custom entrypoint script to correctly map local to container permissions.
+  3. Mount your binaries as volumes so they can be shared with containers.
+  4. Set the container's working directory so that it matches the users local location.
+  5. Set any config in relevant environmental variables if possible
 
 !!! danger "Experimental feature"
     There may be instances where it's still easier to use tools on your native host machine. For example you may be more comfortable using Tower or your native git for ease-of-use or speed instead of `kbox git`. Do what's best for you! Especially while we continue to work out the kinks with tooling.
