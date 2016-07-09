@@ -31,11 +31,11 @@ module.exports = function(kbox) {
   // Display list of apps.
   kbox.tasks.add(function(task) {
     task.path = ['list'];
-    task.description = 'Display list of apps.';
+    task.description = 'Display list of apps';
     task.options.push({
       name: 'names',
       alias: 'n',
-      description: 'Only display app names.'
+      description: 'Only display app names'
     });
     task.func = function(done) {
 

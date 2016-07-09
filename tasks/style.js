@@ -50,6 +50,9 @@ module.exports = function(common) {
           'switch'
         ],
         relaxerror: [
+          'This document appears to be written in English. ' +
+          'Consider adding “lang="en"” (or variant) to the “html” element ' +
+          'start tag.',
           'Empty heading.',
           'Element “img” is missing required attribute “src”',
           'Element “browser” not allowed as child of element “li” in this ' +
@@ -62,8 +65,9 @@ module.exports = function(common) {
       },
       files: {
         src: common.files.htmlTpl
-      }
-    }
+      },
+    },
+    mdlint: ['docs/**/*.md']
   };
 
 };

@@ -7,21 +7,23 @@ markdown_extensions:
   - markdown.extensions.admonition
   - markdown.extensions.smarty
   - markdown.extensions.nl2br
-  - markdown.extensions.codehilite:
-      guess_lang: false
-  - pymdownx.extra
-  - pymdownx.inlinehilite
-  - pymdownx.magiclink
-  - pymdownx.tilde
-  - pymdownx.caret
-  - pymdownx.smartsymbols
-  - pymdownx.githubemoji
-  - pymdownx.tasklist
-  - pymdownx.progressbar
-  - pymdownx.headeranchor
-  - pymdownx.arithmatex
-  - pymdownx.mark
-  - pymdownx.critic
 pages:
   - 'Homepage': 'index.md'
-
+  - 'General Information':
+    - 'System Requirements': 'general/sysreq.md'
+    - 'The Kalabox Engine': 'general/engine.md'
+  - 'For Users':
+    - 'Installation': 'users/install.md'
+    - 'Getting Started': 'users/started.md'
+    - 'Using the Kalabox CLI': 'users/cli.md'
+    - 'Using the Kalabox GUI': 'users/gui.md'
+    - 'Configuring Apps': 'users/config.md'
+    - 'Uninstallation': 'users/uninstall.md'
+  - 'For Developers':
+    - 'Getting Started': 'developers/contrib.md'
+    - 'Config System': 'developers/config.md'
+    - 'Plugins': 'developers/plugins.md'
+    - 'Kalabox API': 'developers/api.md'
+    - 'Testing': 'developers/testing.md'
+    - 'Shipping': 'developers/shipping.md'
+  - 'Troubleshooting': 'troubleshooting.md'

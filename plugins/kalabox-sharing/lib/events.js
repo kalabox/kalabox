@@ -23,21 +23,32 @@ module.exports = function(kbox) {
     var webService = parts[0];
     var webRoot = parts[1];
 
-    return {
-      unison: {
-        image: 'kalabox/unison:stable',
-        restart: 'always',
-        environment: {
-          'UNISON_WEBROOT': webRoot,
-          'UNISON_CODEROOT': '/src/' + app.config.sharing.codeDir,
-          'UNISON_OPTIONS': ''
-        },
-        volumes: [
-          '$KALABOX_APP_ROOT_BIND:/src'
-        ],
-        'volumes_from': [webService]
-      }
+    // Start the services collector
+    var services = {};
+
+    // Build the unison part
+    services.unison = {
+      image: 'kalabox/unison:stable',
+      restart: 'always',
+      environment: {
+        'UNISON_WEBROOT': webRoot,
+        'UNISON_CODEROOT': '/src/' + app.config.sharing.codeDir,
+        'UNISON_OPTIONS': ''
+      },
+      volumes: [
+        '$KALABOX_APP_ROOT_BIND:/src'
+      ],
+      'volumes_from': [webService]
     };
+
+    // Build the webroot part
+    services[webService] = {
+      volumes: [webRoot]
+    };
+
+    // Return both
+    return services;
+
   };
 
   /*
@@ -99,27 +110,7 @@ module.exports = function(kbox) {
 
     // Our default sharing configuration
     var defaultConfig = kbox.core.config.normalize({
-      codeDir: 'code',
-      ignore: [
-        '*.7z',
-        '*.bz2',
-        '*.dmg',
-        '*.gz',
-        '*.iso',
-        '*.jar',
-        '*.rar',
-        '*.tar',
-        '*.tgz',
-        '*.un~',
-        '*.zip',
-        '.*.swp',
-        '.*DS_Store',
-        '.DS_Store*',
-        '._*',
-        '.sass-cache',
-        'Thumbs.db',
-        'ehthumbs.db'
-      ]
+      codeDir: 'code'
     });
 
     // Mix in our user config if we have it

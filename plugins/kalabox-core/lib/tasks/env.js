@@ -11,7 +11,7 @@ module.exports = function(kbox) {
   // ENV for core
   kbox.tasks.add(function(task) {
     task.path = ['env'];
-    task.description = 'Print Kalabox environmental vars.';
+    task.description = 'List global Kalabox environmental vars';
     task.func = function(done) {
       _.forEach(process.env, function(value, key) {
         if (_.startsWith(key, 'KALABOX')) {
@@ -27,7 +27,7 @@ module.exports = function(kbox) {
     app.events.on('load-tasks', function() {
       kbox.tasks.add(function(task) {
         task.path = [app.name, 'env'];
-        task.description = 'Stop and then start a running kbox application.';
+        task.description = 'List global and app Kalabox environmental vars';
         task.func = function(done) {
           var processEnv = _.cloneDeep(process.env);
           var appEnv = app.env.getEnv();
