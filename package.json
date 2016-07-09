@@ -97,6 +97,7 @@
     "grunt-html2js": "^0.3.5",
     "grunt-jscs": "~0.8.1",
     "grunt-jsdoc": "^0.5.7",
+    "grunt-mdlint": "0.0.1",
     "grunt-mocha-cli": "^2.0.0",
     "grunt-nwjs-builder": "kalabox/grunt-nwjs-builder.git",
     "grunt-shell": "^1.1.1",

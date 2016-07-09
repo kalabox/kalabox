@@ -43,6 +43,7 @@ module.exports = function(grunt) {
     jshint: style.jshint,
     jscs: style.jscs,
     htmlangular: style.htmlangular,
+    mdlint: style.mdlint,
 
     // Concat our things
     concat: {
@@ -204,7 +205,8 @@ module.exports = function(grunt) {
   grunt.registerTask('test:code', [
     'jshint',
     'jscs',
-    'htmlangular'
+    'htmlangular',
+    'mdlint'
   ]);
 
   // Run unit tests
