@@ -2,6 +2,9 @@
 
 module.exports = function(kbox) {
 
+  // Node modules
+  var path = require('path');
+
   // Npm modules
   var _ = require('lodash');
   var redis = require('redis');
@@ -38,13 +41,33 @@ module.exports = function(kbox) {
       };
     };
 
+    /*
+     * Return the services definition
+     */
+    var getServices = {
+      compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
+      project: 'kalabox',
+      opts: {
+        services: ['dns', 'proxy'],
+        internal: true
+      }
+    };
+
     /**
      * Creates a proxy record via redis for components with proxy definitions.
      */
     app.events.on('post-start', 1, function() {
 
+      // Make sure the services are started up
+      return kbox.engine.start(getServices)
+
+      // Get the keys we need
+      .then(function() {
+        return _.keys(services);
+      })
+
       // Go through our services that need to be exposed
-      return Promise.each(_.keys(services), function(service) {
+      .each(function(service) {
 
         // Get the redis IP
         var REDIS_IP = kbox.core.deps.get('engineConfig').host;
@@ -140,8 +163,16 @@ module.exports = function(kbox) {
      */
     app.events.on('post-stop', function() {
 
+      // Make sure the services are started up
+      return kbox.engine.start(getServices)
+
+      // Get the keys we need
+      .then(function() {
+        return _.keys(services);
+      })
+
       // Go through our services that need to be exposed
-      return Promise.each(_.keys(services), function(service) {
+      .each(function(service) {
 
         // Get the redis IP
         var REDIS_IP = kbox.core.deps.get('engineConfig').host;
