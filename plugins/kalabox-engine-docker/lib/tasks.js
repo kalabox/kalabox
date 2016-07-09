@@ -13,12 +13,12 @@ module.exports = function(kbox) {
   kbox.tasks.add(function(task) {
     task.path = ['up'];
     task.category = 'dev';
-    task.description = 'Bring kbox container engine up.';
+    task.description = 'Bring kbox container engine up';
     task.func = function() {
 
       // Events
       events.on('post-engine-up', function(done) {
-        console.log(chalk.green('Kalabox engine has been activated.'));
+        console.log(chalk.green('Kalabox engine has been activated'));
         done();
       });
 
@@ -32,7 +32,7 @@ module.exports = function(kbox) {
 
     task.path = ['down'];
     task.category = 'dev';
-    task.description = 'Bring kbox container engine down.';
+    task.description = 'Bring kbox container engine down';
     task.func = function() {
 
       // Events
@@ -50,7 +50,7 @@ module.exports = function(kbox) {
   kbox.tasks.add(function(task) {
     task.path = ['status'];
     task.category = 'dev';
-    task.description = 'Display status of kbox container engine.';
+    task.description = 'Display status of kbox container engine';
     task.func = function(done) {
       engine.provider().call('isUp')
       .then(function(isUp) {
