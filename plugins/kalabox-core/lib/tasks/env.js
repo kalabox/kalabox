@@ -27,7 +27,7 @@ module.exports = function(kbox) {
     app.events.on('load-tasks', function() {
       kbox.tasks.add(function(task) {
         task.path = [app.name, 'env'];
-        task.description = 'List global and app specific Kalabox environmental vars';
+        task.description = 'List global and app Kalabox environmental vars';
         task.func = function(done) {
           var processEnv = _.cloneDeep(process.env);
           var appEnv = app.env.getEnv();
