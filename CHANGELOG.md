@@ -1,11 +1,12 @@
 v0.13.0-alpha.2
-==================
+===============
 
 * Rebooted our documentation [#1322](https://github.com/kalabox/kalabox/issues/1322)
 * Improved `kbox env` description [#1373](https://github.com/kalabox/kalabox/issues/1373)
+* Fixed Kalabox complaining about the `appRegistry.json.lock` file [#1426](https://github.com/kalabox/kalabox/issues/1426)
 
 v0.13.0-alpha.1
-==================
+===============
 
 * Moved `kalabox-app-pantheon` and `kalabox-app-php` from `srcRoot` to `sysConfRoot`. [#1407](https://github.com/kalabox/kalabox/issues/1407)
 * Simplified OSX packge so most assets are within `Kalabox.app` bundle. [#1406](https://github.com/kalabox/kalabox/issues/1406)
