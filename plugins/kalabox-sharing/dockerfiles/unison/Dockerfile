@@ -27,4 +27,7 @@ RUN apt-get update  && apt-get install -y \
   && apt-get autoremove -y \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
 
-CMD ["unison $UNISON_CODEROOT $UNISON_WEBROOT $UNISON_OPTIONS"]
+COPY sync.profile /root/.unison/default.prf
+COPY run.sh /run.sh
+
+CMD ["/run.sh"]
