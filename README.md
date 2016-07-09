@@ -18,7 +18,7 @@ Getting Started
 
 Kalabox ships as native installer packages for Windows, OSX, Debian and Fedora. Officially supported versions are available on our [releases page](https://github.com/kalabox/kalabox/releases). To get informed of new Kalabox releases and project updates we encourage you to [sign up for our newsletter](http://www.kalabox.io/).
 
-Once you've [installed Kalabox](http://docs.kalabox.io/users/install/#installation) you should have...
+Once you've [installed Kalabox](http://docs.kalabox.io/en/stable/users/install/#installation) you should have...
 
   * The Kalabox GUI in your applications folder, linux menu or Windows start menu.
   * The Kalabox CLI available in your terminal. Type `kbox` on a terminal to see.
