@@ -18,6 +18,28 @@ module.exports = function(kbox) {
    */
   var getSharingComposeNotLinux = function(app) {
 
+    /*
+     * Transform an  array of values into a common deliminated
+     * string of option;value
+     */
+    var getUnisonString = function(option, values) {
+
+      // Start an opts collector
+      var opts = [];
+
+      // Add in ignores if they exist
+      if (!_.isEmpty(values)) {
+        _.forEach(values, function(value) {
+          opts.push(option);
+          opts.push(value);
+        });
+      }
+
+      // Return as common deliminated string
+      return opts.join(';');
+
+    };
+
     // Get the remote service and webroot
     var parts = app.config.sharing.share.split(':');
     var webService = parts[0];
@@ -32,11 +54,13 @@ module.exports = function(kbox) {
       restart: 'always',
       environment: {
         'UNISON_WEBROOT': webRoot,
-        'UNISON_CODEROOT': '/src/' + app.config.sharing.codeDir,
-        'UNISON_OPTIONS': ''
+        'UNISON_CODEROOT': '/kalashare/' + app.config.sharing.codeDir,
+        'UNISON_OPTIONS': '-repeat 1',
+        'UNISON_IGNORE': getUnisonString('-ignore', app.config.sharing.ignore),
+        'UNISON_PATHS': getUnisonString('-path', app.config.sharing.paths)
       },
       volumes: [
-        '$KALABOX_APP_ROOT_BIND:/src'
+        '$KALABOX_APP_ROOT_BIND:/kalashare'
       ],
       'volumes_from': [webService]
     };
@@ -110,7 +134,26 @@ module.exports = function(kbox) {
 
     // Our default sharing configuration
     var defaultConfig = kbox.core.config.normalize({
-      codeDir: 'code'
+      codeDir: 'code',
+      ignore: [
+        'Name *.7z',
+        'Name *.bz2',
+        'Name *.dmg',
+        'Name *.gz',
+        'Name *.iso',
+        'Name *.jar',
+        'Name *.rar',
+        'Name *.tar',
+        'Name *.tgz',
+        'Name *.un~',
+        'Name *.zip',
+        'Name .*.swp',
+        'Name .DS_Store',
+        'Name ._*',
+        'Name .sass-cache',
+        'Name Thumbs.db',
+        'Name ehthumbs.db'
+      ]
     });
 
     // Mix in our user config if we have it

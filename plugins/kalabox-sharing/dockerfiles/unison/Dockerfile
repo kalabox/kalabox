@@ -1,6 +1,9 @@
 FROM debian:jessie
 
 ENV UNISON_VERSION=2.48.4
+ENV UNISON_CODEROOT=/code
+ENV UNISON_WEBROOT=/var/www
+ENV UNISON_OPTIONS=
 
 RUN apt-get update  && apt-get install -y \
     curl \

@@ -17,6 +17,7 @@ setup() {
   kbox-setup-preflight
   # Location of our dockerfiles
   CMD_DOCKERFILES_DIR=${TRAVIS_BUILD_DIR}/plugins/kalabox-cmd/dockerfiles/
+  SHARING_DOCKERFILES_DIR=${TRAVIS_BUILD_DIR}/plugins/kalabox-sharing/dockerfiles/
 }
 
 # Check that we can install Kalabox.
@@ -101,9 +102,20 @@ setup() {
   [ "$status" -eq 0 ]
 }
 
-# Check that our image version is the stable tag
-@test "Check that our image version is the stable tag." {
+# Check that we can build the unison image without an error.
+@test "Check that we can build the unison image without an error." {
+  run kbox-docker-build-retry kalabox/unison testing $SHARING_DOCKERFILES_DIR/unison
+  [ "$status" -eq 0 ]
+}
+
+# Check that our cli image version is the stable tag
+@test "Check that our cli image version is the stable tag." {
   cat ${TRAVIS_BUILD_DIR}/plugins/kalabox-cmd/kalabox-compose.yml | grep "image: kalabox/cli:" | grep "stable"
+}
+
+# Check that our unison image version is the stable tag
+@test "Check that our unison image version is the stable tag." {
+  cat ${TRAVIS_BUILD_DIR}/plugins/kalabox-sharing/lib/events.js | grep "image: 'kalabox/unison:stable'" | grep "stable"
 }
 
 # Check that we can compile native stuff with node-gyp.
