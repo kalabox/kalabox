@@ -8,7 +8,32 @@ Sharing
 
 Kalabox seeks to mitigate the **HARDEST PROBLEM** in VM-based local development: quickly sharing files from your host machine into the VM while maintaining fast page loads. This is a longstanding issue and no project has a perfect solution; for a longer discussion on filesharing, see the [Advanced file sharing topics](#advanced-file-sharing-topics) section below.
 
-With Kalabox, you can easily enable file sharing by adding a `sharing` object to the `pluginconfig` of your app's `kalabox.yml` file:
+With Kalabox, you can easily enable file sharing by adding a `sharing` object to the `pluginconfig` of your app's `kalabox.yml` file. If you are on Mac OSX or Windows then sharing does have [some limitations](#advanced-file-sharing-topics) so we've also provided a few easy ways to both ignore specific kinds of files and share specific directories. If you have a particularly large codebase we **highly recommend** you take advantage of the `paths` and `ignore` options to speed up your sync.
+
+We already try to do some basic optimization for you by ignoring the following:
+
+```
+Name *.7z
+Name *.bz2
+Name *.dmg'
+Name *.gz'
+Name *.iso'
+Name *.jar'
+Name *.rar'
+Name *.tar'
+Name *.tgz'
+Name *.un~'
+Name *.zip'
+Name .*.swp'
+Name .DS_Store'
+Name ._*'
+Name .sass-cache'
+Name Thumbs.db'
+Name ehthumbs.db
+```
+
+!!! tip "How does the ignore syntax work?"
+    We use `unison` [path specification](http://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html#pathspec) for our ignore syntax.
 
 ### Example 1: Directly share your webroot.
 
@@ -21,9 +46,9 @@ pluginconfig:
     share: 'web:/usr/share/nginx/html'
 ```
 
-### Example 2: Share a data container mount to a custom code root
+### Example 2: Optimize sharing for a large Drupal project.
 
-This example will create a directory called `wwwdocs` inside your local app root and it will sync that directory with what is inside your `data` container at `/code`.
+This example will create a directory called `wwwdocs` inside your local app root and it will sync that directory with what is inside your `data` container at `/code`. It will only sync `index.php` and everything in you custom modules folder while also ignoring your Drupal files directory.
 
 ```yaml
 name: example2
@@ -31,7 +56,15 @@ pluginconfig:
   sharing:
     codeDir: 'wwwdocs'
     share: 'data:/code'
+    ignore:
+      - Path sites/default/files
+    paths:
+      - index.php
+      - sites/all/modules/custom
 ```
+
+!!! tip "Protect upstream from being hacked"
+    The `paths` and `ignore` options are also useful for restricting the code a user can alter. For example the above config (with the exception of index.php) would prevent changes being made to Drupal core and contrib modules.
 
 ### Advanced file sharing topics
 
@@ -72,8 +105,7 @@ The sharing process works like this
 
 #### The Downside
 
-While this produces `nfs` speed file change propogation along with "native" page loads, the speed of propogation does slow with the amount of files you are scanning. **We are planning to add various config options to sharing so that you can target the paths the make the most sense for file sharing.** For example, on a Drupal site you could share your "sites/all" directory, instead of the entire Drupal codebase.
-
+While this produces `nfs` speed file change propogation along with "native" page loads, the speed of propagation does slow as you increase the amount of files you are scanning. Luckily, we've provided a few ways for you to optimize your sync.
 #### The Roadmap Forward
 
 We **really, really hope** that the above is a stop-gap solution. Docker is currently working on "native" filesharing for both OSX and Windows. Once those are complete and perform better than what we have we will switch our sharing over to use them. You can track the progress of that issue over here:
