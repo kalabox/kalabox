@@ -22,7 +22,7 @@ Prints out the currently active Kalabox configuration. If you are inside of an a
 Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
-  --debug        Use debug output.                                     [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
 ```
 
 create
@@ -45,7 +45,7 @@ Completely removes an app and its code. This means that after you run this comma
 Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
-  --debug        Use debug output.                                     [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
   -y, --yes      Automatically answer affirmitive                      [boolean]
 ```
 
@@ -72,7 +72,7 @@ Prints out a list of environmental variables that Kalabox sets dynamically. This
 Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
-  --debug        Use debug output.                                     [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
 ```
 
 list
@@ -86,7 +86,7 @@ Prints a JSON object of your apps with some summary information about them. Runs
 Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
-  --debug        Use debug output.                                     [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
   -n, --names    Only display app names.                               [boolean]
 ```
 
@@ -101,7 +101,7 @@ Completely rebuilds the containers and services you use to run your app. This co
 Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
-  --debug        Use debug output.                                     [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
 ```
 
 ```bash
@@ -125,7 +125,7 @@ Stops and then starts an app. You need to have an app context to run this comman
 Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
-  --debug        Use debug output.                                     [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
 ```
 
 !!! tip "Good to resolve random issues"
@@ -151,7 +151,7 @@ Start an app. It will also build the app if this is the first time you've starte
 Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
-  --debug        Use debug output.                                     [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
 ```
 
 ```bash
@@ -180,7 +180,7 @@ Stop your Kalabox app. You need to have an app context to run this command.
 Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
-  --debug        Use debug output.                                     [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
 ```
 
 !!! tip "Good to stop apps you aren't using"
@@ -197,7 +197,7 @@ Prints out the current version of Kalabox you are using. Runs from either an app
 Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
-  --debug        Use debug output.                                     [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
 ```
 
 Additional Commands
@@ -223,7 +223,7 @@ The following options are available for every command.
 ```bash
 -h, --help     Display help message.                                 [boolean]
 -v, --verbose  Use verbose output.                                   [boolean]
---debug        Use debug output.                                     [boolean]
+-d, --debug    Use debug output.                                     [boolean]
 ```
 
 ### Examples
