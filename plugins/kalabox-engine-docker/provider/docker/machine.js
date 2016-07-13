@@ -13,6 +13,7 @@ module.exports = function(kbox) {
   // NPM modules
   var VError = require('verror');
   var _ = require('lodash');
+  var format = require('util').format;
   var fs = require('fs-extra');
 
   // Kalabox modules
@@ -24,7 +25,7 @@ module.exports = function(kbox) {
   var MACHINE_EXECUTABLE = bin.getMachineExecutable();
 
   // Set of logging functions.
-  var log = kbox.core.log.make('MACHINE');
+  var log = kbox.core.log.make('DOCKER MACHINE');
 
   /*
    * Run a provider command in a shell.
@@ -39,7 +40,7 @@ module.exports = function(kbox) {
 
       // Build and log the command
       var run = [MACHINE_EXECUTABLE].concat(cmd).concat('Kalabox2');
-      log.debug(run);
+      log.info(format('Running %j', cmd));
 
       // Run the command
       return bin.sh(run, opts)

@@ -10,6 +10,7 @@ module.exports = function(kbox) {
   // Native modules
   var path = require('path');
   var url = require('url');
+  var format = require('util').format;
 
   // NPM modules
   var _ = require('lodash');
@@ -24,7 +25,7 @@ module.exports = function(kbox) {
   var COMPOSE_EXECUTABLE = bin.getComposeExecutable();
 
   // Set of logging functions.
-  var log = kbox.core.log.make('COMPOSE');
+  var log = kbox.core.log.make('DOCKER COMPOSE');
 
   /*
    * Run a provider command in a shell.
@@ -56,7 +57,7 @@ module.exports = function(kbox) {
     }
 
     // Run a provider command in a shell.
-    log.info(_.flatten([cmd, opts]));
+    log.info(format('Running: %j', cmd));
     return bin.sh([COMPOSE_EXECUTABLE].concat(cmd), opts);
 
   };

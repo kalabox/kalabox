@@ -20,9 +20,8 @@ If you encounter an error during runtime, check out the runtime log at...
   * **OSX/LINUX** - `~/.kalabox/logs/kalabox.log`
   * **Windows** - `C:\Users\{ME}\.kalabox\logs\kalabox.log`
 
-!!! tip "Pro Tip: Use verbose mode!""
-    Run the failing command again with the `-- -v` option to get more useful
-    debug output.
+!!! tip "Pro Tip: Use verbose or debug mode!""
+    Run the failing command again with either the `-v` or `-d` option to get more useful debug output. But be careful because this output could contain sensitive information.
 
 Docker Logs
 -----------
@@ -64,11 +63,11 @@ Fortunately, removing these duplicates is fairly easy:
 1. Open VirtualBox.
 
 2. Look at each of your virtual machines and record the value for their "Host-only Adapter" under the "Network" section:
-    
+
     ![Kalabox2 in VirtualBox](./images/kalabox2vb.png)
 <br>
 3. Now go to Preferences -> Network -> Host-only Network to see a list of all your adapters:
-    
+
     ![List of host only adapter in VirtualBox](./images/hostonlyadapters.png)
 <br>
 4. Delete any of the adapters that aren't being used by one of your virtual machines.
