@@ -21,7 +21,7 @@ If you encounter an error during runtime, check out the runtime log at...
   * **Windows** - `C:\Users\{ME}\.kalabox\logs\kalabox.log`
 
 !!! tip "Pro Tip: Use verbose or debug mode!""
-    Run the failing command again with either the `-v` or `-d` option to get more useful debug output.
+    Run the failing command again with either the `-v` or `-d` option to get more useful debug output. But be careful because this output could contain sensitive information.
 
 Docker Logs
 -----------

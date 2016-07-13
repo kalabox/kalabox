@@ -16,9 +16,6 @@ module.exports = function(kbox) {
   // Kalabox modules
   var shell = kbox.util.shell;
 
-  // Set of logging functions.
-  var log = kbox.core.log.make('DOCKER');
-
   /*
    * Get directory for docker executables.
    */
@@ -109,15 +106,7 @@ module.exports = function(kbox) {
 
     // Otherwise we can do a basic exec
     else {
-
-      // Do the exec
-      return shell.exec(cmd, opts)
-
-      // Log results.
-      .tap(function(data) {
-        log.debug('Command results.', data);
-      });
-
+      return shell.exec(cmd, opts);
     }
   };
 

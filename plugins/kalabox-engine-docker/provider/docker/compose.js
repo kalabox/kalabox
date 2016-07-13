@@ -25,7 +25,7 @@ module.exports = function(kbox) {
   var COMPOSE_EXECUTABLE = bin.getComposeExecutable();
 
   // Set of logging functions.
-  var log = kbox.core.log.make('COMPOSE');
+  var log = kbox.core.log.make('DOCKER COMPOSE');
 
   /*
    * Run a provider command in a shell.
