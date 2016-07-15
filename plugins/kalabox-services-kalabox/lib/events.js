@@ -4,6 +4,7 @@ module.exports = function(kbox) {
 
   // Node modules
   var path = require('path');
+  var format = require('util').format;
 
   // Npm modules
   var _ = require('lodash');
@@ -15,7 +16,7 @@ module.exports = function(kbox) {
   var Promise = kbox.Promise;
 
   // Logging
-  var log = kbox.core.log.make('SERVICES');
+  var log = kbox.core.log.make('SERVICES PLUGIN');
 
   /*
    * App events
@@ -68,6 +69,9 @@ module.exports = function(kbox) {
 
       // Go through our services that need to be exposed
       .each(function(service) {
+
+        // Log the service getting confed
+        log.debug(format('Configuration DNS for %s service.', service));
 
         // Get the redis IP
         var REDIS_IP = kbox.core.deps.get('engineConfig').host;

@@ -56,43 +56,22 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Return a containers name.
-   */
-  var getContainerName = function(container) {
-    var name = container.Names[0];
-    if (_.head(name) === '/' || _.head(name) === ' ') {
-      name = name.slice(1);
-    }
-    return name;
-  };
-
-  /*
    * Convert a docker container to a generic container.
    */
   var toGenericContainer = function(dockerContainer) {
 
     // Get name of docker container.
-    var containerNameString = getContainerName(dockerContainer);
-
-    // Parse docker container name.
-    var name = null;
-    try {
-      name = kbox.util.docker.containerName.parse(containerNameString);
-    } catch (err) {
-      name = null;
-    }
+    var app = dockerContainer.Labels['com.docker.compose.project'];
+    var service = dockerContainer.Labels['com.docker.compose.service'];
+    var num = dockerContainer.Labels['com.docker.compose.container-number'];
 
     // Build generic container.
-    if (!name) {
-      return null;
-    } else {
-      return {
-        id: dockerContainer.Id,
-        name: containerNameString,
-        app: name.app,
-        kind: name.kind
-      };
-    }
+    return {
+      id: dockerContainer.Id,
+      name: [app, service, num].join('_'),
+      app: (app !== 'kalabox') ? app : undefined,
+      kind: (app !== 'kalabox') ? 'app' : 'service'
+    };
 
   };
 
