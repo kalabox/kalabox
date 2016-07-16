@@ -79,6 +79,7 @@ deploy:
       secure: o/pYPIuDU8SPSrTB15BwzlLrDXGuhhTJUWdWMyvDLnsAwC6uJmASPEATUX9CFIEW
     bucket: installer.kalabox.io
     region: us-west-2
+    set_public: true
     artifact: weezer
     on:
       branch: v0.13
