@@ -64,6 +64,12 @@ module.exports = function(kbox) {
     var app = dockerContainer.Labels['com.docker.compose.project'];
     var service = dockerContainer.Labels['com.docker.compose.service'];
     var num = dockerContainer.Labels['com.docker.compose.container-number'];
+    var run = dockerContainer.Labels['com.docker.compose.oneoff'];
+
+    // Add 'run' the service if this is a oneoff container
+    if (run === 'True') {
+      service = [service, 'run'].join('_');
+    }
 
     // Build generic container.
     return {
