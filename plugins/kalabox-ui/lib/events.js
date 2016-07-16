@@ -12,36 +12,24 @@
  */
 module.exports = function(kbox) {
 
-  // Node modules.
-  var path = require('path');
-
   /*
    * Run whenever an app is loaded.
    */
   kbox.core.events.on('post-app-load', function(app) {
 
-    // Get a compose object for the token container.
-    var compose = {
-      compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
-      project: app.name,
-      opts: {
-        internal: true
-      }
-    };
-
     // Start token container.
     app.events.on('post-start', function() {
-      return kbox.engine.start(compose);
+      return kbox.core.events.emit('app-started', app);
     });
 
     // Stop token container.
     app.events.on('post-stop', function() {
-      return kbox.engine.stop(compose);
+      return kbox.core.events.emit('app-stopped', app);
     });
 
     // Destroy token container.
     app.events.on('post-destroy', function() {
-      return kbox.engine.destroy(compose);
+      return kbox.core.events.emit('app-destroyed');
     });
 
   });

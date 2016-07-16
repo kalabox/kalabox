@@ -298,16 +298,8 @@ module.exports = function(kbox) {
     });
   };
 
-  /*
-   * Returns a stream of docker events.
-   */
-  var events = function() {
-    return docker.events();
-  };
-
   return {
     build: build,
-    events: events,
     exists: exists,
     getProvider: getProvider,
     init: init,
