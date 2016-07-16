@@ -7,6 +7,8 @@ v0.13.0-alpha.2
 * Ensured `dns` and `proxy` are running before a `kbox start` and `kbox stop` [#1294](https://github.com/kalabox/kalabox/issues/1294)
 * Added ability to optimize `unison` file sharing by ignoring or targeting specific paths. [#1440](https://github.com/kalabox/kalabox/issues/1440)
 * Improved logging by reducing noise, adding color and separated `debug` and `verbose` better.
+* Fixed bug on Linux where adding services to `kalabox_proxy` was failing. [#1351](https://github.com/kalabox/kalabox/issues/1351)
+* Fixed bug on Linux where `kbox services` would sometimes not return all the services. [#1429](https://github.com/kalabox/kalabox/issues/1429)
 
 v0.13.0-alpha.1
 ===============
