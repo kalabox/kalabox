@@ -9,6 +9,7 @@ v0.13.0-alpha.2
 * Improved logging by reducing noise, adding color and separated `debug` and `verbose` better.
 * Fixed bug on Linux where adding services to `kalabox_proxy` was failing. [#1351](https://github.com/kalabox/kalabox/issues/1351)
 * Fixed bug on Linux where `kbox services` would sometimes not return all the services. [#1429](https://github.com/kalabox/kalabox/issues/1429)
+* Fixed bug where Windows latest dev release was not avaialable to the public by default.
 
 v0.13.0-alpha.1
 ===============
