@@ -47,7 +47,9 @@ module.exports = function(common) {
           'pantheon-app-click',
           'site',
           'select-on-click',
-          'switch'
+          'switch',
+          'link',
+          'browser'
         ],
         relaxerror: [
           'This document appears to be written in English. Consider' +
