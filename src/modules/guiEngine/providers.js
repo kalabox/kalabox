@@ -18,9 +18,7 @@ angular.module('kalabox.dashboard')
     // Init.
     this.sites = [];
     this.refreshing = false;
-    this.displayName = this.username ?
-      this.username :
-      this.name;
+    this.displayName = this.username ? this.username : this.name;
 
   }
 
@@ -61,6 +59,7 @@ angular.module('kalabox.dashboard')
       var sites = self.integration.sites();
       var siteProvider = _.cloneDeep(self);
       delete siteProvider.sites;
+      console.log(self);
       // Get list of sites.
       return sites.run(self.username)
       // Map sites.

@@ -14,16 +14,12 @@
     <div class="alert alert-danger" ng-if="errorMessage">Are your Pantheon email and password correct? Gotta check'em all!</div>
     <form name="authForm">
       <div class="form-group">
-        <label for="authEmail">Email</label>
-        <input type="email" class="form-control" id="authEmail" placeholder="Email" ng-model="email" required>
-      </div>
-      <div class="form-group">
-        <label for="authPassword">Password</label>
-        <input type="password" class="form-control" id="authPassword" placeholder="Password" ng-model="password" ng-enter="ok(email, password)" required>
+        <label for="authMachineToken">Machine Token</label>
+        <input type="password" class="form-control" id="authMachineToken" placeholder="Machine Token" ng-model="token" ng-enter="ok(token)" required>
       </div>
     </form>
     <div class="form-actions">
-      <button class="btn btn-primary" type="button" ng-disabled="authForm.$invalid" ng-click="ok(email, password); $event.stopPropagation();">Submit</button>
+      <button class="btn btn-primary" type="button" ng-disabled="authForm.$invalid" ng-click="ok(token); $event.stopPropagation();">Submit</button>
       <button class="btn btn-default" type="button" ui-sref="dashboard.sidebar">Cancel</button>
     </div>
   </div>

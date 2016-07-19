@@ -70,10 +70,10 @@ angular.module('kalabox.sidebar', [
     guiEngine.try(function() {
       $scope.errorMessage = false;
       // Auth on submission.
-      $scope.ok = function(email, password) {
+      $scope.ok = function(token) {
         $scope.authorizing = true;
         // Authorize with provider.
-        return $scope.provider.authorize(email, password)
+        return $scope.provider.authorize(token)
         // Refresh providers.
         .then(function() {
           return providers.get()
