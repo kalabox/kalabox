@@ -52,6 +52,9 @@ angular.module('kalabox.dashboard', [
   kbox.then(function(kbox) {
     $scope.ui.devMode = kbox.core.deps.get('globalConfig').devMode;
     $rootScope.apps = _.values(kbox.create.getAll());
+    kbox.app.list().each(function(app) {
+      $scope.ui.states[app.name] = app.status();
+    });
   });
 
   function findSite(app, sites) {
@@ -157,7 +160,7 @@ angular.module('kalabox.dashboard', [
     setTimeout(reload, 1000 * 15);
   }
 
-  // Reload sites when dashboard loads.
+  // Reload sites and get states when dashboard loads.
   reloadSites();
 
   // Update site states whenever an update event occurs.
@@ -204,25 +207,6 @@ angular.module('kalabox.dashboard', [
   $scope.errors = modalData.errors;
   $scope.ok = function() {
     $uibModalInstance.close();
-  };
-})
-.controller(
-  'SiteCtrl',
-  function($scope) {
-  // Code for setting site state on view.
-  $scope.siteClasses = function() {
-    var currentAction = $scope.site.currentAction ? $scope.site.currentAction :
-    '';
-    var siteUp = $scope.ui.states[$scope.site.machineName] ? 'site-up' : '';
-    return currentAction + ' ' + siteUp;
-  };
-  $scope.currentActionName = function() {
-    if ($scope.site.currentAction) {
-      var actions = {stop: 'Stopping', start: 'Starting', 'delete': 'Deleting',
-      pull: 'Pulling', push: 'Pushing', add: 'Installing'};
-      return actions[$scope.site.currentAction];
-    }
-    return false;
   };
 })
 .controller(

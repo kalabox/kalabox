@@ -1,7 +1,23 @@
 'use strict';
 
 angular.module('kalabox.dashboard')
-
+.controller('SiteCtrl', function($scope) {
+  // Code for setting site state on view.
+  $scope.siteClasses = function() {
+    var currentAction = $scope.site.currentAction ? $scope.site.currentAction :
+    '';
+    var siteUp = $scope.ui.states[$scope.site.name] ? 'site-up' : '';
+    return currentAction + ' ' + siteUp;
+  };
+  $scope.currentActionName = function() {
+    if ($scope.site.currentAction) {
+      var actions = {stop: 'Stopping', start: 'Starting', 'delete': 'Deleting',
+      pull: 'Pulling', push: 'Pushing', add: 'Installing'};
+      return actions[$scope.site.currentAction];
+    }
+    return false;
+  };
+})
 /*
  * Start site if site is stopped, stop site if site is started.
  */
