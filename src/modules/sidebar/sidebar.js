@@ -244,7 +244,7 @@ angular.module('kalabox.sidebar', [
               // Add site.
               sites.add({
                 provider: provider,
-                email: provider.username,
+                token: provider.username,
                 site: site.name,
                 env: appConfig.env,
                 name: appConfig.name.toLowerCase(),
