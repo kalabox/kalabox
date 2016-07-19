@@ -28,83 +28,10 @@ angular.module('kalabox.dashboard', [
     }
   });
 })
-/*
- * Start site if site is stopped, stop site if site is started.
- */
-.directive('siteToggle', function(guiEngine) {
-  return {
-    scope: true,
-    link: function($scope, element) {
-      element.on('click', function() {
-        return guiEngine.try(function() {
-          // Query running state of site.
-          return $scope.site.isRunning()
-          .then(function(isRunning) {
-            if (isRunning) {
-              // Stop site.
-              return $scope.site.stop();
-            } else {
-              // Start site.
-              return $scope.site.start();
-            }
-          });
-        });
-      });
-    }
-  };
-})
-.directive('siteBrowser', function(guiEngine) {
-  return {
-    scope: true,
-    link: function($scope, element) {
-      element.on('click', function() {
-        if ($scope.ui.states[$scope.site.machineName]) {
-          guiEngine.try(function() {
-            // Get reference to nw gui.
-            var gui = require('nw.gui');
-            // Open folder in os' default file browser.
-            gui.Shell.openExternal($scope.site.url);
-          });
-        }
-      });
-    }
-  };
-})
-.directive('siteCode', function(guiEngine) {
-  return {
-    scope: true,
-    link: function($scope, element) {
-      element.on('click', function() {
-        guiEngine.try(function() {
-          var gui = require('nw.gui');
-          gui.Shell.openItem($scope.site.codeFolder);
-        });
-      });
-    }
-  };
-})
-.directive('siteTerminal', function(guiEngine, terminal) {
-  return {
-    scope: true,
-    link: function($scope, element) {
-      element.on('click', function() {
-        guiEngine.try(function() {
-          terminal.open($scope.site.codeFolder);
-        });
-      });
-    }
-  };
-})
-.directive('site', function() {
-  return {
-    restrict: 'EA',
-    templateUrl: 'modules/dashboard/site.html.tmpl'
-  };
-})
 .controller(
   'DashboardCtrl',
-  function($scope, $uibModal, $timeout, $interval, $q, kbox,
-    sites, providers, siteStates, _, guiEngine, $state, $rootScope) {
+  function($scope, $uibModal, $interval, $q, kbox,
+    sites, Site, providers, _, guiEngine, $state, $rootScope) {
 
   //Init ui model.
   $scope.ui = {
@@ -125,17 +52,51 @@ angular.module('kalabox.dashboard', [
   kbox.then(function(kbox) {
     $scope.ui.devMode = kbox.core.deps.get('globalConfig').devMode;
     $rootScope.apps = _.values(kbox.create.getAll());
+    kbox.app.list().each(function(app) {
+      $scope.ui.states[app.name] = app.status();
+    });
   });
 
-  // When a site is destroyed filter the sites in the scope to remove it.
-  // This needs to happen because the polling takes time to catch up.
+  function findSite(app, sites) {
+    return _.findIndex(sites, function(site) {
+      return site.name === app.name;
+    });
+  }
+
+  // Handle site state.
   kbox.then(function(kbox) {
-    $scope.kbox = kbox;
-    // Listen to the post app destroy event.
-    kbox.core.events.on('post-app-destroy', function(app) {
+    kbox.core.events.on('post-create-app', function(app) {
+      // Updates sites.
+      // Update site based on creation.
+      $scope.ui.sites.push(Site.fromApp(app));
+      var index = findSite(app, $scope.ui.sites);
+      $scope.ui.sites[index].busy = true;
+    });
+
+    kbox.core.events.on('app-started', function(app) {
+      $scope.ui.states[app.name] = true;
+    });
+
+    kbox.core.events.on('app-created', function(app) {
+      // Set site active.
+      var index = findSite(app, $scope.ui.sites);
+      $scope.$applyAsync(function() {
+        $scope.ui.sites[index].updateScreenshotUrl();
+        $scope.ui.sites[index].busy = false;
+        $scope.ui.states[app.name] = true;
+      });
+    });
+
+    kbox.core.events.on('app-stopped', function(app) {
+      $scope.ui.states[app.name] = false;
+    });
+
+    kbox.core.events.on('app-destroyed', function(app) {
       // Filter sites to remove site that was just destroyed.
-      $scope.ui.sites = _.filter($scope.ui.sites, function(site) {
-        return site.machineName !== app.name;
+      $scope.$applyAsync(function() {
+        $scope.ui.sites = _.filter($scope.ui.sites, function(site) {
+          return site.name !== app.name;
+        });
       });
     });
   });
@@ -175,16 +136,6 @@ angular.module('kalabox.dashboard', [
     });
   });
 
-  var siteUpdate = $interval(function() {
-    // Update site properties once a second.
-    $scope.$evalAsync(function($scope) {
-      var sites = $scope.ui.sites;
-      _.each(sites, function(site) {
-        site.update();
-      });
-    });
-  }, 1000);
-
   // Helper function for reloading list of sites.
   function reloadSites() {
     function reload() {
@@ -205,27 +156,12 @@ angular.module('kalabox.dashboard', [
     setTimeout(reload, 1000 * 15);
   }
 
-  // Reload sites when dashboard loads.
+  // Reload sites and get states when dashboard loads.
   reloadSites();
 
   // Update site states whenever an update event occurs.
   sites.on('update', function() {
-    reloadSites();
-  });
-
-  // Update site states whenever an update event occurs.
-  siteStates().on('update', function(apps) {
-    $scope.ui.states = apps;
-  });
-
-  // Reload sites when a new site is created.
-  siteStates().on('create', function() {
-    reloadSites();
-  });
-
-  // Reload sites when a site is destroyed.
-  siteStates().on('destroy', function() {
-    reloadSites();
+    //reloadSites();
   });
 
   // Poll list of errors.
@@ -256,7 +192,6 @@ angular.module('kalabox.dashboard', [
     '$destroy',
     function() {
       $interval.cancel(errorPoll);
-      $interval.cancel(siteUpdate);
     }
   );
 
@@ -268,25 +203,6 @@ angular.module('kalabox.dashboard', [
   $scope.errors = modalData.errors;
   $scope.ok = function() {
     $uibModalInstance.close();
-  };
-})
-.controller(
-  'SiteCtrl',
-  function($scope) {
-  // Code for setting site state on view.
-  $scope.siteClasses = function() {
-    var currentAction = $scope.site.currentAction ? $scope.site.currentAction :
-    '';
-    var siteUp = $scope.ui.states[$scope.site.machineName] ? 'site-up' : '';
-    return currentAction + ' ' + siteUp;
-  };
-  $scope.currentActionName = function() {
-    if ($scope.site.currentAction) {
-      var actions = {stop: 'Stopping', start: 'Starting', 'delete': 'Deleting',
-      pull: 'Pulling', push: 'Pushing', add: 'Installing'};
-      return actions[$scope.site.currentAction];
-    }
-    return false;
   };
 })
 .controller(
