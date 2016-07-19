@@ -430,34 +430,7 @@ module.exports = function(kbox) {
 
   };
 
-  /*
-   * Returns a stream of docker events.
-   */
-  var events = function() {
-
-    // Get docker instance.
-    return dockerInstance()
-    // Get stream of docker events.
-    .then(function(dockerInstance) {
-      return Promise.fromNode(function(cb) {
-        // Include since option with a really old timestamp to ensure we get
-        // all events since engine was started. This is useful when an app
-        // was started with the cli, before the GUI was initialized.
-        var opts = {
-          since: 1300000000
-        };
-        dockerInstance.getEvents(opts, cb);
-      });
-    })
-    // Wrap errors.
-    .catch(function(err) {
-      throw new VError(err, 'Error listening to docker events.');
-    });
-
-  };
-
   return {
-    events: events,
     findContainer: findContainer,
     findContainerThrows: findContainerThrows,
     inspect: inspect,

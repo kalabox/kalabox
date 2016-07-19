@@ -4,13 +4,12 @@ angular.module('kalabox.sites', [])
 /*
  * Class for encapsulating a site instance.
  */
-.factory('Site', function(kbox, siteStates, _, providers, guiEngine, $q, path) {
+.factory('Site', function(kbox, _, providers, guiEngine, $q, path, $window) {
 
   // Constructor.
   function Site(opts) {
     this.opts = opts;
     this.name = opts.name;
-    this.machineName = opts.name.replace(/-/g, '');
     this.url = opts.url;
     this.folder = opts.folder;
     this.codeFolder = opts.codeFolder;
@@ -93,10 +92,11 @@ angular.module('kalabox.sites', [])
    */
   Site.prototype.updateScreenshotUrl = function() {
     var timestamp = new Date().getTime();
+    // @todo: need to reference an image inside of the built GUI app.
     var imagePath = this.opts.folder ?
-      path.join(this.opts.folder, 'screenshot.png') + '?' + timestamp :
-      this.opts.image;
-    this.image = 'file://' + imagePath;
+      path.join('file://', this.opts.folder, 'screenshot.png') + '?' + timestamp
+      : this.opts.image;
+    this.image = imagePath;
   };
 
   /*
@@ -160,14 +160,6 @@ angular.module('kalabox.sites', [])
         return self.afterQueue();
       });
     });
-  };
-
-  /*
-   * Returns boolean set to true if site is running.
-   */
-  Site.prototype.isRunning = function() {
-    var self = this;
-    return $q.resolve(siteStates().apps[self.machineName]);
   };
 
   /*
@@ -344,7 +336,8 @@ angular.module('kalabox.sites', [])
       url: null,
       folder: null,
       codeFolder: null,
-      image: 'images/kalabox/screenshot.png',
+      image: 'chrome-extension://' + $window.location.hostname +
+      '/images/kalaboxv2.png',
       providerInfo: {
         framework: 'drupal'
       }
@@ -509,148 +502,5 @@ angular.module('kalabox.sites', [])
 
   // Return class instance.
   return new Sites();
-
-})
-/*
- * Object for getting a cached list of site instance states.
- */
-.factory('siteStates', function(kbox, _) {
-
-  return _.once(function() {
-
-    var events = require('events');
-    var util = require('util');
-
-    // Constructor.
-    function SiteStates() {
-      this.apps = {};
-      events.EventEmitter.call(this);
-      this.init();
-    }
-    // Inherit from event emitter.
-    util.inherits(SiteStates, events.EventEmitter);
-
-    // Initialize.
-    SiteStates.prototype.init = function() {
-
-      var self = this;
-
-      return kbox.then(function(kbox) {
-
-        // Map container id to container name.
-        var mapId = _.memoize(function(id) {
-          // Inspect container.
-          return kbox.engine.inspect({containerID: id})
-          // Return container name.
-          .then(function(data) {
-            return data.Name ? _.trim(data.Name, '/') : null;
-          })
-          // Ignore errors and return undefined.
-          .catch(function() {
-            /*
-             * It's expected to have a lot of instances where we fail to inspect
-             * a container here, so ignore errors and assume we didn't need to
-             * map that container.
-             */
-          });
-        });
-
-        // Promise chain for serializing events.
-        var p = kbox.Promise.resolve();
-
-        // Get list of containers.
-        return kbox.engine.list()
-        // Seed memoized map.
-        .each(function(container) {
-          return mapId(container.id);
-        })
-        // Get event stream.
-        .then(function() {
-          return kbox.engine.events();
-        })
-        .then(function(result) {
-
-          // Set encoding so events give a string rather than a Buffer.
-          result.setEncoding('utf8');
-
-          // Handle data events from the result stream.
-          result.on('data', function(data) {
-
-            // Serialize events by adding to tail of promise chain.
-            p = p.then(function() {
-              // Run inside of a promise.
-              return kbox.Promise.try(function() {
-
-                // Parse data string into a json object.
-                data = JSON.parse(data);
-
-                // Get action.
-                var action = _.get(data, 'status');
-                // Get container id.
-                var id = _.get(data, 'id');
-
-                if (action && id) {
-
-                  // Get name of the container.
-                  return mapId(id)
-                  .then(function(name) {
-
-                    // Split the container name into it's parts.
-                    var parts = name ? name.split('_') : [];
-                    // Get name of app from container name's first part.
-                    var app = parts[0];
-                    // Get container type from container name's second part.
-                    var container = parts[1];
-
-                    // Only events with a container of appserver are interesting.
-                    if (parts.length === 3 && container === 'token') {
-                      if (action === 'create') {
-                        // App created, so add to list of app states.
-                        self.apps[app] = false;
-                        self.emit('create', app);
-                        self.emit('update', self.apps);
-                      } else if (action === 'start') {
-                        // App started, set state to true.
-                        self.apps[app] = true;
-                        self.emit('start', app);
-                        self.emit('update', self.apps);
-                      } else if (action === 'destroy') {
-                        self.emit('destroy', app);
-                        self.emit('update', self.apps);
-                      } else if (action === 'die' || action === 'stop') {
-                        // App stopped, set state to false.
-                        self.apps[app] = false;
-                        self.emit('stop', app);
-                        self.emit('update', self.apps);
-                      }
-                    }
-
-                  });
-
-                }
-
-              })
-              // Ignore errors.
-              .catch(function(err) {
-                console.log(err.message);
-                console.log(err.stack);
-              });
-            });
-
-          });
-        })
-        // Ignore errors.
-        .catch(function(err) {
-          console.log(err.message);
-          console.log(err.stack);
-          throw err;
-        });
-      });
-    };
-
-    // Return singleton instance.
-    return new SiteStates();
-
-  });
 
 });

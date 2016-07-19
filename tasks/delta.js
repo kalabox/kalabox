@@ -13,11 +13,11 @@ module.exports = function(common) {
     },
     appJS: {
       files: ['src/modules/**/*'],
-      tasks: ['jshint', 'copy:buildGui']
+      tasks: ['jshint', 'copy:guiBuild']
     },
     assets: {
       files: ['src/assets/**/*'],
-      tasks: ['copy:buildGui']
+      tasks: ['copy:guiBuild']
     },
     html: {
       files: ['src/index.html'],
