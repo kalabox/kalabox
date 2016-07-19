@@ -53,7 +53,11 @@ angular.module('kalabox.dashboard', [
     $scope.ui.devMode = kbox.core.deps.get('globalConfig').devMode;
     $rootScope.apps = _.values(kbox.create.getAll());
     kbox.app.list().each(function(app) {
-      $scope.ui.states[app.name] = app.status();
+      app.status().then(function(status) {
+        $scope.$applyAsync(function() {
+          $scope.ui.states[app.name] = status[1];
+        });
+      });
     });
   });
 
@@ -158,11 +162,6 @@ angular.module('kalabox.dashboard', [
 
   // Reload sites and get states when dashboard loads.
   reloadSites();
-
-  // Update site states whenever an update event occurs.
-  sites.on('update', function() {
-    //reloadSites();
-  });
 
   // Poll list of errors.
   var errorPoll = $interval(function() {
