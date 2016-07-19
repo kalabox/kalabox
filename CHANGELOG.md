@@ -11,6 +11,7 @@ v0.13.0-alpha.2
 * Fixed bug on Linux where `kbox services` would sometimes not return all the services. [#1429](https://github.com/kalabox/kalabox/issues/1429)
 * Fixed bug where Windows latest dev release was not avaialable to the public by default.
 * Upgraded Windows and OSX to [VirtualBox 5.0.26](https://www.virtualbox.org/wiki/Download_Old_Builds_5_0)
+* Improved `app.isRunning` to filter out any `autostart` services.
 
 v0.13.0-alpha.1
 ===============
