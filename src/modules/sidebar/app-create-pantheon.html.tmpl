@@ -12,7 +12,7 @@
       <label for="appEnv">Which environment?</label>
       <select class="form-control" id="appEnv" ng-model="app.env" required>
         <option label="-- Select Environment --" hidden></option>
-        <option ng-repeat="env in site.environments" value="{{env}}">{{env}}</option>
+        <option ng-repeat="env in site.environments" value="{{env.value}}">{{env.name}}</option>
       </select>
     </div>
     <div class="form-group show-labels" show-errors>
