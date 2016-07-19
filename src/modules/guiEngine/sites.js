@@ -4,7 +4,7 @@ angular.module('kalabox.sites', [])
 /*
  * Class for encapsulating a site instance.
  */
-.factory('Site', function(kbox, _, providers, guiEngine, $q, path) {
+.factory('Site', function(kbox, _, providers, guiEngine, $q, path, $window) {
 
   // Constructor.
   function Site(opts) {
@@ -92,10 +92,11 @@ angular.module('kalabox.sites', [])
    */
   Site.prototype.updateScreenshotUrl = function() {
     var timestamp = new Date().getTime();
+    // @todo: need to reference an image inside of the built GUI app.
     var imagePath = this.opts.folder ?
-      path.join(this.opts.folder, 'screenshot.png') + '?' + timestamp :
-      this.opts.image;
-    this.image = 'file://' + imagePath;
+      path.join('file://', this.opts.folder, 'screenshot.png') + '?' + timestamp
+      : this.opts.image;
+    this.image = imagePath;
   };
 
   /*
@@ -335,7 +336,8 @@ angular.module('kalabox.sites', [])
       url: null,
       folder: null,
       codeFolder: null,
-      image: 'images/kalabox/screenshot.png',
+      image: 'chrome-extension://' + $window.location.hostname +
+      '/images/kalaboxv2.png',
       providerInfo: {
         framework: 'drupal'
       }

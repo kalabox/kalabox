@@ -31,7 +31,7 @@ angular.module('kalabox.dashboard', [
 .controller(
   'DashboardCtrl',
   function($scope, $uibModal, $interval, $q, kbox,
-    sites, providers, _, guiEngine, $state, $rootScope) {
+    sites, Site, providers, _, guiEngine, $state, $rootScope) {
 
   //Init ui model.
   $scope.ui = {
@@ -65,16 +65,12 @@ angular.module('kalabox.dashboard', [
 
   // Handle site state.
   kbox.then(function(kbox) {
-    kbox.core.events.on('pre-create-app', function(app) {
+    kbox.core.events.on('post-create-app', function(app) {
       // Updates sites.
-      sites.get()
-      .then(function(sites) {
-        $scope.ui.sites = sites;
-      }).then(function() {
-        // Set site busy.
-        var index = findSite(app, $scope.ui.sites);
-        $scope.ui.sites[index].busy = true;
-      });
+      // Update site based on creation.
+      $scope.ui.sites.push(Site.fromApp(app));
+      var index = findSite(app, $scope.ui.sites);
+      $scope.ui.sites[index].busy = true;
     });
 
     kbox.core.events.on('app-started', function(app) {
