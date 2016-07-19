@@ -5,7 +5,7 @@ angular.module('kalabox.nodewrappers', [])
     return require('child_process').exec;
   }])
   .factory('fs', [function() {
-    return require('fs');
+    return require('fs-extra');
   }])
   .factory('path', [function() {
     return require('path');
