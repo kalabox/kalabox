@@ -56,13 +56,12 @@ angular.module('kalabox.dashboard', [
 
   function findSite(app, sites) {
     return _.findIndex(sites, function(site) {
-      return site.machineName === app.name;
+      return site.name === app.name;
     });
   }
 
   // Handle site state.
   kbox.then(function(kbox) {
-    // On starting app creation.
     kbox.core.events.on('pre-create-app', function(app) {
       // Updates sites.
       sites.get()
@@ -79,16 +78,16 @@ angular.module('kalabox.dashboard', [
       $scope.ui.states[app.name] = true;
     });
 
-    kbox.core.events.on('app-stopped', function(app) {
-      $scope.ui.states[app.name] = false;
-    });
-
-    kbox.core.events.on('post-create-app', function(app) {
+    kbox.core.events.on('app-created', function(app) {
       // Set site active.
-      // @todo verify.
       var index = findSite(app, $scope.ui.sites);
+      $scope.ui.sites[index].updateScreenshotUrl();
       $scope.ui.sites[index].busy = false;
       $scope.ui.states[app.name] = true;
+    });
+
+    kbox.core.events.on('app-stopped', function(app) {
+      $scope.ui.states[app.name] = false;
     });
 
     kbox.core.events.on('app-destroyed', function(app) {
@@ -159,7 +158,7 @@ angular.module('kalabox.dashboard', [
 
   // Update site states whenever an update event occurs.
   sites.on('update', function() {
-    reloadSites();
+    //reloadSites();
   });
 
   // Poll list of errors.

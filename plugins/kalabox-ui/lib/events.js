@@ -7,19 +7,24 @@ module.exports = function(kbox) {
    */
   kbox.core.events.on('post-app-load', function(app) {
 
-    // Start token container.
+    // Start an app.
     app.events.on('post-start', function() {
       return kbox.core.events.emit('app-started', app);
     });
 
-    // Stop token container.
+    // Stop an app.
     app.events.on('post-stop', function() {
       return kbox.core.events.emit('app-stopped', app);
     });
 
-    // Destroy token container.
+    // Create an app.
+    app.events.on('post-create', 9, function() {
+      return kbox.core.events.emit('app-created', app);
+    });
+
+    // Destroy an app.
     app.events.on('post-destroy', function() {
-      return kbox.core.events.emit('app-destroyed');
+      return kbox.core.events.emit('app-destroyed', app);
     });
 
   });
