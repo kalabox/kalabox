@@ -12,7 +12,7 @@ angular.module('kalabox.dashboard')
       element.on('click', function() {
         return guiEngine.try(function() {
           // Query running state of site.
-          var isRunning = $scope.ui.states[$scope.site.machineName];
+          var isRunning = $scope.ui.states[$scope.site.name];
           if (isRunning) {
             // Stop site.
             return $scope.site.stop();
@@ -30,7 +30,7 @@ angular.module('kalabox.dashboard')
     scope: true,
     link: function($scope, element) {
       element.on('click', function() {
-        if ($scope.ui.states[$scope.site.machineName]) {
+        if ($scope.ui.states[$scope.site.name]) {
           guiEngine.try(function() {
             // Get reference to nw gui.
             var gui = require('nw.gui');

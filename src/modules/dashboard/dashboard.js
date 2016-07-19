@@ -81,9 +81,11 @@ angular.module('kalabox.dashboard', [
     kbox.core.events.on('app-created', function(app) {
       // Set site active.
       var index = findSite(app, $scope.ui.sites);
-      $scope.ui.sites[index].updateScreenshotUrl();
-      $scope.ui.sites[index].busy = false;
-      $scope.ui.states[app.name] = true;
+      $scope.$applyAsync(function() {
+        $scope.ui.sites[index].updateScreenshotUrl();
+        $scope.ui.sites[index].busy = false;
+        $scope.ui.states[app.name] = true;
+      });
     });
 
     kbox.core.events.on('app-stopped', function(app) {
@@ -92,8 +94,10 @@ angular.module('kalabox.dashboard', [
 
     kbox.core.events.on('app-destroyed', function(app) {
       // Filter sites to remove site that was just destroyed.
-      $scope.ui.sites = _.filter($scope.ui.sites, function(site) {
-        return site.machineName !== app.name;
+      $scope.$applyAsync(function() {
+        $scope.ui.sites = _.filter($scope.ui.sites, function(site) {
+          return site.name !== app.name;
+        });
       });
     });
   });
