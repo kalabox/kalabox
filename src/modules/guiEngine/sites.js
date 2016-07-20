@@ -4,7 +4,8 @@ angular.module('kalabox.sites', [])
 /*
  * Class for encapsulating a site instance.
  */
-.factory('Site', function(kbox, _, providers, guiEngine, $q, path, $window) {
+.factory('Site', function(
+  kbox, _, providers, guiEngine, $q, path, fs, $window) {
 
   // Constructor.
   function Site(opts) {
@@ -365,11 +366,13 @@ angular.module('kalabox.sites', [])
         opts._ = opts._ || [];
         opts.h = opts.h || false;
         opts.v = opts.v || false;
-        opts.versbose = opts.versbose || false;
-        opts.needsFramework = opts.needsFramework || false;
+        opts.d = opts.d || false;
         opts._type = opts.provider.name;
         opts.dir = opts.dir || config.appsRoot;
-        process.chdir(opts.dir);
+        // Ensure the appRoot exists
+        if (!fs.existsSync(opts.dir)) {
+          fs.mkdirpSync(opts.dir);
+        }
         // Get app.
         var app = kbox.create.get(opts.provider.name);
         // Create app.
