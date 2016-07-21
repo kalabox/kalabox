@@ -9,6 +9,7 @@ describe('events module', function() {
   before(function() {
     var globalConfig = kbox.core.config.getGlobalConfig();
     kbox.core.deps.registerIf('globalConfig', globalConfig);
+    kbox.core.deps.registerIf('mode', 'cli');
   });
 
   describe('#emit()', function() {
