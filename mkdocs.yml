@@ -19,6 +19,7 @@ pages:
     - 'Using the Kalabox GUI': 'users/gui.md'
     - 'Configuring Apps': 'users/config.md'
     - 'Uninstallation': 'users/uninstall.md'
+    - 'Updating': 'users/updating.md'
   - 'For Developers':
     - 'Getting Started': 'developers/contrib.md'
     - 'Config System': 'developers/config.md'
