@@ -1,11 +1,5 @@
-v0.13.0-beta.3
-==============
-
-* Fixed bug where `mode` was not set as a dependency in our tests.
-* Fixed bug on OSX where `.docker` had the wrong permissions, causing install failure
-
-v0.13.0-beta.2
-==============
+v.13.0-beta.2
+=============
 
 * Rebooted our documentation [#1322](https://github.com/kalabox/kalabox/issues/1322)
 * Improved `kbox env` description [#1373](https://github.com/kalabox/kalabox/issues/1373)
@@ -18,7 +12,10 @@ v0.13.0-beta.2
 * Fixed bug where Windows latest dev release was not avaialable to the public by default.
 * Upgraded Windows and OSX to [VirtualBox 5.0.26](https://www.virtualbox.org/wiki/Download_Old_Builds_5_0)
 * Improved `app.isRunning` to filter out any `autostart` services.
-* Improved handling of app state to remove the "token" docker containers. Should improve app start speed and general GUI experience. [#1451](https://github.com/kalabox/kalabox/issues/1351)
+* Improved handling of app state to remove the "token" docker containers. Should improve app start speed and general GUI experience. [#1451](https://github.com/kalabox/kalabox/issues/1451)
+* Fixed bug where `mode` was not set as a dependency in our tests.
+* Fixed bug on OSX where `.docker` had the wrong permissions, causing install failure
+* Fixed bug where GUI initialize screen would persist indefinitely on Windows [#1435](https://github.com/kalabox/kalabox/issues/1435)
 
 v0.13.0-alpha.1
 ===============
