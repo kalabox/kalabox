@@ -1,5 +1,11 @@
+v0.13.0-beta.3
+==============
+
+* Fixed bug where `mode` was not set as a dependency in our tests.
+* Fixed bug on OSX where `.docker` had the wrong permissions, causing install failure
+
 v0.13.0-beta.2
-===============
+==============
 
 * Rebooted our documentation [#1322](https://github.com/kalabox/kalabox/issues/1322)
 * Improved `kbox env` description [#1373](https://github.com/kalabox/kalabox/issues/1373)
