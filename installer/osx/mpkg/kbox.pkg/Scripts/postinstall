@@ -32,12 +32,13 @@ fi
 # Place boot2docker ISO in cache & upgrade the boot2docker VM
 mkdir -p $CONSOLE_USER_HOME/.docker/machine/cache
 cp $APPLICATION/boot2docker.iso $CONSOLE_USER_HOME/.docker/machine/cache/boot2docker.iso
-
 if [ -d "$CONSOLE_USER_HOME/.docker/machine/machines/$VM" ] && [ -f "$DOCKER_MACHINE" ]; then
   sudo -i -u "$CONSOLE_USER" "$DOCKER_MACHINE" stop "$VM" || true
   cp /usr/local/share/boot2docker/boot2docker.iso "$CONSOLE_USER_HOME/.docker/machine/machines/$VM/boot2docker.iso"
-  chown -R $CONSOLE_USER:staff $CONSOLE_USER_HOME/.docker
 fi
+
+# Make sure we set the correct permissions on our docker stuff
+chown -R $CONSOLE_USER:staff $CONSOLE_USER_HOME/.docker
 
 # Set up the Kalabox engine if needed
 sudo -u "${CONSOLE_USER}" "${VBOXMANAGE}" list vms | grep \""${VM}"\" &> /dev/null
