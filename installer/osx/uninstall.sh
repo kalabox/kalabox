@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Uninstall Script
 
 # Make sure we are root
