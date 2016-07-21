@@ -1,4 +1,4 @@
-v0.13.0-alpha.2
+v0.13.0-beta.2
 ===============
 
 * Rebooted our documentation [#1322](https://github.com/kalabox/kalabox/issues/1322)
@@ -13,7 +13,6 @@ v0.13.0-alpha.2
 * Upgraded Windows and OSX to [VirtualBox 5.0.26](https://www.virtualbox.org/wiki/Download_Old_Builds_5_0)
 * Improved `app.isRunning` to filter out any `autostart` services.
 * Improved handling of app state to remove the "token" docker containers. Should improve app start speed and general GUI experience. [#1451](https://github.com/kalabox/kalabox/issues/1351)
-
 
 v0.13.0-alpha.1
 ===============

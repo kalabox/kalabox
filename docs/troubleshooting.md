@@ -53,6 +53,23 @@ Once you've completed the above you should be able to communicate with your cont
 **Attach to a container (this is like SSHing)**
 `docker exec -i -t service_appname_1 bash`
 
+Container Logs
+--------------
+
+While you can get container logs by following some of the steps above you can also access specific container logs by mounting them back out onto your host machine. This is done by modifiying your `kalabox-compose.yml` file, which is a normal [Docker Compose](https://docs.docker.com/compose/compose-file/) with a bunch of extra [environmental variables](users/cli/#env) that Kalabox sets for you.
+
+### Example: Sharing your entire logs directory
+
+Here is a basic example of a `kalabox-compose.yml` `php` service that shares the entire `/var/log` directory of your container to `logs` inside of your app's root directory.
+
+```yml
+php:
+  image: php-7.0
+  hostname: $KALABOX_APP_HOSTNAME
+  volumes:
+    - $KALABOX_APP_ROOT_BIND/logs:/var/log
+```
+
 Resolving Duplicate Host Only Adapters
 ======================================
 

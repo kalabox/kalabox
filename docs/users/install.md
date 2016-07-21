@@ -4,10 +4,10 @@ Installation
 Preinstall Checks
 -----------------
 
-1. If you have previously installed Kalabox and are attempting to install a new minor version (ie from 0.12.x to 0.13.x) it is **highly recommended** that you [uninstall](http://docs.kalabox.io/en/stable/users/uninstall/) your current version of Kalabox before continuing.
-2. Verify that your system meets the [minimum system and hardware requirements](http://docs.kalabox.io/general/sysreq/) to run Kalabox.
-3. Verify that you are connected to the internet.
-4. Verify that you have administrative access to your machine.
+1. Verify that your system meets the [minimum system and hardware requirements](http://docs.kalabox.io/general/sysreq/) to run Kalabox.
+2. Verify that you are connected to the internet.
+3. Verify that you have administrative access to your machine.
+4. If you have previously installed Kalabox and are attempting to install a new  version check out our [update guide](./updating.md) before continuing.
 
 Mac OSX
 -------
@@ -81,14 +81,11 @@ Common Installation Issues
 
 ### OSX
 
-!!! danger "Installaton Failed"
-    Please check out our two most common OSX installation issues
-    1. [Duplicate host only adapter](./troubleshooting/#resolving-duplicate-host-only-adapters)
-    2. [Using a different default shell than BASH](https://github.com/kalabox/kalabox/issues/1343)
+1. [Duplicate host only adapter](./troubleshooting/#resolving-duplicate-host-only-adapters)
+2. [Using a different default shell than BASH](https://github.com/kalabox/kalabox/issues/1343)
 
 ### Windows
 
-!!! danger "Installaton Failed"
-    Please check out our two most common Windows installation issues
-    1. [Duplicate host only adapter](./troubleshooting/#resolving-duplicate-host-only-adapters)
+1. [Duplicate host only adapter](./troubleshooting/#resolving-duplicate-host-only-adapters)
+2. [Problems enabling or using VT-x](https://github.com/kalabox/kalabox/issues/1141)
 
