@@ -14,7 +14,7 @@ Currently Kalabox is compatible with...
   * Fedora 23+
 
 !!! note "VT-x must be enabled on Windows"
-    To learn how to enable VT-x check out this [article](http://www.howtogeek.com/213795/how-to-enable-intel-vt-x-in-your-computers-bios-or-uefi-firmware)
+    To learn how to enable VT-x check out this [article](http://www.howtogeek.com/213795/how-to-enable-intel-vt-x-in-your-computers-bios-or-uefi-firmware). To read about some common problems with VT-x and Hyper-V on Kalabox check out this [issue](https://github.com/kalabox/kalabox/issues/1141).
 
 Harware Requirements
 -------------------

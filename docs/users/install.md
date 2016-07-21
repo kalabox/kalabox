@@ -81,14 +81,11 @@ Common Installation Issues
 
 ### OSX
 
-!!! danger "Installaton Failed"
-    Please check out our two most common OSX installation issues
-    1. [Duplicate host only adapter](./troubleshooting/#resolving-duplicate-host-only-adapters)
-    2. [Using a different default shell than BASH](https://github.com/kalabox/kalabox/issues/1343)
+1. [Duplicate host only adapter](./troubleshooting/#resolving-duplicate-host-only-adapters)
+2. [Using a different default shell than BASH](https://github.com/kalabox/kalabox/issues/1343)
 
 ### Windows
 
-!!! danger "Installaton Failed"
-    Please check out our two most common Windows installation issues
-    1. [Duplicate host only adapter](./troubleshooting/#resolving-duplicate-host-only-adapters)
+1. [Duplicate host only adapter](./troubleshooting/#resolving-duplicate-host-only-adapters)
+2. [Problems enabling or using VT-x](https://github.com/kalabox/kalabox/issues/1141)
 
