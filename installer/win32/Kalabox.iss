@@ -71,8 +71,8 @@ Source: "{#dnsSetup}"; DestDir: "{app}"; Components: "Kalabox"; AfterInstall: Ru
 Source: "{#git}"; DestDir: "{app}\installers\git"; DestName: "git.exe"; AfterInstall: RunInstallGit(); Components: "Git"
 
 [Icons]
-Name: "{userprograms}\Kalabox"; WorkingDir: "{app}"; Filename: "{app}\kalabox.exe"; Components: "Kalabox"; IconFilename: "{app}\kalabox.ico"
-Name: "{commondesktop}\Kalabox"; WorkingDir: "{app}"; Filename: "{app}\kalabox.exe"; Tasks: desktopicon; Components: "Kalabox"; IconFilename: "{app}\kalabox.ico"
+Name: "{userprograms}\Kalabox"; WorkingDir: "{app}\gui"; Filename: "{app}\gui\kalabox.exe"; Components: "Kalabox"; IconFilename: "{app}\kalabox.ico"
+Name: "{commondesktop}\Kalabox"; WorkingDir: "{app}\gui"; Filename: "{app}\gui\kalabox.exe"; Tasks: desktopicon; Components: "Kalabox"; IconFilename: "{app}\kalabox.ico"
 
 [UninstallRun]
 Filename: "{app}\bin\docker-machine.exe"; Parameters: "stop Kalabox2";

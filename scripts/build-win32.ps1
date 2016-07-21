@@ -12,6 +12,7 @@ $ErrorActionPreference = "Stop"
 $temp_dir = $env:TMP
 $base_dir = "$pwd\build\installer"
 $bundle_dir = "$base_dir\bundle"
+$gui_dir = "$bundle_dir\gui"
 $docs_dir = "$bundle_dir\docs"
 $bin_dir = "$bundle_dir\bin"
 $services_dir = "$bundle_dir\services"
@@ -83,11 +84,11 @@ If (!(Test-Path $inno_bin)) {
 }
 
 # Get the things we need
-New-Item -type directory -force -path $bundle_dir, $docs_dir, $bin_dir, $services_dir, $plugins_dir
+New-Item -type directory -force -path $bundle_dir, $docs_dir, $bin_dir, $services_dir, $plugins_dir, $gui_dir
 Write-Output "Grabbing the files we need..."
 
 # Kalabox things
-Copy-Item "dist\gui\kalabox-ui\*" "$bundle_dir" -force -recurse
+Copy-Item "dist\gui\kalabox-ui\*" "$gui_dir" -force -recurse
 Copy-Item "dist\cli\kbox-win32-x64-v$kalabox_version.exe" "$bin_dir\kbox.exe" -force
 Copy-Item "plugins\kalabox-services-kalabox\kalabox-compose.yml" "$services_dir\services.yml" -force
 
