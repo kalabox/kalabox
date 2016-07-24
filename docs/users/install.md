@@ -44,6 +44,7 @@ Debian/Ubuntu
 1. Download the `.deb` package from [kalabox.io/download](http://kalabox.io/download)
 2. Double-click on the `.deb` package to launch Software Center
 3. Click the "Install" button and enter your password when prompted
+4. Add `10.13.37.100    *.kbox` to `/etc/hosts`
 
 !!! Note "Kalabox binds to port 80"
     Kalabox uses port 80 on your machine, so make sure it is free before you attempt an install.
