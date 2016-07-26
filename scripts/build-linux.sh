@@ -33,7 +33,6 @@ cd build/installer/kalabox
 
 # Get our Kalabox dependencies
 cp -rf ../../../dist/gui/kalabox-ui/* ./
-chmod 755 -Rv ./
 cp -rf ../../../dist/cli/kbox-linux-x64-v${KALABOX_VERSION} bin/kbox
 cp -rf ../../../plugins/kalabox-services-kalabox/kalabox-compose.yml services/services.yml
 chmod +x bin/kbox
