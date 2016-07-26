@@ -1,3 +1,8 @@
+v.13.0-beta.3
+=============
+
+* Fixed permission error on OSX that caused "The application “Kalabox” can’t be opened" [#1477](https://github.com/kalabox/kalabox/issues/1477)
+
 v.13.0-beta.2
 =============
 
