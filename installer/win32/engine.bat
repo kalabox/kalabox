@@ -55,7 +55,7 @@ IF %ERRORLEVEL% NEQ 0 (
   "%DOCKER_MACHINE%" create -d virtualbox ^
     --virtualbox-memory 2048 ^
     --virtualbox-disk-size "%VB_DISK%" ^
-    --virtualbox-hostonly-cidr 10.13.37.1/24
+    --virtualbox-hostonly-cidr 10.13.37.1/24 ^
     "%VM%"
 
 )
