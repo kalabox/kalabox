@@ -3,6 +3,7 @@ v.13.0-beta.3
 
 * Clarified which uninstaller should be used. [#1490](https://github.com/kalabox/kalabox/issues/1490)
 * Fixed permission error on OSX that caused "The application “Kalabox” can’t be opened" [#1477](https://github.com/kalabox/kalabox/issues/1477)
+* Fixed `unison` on Windows. This resolves the `*.tmp` directory problem. [#1484](https://github.com/kalabox/kalabox/issues/1484)
 
 v.13.0-beta.2
 =============
