@@ -47,11 +47,15 @@ IF %FREE_DISK% GTR 150000 (
 "%VBOXMANAGE%" list vms | findstr "%VM%"
 IF %ERRORLEVEL% NEQ 0 (
 
+  :: Do a basic check to make sure we clear out the filth
+  "%DOCKER_MACHINE%" rm -f "$VM$" || yes
+  RD /S /Q "%USERPROFILE%/.docker/machine/machines/%VM%" || yes
+
+  :: Create the machine
   "%DOCKER_MACHINE%" create -d virtualbox ^
     --virtualbox-memory 2048 ^
     --virtualbox-disk-size "%VB_DISK%" ^
-    --virtualbox-hostonly-cidr 10.13.37.1/24 ^
-    --virtualbox-host-dns-resolver ^
+    --virtualbox-hostonly-cidr 10.13.37.1/24
     "%VM%"
 
 )
