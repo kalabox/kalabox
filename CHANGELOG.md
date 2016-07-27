@@ -1,3 +1,8 @@
+v.13.0-beta.3
+=============
+
+* Clarify which uninstaller should be used. [#1490](https://github.com/kalabox/kalabox/issues/1490)
+
 v.13.0-beta.2
 =============
 
