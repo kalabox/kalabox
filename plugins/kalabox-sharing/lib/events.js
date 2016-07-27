@@ -22,7 +22,7 @@ module.exports = function(kbox) {
      * Transform an  array of values into a common deliminated
      * string of option;value
      */
-    var getUnisonString = function(option, values) {
+    var parsePathString = function(option, values) {
 
       // Start an opts collector
       var opts = [];
@@ -37,6 +37,27 @@ module.exports = function(kbox) {
 
       // Return as common deliminated string
       return opts.join(';');
+
+    };
+
+    /*
+     * Get a list of unison options based on the platform
+     */
+    var getUnisonOptions = function() {
+
+      // Start with our basic options
+      var opts = ['-repeat', '1', '-retry', '5'];
+
+      // Add in platform specific (FUCKING WINDOWS) options
+      if (process.platform === 'win32') {
+        opts.push('-fat');
+        opts.push('-owner');
+        opts.push('-group');
+        opts.push('-numericids');
+      }
+
+      // Return our list
+      return opts.join(' ');
 
     };
 
@@ -55,9 +76,9 @@ module.exports = function(kbox) {
       environment: {
         'UNISON_WEBROOT': webRoot,
         'UNISON_CODEROOT': '/kalashare/' + app.config.sharing.codeDir,
-        'UNISON_OPTIONS': '-repeat 1',
-        'UNISON_IGNORE': getUnisonString('-ignore', app.config.sharing.ignore),
-        'UNISON_PATHS': getUnisonString('-path', app.config.sharing.paths)
+        'UNISON_OPTIONS': getUnisonOptions(),
+        'UNISON_IGNORE': parsePathString('-ignore', app.config.sharing.ignore),
+        'UNISON_PATHS': parsePathString('-path', app.config.sharing.paths)
       },
       volumes: [
         '$KALABOX_APP_ROOT_BIND:/kalashare'
