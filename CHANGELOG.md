@@ -1,3 +1,8 @@
+v.13.0-beta.4
+=============
+
+* Loosened default `unison` ignore patterns. [#1501](https://github.com/kalabox/kalabox/issues/1501)
+
 v.13.0-beta.3
 =============
 
