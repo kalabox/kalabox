@@ -10,6 +10,7 @@ module.exports = function(grunt) {
 
   // Load in delegated responsibilities because cleanliness => godliness
   var delta = require('./tasks/delta.js')(common);
+  var e2e = require('./tasks/e2e.js');
   var frontend = require('./tasks/frontend.js')(common);
   var fs = require('./tasks/fs.js')(common);
   var nwjs = require('./tasks/nw.js')(common);
@@ -109,6 +110,12 @@ module.exports = function(grunt) {
       installerPkgwin32: shell.psTask('./scripts/build-win32.ps1'),
       installerosxBats: shell.batsTask(common.files.installerOsxBats),
       installerlinuxBats: shell.batsTask(common.files.installerLinuxBats)
+    },
+
+    // Protractor tasks.
+    protractor: {
+      'protractor-setup': e2e.setup(grunt),
+      test: e2e.protractor
     },
 
     // Utility tasks
@@ -217,6 +224,13 @@ module.exports = function(grunt) {
   // Run Installer tests
   grunt.registerTask('func', [
     'shell:installer' + common.system.platform + 'Bats'
+  ]);
+
+  // Run Protractor tests.
+  grunt.registerTask('e2e', [
+    'gui:build',
+    'protractor-setup',
+    'protractor:test'
   ]);
 
   // Bump our minor version

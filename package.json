@@ -57,6 +57,7 @@
     "dockerode": "^2.2.7",
     "download": "^4.4.3",
     "fs-extra": "^0.18.2",
+    "grunt-protractor-runner": "^3.2.0",
     "inquirer": "^0.8.3",
     "js-yaml": "^3.4.6",
     "kalabox-stats-client": "^0.2.1",
