@@ -157,17 +157,6 @@ module.exports = function(kbox) {
     var defaultConfig = kbox.core.config.normalize({
       codeDir: 'code',
       ignore: [
-        'Name *.7z',
-        'Name *.bz2',
-        'Name *.dmg',
-        'Name *.gz',
-        'Name *.iso',
-        'Name *.jar',
-        'Name *.rar',
-        'Name *.tar',
-        'Name *.tgz',
-        'Name *.un~',
-        'Name *.zip',
         'Name .*.swp',
         'Name .DS_Store',
         'Name ._*',
