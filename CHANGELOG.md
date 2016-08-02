@@ -4,6 +4,7 @@ v.13.0-beta.4
 * Loosened default `unison` ignore patterns. [#1501](https://github.com/kalabox/kalabox/issues/1501)
 * Bumped `stdin` max listeners to suppress `EventEmitter` warning. [#1502](https://github.com/kalabox/kalabox/issues/1502)
 * Better user feedback when running `kbox start` and `kbox stop`. [#955](https://github.com/kalabox/kalabox/issues/955)
+* Added a `force` option to `kbox start` and `kbox stop`. [#955](https://github.com/kalabox/kalabox/issues/955)
 
 v.13.0-beta.3
 =============
