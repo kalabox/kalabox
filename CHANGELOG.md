@@ -2,6 +2,7 @@ v.13.0-beta.4
 =============
 
 * Loosened default `unison` ignore patterns. [#1501](https://github.com/kalabox/kalabox/issues/1501)
+* Bumped `stdin` max listeners to suppress `EventEmitter` warning. [#1502](https://github.com/kalabox/kalabox/issues/1502)
 
 v.13.0-beta.3
 =============

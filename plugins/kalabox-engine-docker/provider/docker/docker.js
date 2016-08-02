@@ -307,16 +307,27 @@ module.exports = function(kbox) {
       })
 
       .then(function(stream) {
-
         // Attaching mode
         if (mode === 'attach') {
+
+          // Set a more realistic max listeners considering what we are doing here
+          process.stdin._maxListeners = 15;
+
+          // Pipe the streams output into our process's stdout
           stream.pipe(process.stdout);
+
+          // Restart stdin with correct encoding
           process.stdin.resume();
           process.stdin.setEncoding('utf8');
+
+          // Make sure rawMode matches up
           if (process.stdin.setRawMode) {
             process.stdin.setRawMode(true);
           }
+
+          // Send our processes stdin into the container
           process.stdin.pipe(stream);
+
         }
 
         // Start the container
@@ -346,13 +357,19 @@ module.exports = function(kbox) {
               stdErr = stdErr + String(buffer);
             });
 
+            // Close the stream
             stream.on('end', function() {
+
+              // If we were attached to our processes stdin then close that down
               if (mode === 'attach') {
                 if (process.stdin.setRawMode) {
                   process.stdin.setRawMode(false);
                 }
                 process.stdin.pause();
               }
+
+              // Reject or resolve the promise based on whether we have content in
+              // stderr or not
               if (!_.isEmpty(stdErr)) {
                 reject(stdErr);
               }
