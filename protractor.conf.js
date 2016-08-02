@@ -6,7 +6,7 @@ var platformDir = {
   win64: 'binary-nwjs-sdk-v0.14.6-win-x64'
 };
 var binary = {
-  darwin: 'Kalabox.app/Contents/MacOS/nwjs',
+  darwin: 'nwjs.app/Contents/MacOS/nwjs',
   linux: 'Kalabox',
   win64: 'Kalabox.exe'
 };
@@ -15,7 +15,7 @@ var platform = require('os').platform();
 var kbox = require('./lib/core/env.js');
 var nwbDir = path.join(kbox.getHomeDir(), '.nwjs-builder', 'caches',
   platformDir[platform]);
-var nwBinary = path.join('dist/gui/kalabox-ui', binary[platform]);
+var nwBinary = path.join(nwbDir, binary[platform]);
 var chromedriver = path.join(nwbDir, 'chromedriver');
 
 exports.config = {
@@ -24,7 +24,8 @@ exports.config = {
   capabilities: {
     browserName: 'chrome',
     chromeOptions: {
-      binary: nwBinary
+      binary: nwBinary,
+      args: ['nwapp=build/gui']
     }
   }, 
   framework: 'jasmine',

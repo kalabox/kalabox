@@ -78,6 +78,7 @@ module.exports = function(grunt) {
 
     // Nwjs
     nwjs: {
+      protractor: nwjs.protractor,
       pkg: nwjs.pkg,
       run: nwjs.run
     },
@@ -228,7 +229,7 @@ module.exports = function(grunt) {
 
   // Run Protractor tests.
   grunt.registerTask('e2e', [
-    'pkg:gui',
+    'nwjs:protractor',
     'protractor:test'
   ]);
 

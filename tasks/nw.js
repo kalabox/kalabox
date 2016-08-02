@@ -41,6 +41,13 @@ module.exports = function() {
         macIcns: './installer/osx/kalabox.icns'
       }
     },
+    protractor: {
+      src: ['./build/gui'],
+      options: {
+        version: '0.14.6-sdk',
+        run: false
+      }
+    },
     pkg: {
       src: ['./build/gui'],
       options: {
