@@ -16,12 +16,25 @@ module.exports = function(kbox) {
         task.description = 'Start an installed kbox application.';
         task.func = function() {
 
-          // Print helpful stuff to the user after their app has started
-          app.events.on('post-start', 9, function() {
-            console.log(kbox.art.appStart(app));
-          });
+          // Node modules
+          var format = require('util').format;
+          var log = kbox.core.log;
 
-          return kbox.app.start(app);
+          // Check to see if app is already running
+          return kbox.app.isRunning(app)
+
+          // Start if not running, otherwise inform user
+          .then(function(isRunning) {
+            if (!isRunning) {
+              return kbox.app.start(app)
+              .then(function() {
+                console.log(kbox.art.appStart(app));
+              });
+            }
+            else {
+              log.warn(format('App %s already running.', app.name));
+            }
+          });
 
         };
       });
