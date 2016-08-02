@@ -1,12 +1,20 @@
 'use strict';
 
+
 exports.config = {
-  chromeDriver: './test/support/chromedriver',
+  //chromeDriver: './test/support/chromedriver',
   chromeOnly: true,
+  capabilities: {
+    browserName: 'chrome',
+    chromeOptions: {
+      args: ['nwapp=dist/gui/kalabox-ui/Kalabox.app/Resources/app.nw'],
+      binary: 'dist/gui/kalabox-ui/Kalabox.app/Contents/MacOS/nwjs'
+    }
+  },
   framework: 'jasmine',
 
   specs: [
-    'modules/*/e2e/*.spec.js'
+    'src/modules/*/e2e/*.spec.js'
   ],
   jasmineNodeOpts: {
     showColors: true,
@@ -14,11 +22,9 @@ exports.config = {
     isVerbose: true,
     includeStackTrace: true
   },
+  baseUrl: '',
   rootElement: 'body',
 
   onPrepare: function() {
-    var protocolSplit = browser.getLocationAbsUrl();
-    console.log(protocolSplit);
   }
-
 };

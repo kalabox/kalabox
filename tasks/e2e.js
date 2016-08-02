@@ -7,7 +7,8 @@ var kbox = require('../lib/core/env.js');
 var nwConfig = require('./nw.js');
 var nwbDir = path.join(kbox.getHomeDir(), '.nwjs-builder', 'caches',
   pconfig.platformDir);
-var nwBinary = nwBuilder.GetExecutable(nwbDir, pconfig.platform);
+//var nwBinary = nwBuilder.GetExecutable(nwbDir, pconfig.platform);
+var nwBinary = path.join(nwbDir, 'nwjs');
 // @todo: we should get chromedriver from same place and delete chromedriver
 // logic.
 var chromedriver = path.join(nwbDir, 'chromedriver');
@@ -135,6 +136,8 @@ module.exports = {
   // https://github.com/nadavsinai/node-wekbit-testing/blob/master/protractor.conf.js
   protractor: {
     options: {
+      configFile: 'src/protractor.conf.js',
+      baseUrl: '',
       args: {
         chromeDriver: chromedriver,
         chromeOnly: true,
@@ -145,16 +148,17 @@ module.exports = {
             binary: nwBinary
           }
         },
+        framework: 'jasmine',
+
         specs: [
-        './src/modules/*/e2e/*.spec.js'
+          'src/modules/*/e2e/*.spec.js'
         ],
         jasmineNodeOpts: {
           showColors: true,
-          defaultTimeoutInterval: 3000000,
+          defaultTimeoutInterval: 1000000,
           isVerbose: true,
-          includeStackTrace: true,
+          includeStackTrace: true
         },
-        framework: 'jasmine',
         rootElement: 'body'
       }
     }
