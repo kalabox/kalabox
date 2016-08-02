@@ -114,7 +114,7 @@ module.exports = function(grunt) {
 
     // Protractor tasks.
     protractor: {
-      'protractor-setup': e2e.setup(grunt),
+
       test: e2e.protractor
     },
 
@@ -228,8 +228,7 @@ module.exports = function(grunt) {
 
   // Run Protractor tests.
   grunt.registerTask('e2e', [
-    'gui:build',
-    'protractor-setup',
+    'pkg:gui',
     'protractor:test'
   ]);
 
