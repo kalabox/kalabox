@@ -5,6 +5,7 @@ module.exports = function(kbox) {
   // Node modules
   var path = require('path');
   var format = require('util').format;
+  var u = require('url');
 
   // Npm modules
   var _ = require('lodash');
@@ -22,7 +23,7 @@ module.exports = function(kbox) {
   kbox.core.events.on('post-app-load', function(app) {
 
     // Grab our services config
-    var proxyServices = app.config.pluginconfig.services || {};
+    var proxyConfig = app.config.pluginconfig.services || {};
 
     // "Constants"
     var REDIS_PORT = 8160;
@@ -57,6 +58,101 @@ module.exports = function(kbox) {
     };
 
     /*
+     * Parse a route config object into an array of URLs
+     */
+    var getRouteUrls = function(route) {
+
+      // Start with a hostnames collector
+      var hostnames = [];
+
+      // Handle 'default' key
+      if (route.default) {
+        hostnames.push(app.name);
+      }
+
+      // Handle legacy 'hostname' key
+      if (route.hostname) {
+        hostnames.push([route.hostname, app.name].join('.'));
+      }
+
+      // Handle 'subdomains'
+      if (route.subdomains) {
+        _.forEach(route.subdomains, function(subdomain) {
+          hostnames.push([subdomain, app.name].join('.'));
+        });
+      }
+
+      // Handle 'custom'
+      if (route.custom) {
+        _.forEach(route.custom, function(url) {
+          hostnames.push(url);
+        });
+      }
+
+      // Determine whether the protocol is http or https
+      var protocol = (route.secure) ? 'https://' : 'http://';
+
+      // Return an array of parsed hostnames
+      return _.map(hostnames, function(hostname) {
+        return protocol + [hostname, app.domain].join('.');
+      });
+
+    };
+
+    /*
+     * Get a list of URLs and their counts
+     */
+    var getUrlsCounts = function(services) {
+      // Get routes and flatten
+      var routes = _.flatten(_.pluck(services, 'routes'));
+      // Get URLs and flatten
+      var urls = _.flatten(_.pluck(routes, 'urls'));
+      // Check for duplicate URLs
+      return _.countBy(urls);
+    };
+
+    /*
+     * Parse our config into an array of service objects and do
+     * some basic validation
+     */
+    var parseServices = function(config) {
+
+      // Transform our config into services objects
+      var services = _.map(config, function(data, key) {
+
+        // Map each route into an object of ports and urls
+        var routes = _.map(data, function(route) {
+          return {
+            port: route.port,
+            urls: getRouteUrls(route)
+          };
+        });
+
+        // Return the service
+        return {
+          name: key,
+          routes: routes
+        };
+
+      });
+
+      // Get a count of the URLs so we can check for dupes
+      var urlCount = getUrlsCounts(services);
+      var hasDupes = _.reduce(urlCount, function(result, count) {
+        return count > 1 || result;
+      }, false);
+
+      // Throw an error if there are dupes
+      if (hasDupes) {
+        throw new Error(format('Duplicate URL detected: %j', urlCount));
+      }
+
+      // Return the list
+      return services;
+
+    };
+
+    /*
      * Return the redis client
      *
      * This allows us to retry the connection a few times just in case redis
@@ -69,6 +165,34 @@ module.exports = function(kbox) {
       });
     };
 
+    /*
+     * Adds an entry to redis
+     *
+     * This allows us to retry the connection a few times just in case redis
+     * is slow to start
+     */
+    var addRedisEntry = function(key, dest, containerName) {
+
+      // Attempt to connect to redis
+      return getRedisClient()
+
+      // Run the redis query and then quit
+      .then(function(redis) {
+        log.debug(format('Setting DNS. %s => %s', key, dest));
+        return Promise.fromNode(function(cb) {
+          redis.multi()
+          .del(key)
+          .rpush(key, containerName)
+          .rpush(key, dest)
+          .exec(cb);
+        })
+        .then(function() {
+          redis.quit();
+        });
+      });
+
+    };
+
     /**
      * Creates a proxy record via redis for components with proxy definitions.
      */
@@ -77,19 +201,19 @@ module.exports = function(kbox) {
       // Make sure the core dns and proxy services are started up
       return kbox.engine.start(getCoreServices())
 
-      // Get the services on this app we need to proxy
+      // Parse the config into an array of services objects
       .then(function() {
-        return _.keys(proxyServices);
+        return parseServices(proxyConfig);
       })
 
-      // Go through those services one by one and add a dns entry to redis if needed
+      // Go through those services one by one and add dns entries
       .each(function(service) {
 
         // Log the service getting confed
-        log.debug(format('Configuration DNS for %s service.', service));
+        log.debug(format('Configuring DNS for %s services.', service.name));
 
         // Inspect the service to be proxies
-        return kbox.engine.inspect(getAppService(service))
+        return kbox.engine.inspect(getAppService(service.name))
 
         // Grab our port information from docker
         .then(function(data) {
@@ -98,58 +222,26 @@ module.exports = function(kbox) {
           var ports = _.get(data, 'NetworkSettings.Ports');
 
           // Loop through each proxy.
-          return Promise.map(proxyServices[service], function(proxy) {
-
-            // Start with the default hostname.
-            var hostname = app.hostname;
-
-            // If this is not the default DNS then prefix a subdomain
-            if (!proxy.default) {
-              hostname = [proxy.hostname, app.hostname].join('.');
-            }
-
-            // Grab the correct protocol for the entry
-            var protocol = proxy.secure ? 'https' : 'http';
-
-            // Combine into the total URL
-            var url = [protocol, hostname].join('://');
-
-            // Build redis key for this proxy.
-            var redisKey = ['frontend', url].join(':');
+          return Promise.map(service.routes, function(route) {
 
             // Get port for this proxy from port information.
-            var port = _.get(ports, '[' + proxy.port + '][0].HostPort', null);
+            var port = _.get(ports, '[' + route.port + '][0].HostPort', null);
 
-            // If we have ports then do the mapping
+            // If we have a port assigned then we are safe todo the mapping
             if (port) {
 
-              // Build our destinations.
-              var dest = [protocol, '://', REDIS_IP, ':', port].join('');
-              var containerName = _.trimLeft(data.Name, '/');
-
-              // Attempt to connect to redis
-              return getRedisClient()
-
-              // Run the redis query and then quit
-              .then(function(redis) {
-                log.debug(format('Setting DNS. %s => %s', redisKey, dest));
-                return Promise.fromNode(function(cb) {
-                  redis.multi()
-                  .del(redisKey)
-                  .rpush(redisKey, containerName)
-                  .rpush(redisKey, dest)
-                  .exec(cb);
-                })
-                .then(function() {
-                  redis.quit();
-                });
+              // Loop through each url and add an entry to redis
+              return Promise.map(route.urls, function(url) {
+                return addRedisEntry(
+                  ['frontend', url].join(':'),
+                  u.parse(url).protocol + '//' + REDIS_IP + ':' + port,
+                  _.trimLeft(data.Name, '/')
+                );
               });
 
             }
-          }, {concurrency: 1});
-
+          });
         });
-
       });
     });
   });
