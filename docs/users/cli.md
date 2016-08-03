@@ -61,6 +61,20 @@ kbox app2 destroy
 !!! attention "Only destroys an app, not Kalabox itself!"
     This command should not be confused with uninstalling Kalabox. It **will only** destroy the app that you use it on.
 
+down
+----
+
+Deactivates the Kalabox engine by shutting down the Kalabox daemon on Linux or the Kalabox2 VM on OSX/Windows. **This will stop all running apps.**
+
+`kbox down`
+
+```bash
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
+```
+
 env
 ---
 
@@ -152,6 +166,7 @@ Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
   -d, --debug    Use debug output.                                     [boolean]
+  -f, --force    Force start even if already running.                  [boolean]
 ```
 
 ```bash
@@ -168,6 +183,20 @@ kbox app55 start
 
     This could take a bit of time depending on constitution of the app. For this reason we recommend using the `--verbose` flag your first time starting an app so you can see what is going on.
 
+status
+------
+
+Prints the status of the Kalabox engine. If this returns `down` you probably want to run `kbox up` to get the engine running.
+
+`kbox status`
+
+```bash
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
+```
+
 stop
 ----
 
@@ -181,10 +210,25 @@ Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
   -d, --debug    Use debug output.                                     [boolean]
+  -f, --force    Force stop even if already stopped.                   [boolean]
 ```
 
 !!! tip "Good to stop apps you aren't using"
     Kalabox gets great scale and performance using docker containers but its still a good practice to shut down apps that you are not actively using.
+
+up
+--
+
+Activates the Kalabox engine by turning on the Kalabox daemon on Linux or the Kalabox2 VM on OSX/Windows. **This will get you in a state so you can create new or start existing apps.**
+
+`kbox up`
+
+```bash
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
+```
 
 version
 -------

@@ -13,15 +13,37 @@ module.exports = function(kbox) {
       kbox.tasks.add(function(task) {
         task.path = [app.name, 'start'];
         task.category = 'appAction';
+        task.options.push({
+          name: 'force',
+          alias: 'f',
+          kind: 'boolean',
+          description: 'Force start even if already running.'
+        });
         task.description = 'Start an installed kbox application.';
         task.func = function() {
 
-          // Print helpful stuff to the user after their app has started
-          app.events.on('post-start', 9, function() {
-            console.log(kbox.art.appStart(app));
-          });
+          // Node modules
+          var format = require('util').format;
+          var log = kbox.core.log;
 
-          return kbox.app.start(app);
+          // Get options
+          var options = this.options || {};
+
+          // Check to see if app is already running
+          return kbox.app.isRunning(app)
+
+          // Start if not running, otherwise inform user
+          .then(function(isRunning) {
+            if (!isRunning || options.force) {
+              return kbox.app.start(app)
+              .then(function() {
+                console.log(kbox.art.appStart(app));
+              });
+            }
+            else {
+              log.warn(format('App %s already running.', app.name));
+            }
+          });
 
         };
       });

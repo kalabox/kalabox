@@ -9,7 +9,7 @@ TERM=xterm
 KALABOX_IP=10.13.37.100
 
 # Set some permissions
-chmod 755 -R /usr/share/kalabox
+chmod 755 -R "$KALABOX_ROOT"
 
 # we only need to do this if upstart isn't in charge
 if ! { [ -x /sbin/initctl ] && /sbin/initctl version 2>/dev/null | grep -q upstart; }; then

@@ -1,3 +1,14 @@
+v.13.0-beta.4
+=============
+
+* Loosened default `unison` ignore patterns. [#1501](https://github.com/kalabox/kalabox/issues/1501)
+* Bumped `stdin` max listeners to suppress `EventEmitter` warning. [#1502](https://github.com/kalabox/kalabox/issues/1502)
+* Better user feedback when running `kbox start` and `kbox stop`. [#955](https://github.com/kalabox/kalabox/issues/955)
+* Added a `force` option to `kbox start` and `kbox stop`. [#955](https://github.com/kalabox/kalabox/issues/955)
+* Expanded `services` plugin to handle multiple subdomains and custom URLs. [#1182](https://github.com/kalabox/kalabox/issues/1182) [#1485](https://github.com/kalabox/kalabox/issues/1485)
+* Fixed upgrade pathway on `debian`. [#1506](https://github.com/kalabox/kalabox/issues/1506)
+* Got `kbox` engine commands like `up`, `down` and `status` to work correctly on Linux. [#1375](https://github.com/kalabox/kalabox/issues/1375)
+
 v.13.0-beta.3
 =============
 
