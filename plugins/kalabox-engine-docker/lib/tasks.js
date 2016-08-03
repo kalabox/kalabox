@@ -7,13 +7,10 @@ module.exports = function(kbox) {
   var engine = kbox.engine;
   var events = kbox.core.events.context();
 
-  // Tasks
-  // These tasks are only accessible ig you set an environmental variable
-  // called KALABOX_DEV to 'true'
+  // Start the engine
   kbox.tasks.add(function(task) {
     task.path = ['up'];
-    task.category = 'dev';
-    task.description = 'Bring kbox container engine up';
+    task.description = 'Bring Kalabox engine up';
     task.func = function() {
 
       // Events
@@ -31,8 +28,7 @@ module.exports = function(kbox) {
   kbox.tasks.add(function(task) {
 
     task.path = ['down'];
-    task.category = 'dev';
-    task.description = 'Bring kbox container engine down';
+    task.description = 'Bring Kalabox engine down';
     task.func = function() {
 
       // Events
@@ -46,11 +42,10 @@ module.exports = function(kbox) {
     };
   });
 
-  // Display status of provider.
+  // Display status of engine.
   kbox.tasks.add(function(task) {
     task.path = ['status'];
-    task.category = 'dev';
-    task.description = 'Display status of kbox container engine';
+    task.description = 'Display status of Kalabox engine';
     task.func = function(done) {
       engine.provider().call('isUp')
       .then(function(isUp) {

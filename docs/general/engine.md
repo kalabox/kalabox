@@ -30,6 +30,9 @@ kbox down
 
 # Turn the Kalabox engine on
 kbox up
+
+# Check the status of the Kalabox engine
+kbox status
 ```
 
 If you feel like the engine is **OUT OF CONTROL** and you want to try to manually kill it, try...
@@ -70,7 +73,23 @@ On Linux the Kalabox engine runs a custom Docker daemon via the [Docker Engine](
 
 ### Turning the engine on or off
 
-The Kalabox engine runs as a service. We support the `SysV`, `Upstart` and `systemd` init systems. By default the Kalabox service will launch when you boot your system but you can control it in the normal way.
+The Kalabox engine runs as a service. We support the `SysV`, `Upstart` and `systemd` init systems. By default the Kalabox service will launch when you boot your system but you can control it similar to OSX/Windows.
+
+```bash
+# Turn the Kalabox engine off
+kbox down
+
+# Turn the Kalabox engine on
+kbox up
+
+# Check the status of the Kalabox engine
+kbox status
+```
+
+!!! note "`sudo` access required."
+    You will be prompted for your password running the above since `service` requires `sudo` access.
+
+You can also directly access the underlying services directly:
 
 ```bash
 sudo service kalabox start
