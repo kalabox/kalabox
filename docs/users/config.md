@@ -66,6 +66,27 @@ pluginconfig:
 !!! tip "Protect upstream from being hacked"
     The `paths` and `ignore` options are also useful for restricting the code a user can alter. For example the above config (with the exception of index.php) would prevent changes being made to Drupal core and contrib modules.
 
+### Example 3: Optimize sharing for node-based frontend tooling.
+
+Node-based frontend tooling is very popular these days, and with good reason. Unfortunately these workflows often comes with a large file footprints. You can optimize Kalabox's sharing in these situations by ignoring dependency directories such as `node_modules` or `vendor`.
+
+This example will create a directory called `code` inside your local app root and it will sync that directory with what is inside your `data` container at `/code`. It will also ignore all files and directories below any occurences of `node_modules`, `bower_components`, `vendor` and `build`.
+
+```yaml
+name: example3
+pluginconfig:
+  sharing:
+    share: 'data:/code'
+    ignore:
+      - Name *node_modules*
+      - Name *bower_components*
+      - Name *vendor*
+      - Name *build*
+```
+
+!!! tip "Use `kbox` variants of `npm` and `grunt`"
+    Try using `kbox npm` or `kbox grunt` in your app where available. This will allow you to install needed dependencies directly inside your container so you don't have to rely on installing locally and waiting for files to sync over.
+
 ### Advanced file sharing topics
 
 !!! note "No worries on Linux"
