@@ -138,10 +138,10 @@ Services
 
 Kalabox provides a nice out-of-the-box way to proxy your web-exposed services to nice human readable names such as `http://myapp.kbox`.
 
-You can easily turn on proxying by adding an array of `services` objects to the `pluginconfig` of your app's `kalabox.yml` file.
+You can easily turn on proxying by adding an array of `services` objects to the `pluginconfig` of your app's `kalabox.yml` file. You will need to make sure the relevant containers have exposed the ports you are going to route to by using the `ports` key in your `kalabox-compose.yml` file. If you do not do this the routes will fail.
 
-!!! note "Make sure ports are exposed"
-    You need to make sure the relevant containers have exposed the ports you are going to route to by using the `ports` key in your `kalabox-compose.yml` file. If you do not do this the routes will fail.
+!!! warning "We do not use `/etc/hosts`"
+    For various reasons we do not attempt to mess with your `/etc/hosts` file. All routing should happen through this plugin. You should not expect custom routings put into `/etc/hosts` to resolve correctly.
 
 ### Example 1: Expose a simple HTTP server
 
@@ -183,6 +183,51 @@ pluginconfig:
       - port: 443/tcp
         hostname: edge
         secure: true
+```
+
+### Example 3: Set up some Drupal domain access rules for a basic Drupal multisite
+
+This config will start the following maps:
+
+  * `http://example3.kbox`              => port `80` on your `web` container.
+  * `http://site1.example3.kbox`        => port `80` on your `web` container.
+  * `http://site2.example3.kbox`        => port `80` on your `web` container.
+  * `http://site3.example3.kbox`        => port `80` on your `web` container.
+  * `http://site4.example3.kbox`        => port `80` on your `web` container.
+
+
+```yaml
+name: example3
+pluginconfig:
+  services:
+    web:
+      - port: 80/tcp
+        default: true
+        subdomains:
+          - site1
+          - site2
+          - site3
+          - site4
+```
+
+### Example 4: Set up some custom routes for your site
+
+This config will start the following maps:
+
+  * `http://bob.frank.kbox`             => port `80` on your `web` container.
+  * `http://frank.bob.kbox`             => port `80` on your `web` container.
+  * `http://tippecanoe.tyler.too.kbox`  => port `80` on your `web` container.
+
+```yaml
+name: example4
+pluginconfig:
+  services:
+    web:
+      - port: 80/tcp
+        custom:
+          - bob.frank
+          - frank.bob
+          - tippecanoe.tyler.too
 ```
 
 Tooling
