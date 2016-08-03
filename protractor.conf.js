@@ -7,8 +7,8 @@ var platformDir = {
 };
 var binary = {
   darwin: 'nwjs.app/Contents/MacOS/nwjs',
-  linux: 'Kalabox',
-  win64: 'Kalabox.exe'
+  linux: 'nw',
+  win64: 'nw.exe'
 };
 var path = require('path');
 var platform = require('os').platform();
@@ -27,7 +27,7 @@ exports.config = {
       binary: nwBinary,
       args: ['nwapp=build/gui']
     }
-  }, 
+  },
   framework: 'jasmine',
 
   specs: [
@@ -40,8 +40,5 @@ exports.config = {
     includeStackTrace: true
   },
   baseUrl: '',
-  rootElement: 'body',
-
-  onPrepare: function() {
-  }
+  rootElement: 'body'
 };

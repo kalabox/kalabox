@@ -40,7 +40,7 @@ var guiJsFiles = [
 
 // All auxilary js Files
 var auxJsFiles = [
-  'Gruntfile.js',
+  '*.js',
   'tasks/**/*.js',
   'test/**/*.js',
   'src/modules/**/*.spec.js'

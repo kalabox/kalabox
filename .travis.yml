@@ -41,6 +41,7 @@ before_script:
   - bower --version
   - sass --version
   - node bin/kbox.js version
+  - java -version
 
 script:
 
