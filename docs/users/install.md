@@ -82,7 +82,6 @@ Common Installation Issues
 ### OSX
 
 1. [Duplicate host only adapter](./troubleshooting/#resolving-duplicate-host-only-adapters)
-2. [Using a different default shell than BASH](https://github.com/kalabox/kalabox/issues/1343)
 
 ### Windows
 
