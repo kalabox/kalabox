@@ -152,6 +152,7 @@ Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
   -d, --debug    Use debug output.                                     [boolean]
+  -f, --force    Force start even if already running.                  [boolean]
 ```
 
 ```bash
@@ -181,6 +182,7 @@ Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
   -d, --debug    Use debug output.                                     [boolean]
+  -f, --force    Force stop even if already stopped.                   [boolean]
 ```
 
 !!! tip "Good to stop apps you aren't using"

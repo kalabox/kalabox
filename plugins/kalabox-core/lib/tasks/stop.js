@@ -13,6 +13,12 @@ module.exports = function(kbox) {
       kbox.tasks.add(function(task) {
         task.path = [app.name, 'stop'];
         task.category = 'appAction';
+        task.options.push({
+          name: 'force',
+          alias: 'f',
+          kind: 'boolean',
+          description: 'Force stop even if already stopped.'
+        });
         task.description = 'Stop a running kbox application.';
         task.func = function() {
 
@@ -21,12 +27,15 @@ module.exports = function(kbox) {
           var chalk = require('chalk');
           var log = kbox.core.log;
 
+          // Get options
+          var options = this.options || {};
+
           // Check to see if app is already running
           return kbox.app.isRunning(app)
 
           // Stop if running, otherwise inform user
           .then(function(isRunning) {
-            if (isRunning) {
+            if (isRunning || options.force) {
               return kbox.app.stop(app)
               .then(function() {
                 log.status(chalk.yellow(format('App %s stopped', app.name)));
