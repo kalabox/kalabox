@@ -7,6 +7,13 @@
 
 module.exports = function(kbox) {
 
+  // NODE modules
+  var format = require('util').format;
+
+  // NPM modules
+  var VError = require('verror');
+  var _ = require('lodash');
+
   // Kalabox modules
   var Promise = kbox.Promise;
   var bin = require('./lib/bin.js')(kbox);
@@ -15,13 +22,55 @@ module.exports = function(kbox) {
   // Get our docker engine executable
   var DOCKER_EXECUTABLE = bin.getDockerExecutable();
 
+  // Set of logging functions.
+  var log = kbox.core.log.make('KALABOX ENGINE');
+
+  /*
+   * Run a services command in a shell.
+   */
+  var serviceCmd = function(cmd, opts) {
+
+    // Set the machine env
+    env.setDockerEnv();
+
+    // Retry
+    return Promise.retry(function() {
+
+      // Build and log the command
+      var run = ['sudo', 'service', 'kalabox'].concat(cmd);
+      log.info(format('Running %j', cmd));
+
+      // Run the command
+      return bin.sh(run, opts)
+
+      // Throw an error
+      .catch(function(err) {
+        throw new VError(err);
+      });
+
+    });
+
+  };
+
   /*
    * Bring engine up.
    */
   var up = function() {
 
     // Get status
-    return Promise.resolve(true);
+    return isDown()
+
+    // Only start if we aren't already
+    .then(function(isDown) {
+      if (isDown) {
+        return serviceCmd(['start'], {mode: 'collect'});
+      }
+    })
+
+    // Wrap errors.
+    .catch(function(err) {
+      throw new VError(err, 'Error bringing daemon up.');
+    });
 
   };
 
@@ -30,8 +79,21 @@ module.exports = function(kbox) {
    */
   var down = function() {
 
-    // Get status
-    return Promise.resolve(true);
+    // Get provider status.
+    return isUp()
+
+    // Shut provider down if its status is running.
+    .then(function(isUp) {
+      if (isUp) {
+        // Retry to shutdown if an error occurs.
+        return serviceCmd(['stop'], {mode: 'collect'});
+      }
+    })
+
+    // Wrap errors.
+    .catch(function(err) {
+      throw new VError(err, 'Error while shutting down.');
+    });
 
   };
 
@@ -39,10 +101,7 @@ module.exports = function(kbox) {
    * Return engine's IP address.
    */
   var getIp = function() {
-
-    // Get status
     return Promise.resolve('10.13.37.100');
-
   };
 
   /*
@@ -50,8 +109,13 @@ module.exports = function(kbox) {
    */
   var isUp = function() {
 
-    // Get status
-    return Promise.resolve(true);
+    // Get status.
+    return serviceCmd(['status'], {silent:true})
+    // Do some lodash fu to get the status
+    .then(function(result) {
+      log.debug('Current status', result);
+      return _.includes(result, 'start/running');
+    });
 
   };
 

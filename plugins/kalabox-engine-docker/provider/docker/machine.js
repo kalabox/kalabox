@@ -25,7 +25,7 @@ module.exports = function(kbox) {
   var MACHINE_EXECUTABLE = bin.getMachineExecutable();
 
   // Set of logging functions.
-  var log = kbox.core.log.make('DOCKER MACHINE');
+  var log = kbox.core.log.make('KALABOX ENGINE');
 
   /*
    * Run a provider command in a shell.
