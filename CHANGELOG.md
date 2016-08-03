@@ -6,6 +6,7 @@ v.13.0-beta.4
 * Better user feedback when running `kbox start` and `kbox stop`. [#955](https://github.com/kalabox/kalabox/issues/955)
 * Added a `force` option to `kbox start` and `kbox stop`. [#955](https://github.com/kalabox/kalabox/issues/955)
 * Expanded `services` plugin to handle multiple subdomains and custom URLs. [#1182](https://github.com/kalabox/kalabox/issues/1182) [#1485](https://github.com/kalabox/kalabox/issues/1485)
+* Fixed upgrade pathway on `debian`. [#1506](https://github.com/kalabox/kalabox/issues/1506)
 
 v.13.0-beta.3
 =============
