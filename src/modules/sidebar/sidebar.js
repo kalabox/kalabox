@@ -232,6 +232,7 @@ angular.module('kalabox.sidebar', [
     $scope.site = $stateParams.site;
     $scope.provider = $stateParams.provider;
     $scope.app = {};
+    $scope.selectedEnv = {id: 'dev', name: 'dev'};
     $scope.app.pullFiles = true;
     $scope.app.pullDatabase = true;
     $scope.errorMessage = false;

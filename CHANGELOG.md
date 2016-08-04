@@ -10,6 +10,7 @@ v.13.0-beta.4
 * Fixed `kbox` engine commands like `up`, `down` and `status` to work correctly on Linux. [#1375](https://github.com/kalabox/kalabox/issues/1375)
 * Removed empty menu in `win32` and `linux`. [#1521](https://github.com/kalabox/kalabox/issues/1521)
 * Added an option to refresh the list of Pantheon sites to the GUI. [#1510](https://github.com/kalabox/kalabox/issues/1510)
+* Set default Pantheon create `env` to `dev` in GUI. [#1365](https://github.com/kalabox/kalabox/issues/1365)
 
 v.13.0-beta.3
 =============
