@@ -8,8 +8,10 @@ The Kalabox CLI is accessible via your terminal by typing `kbox` at the prompt, 
 
 The context will determine the list of commands you can run. If you have app context then the commands you run will apply to the app. In the example above Kalabox is running in an app context. You will see that Kalabox will group the commands into seperate contexts for you.
 
-!!! tip "Easily switch contexts"
-    If you are in a different app or global context you can easily run a command against another app using the `kbox <APPNAME> command` syntax.
+If you are in a different app or global context you can easily run a command against another app using the `kbox <APPNAME> command` syntax.
+
+!!! warning "Windows Users"
+    We currently only support CLI usage via `cmd.exe`. That said, there is an issue to add support for alternate shells [over here](https://github.com/kalabox/kalabox/issues/1475).
 
 config
 ------

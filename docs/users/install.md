@@ -81,10 +81,10 @@ Common Installation Issues
 
 ### OSX
 
-1. [Duplicate host only adapter](./troubleshooting/#resolving-duplicate-host-only-adapters)
+1. [Duplicate host only adapter](./../troubleshooting/#resolving-duplicate-host-only-adapters)
 
 ### Windows
 
-1. [Duplicate host only adapter](./troubleshooting/#resolving-duplicate-host-only-adapters)
+1. [Duplicate host only adapter](./../troubleshooting/#resolving-duplicate-host-only-adapters)
 2. [Problems enabling or using VT-x](https://github.com/kalabox/kalabox/issues/1141)
 
