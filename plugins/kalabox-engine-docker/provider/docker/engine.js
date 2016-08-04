@@ -24,6 +24,7 @@ module.exports = function(kbox) {
 
   // Set of logging functions.
   var log = kbox.core.log.make('KALABOX ENGINE');
+  var mode = kbox.core.deps.get('mode');
 
   /*
    * Run a services command in a shell.
@@ -53,9 +54,15 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Bring engine up.
+   * Bring engine up. Only do this in the CLI we assume the engine is on
+   * on the GUI until we figure out how to deal with SUDO in GUI
    */
   var up = function() {
+
+    // Automatically return true if we are in the GUI
+    if (mode === 'gui') {
+      return Promise.resolve(true);
+    }
 
     // Get status
     return isDown()
@@ -78,6 +85,11 @@ module.exports = function(kbox) {
    * Bring engine down.
    */
   var down = function() {
+
+    // Automatically return true if we are in the GUI
+    if (mode === 'gui') {
+      return Promise.resolve(true);
+    }
 
     // Get provider status.
     return isUp()
@@ -108,6 +120,11 @@ module.exports = function(kbox) {
    * Return true if engine is up.
    */
   var isUp = function() {
+
+    // Automatically return true if we are in the GUI
+    if (mode === 'gui') {
+      return Promise.resolve(true);
+    }
 
     // Get status.
     return serviceCmd(['status'], {silent:true})
