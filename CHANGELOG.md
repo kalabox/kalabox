@@ -9,6 +9,7 @@ v.13.0-beta.4
 * Fixed upgrade pathway on `debian`. [#1506](https://github.com/kalabox/kalabox/issues/1506)
 * Fixed `kbox` engine commands like `up`, `down` and `status` to work correctly on Linux. [#1375](https://github.com/kalabox/kalabox/issues/1375)
 * Removed empty menu in `win32` and `linux`. [#1521](https://github.com/kalabox/kalabox/issues/1521)
+* Added an option to refresh the list of Pantheon sites to the GUI. [#1510](https://github.com/kalabox/kalabox/issues/1510)
 
 v.13.0-beta.3
 =============
