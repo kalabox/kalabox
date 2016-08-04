@@ -64,14 +64,28 @@
     }
   }
 
-  ul.providers-existing > li > ul > li {
-    a {
-      padding: 10px 20px;
-      margin-right: 0px;
-      text-align: right;
+  ul.providers-existing {
+    ul.provider-sites {
+      li {
+        a {
+          padding: 10px 20px;
+          margin-right: 0px;
+          text-align: right;
+        }
+        text-align: right;
+        a.refresh-pantheon-sites {
+          margin-right: 10px;
+          margin-left: -5px;
+          padding: 0px;
+        }
+        .fa-refresh {
+          font-size: 1.5em;
+          vertical-align: middle;
+        }
+      }
     }
-    text-align: right;
   }
+
 
   form .form-group.show-labels label {
     display: inline-block;
@@ -79,8 +93,12 @@
     margin-bottom: 0px;
     margin-right: 5px;
   }
-  form.provider-search .form-group .form-control {
-    background: #1D2E3D;
+  form.provider-search {
+    .form-group .form-control {
+      background: #1D2E3D;
+    }
+    width: 230px;
+    display: inline-block;
   }
   form {
     padding: 15px;
