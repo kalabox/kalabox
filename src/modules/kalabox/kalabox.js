@@ -50,7 +50,7 @@ angular.module('kalabox', [
 // Override the default global error handler.
 .factory('$exceptionHandler', function() {
   return function(exception) {
-    if (exception.message.match(/transition (superseded|prevented|aborted|failed)/)) {
+    if (exception.message && exception.message.match(/transition (superseded|prevented|aborted|failed)/)) {
       return;
     }
     var err = exception;
@@ -67,8 +67,12 @@ angular.module('kalabox', [
     // jshint camelcase:true
     // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 
-    console.log(err.message);
-    console.log(stack);
+    // Output a message if it exists
+    if (err.message && stack) {
+      console.log(err.message);
+      console.log(stack);
+    }
+
   };
 })
 // Global error handing.
