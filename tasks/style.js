@@ -45,6 +45,7 @@ module.exports = function(common) {
           'notification-center',
           'app-click',
           'pantheon-app-click',
+          'refresh-pantheon-sites',
           'site',
           'select-on-click',
           'switch',

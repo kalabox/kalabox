@@ -42,6 +42,7 @@
                 <input type="search" ng-model="siteAvailableSearch.name" class="form-control" id="siteAvailableSearch" placeholder="Type site name">
               </div>
             </form>
+            <a class="refresh-pantheon-sites" refresh-pantheon-sites><i ng-hide="!provider.sites.length" class="fa fa-refresh"></i></a>
           </li>
           <li ng-repeat="site in provider.sites | filter:siteAvailableSearch" class="new-site">
             <a ng-bind="site.name" pantheon-app-click></a>

@@ -207,6 +207,25 @@ angular.module('kalabox.sidebar', [
     }
   };
 })
+.directive('refreshPantheonSites', function(guiEngine) {
+  return {
+    scope: true,
+    link: function($scope, element) {
+      element.on('click', function() {
+        guiEngine.try(function() {
+          if ($scope.provider.authorized()) {
+            $scope.provider.refresh().then(function(result) {
+              if (result.message) {
+                $scope.sidebar.errorMessage = 'Authentication failed. ' +
+                'Please re-authenticate your Pantheon account.';
+              }
+            });
+          }
+        });
+      });
+    }
+  };
+})
 .controller(
   'AppCreatePantheon',
   function($scope, kbox, _, guiEngine, $state, $stateParams, sites) {
