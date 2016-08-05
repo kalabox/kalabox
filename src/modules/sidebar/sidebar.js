@@ -232,7 +232,7 @@ angular.module('kalabox.sidebar', [
     $scope.site = $stateParams.site;
     $scope.provider = $stateParams.provider;
     $scope.app = {};
-    $scope.selectedEnv = {id: 'dev', name: 'dev'};
+    $scope.app.env = {id: 'dev', name: 'dev'};
     $scope.app.pullFiles = true;
     $scope.app.pullDatabase = true;
     $scope.errorMessage = false;
@@ -248,6 +248,7 @@ angular.module('kalabox.sidebar', [
 
       // Modal function.
       $scope.ok = function(appConfig) {
+
         // Run inside a gui task.
         // @TODO: Abstract this to work both for regular AppCreate and
         // AppCreatePantheon.
@@ -266,7 +267,7 @@ angular.module('kalabox.sidebar', [
                 provider: provider,
                 token: provider.username,
                 site: site.name,
-                env: appConfig.env,
+                env: appConfig.env.id || 'dev',
                 name: appConfig.name.toLowerCase(),
                 nofiles: !appConfig.pullFiles,
                 nodb: !appConfig.pullDatabase

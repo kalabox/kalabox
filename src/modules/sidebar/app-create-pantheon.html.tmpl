@@ -10,7 +10,7 @@
     </div>
     <div class="form-group" show-errors>
       <label for="appEnv">Which environment?</label>
-      <select class="form-control" id="appEnv" ng-model="selectedEnv" ng-options="env as env.value for env in site.environments track by env.id" required>
+      <select class="form-control" id="appEnv" ng-model="app.env" ng-options="env as env.value for env in site.environments track by env.id" required>
         <option label="-- Select Environment --" hidden></option>
       </select>
     </div>
