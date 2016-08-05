@@ -28,8 +28,6 @@ angular.module('kalabox.initialize', [
       gui.Window.get().menu = mb;
     }
 
-    // Set the menu
-
     // Take us to the Dashboard.
     kbox.then(function(kbox) {
 
@@ -47,10 +45,12 @@ angular.module('kalabox.initialize', [
       .then(function() {
         return sites.get();
       })
-    // Navigate to dashboard.
+
+      // Navigate to dashboard.
       .then(function() {
         $state.go('dashboard');
       });
+
     });
 
   }]);
