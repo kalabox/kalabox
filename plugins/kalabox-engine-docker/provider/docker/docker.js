@@ -26,6 +26,7 @@ module.exports = function(kbox) {
    */
   var dockerConfigInstance = function() {
 
+    // Return the engine config
     return Promise.try(function() {
       return kbox.core.deps.get('engineConfig');
     })

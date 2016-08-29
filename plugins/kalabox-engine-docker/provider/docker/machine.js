@@ -55,6 +55,51 @@ module.exports = function(kbox) {
   };
 
   /*
+   * Access the docker daemon script inside the provider
+   */
+  var verifyDockerDaemon = function() {
+
+    /*
+     * Light wrapper for the docker daemon script
+     */
+    var dockerDaemon = function(cmd) {
+
+      // Build the ssh cmd
+      var entrypoint = [MACHINE_EXECUTABLE].concat(['ssh', 'Kalabox2']);
+      var run = entrypoint.concat(['sudo', '/etc/init.d/docker', cmd]);
+
+      // Build and log the command
+      log.info(format('Running %j', [MACHINE_EXECUTABLE].concat(run)));
+
+      // Run the command
+      return bin.sh(run, {mode: 'collect'});
+
+    };
+
+    // Set the machine env
+    env.setDockerEnv();
+
+    // Try this a few times
+    return Promise.retry(function() {
+
+      // Check to see if we are up or down
+      return dockerDaemon('status')
+
+      // If there is an error (ie we are not up) try to restart the docker daemon
+      .catch(function() {
+        return dockerDaemon('restart');
+      });
+
+    })
+
+    // Finally throw an error if it doesnt work out
+    .catch(function(err) {
+      throw new VError(err, 'Error starting the docker daemon');
+    });
+
+  };
+
+  /*
    * Bring machine up.
    */
   var up = function() {
@@ -121,7 +166,22 @@ module.exports = function(kbox) {
     // Return true if status is 'running'.
     return getStatus()
     .then(function(status) {
-      return (status === 'running');
+
+      // If the machine is up let's do another check to ensure the docker daemon
+      // is responding. This should help provide some durability to situations
+      // where the docker daemon unexpectedly quits
+      if (status === 'running') {
+        return verifyDockerDaemon()
+        .then(function() {
+          return true;
+        });
+      }
+
+      // Otherwise just return that we are down down
+      else {
+        return false;
+      }
+
     });
 
   };
