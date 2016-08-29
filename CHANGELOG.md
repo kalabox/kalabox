@@ -1,3 +1,8 @@
+v.13.0-rc.1
+=============
+
+* Switched `kbox status` on `linux` to use PID file existence instead of `service` wrapper. [#1539](https://github.com/kalabox/kalabox/issues/1539)
+
 v.13.0-beta.4
 =============
 
