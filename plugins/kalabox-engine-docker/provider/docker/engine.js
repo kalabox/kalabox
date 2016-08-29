@@ -9,10 +9,11 @@ module.exports = function(kbox) {
 
   // NODE modules
   var format = require('util').format;
+  var path = require('path');
 
   // NPM modules
+  var fs = require('fs-extra');
   var VError = require('verror');
-  var _ = require('lodash');
 
   // Kalabox modules
   var Promise = kbox.Promise;
@@ -25,6 +26,22 @@ module.exports = function(kbox) {
   // Set of logging functions.
   var log = kbox.core.log.make('KALABOX ENGINE');
   var mode = kbox.core.deps.get('mode');
+
+  /*
+   * Get directory for docker engine.
+   */
+  var getEngineUpFiles = function() {
+
+    // Get sysconfroot
+    var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;
+
+    // Retrun files we need to check for
+    return [
+      path.join(sysConfRoot, 'docker.pid'),
+      path.join(sysConfRoot, 'docker.socket')
+    ];
+
+  };
 
   /*
    * Run a services command in a shell.
@@ -126,13 +143,13 @@ module.exports = function(kbox) {
       return Promise.resolve(true);
     }
 
-    // Get status.
-    return serviceCmd(['status'], {silent:true})
-    // Do some lodash fu to get the status
-    .then(function(result) {
-      log.debug('Current status', result);
-      return _.includes(result, 'start/running');
-    });
+    // Reduce list of engine files to a boolean
+    return Promise.reduce(getEngineUpFiles(), function(isUp, file) {
+      var fileExists = fs.existsSync(file);
+      log.debug(format('File %s exists: %s', file, fileExists));
+      log.debug(format('Engine status: %s', isUp && fileExists));
+      return isUp && fileExists;
+    }, true);
 
   };
 
