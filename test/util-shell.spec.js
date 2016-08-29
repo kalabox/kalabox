@@ -46,8 +46,7 @@ describe('shell', function() {
         var cmd = ['not-a-real-cmd'];
 
         var expected = util.format(
-          'code: %serr:%s: %s(\n|\r\n)',
-          '127',
+          '%s: %s(\n|\r\n)',
           '/bin/sh: (1: )?' + cmd.join(' '),
           '(command )?not found'
         );
