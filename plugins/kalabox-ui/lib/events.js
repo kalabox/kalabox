@@ -8,7 +8,7 @@ module.exports = function(kbox) {
   kbox.core.events.on('post-app-load', function(app) {
 
     // Start an app.
-    app.events.on('post-start', function() {
+    app.events.on('post-start', 8, function() {
       return kbox.core.events.emit('app-started', app);
     });
 
