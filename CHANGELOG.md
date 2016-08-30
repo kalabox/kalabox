@@ -3,6 +3,8 @@ v.13.0-rc.1
 
 * Switched `kbox status` on `linux` to use PID file existence instead of `service` wrapper. [#1539](https://github.com/kalabox/kalabox/issues/1539)
 * Provided a check to ensure the `docker` daemon is up on Windows and OSX. [#1387](https://github.com/kalabox/kalabox/issues/1387)
+* Simplified `osx` uninstall script and made it clickable. [#1361](https://github.com/kalabox/kalabox/issues/1361)
+* Updated to latest stable releaes of `engine`, `compose`, `machine` and `virtualbox`. [#1361](https://github.com/kalabox/kalabox/issues/1361)
 
 v.13.0-beta.4
 =============

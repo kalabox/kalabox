@@ -3,14 +3,7 @@
 set -e
 
 # Uninstall Script
-
-# Make sure we are root
-if [ "${USER}" != "root" ]; then
-  echo "$0 must be run as root!"
-  exit 2
-fi
-
-# Get our options
+# -# Get our options
 FORCE=false
 while getopts 'f' flag; do
   case "${flag}" in
@@ -18,12 +11,8 @@ while getopts 'f' flag; do
   esac
 done
 
-# Find out our user
+# Set some helpers
 APPLICATION="/Applications/Kalabox.app/Contents/MacOS"
-
-CONSOLE_USER=$(stat -f '%Su' /dev/console)
-CONSOLE_USER_HOME=$(su $CONSOLE_USER -c 'echo $HOME')
-
 DOCKER_MACHINE="$APPLICATION/bin/docker-machine"
 
 #
@@ -32,13 +21,14 @@ DOCKER_MACHINE="$APPLICATION/bin/docker-machine"
 uninstall() {
 
   echo "Removing Kalabox VM..."
-  sudo -u "${CONSOLE_USER}" "${DOCKER_MACHINE}" rm -f Kalabox2 || "${DOCKER_MACHINE}" rm -f Kalabox2
+  "${DOCKER_MACHINE}" rm -f Kalabox2
+  rm -f "${HOME}/.docker/machine/machines/Kalabox2"
 
   echo "Removing Application..."
-  rm -rf /Applications/Kalabox.app
+  sudo rm -rf /Applications/Kalabox.app
 
   echo "Removing DNS"
-  rm -f /etc/resolver/kbox
+  sudo rm -f /etc/resolver/kbox
 
   echo "All Done!"
 

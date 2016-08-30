@@ -13,13 +13,13 @@ PLUGIN_PANTHEON_VERSION="0.13.0-beta.4"
 PLUGIN_PHP_VERSION="0.13.0-beta.2"
 
 # Docker things
-DOCKER_MACHINE_VERSION="0.7.0"
-DOCKER_COMPOSE_VERSION="1.7.1"
-BOOT2DOCKER_ISO_VERSION="1.11.2"
+DOCKER_MACHINE_VERSION="0.8.1"
+DOCKER_COMPOSE_VERSION="1.8.0"
+BOOT2DOCKER_ISO_VERSION="1.12.1"
 
 # VirtualBox Things
-VBOX_VERSION="5.0.26"
-VBOX_REVISION="108824"
+VBOX_VERSION="5.1.4"
+VBOX_REVISION="110228"
 
 # Move dependencies into the application bundle
 APP_CONTENTS="Kalabox.app/Contents/MacOS"
@@ -92,7 +92,7 @@ sed -i "" -e "s/%VBOX_VERSION%/$VBOX_VERSION/g" mpkg/Resources/en.lproj/Localiza
 # Build the package
 mkdir -p dmg && mkdir -p dist && cd mpkg && \
   xar -c --compression=none -f ../dmg/KalaboxInstaller.pkg . && cd .. && \
-  mv -f uninstall.sh dmg/uninstall.sh && \
+  mv -f uninstall.sh dmg/uninstall.command && \
   mv -f kalabox.icns dmg/.VolumeIcon.icns && \
   cp -rf ../../README.md dmg/README.md && \
   cp -rf ../../TERMS.md dmg/TERMS.md && \

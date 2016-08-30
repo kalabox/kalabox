@@ -9,12 +9,10 @@ Preuninstall Checks
 Mac OSX
 -------
 
-1. Run `kbox version` to determine the Kalabox version you have
-2. Visit [the Kalabox release page](https://github.com/kalabox/kalabox/releases) and download the DMG that correspondes to your version
-3. Mount the DMG you downloaded
-4. Run `sudo /Volumes/Kalabox/uninstall.sh`
-5. Agree to remove the Kalabox2 VM when prompted
-6. If you think uninstall failed please consult the [manual uninstall steps below](#manually-uninstalling-kalabox)
+1. Mount the DMG you downloaded to install Kalabox. Visit [the Kalabox release page](https://github.com/kalabox/kalabox/releases) if you no longer have the DMG
+2. Double click on the `uninstall.command` script
+3. Agree to completely remove Kalabox2 and enter your user password when prompted
+4. If you think uninstall failed please consult the [manual uninstall steps below](#manually-uninstalling-kalabox)
 
 Windows
 -------
