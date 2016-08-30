@@ -32,13 +32,13 @@ $plugin_pantheon_version = "0.13.0-beta.4"
 $plugin_php_version = "0.13.0-beta.2"
 
 # Docker version information
-$docker_machine_version = "0.7.0"
-$docker_compose_version = "1.7.1"
-$boot2docker_iso_version = "1.11.2"
+$docker_machine_version = "0.8.1"
+$docker_compose_version = "1.8.0"
+$boot2docker_iso_version = "1.12.1"
 
 # Virtualbox version information
-$virtualbox_version = "5.0.26"
-$virtualbox_revision = "108824"
+$virtualbox_version = "5.1.4"
+$virtualbox_revision = "110228"
 
 # Git version information
 $git_version ="2.7.0"
