@@ -6,6 +6,7 @@ v.13.0-rc.1
 * Simplified `osx` uninstall script and made it clickable. [#1361](https://github.com/kalabox/kalabox/issues/1361)
 * Updated to latest stable releaes of `engine`, `compose`, `machine` and `virtualbox`. [#1361](https://github.com/kalabox/kalabox/issues/1361)
 * Added a weak check to warn the user if an app is possibly in a bad state. [#1542](https://github.com/kalabox/kalabox/issues/1542)
+* Improved `kbox start` so it waits until site returns `200 OK` before indicating site is up. [#1543](https://github.com/kalabox/kalabox/issues/1543)
 
 v.13.0-beta.4
 =============
