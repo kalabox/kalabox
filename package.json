@@ -69,6 +69,7 @@
     "moment": "^2.10.6",
     "multipipe": "^0.1.2",
     "redis": "https://github.com/kalabox/node_redis/tarball/master",
+    "restler": "^3.4.0",
     "sha1": "^1.1.0",
     "shell-escape": "https://github.com/kalabox/node-shell-escape/tarball/master",
     "shelljs": "^0.6.0",
