@@ -1,9 +1,17 @@
+
 <div class="connection-info container">
   <div class="modal-header">
     <button type="button" class="close" ng-click="ok()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h3 class="modal-title" ng-bind="'Connection Info for ' + site.name"></h3>
+    <h3 ng-if="refreshing" class="modal-title" ng-bind="'Loading Connection Info for ' + site.name"></h3>
+    <h3 ng-if="!refreshing" class="modal-title" ng-bind="'Connection Info for ' + site.name"></h3>
   </div>
-  <div class="modal-body">
+  <div ng-if="refreshing" class="modal-body">
+    <div class="progress">
+      <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+      </div>
+    </div>
+  </div>
+  <div ng-if="!refreshing" class="modal-body">
     <div class="row">
       <div class="service appserver col-xs-12">
         <div class="panel panel-default">
@@ -84,7 +92,7 @@
       </div>
     </div>
   </div>
-  <div class="modal-footer">
+  <div ng-if="!refreshing" class="modal-footer">
     <button class="btn btn-primary" type="button" ng-click="ok()">Got it, Thanks!</button>
   </div>
 </div>

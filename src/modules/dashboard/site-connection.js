@@ -2,32 +2,22 @@
 
 angular.module('kalabox.dashboard')
 
-.directive('siteConnection', function(guiEngine, Site, kbox) {
+.directive('siteConnection', function(guiEngine) {
   return {
     scope: true,
     link: function($scope, element) {
       element.on('click', function() {
         // Run inside of a gui task.
         guiEngine.try(function() {
-          // Get the services.
-          kbox.then(function(kbox) {
-            return kbox.app.get($scope.site.name)
-            .then(function(app) {
-              return kbox.app.services(app);
-            })
-            .then(function(services) {
-              var siteConnectModal = $scope.open(
-                'modules/dashboard/site-connection-modal.html.tmpl',
-                'SiteConnectModal',
-                {
-                  kbox: kbox,
-                  site: $scope.site,
-                  services: services
-                }
-              );
-              return siteConnectModal.result;
-            });
-          });
+          // Open the modal.
+          var siteConnectModal = $scope.open(
+            'modules/dashboard/site-connection-modal.html.tmpl',
+            'SiteConnectModal',
+            {
+              site: $scope.site
+            }
+          );
+          return siteConnectModal.result;
         });
       });
     }
@@ -36,11 +26,24 @@ angular.module('kalabox.dashboard')
 
 .controller(
   'SiteConnectModal',
-  function($scope, $uibModalInstance, _, modalData, guiEngine) {
+  function($scope, $uibModalInstance, _, modalData, guiEngine, kbox) {
 
     guiEngine.try(function() {
-      $scope.services = modalData.services;
       $scope.site = modalData.site;
+      $scope.refreshing = true;
+
+      // Get the services.
+      kbox.then(function(kbox) {
+        return kbox.app.get($scope.site.name)
+        .then(function(app) {
+          return kbox.app.services(app);
+        })
+        .then(function(services) {
+          $scope.services = services;
+          $scope.refreshing = false;
+        });
+      });
+
       $scope.ok = function() {
         $uibModalInstance.close();
       };
