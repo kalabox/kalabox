@@ -74,10 +74,10 @@ angular.module('kalabox.dashboard', [
       $scope.ui.states[app.name] = true;
     });
 
-    kbox.core.events.on('pre-create', function(app) {
+    kbox.core.events.on('pre-create', function(results) {
       // Create placeholder site.
       var site = {
-        name: app.siteName,
+        name: results.name,
         url: null,
         folder: null,
         codeFolder: null,
