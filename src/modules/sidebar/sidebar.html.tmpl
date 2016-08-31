@@ -6,7 +6,17 @@
       </div>
     </div>
   </div>
-  <div class="row" ui-view>
+  <div ng-if="sidebar.refreshing" class="loader">
+    <div class="loader-inner line-scale">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <h4>Contacting Pantheon...</h4>
+  </div>
+  <div ng-if="!sidebar.refreshing" class="row" ui-view>
     <div class="alert alert-danger" ng-if="sidebar.errorMessage" ng-bind="sidebar.errorMessage"></div>
     <h4 class="add-account">Add Account</h4>
     <ul class="nav navmenu-nav navmenu-inverse providers-next">

@@ -165,6 +165,10 @@
     font-size: 1.5em;
     padding: .5em;
   }
+  .progress-bar {
+    height: .5em;
+    background: linear-gradient(to left, #4CB8C4 , #3CD3AD);
+  }
 }
 
 .site.add {
@@ -189,9 +193,4 @@
   h3 {
     margin-top: -10px;
   }
-}
-
-.progress-bar {
-  background: linear-gradient(to left, #4CB8C4 , #3CD3AD);
-  height: .5em;
 }

@@ -193,12 +193,16 @@ angular.module('kalabox.sidebar', [
     scope: true,
     link: function($scope, element) {
       element.on('click', function() {
+        $scope.$applyAsync(function() {
+          $scope.sidebar.refreshing = true;
+        });
         guiEngine.try(function() {
           // Get list of site environments.
           return $scope.site.getEnvironments()
           .then(function(envs) {
             var provider = $scope.provider;
             $scope.site.environments = envs;
+            $scope.sidebar.refreshing = false;
             $state.go('dashboard.sidebar.app-create-pantheon',
               {site: $scope.site, provider: provider}, {location: false});
           });

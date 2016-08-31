@@ -69,16 +69,31 @@ angular.module('kalabox.dashboard', [
 
   // Handle site state.
   kbox.then(function(kbox) {
-    kbox.core.events.on('post-create-app', function(app) {
-      // Updates sites.
-      // Update site based on creation.
-      $scope.ui.sites.push(Site.fromApp(app));
-      var index = findSite(app, $scope.ui.sites);
-      $scope.ui.sites[index].busy = true;
-    });
 
     kbox.core.events.on('app-started', function(app) {
       $scope.ui.states[app.name] = true;
+    });
+
+    kbox.core.events.on('pre-create', function(results) {
+      // Create placeholder site.
+      var site = {
+        name: results.name,
+        url: null,
+        folder: null,
+        codeFolder: null,
+        busy: true,
+        status: 'Creating...'
+      };
+      $scope.ui.sites.push(site);
+    });
+
+    kbox.core.events.on('post-create-app', function(app) {
+      // Update site based on creation.
+      var index = findSite(app, $scope.ui.sites);
+      $scope.$applyAsync(function() {
+        $scope.ui.sites[index] = Site.fromApp(app);
+        $scope.ui.sites[index].busy = true;
+      });
     });
 
     kbox.core.events.on('app-created', function(app) {
