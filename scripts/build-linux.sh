@@ -16,8 +16,8 @@ KBOX_VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$(cat package.jso
 KALABOX_VERSION="$KBOX_VERSION"
 
 # Apps
-PLUGIN_PANTHEON_VERSION="0.13.0-beta.4"
-PLUGIN_PHP_VERSION="0.13.0-beta.2"
+PLUGIN_PANTHEON_VERSION="0.13.0-rc.1"
+PLUGIN_PHP_VERSION="0.13.0-rc.1"
 
 # Docker things
 DOCKER_ENGINE_VERSION="1.9.1"
