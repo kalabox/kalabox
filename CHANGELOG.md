@@ -1,3 +1,7 @@
+v.13.0-rc.2
+=============
+* Introduced a waiting dialogue while fetching environments for the site pull modal to prevent a "hang" after selecting "Pull" from the site actions dropdown in the GUI. [#1570](https://github.com/kalabox/kalabox/issues/1570)
+
 v.13.0-rc.1
 =============
 

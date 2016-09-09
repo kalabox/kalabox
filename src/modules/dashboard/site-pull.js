@@ -9,18 +9,14 @@ angular.module('kalabox.dashboard')
       element.on('click', function() {
         // Run inside of a gui task.
         guiEngine.try(function() {
-          return $scope.site.getEnvironments()
-          .then(function(envs) {
-            var sitePullModal = $scope.open(
-              'modules/dashboard/site-pull-modal.html.tmpl',
-              'SitePullModal',
-              {
-                site: $scope.site,
-                environments: envs
-              }
-            );
-            return sitePullModal.result;
-          });
+          var sitePullModal = $scope.open(
+            'modules/dashboard/site-pull-modal.html.tmpl',
+            'SitePullModal',
+            {
+              site: $scope.site
+            }
+          );
+          return sitePullModal.result;
         });
       });
     }
@@ -34,8 +30,14 @@ angular.module('kalabox.dashboard')
 
     guiEngine.try(function() {
       $scope.site = modalData.site;
-      $scope.environments = modalData.environments;
       $scope.errorMessage = false;
+      $scope.refreshing = true;
+      // Get the site environments.
+      $scope.site.getEnvironments()
+      .then(function(envs) {
+        $scope.environments = envs;
+        $scope.refreshing = false;
+      });
       $scope.ok = function(database, createBackup, files) {
         guiEngine.try(function() {
           $uibModalInstance.close();
