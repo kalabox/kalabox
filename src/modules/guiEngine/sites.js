@@ -258,17 +258,22 @@ angular.module('kalabox.sites', [])
   Site.prototype.pull = function(opts) {
     var self = this;
     // Run as a queued job.
-    return self.queue('Pulling site: ' + self.name, function(update) {
+    return self.queue('Pulling site: ' + self.name, function() {
       // Get kbox core library.
       return kbox.then(function(kbox) {
         // Initialize app context.
         return kbox.app.get(self.name)
         // Do a pull on the site.
-        .then(function() {
+        .then(function(app) {
           var pull = kbox.integrations.get(self.providerName).pull();
-          // Update job's status message with info from pull.
-          pull.on('update', function(msg) {
-            update(msg.status);
+          // Update status.
+          self.status = 'Pulling...';
+          app.events.on('status', function(msg) {
+            // Update status message.
+            self.status = msg;
+            // Increase progress.
+            var step = (1 - self.progress) / 8;
+            self.progress += step;
           });
           return pull.run(opts);
         });
@@ -282,17 +287,22 @@ angular.module('kalabox.sites', [])
   Site.prototype.push = function(opts) {
     var self = this;
     // Run as a queued job.
-    return self.queue('Pushing site: ' + self.name, function(update) {
+    return self.queue('Pushing site: ' + self.name, function() {
       // Get kbox core library.
       return kbox.then(function(kbox) {
         // Initialize app context.
         return kbox.app.get(self.name)
-        // Do a pull on the site.
-        .then(function() {
+        // Do a push on the site.
+        .then(function(app) {
           var push = kbox.integrations.get(self.providerName).push();
-          // Update job's status message with info from push.
-          push.on('update', function(msg) {
-            update(msg.status);
+          // Update status.
+          self.status = 'Pushing...';
+          app.events.on('status', function(msg) {
+            // Update status message.
+            self.status = msg;
+            // Increase progress.
+            var step = (1 - self.progress) / 8;
+            self.progress += step;
           });
           return push.run(opts);
         });
