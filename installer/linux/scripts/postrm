@@ -2,9 +2,9 @@
 
 set -e
 set -u
-if [ "$1" = "purge" ] ; then
-  update-rc.d kalabox remove > /dev/null || true
-fi
+
+# Remove the service if it hasn't been already
+update-rc.d kalabox remove > /dev/null || true
 
 # In case this system is running systemd, we make systemd reload the unit files
 # to pick up changes.
@@ -14,3 +14,8 @@ fi
 
 # Remove DNS
 rm -f /etc/resolver/kbox
+
+# Totally wipe out /usr/share/kalabox on a purge
+if [ "$1" = "purge" ] ; then
+  rm -rf /usr/share/kalabox
+fi
