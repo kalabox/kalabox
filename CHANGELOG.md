@@ -1,6 +1,7 @@
 v.13.0-rc.2
 =============
 * Introduced a waiting dialogue while fetching environments for the site pull modal to prevent a "hang" after selecting "Pull" from the site actions dropdown in the GUI. [#1570](https://github.com/kalabox/kalabox/issues/1570)
+* Prevent an authentication error from appearing when retrieval of complete site list takes longer than 15 seconds. [#1569](https://github.com/kalabox/kalabox/issues/1569)
 
 v.13.0-rc.1
 =============

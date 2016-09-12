@@ -72,8 +72,6 @@ angular.module('kalabox.dashboard')
     })
     // Return list of sites.
     .return(self.sites)
-    // Set a timeout.
-    .timeout(15 * 1000)
     // Make sure we signal that we are no longer refreshing.
     .finally(function() {
       self.refreshing = false;
@@ -117,8 +115,6 @@ angular.module('kalabox.dashboard')
       // Return accumilator.
       .return(acc);
     }, [])
-    // Set a timeout.
-    .timeout(15 * 1000)
     // Wrap errors.
     .wrap('Error building list of providers.');
   };
