@@ -29,7 +29,7 @@
       </div>
     </form>
   </div>
-  <div class="modal-footer">
+  <div ng-if="!refreshing" class="modal-footer">
     <button class="btn btn-primary" type="button" ng-disabled="sitePull.$invalid" ng-click="ok(database, createBackup, files)">Submit</button>
     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
   </div>
