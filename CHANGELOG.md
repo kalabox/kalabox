@@ -5,6 +5,9 @@ v.13.0-rc.2
 * Prevented an authentication error from appearing when retrieval of complete site list takes longer than 15 seconds. [#1569](https://github.com/kalabox/kalabox/issues/1569)
 * Ensured `kalabox` service was disabled on `*nix` pkg removal. [#1565](https://github.com/kalabox/kalabox/issues/1565)
 * Ensured `kalabox` `docker` assets get removed on `*nix` pkg pruge. [#1565](https://github.com/kalabox/kalabox/issues/1565)
+* Fixed hung installer on Windows by removing `yes.exe` from engine activation script. [#1564](https://github.com/kalabox/kalabox/issues/1564)
+* Added better error reporting and handling to the Windows installer. [#1564](https://github.com/kalabox/kalabox/issues/1564)
+* Upgraded to Virtualbox 5.1.6
 
 v.13.0-rc.1
 =============

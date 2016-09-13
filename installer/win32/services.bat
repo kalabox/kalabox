@@ -46,3 +46,7 @@ IF %ERRORLEVEL% NEQ 0 (
   ECHO "Something went wrong during services installation."
   EXIT /B 666
 )
+
+:: Report success if we get this far
+EXIT /B 0
+

@@ -10,9 +10,8 @@ CLS
 ::
 
 :: Set out environment
-SET DOCKER_MACHINE=%~dp0bin\docker-machine.exe
-SET VBOXMANAGE=%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe
 SET VM=Kalabox2
+SET VBOXMANAGE=%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe
 SET KALABOX_DEFAULT_HOA=VirtualBox Host-Only Network
 
 :: Get the Kalabox HOA
@@ -21,7 +20,7 @@ FOR /F "tokens=2 delims=," %%A IN ('TYPE "%TEMP%\hoa.tmp"') DO SET KALABOX_ATTAC
 FOR /F "tokens=2 delims='" %%A IN ("%KALABOX_ATTACHMENT%") DO SET KALABOX_VB_HOA=%%A
 FOR /F "tokens=5 delims= " %%A IN ("%KALABOX_VB_HOA%") DO SET KALABOX_ADAPTER_ID=%%A
 
-:: Check to see if docker compose is installed
+:: Append an ID to the HOA if needed
 IF DEFINED KALABOX_ADAPTER_ID (SET KALABOX_WIN_HOA="%KALABOX_DEFAULT_HOA% %KALABOX_ADAPTER_ID%") ELSE (SET KALABOX_WIN_HOA="%KALABOX_DEFAULT_HOA%")
 
 :: GEt the IP addrress assume
@@ -32,3 +31,6 @@ IF NOT DEFINED KALABOX_IP (SET KALABOX_IP=10.13.37.100)
 :: Set the Kalabox IP address into the Kalabox HOA
 netsh interface ipv4 add dnsservers %KALABOX_WIN_HOA% %KALABOX_IP% validate=no index=1
 ipconfig /flushdns
+
+:: Report success if we get this far
+EXIT /B 0

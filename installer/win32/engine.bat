@@ -10,12 +10,13 @@ CLS
 ::
 
 :: Load in some env
+::SET DOCKER_MACHINE=%ProgramFiles%\Kalabox\bin\docker-machine.exe
 SET DOCKER_MACHINE=%~dp0bin\docker-machine.exe
 SET VBOXMANAGE=%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe
 SET VM=Kalabox2
 
-echo %DOCKER_MACHINE%
-echo %VBOXMANAGE%
+ECHO %DOCKER_MACHINE%
+ECHO %VBOXMANAGE%
 
 :: Check to see if DOCKER MACHINE is actually installed
 IF NOT EXIST "%DOCKER_MACHINE%" (
@@ -66,3 +67,12 @@ IF %ERRORLEVEL% NEQ 0 (
   "%DOCKER_MACHINE%" start "%VM%"
   ECHO y | "%DOCKER_MACHINE%" regenerate-certs "%VM%"
 )
+
+:: Do a final check so we can throw an error if needed
+"%DOCKER_MACHINE%" status "%VM%" | findstr Running
+IF %ERRORLEVEL% NEQ 0 (
+  EXIT /B 4
+)
+
+:: Report success if we get this far
+EXIT /B 0
