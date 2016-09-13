@@ -265,17 +265,8 @@ angular.module('kalabox.sites', [])
         return kbox.app.get(self.name)
         // Do a pull on the site.
         .then(function(app) {
-          var pull = kbox.integrations.get(self.providerName).pull();
-          // Update status.
           self.status = 'Pulling...';
-          app.events.on('status', function(msg) {
-            // Update status message.
-            self.status = msg;
-            // Increase progress.
-            var step = (1 - self.progress) / 8;
-            self.progress += step;
-          });
-          return pull.run(opts);
+          return app.pull(app.config.pluginconfig.pantheon, opts);
         });
       });
     });
@@ -292,19 +283,10 @@ angular.module('kalabox.sites', [])
       return kbox.then(function(kbox) {
         // Initialize app context.
         return kbox.app.get(self.name)
-        // Do a push on the site.
+        // Do a pull on the site.
         .then(function(app) {
-          var push = kbox.integrations.get(self.providerName).push();
-          // Update status.
           self.status = 'Pushing...';
-          app.events.on('status', function(msg) {
-            // Update status message.
-            self.status = msg;
-            // Increase progress.
-            var step = (1 - self.progress) / 8;
-            self.progress += step;
-          });
-          return push.run(opts);
+          return app.push(app.config.pluginconfig.pantheon, opts);
         });
       });
     });
