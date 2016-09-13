@@ -112,7 +112,7 @@ var
 begin
   WizardForm.FilenameLabel.Caption := 'Installing VirtualBox'
   if not Exec(ExpandConstant('msiexec'), ExpandConstant('/qn /i "{app}\installers\virtualbox\virtualbox.msi" /norestart'), '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-    MsgBox('virtualbox install failure', mbInformation, MB_OK);
+    MsgBox('VirtualBox install failure', mbInformation, MB_OK);
 end;
 
 procedure RunEngineSetup();
@@ -120,8 +120,23 @@ var
   ResultCode: Integer;
 begin
   WizardForm.FilenameLabel.Caption := 'Activating the engine...'
-  if not ExecAsOriginalUser(ExpandConstant('{app}\engine.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-    MsgBox('Engine activation failed', mbInformation, MB_OK);
+  if ExecAsOriginalUser(ExpandConstant('{app}\engine.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  begin
+    if ( ResultCode = 0 ) then
+    begin
+      Log('Engine activated with great success and result code ' + IntToStr(ResultCode));
+    end
+    else begin
+      Log('Engine activation failed with code ' + IntToStr(ResultCode));
+      MsgBox('Engine activation failed!', mbCriticalError, MB_OK);
+      WizardForm.Close;
+      exit;
+    end;
+  end
+  else begin
+    Log('Something bad happened with code ' + IntToStr(ResultCode));
+    MsgBox('Something bad happened. Install Fail.', mbCriticalError, MB_OK);
+  end;
 end;
 
 procedure RunServicesSetup();
@@ -129,11 +144,41 @@ var
   ResultCode: Integer;
 begin
   WizardForm.FilenameLabel.Caption := 'Starting the proxy and dns services...'
-  if not ExecAsOriginalUser(ExpandConstant('{app}\services.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-    MsgBox('Service activation failed', mbInformation, MB_OK);
+  if ExecAsOriginalUser(ExpandConstant('{app}\services.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  begin
+    if ( ResultCode = 0 ) then
+    begin
+      Log('Services activated with great success and result code ' + IntToStr(ResultCode));
+    end
+    else begin
+      Log('Service activation failed with code ' + IntToStr(ResultCode));
+      MsgBox('Service activation failed!', mbCriticalError, MB_OK);
+      WizardForm.Close;
+      exit;
+    end;
+  end
+  else begin
+    Log('Something bad happened with code ' + IntToStr(ResultCode));
+    MsgBox('Something bad happened. Install Fail.', mbCriticalError, MB_OK);
+  end;
   WizardForm.FilenameLabel.Caption := 'Configuring DNS...'
-  if not Exec(ExpandConstant('{app}\dns.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-    MsgBox('DNS configuration failed', mbInformation, MB_OK);
+  if Exec(ExpandConstant('{app}\dns.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  begin
+    if ( ResultCode = 0 ) then
+    begin
+      Log('DNS activated with great success and result code ' + IntToStr(ResultCode));
+    end
+    else begin
+      Log('DNS activation failed with code ' + IntToStr(ResultCode));
+      MsgBox('DNS activation failed!', mbCriticalError, MB_OK);
+      WizardForm.Close;
+      exit;
+    end;
+  end
+  else begin
+    Log('Something bad happened with code ' + IntToStr(ResultCode));
+    MsgBox('Something bad happened. Install Fail.', mbCriticalError, MB_OK);
+  end;
 end;
 
 procedure RunInstallGit();
@@ -148,9 +193,11 @@ begin
   end
   else begin
     // handle failure if necessary; ResultCode contains the error code
-    MsgBox('git install failure', mbInformation, MB_OK);
+    MsgBox('git install failure', mbCriticalError, MB_OK);
+  end
+
+
   end;
-end;
 
 procedure CopyBoot2DockerISO();
 begin

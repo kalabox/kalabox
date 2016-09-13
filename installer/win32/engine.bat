@@ -10,12 +10,13 @@ CLS
 ::
 
 :: Load in some env
+::SET DOCKER_MACHINE=%ProgramFiles%\Kalabox\bin\docker-machine.exe
 SET DOCKER_MACHINE=%~dp0bin\docker-machine.exe
 SET VBOXMANAGE=%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe
 SET VM=Kalabox2
 
-echo %DOCKER_MACHINE%
-echo %VBOXMANAGE%
+ECHO %DOCKER_MACHINE%
+ECHO %VBOXMANAGE%
 
 :: Check to see if DOCKER MACHINE is actually installed
 IF NOT EXIST "%DOCKER_MACHINE%" (
@@ -48,8 +49,8 @@ IF %FREE_DISK% GTR 150000 (
 IF %ERRORLEVEL% NEQ 0 (
 
   :: Do a basic check to make sure we clear out the filth
-  "%DOCKER_MACHINE%" rm -f "$VM$" || yes
-  RD /S /Q "%USERPROFILE%/.docker/machine/machines/%VM%" || yes
+  "%DOCKER_MACHINE%" rm -f "%VM%"
+  RD /S /Q "%USERPROFILE%/.docker/machine/machines/%VM%"
 
   :: Create the machine
   "%DOCKER_MACHINE%" create -d virtualbox ^
@@ -64,5 +65,14 @@ IF %ERRORLEVEL% NEQ 0 (
 "%DOCKER_MACHINE%" status "%VM%" | findstr Running
 IF %ERRORLEVEL% NEQ 0 (
   "%DOCKER_MACHINE%" start "%VM%"
-  ECHO yes | "%DOCKER_MACHINE%" regenerate-certs "%VM%"
+  ECHO y | "%DOCKER_MACHINE%" regenerate-certs "%VM%"
 )
+
+:: Do a final check so we can throw an error if needed
+"%DOCKER_MACHINE%" status "%VM%" | findstr Running
+IF %ERRORLEVEL% NEQ 0 (
+  EXIT /B 4
+)
+
+:: Report success if we get this far
+EXIT /B 0
