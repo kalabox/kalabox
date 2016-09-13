@@ -37,8 +37,8 @@ $docker_compose_version = "1.8.0"
 $boot2docker_iso_version = "1.12.1"
 
 # Virtualbox version information
-$virtualbox_version = "5.1.4"
-$virtualbox_revision = "110228"
+$virtualbox_version = "5.1.6"
+$virtualbox_revision = "110634"
 
 # Git version information
 $git_version ="2.7.0"
