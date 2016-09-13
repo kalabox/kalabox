@@ -164,21 +164,8 @@ begin
   WizardForm.FilenameLabel.Caption := 'Configuring DNS...'
   if Exec(ExpandConstant('{app}\dns.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
   begin
-    if ( ResultCode = 0 ) then
-    begin
-      Log('DNS activated with great success and result code ' + IntToStr(ResultCode));
-    end
-    else begin
-      Log('DNS activation failed with code ' + IntToStr(ResultCode));
-      MsgBox('DNS activation failed!', mbCriticalError, MB_OK);
-      WizardForm.Close;
-      exit;
-    end;
+    Log('DNS script ran with result code ' + IntToStr(ResultCode));
   end
-  else begin
-    Log('Something bad happened with code ' + IntToStr(ResultCode));
-    MsgBox('Something bad happened. Install Fail.', mbCriticalError, MB_OK);
-  end;
 end;
 
 procedure RunInstallGit();
