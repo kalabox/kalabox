@@ -23,6 +23,7 @@ Here is a list of recent versions of Kalabox that introduce breaking changes. Th
 * `v0.12.0-beta.1`
 * `v0.13.0-alpha.1`
 * `v0.13.0-beta.2`
+* `v0.13.0-rc.2`
 
 Normal Updating
 ---------------
