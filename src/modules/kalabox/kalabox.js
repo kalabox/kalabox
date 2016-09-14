@@ -48,8 +48,9 @@ angular.module('kalabox', [
   });
 })
 // Override the default global error handler.
-.factory('$exceptionHandler', function() {
+.factory('$exceptionHandler', function(notificationQueue) {
   return function(exception) {
+
     if (exception.message && exception.message.match(/transition (superseded|prevented|aborted|failed)/)) {
       return;
     }
@@ -71,6 +72,10 @@ angular.module('kalabox', [
     if (err.message && stack) {
       console.log(err.message);
       console.log(stack);
+
+      // Add the exception to the notification QUEUE so users can see
+      // actually see what happened
+      notificationQueue.add(exception, 'error');
     }
 
   };

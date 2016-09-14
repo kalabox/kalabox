@@ -1,5 +1,5 @@
-<button uib-dropdown-toggle class="btn btn-default" type="button" id="notification-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-click="queue.markAllRead();">
-  <i class="fa fa-bell-o"></i>
+<button uib-dropdown-toggle class="btn" ng-class="queue.error ? 'btn-danger' : 'btn-default'" type="button" id="notification-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-click="queue.markAllRead();">
+  <i class="fa" ng-class="queue.error ? 'fa-exclamation-triangle' : 'fa-bell-o'"></i>
 </button>
 <div class="notifier" ng-class="{'unread' : queue.unread}"></div>
 <ul uib-dropdown-menu aria-labelledby="notification-dropdown" class="container">

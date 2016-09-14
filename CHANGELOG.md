@@ -1,5 +1,10 @@
-v.13.0-rc.2
+v2.0.0
 ===========
+
+* Improved GUI error reporting. Errors now get sent to the notification center.
+
+v0.13.0-rc.2
+============
 
 * Resolved longstanding Windows DNS issue. [#1478](https://github.com/kalabox/kalabox/issues/1478)
 * Introduced a waiting dialogue while fetching environments for the site pull modal to prevent a "hang" after selecting "Pull" from the site actions dropdown in the GUI. [#1570](https://github.com/kalabox/kalabox/issues/1570)
@@ -11,8 +16,8 @@ v.13.0-rc.2
 * Upgraded to Virtualbox 5.1.6
 * Fix messaging on pull/push in Kalabox. [#1574](https://github.com/kalabox/kalabox/issues/1574)
 
-v.13.0-rc.1
-===========
+v0.13.0-rc.1
+============
 
 * Switched `kbox status` on `linux` to use PID file existence instead of `service` wrapper. [#1539](https://github.com/kalabox/kalabox/issues/1539)
 * Provided a check to ensure the `docker` daemon is up on Windows and OSX. [#1387](https://github.com/kalabox/kalabox/issues/1387)
@@ -22,8 +27,8 @@ v.13.0-rc.1
 * Improved `kbox start` so it waits until site returns `200 OK` before indicating site is up. [#1543](https://github.com/kalabox/kalabox/issues/1543)
 * Add loading icons and placeholders to show GUI activities to the user. [#1489](https://github.com/kalabox/kalabox/issues/1489)
 
-v.13.0-beta.4
-=============
+v0.13.0-beta.4
+==============
 
 * Loosened default `unison` ignore patterns. [#1501](https://github.com/kalabox/kalabox/issues/1501)
 * Bumped `stdin` max listeners to suppress `EventEmitter` warning. [#1502](https://github.com/kalabox/kalabox/issues/1502)
@@ -37,16 +42,16 @@ v.13.0-beta.4
 * Set default Pantheon create `env` to `dev` in GUI. [#1365](https://github.com/kalabox/kalabox/issues/1365)
 * Fixed and improved site `url` listing in GUI Site Connection Info Modal. [#1492](https://github.com/kalabox/kalabox/issues/1492)
 
-v.13.0-beta.3
-=============
+v0.13.0-beta.3
+==============
 
 * Clarified which uninstaller should be used. [#1490](https://github.com/kalabox/kalabox/issues/1490)
 * Fixed permission error on OSX that caused "The application “Kalabox” can’t be opened" [#1477](https://github.com/kalabox/kalabox/issues/1477)
 * Fixed `unison` on Windows. This resolves the `*.tmp` directory problem. [#1484](https://github.com/kalabox/kalabox/issues/1484)
 * Removed `dns host resolver` setting to improve DNS response time on Windows [#1487](https://github.com/kalabox/kalabox/issues/1487)
 
-v.13.0-beta.2
-=============
+v0.13.0-beta.2
+==============
 
 * Rebooted our documentation [#1322](https://github.com/kalabox/kalabox/issues/1322)
 * Improved `kbox env` description [#1373](https://github.com/kalabox/kalabox/issues/1373)
