@@ -10,7 +10,7 @@
     "devops"
   ],
   "main": "lib/kbox.js",
-  "version": "0.13.0-rc.1",
+  "version": "0.13.0-rc.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/kalabox/kalabox"
