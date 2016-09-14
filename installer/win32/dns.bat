@@ -28,8 +28,11 @@ IF DEFINED KALABOX_ADAPTER_ID (SET KALABOX_WIN_HOA="%KALABOX_DEFAULT_HOA% %KALAB
 FOR /F %%A in ('TYPE "%TEMP%\ip.tmp"') DO (SET KALABOX_IP=%%A)
 IF NOT DEFINED KALABOX_IP (SET KALABOX_IP=10.13.37.100)
 
-:: Set the Kalabox IP address into the Kalabox HOA
+:: We need to set these so that Windows does not use our DNS server as its primary
 netsh interface ipv4 set interface %KALABOX_WIN_HOA% metric=9999
+netsh interface ipv6 set interface %KALABOX_WIN_HOA% metric=9999
+
+:: Set the Kalabox IP address into the Kalabox HOA
 netsh interface ipv4 add dnsservers %KALABOX_WIN_HOA% %KALABOX_IP% validate=no index=1
 ipconfig /flushdns
 
