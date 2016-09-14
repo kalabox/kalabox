@@ -12,11 +12,12 @@ angular.module('kalabox.notificationQueue', [
 
   notificationQueue.notifications = [];
 
-  notificationQueue.add = function(message) {
+  notificationQueue.add = function(message, type) {
     this.notifications.push(
       {message: message, read: false, id: this.notifications.length + 1}
     );
     this.unread = true;
+    this.error = (type === 'error');
   };
 
   notificationQueue.markAllRead = function() {
@@ -25,6 +26,7 @@ angular.module('kalabox.notificationQueue', [
       notifications[key].read = true;
     });
     this.unread = false;
+    this.error = false;
   };
 
   notificationQueue.delete = function(id) {
@@ -35,6 +37,7 @@ angular.module('kalabox.notificationQueue', [
 
     if (this.notifications.length === 0) {
       this.unread = false;
+      this.error = false;
     }
   };
 
