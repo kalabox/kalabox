@@ -1,5 +1,5 @@
 v.13.0-rc.2
-=============
+===========
 
 * Resolved longstanding Windows DNS issue. [#1478](https://github.com/kalabox/kalabox/issues/1478)
 * Introduced a waiting dialogue while fetching environments for the site pull modal to prevent a "hang" after selecting "Pull" from the site actions dropdown in the GUI. [#1570](https://github.com/kalabox/kalabox/issues/1570)
@@ -12,7 +12,7 @@ v.13.0-rc.2
 * Fix messaging on pull/push in Kalabox. [#1574](https://github.com/kalabox/kalabox/issues/1574)
 
 v.13.0-rc.1
-=============
+===========
 
 * Switched `kbox status` on `linux` to use PID file existence instead of `service` wrapper. [#1539](https://github.com/kalabox/kalabox/issues/1539)
 * Provided a check to ensure the `docker` daemon is up on Windows and OSX. [#1387](https://github.com/kalabox/kalabox/issues/1387)
