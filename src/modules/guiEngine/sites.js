@@ -258,19 +258,15 @@ angular.module('kalabox.sites', [])
   Site.prototype.pull = function(opts) {
     var self = this;
     // Run as a queued job.
-    return self.queue('Pulling site: ' + self.name, function(update) {
+    return self.queue('Pulling site: ' + self.name, function() {
       // Get kbox core library.
       return kbox.then(function(kbox) {
         // Initialize app context.
         return kbox.app.get(self.name)
         // Do a pull on the site.
-        .then(function() {
-          var pull = kbox.integrations.get(self.providerName).pull();
-          // Update job's status message with info from pull.
-          pull.on('update', function(msg) {
-            update(msg.status);
-          });
-          return pull.run(opts);
+        .then(function(app) {
+          self.status = 'Pulling...';
+          return app.pull(app.config.pluginconfig.pantheon, opts);
         });
       });
     });
@@ -282,19 +278,15 @@ angular.module('kalabox.sites', [])
   Site.prototype.push = function(opts) {
     var self = this;
     // Run as a queued job.
-    return self.queue('Pushing site: ' + self.name, function(update) {
+    return self.queue('Pushing site: ' + self.name, function() {
       // Get kbox core library.
       return kbox.then(function(kbox) {
         // Initialize app context.
         return kbox.app.get(self.name)
         // Do a pull on the site.
-        .then(function() {
-          var push = kbox.integrations.get(self.providerName).push();
-          // Update job's status message with info from push.
-          push.on('update', function(msg) {
-            update(msg.status);
-          });
-          return push.run(opts);
+        .then(function(app) {
+          self.status = 'Pushing...';
+          return app.push(app.config.pluginconfig.pantheon, opts);
         });
       });
     });

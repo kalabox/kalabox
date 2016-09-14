@@ -1,7 +1,34 @@
 'use strict';
 
 angular.module('kalabox.dashboard')
-.controller('SiteCtrl', function($scope) {
+.controller('SiteCtrl', function($scope, kbox) {
+  kbox.then(function(kbox) {
+    // Get app object.
+    return kbox.app.get($scope.site.name)
+    // Subscribe to status message updates.
+    .then(function(app) {
+      // Create a throttled event emitter.
+      var throttledEvents = new kbox.util.ThrottledEvents({
+        throttle: function(size) {
+          return size < 5 ? 0.5 : size / 2;
+        }
+      });
+      // When a status update happens, update site status and progress.
+      throttledEvents.on('status', function(msg) {
+        $scope.$apply(function() {
+          // Update status message.
+          $scope.site.status = msg;
+          // Increase progress.
+          var step = (1 - $scope.site.progress) / 8;
+          $scope.site.progress += step;
+        });
+      });
+      // Emit a status update to be handled above.
+      app.events.on('status', function(msg) {
+        throttledEvents.emit('status', msg);
+      });
+    });
+  });
   // Code for setting site state on view.
   $scope.siteClasses = function() {
     var currentAction = $scope.site.currentAction ? $scope.site.currentAction :

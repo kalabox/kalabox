@@ -9,6 +9,7 @@ v.13.0-rc.2
 * Fixed hung installer on Windows by removing `yes.exe` from engine activation script. [#1564](https://github.com/kalabox/kalabox/issues/1564)
 * Added better error reporting and handling to the Windows installer. [#1564](https://github.com/kalabox/kalabox/issues/1564)
 * Upgraded to Virtualbox 5.1.6
+* Fix messaging on pull/push in Kalabox. [#1574](https://github.com/kalabox/kalabox/issues/1574)
 
 v.13.0-rc.1
 =============
