@@ -25,7 +25,9 @@ angular.module('kalabox.dashboard')
   function($scope, $uibModalInstance, _, modalData, guiEngine) {
 
     guiEngine.try(function() {
+      $scope.site = modalData.site;
       $scope.errorMessage = false;
+      $scope.opts = {};
       $scope.ok = function(message, database, files) {
         guiEngine.try(function() {
           $uibModalInstance.close();

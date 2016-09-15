@@ -52,7 +52,7 @@ module.exports = function(kbox) {
 
       });
 
-    }, {max: 50});
+    }, {max: 40});
   };
 
   /*

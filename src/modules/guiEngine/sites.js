@@ -17,6 +17,7 @@ angular.module('kalabox.sites', [])
     this.providerName = 'pantheon';
     this.providerInfo = opts.providerInfo;
     this.framework = opts.providerInfo.framework;
+    this.startingEnv = opts.providerInfo.env || null;
     this.busy = false;
     this.update();
     this.environments = [];

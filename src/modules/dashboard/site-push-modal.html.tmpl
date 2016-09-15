@@ -7,27 +7,27 @@
   <form name="sitePush">
     <div class="form-group">
       <label for="sitePushMessage">Commit message</label>
-      <input type="text" class="form-control" id="sitePushMessage" placeholder="Message" ng-model="message" required>
+      <input type="text" class="form-control" id="sitePushMessage" placeholder="Message" ng-model="opts.message" required>
     </div>
     <div class="form-group">
       <label for="pushDatabase">Push database to</label>
-      <select class="form-control" id="pushDatabase" placeholder="Database" ng-model="database" required>
-        <option label="-- Push Database to? --" hidden></option>
-        <option value="none">I'm good! (Don't push my database)</option>
-        <option value="dev">Development Environment</option>
+      <select class="form-control" id="pushDatabase" placeholder="Database" ng-model="opts.database" required>
+        <option label="-- Push database to? --" hidden></option>
+        <option value="none">do not push</option>
+        <option ng-value="site.startingEnv">{{ site.startingEnv }}</option>
       </select>
     </div>
     <div class="form-group">
       <label for="pushFiles">Push files to</label>
-      <select class="form-control" id="pushFiles" placeholder="Files" ng-model="files" required>
+      <select class="form-control" id="pushFiles" placeholder="Files" ng-model="opts.files" required>
         <option label="-- Push files to? --" hidden></option>
-        <option value="none">I'm good! (Don't push my files)</option>
-        <option value="dev">Development Environment</option>
+        <option value="none">do not push</option>
+        <option ng-value="site.startingEnv">{{ site.startingEnv }}</option>
       </select>
     </div>
   </form>
 </div>
 <div class="modal-footer">
-	<button class="btn btn-primary" type="button" ng-disabled="sitePush.$invalid" ng-click="ok(message, database, files)">Submit</button>
+	<button class="btn btn-primary" type="button" ng-disabled="sitePush.$invalid" ng-click="ok(opts.message, opts.database, opts.files)">Submit</button>
   <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
 </div>
