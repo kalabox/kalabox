@@ -31,19 +31,12 @@ angular.module('kalabox.dashboard')
     guiEngine.try(function() {
       $scope.site = modalData.site;
       $scope.errorMessage = false;
-      $scope.refreshing = true;
-      // Get the site environments.
-      $scope.site.getEnvironments()
-      .then(function(envs) {
-        $scope.environments = envs;
-        $scope.refreshing = false;
-      });
-      $scope.ok = function(database, createBackup, files) {
+      $scope.opts = {};
+      $scope.ok = function(database, files) {
         guiEngine.try(function() {
           $uibModalInstance.close();
           var site = modalData.site;
           return site.pull({
-            createBackup: createBackup,
             database: database,
             files: files
           });

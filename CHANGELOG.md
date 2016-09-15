@@ -1,7 +1,9 @@
-v2.0.0
-===========
+v0.13.0-rc.3
+============
 
 * Improved GUI error reporting. Errors now get sent to the notification center.
+* Fixed critical regression that caused PUSH/PULL to not grab DB/FILES on GUI. [#1587](https://github.com/kalabox/kalabox/issues/1587)
+* Added correct starting `env` to push/pull in GUI and `test`/`live` to pull for Pantheon apps. [#1537](https://github.com/kalabox/kalabox/issues/1587)
 
 v0.13.0-rc.2
 ============
