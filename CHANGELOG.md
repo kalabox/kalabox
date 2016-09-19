@@ -1,6 +1,8 @@
 v2.0.0
 ======
 
+* Relaxed criteria for a site to "Be ready". [#1593](https://github.com/kalabox/kalabox/issues/1593)
+
 v0.13.0-rc.3
 ============
 

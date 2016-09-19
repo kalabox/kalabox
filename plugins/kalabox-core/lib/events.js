@@ -7,6 +7,7 @@ module.exports = function(kbox) {
 
   // Npm modules
   var rest = require('restler');
+  var _ = require('lodash');
 
   // Kalabox modules
   var Promise = kbox.Promise;
@@ -45,9 +46,21 @@ module.exports = function(kbox) {
 
         // Throw an error on fail/error
         .on('fail', function(data, response) {
+
+          // Get the codes and define codes that should indicate the site
+          // is not ready yet
           var code = response.statusCode;
-          log.debug(format('%s not yet ready with code %s.', site, code));
-          reject(new Error(response));
+          var waitCodes = [400, 502];
+
+          if (_.includes(waitCodes, code)) {
+            log.debug(format('%s not yet ready with code %s.', site, code));
+            reject(new Error(response));
+          }
+          else {
+            log.debug(format('%s is now ready.', site));
+            fulfill(data);
+          }
+
         }).on('error', reject);
 
       });
