@@ -28,8 +28,8 @@ $kalabox_pkg = Get-Content "package.json" | Out-String | ConvertFrom-Json
 $kalabox_version = $kalabox_pkg.version
 
 # Kalabox plugins
-$plugin_pantheon_version = "0.13.0-rc.2"
-$plugin_php_version = "0.13.0-rc.2"
+$plugin_pantheon_version = "2.0.0"
+$plugin_php_version = "2.0.0"
 
 # Docker version information
 $docker_machine_version = "0.8.1"

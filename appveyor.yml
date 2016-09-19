@@ -82,7 +82,7 @@ deploy:
     set_public: true
     artifact: weezer
     on:
-      branch: v0.13
+      branch: v2.0
 notifications:
   - provider: Email
     to:
