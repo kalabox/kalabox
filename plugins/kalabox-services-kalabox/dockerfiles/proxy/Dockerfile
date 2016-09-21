@@ -13,7 +13,7 @@ RUN \
   curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xvfz - -C / && \
   apk del curl && \
   apk add --update nodejs redis openssl && \
-  npm install --prefix=/usr/local -g https://github.com/kalabox/hipache/tarball/$HIPACHE_VERSION --production && \
+  npm install --prefix=/usr/local -g https://github.com/thinktandem/hipache/tarball/$HIPACHE_VERSION --production && \
   mkdir -p /var/log/hipache && \
   mkdir -p /certs && \
   rm -rf /var/cache/apk/*
