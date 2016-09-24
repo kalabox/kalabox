@@ -5,7 +5,7 @@ The Kalabox config system is highly flexible and allows you to configure a few t
 
   * The default domain suffix.
   * The plugins it should load.
-  * The plugin which contains the enging implementation.
+  * The plugin which contains the engine implementation.
 
 kalabox.yaml
 -------------
