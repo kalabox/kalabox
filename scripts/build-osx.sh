@@ -86,7 +86,7 @@ cd mpkg/kbox.pkg && \
   cd ../..
 
 # Add in more version info
-sed -i "" -e "s/%KALABOX_VERSION%/$KALABOX_VERSION/g" mpkg/Resources/en.lproj/welcome.rtfd/TXT.rtf mpkg/Distribution
+sed -i "" -e "s/%KBOX_VERSION%/$KALABOX_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings mpkg/Resources/en.lproj/welcome.rtfd/TXT.rtf mpkg/Distribution
 sed -i "" -e "s/%VBOX_VERSION%/$VBOX_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings mpkg/Distribution
 
 # Build the package
