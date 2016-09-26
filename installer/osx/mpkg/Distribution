@@ -36,7 +36,7 @@
         <bundle-version/>
     </pkg-ref>
 
-    <product id="io.kalabox.mpkg.kalabox" version="%KALABOX_VERSION%"/>
+    <product id="io.kalabox.mpkg.kalabox" version="%KBOX_VERSION%"/>
 
     <!-- Manually imported VBox Stuff -->
     <installation-check script="checkPrerequisite()"/>
