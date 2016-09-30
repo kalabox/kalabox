@@ -9,7 +9,7 @@ Install Logs
 If you have a failed installation, you should be able to find logs in the following locations...
 
 * **Windows** - `%TEMP%\Setup Log**.txt`
-* **MacOSX** - `/var/log/install.log`
+* **macOS** - `/var/log/install.log`
 * **Linux** - Differs per system but check common `apt` or `dnf/yum` logs
 
 Runtime Logs
@@ -17,7 +17,7 @@ Runtime Logs
 
 If you encounter an error during runtime, check out the runtime log at...
 
-  * **OSX/LINUX** - `~/.kalabox/logs/kalabox.log`
+  * **macOS/LINUX** - `~/.kalabox/logs/kalabox.log`
   * **Windows** - `C:\Users\{ME}\.kalabox\logs\kalabox.log`
 
 !!! tip "Pro Tip: Use verbose or debug mode!""
@@ -29,7 +29,7 @@ Docker Logs
 One of the best ways to troubleshoot an issue is to get access to the Kalabox Engine and start hacking around.
 
 !!! attention "Make sure you are ready to run Docker commands on the engine"
-    Follow the instructions for [OSX/Windows](./general/engine/#engine-for-osxwin) or [Linux](./general/engine/#engine-for-linux)
+    Follow the instructions for [macOS/Windows](./general/engine/#engine-for-osxwin) or [Linux](./general/engine/#engine-for-linux)
 
 **Some basic Docker commands**
 

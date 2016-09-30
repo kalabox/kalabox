@@ -34,12 +34,12 @@ Normal updating if fairly simple.
 2. Follow the [normal installation steps](./install.md) with the new version.
 
 !!! note "Older apps will not be updated!!!"
-    If you created apps with a previous version of Kalabox these apps will not be updated. In order to also update your apps we recommend you destroy and recreate those apps.
+    If you created apps with a previous version of Kalabox these apps will not be updated. Also, to update your apps we recommend you destroy and recreate those apps.
 
 Purge Updating
 --------------
 
-In order to update to a Kalabox that has breaking changes you will want to purge the old and install the new one. The easiest way to do this is:
+To update to a Kalabox that has breaking changes purge the old installation and install the new one. The easiest way to do this is:
 
 1. Destroy all the apps you have (see [backing up older apps](#backing-up-older-appps))
 2. Shutdown the Kalabox GUI and/or kill any running Kalabox CLI process.
