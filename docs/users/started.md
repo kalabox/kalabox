@@ -7,12 +7,12 @@
 Getting Started
 ===============
 
-Now that you've [succesfully installed](./install.md) Kalabox you can start creating your own apps. Kalabox apps are completely isolated development environments which means on a high level they contain the following things:
+Now that you've [successfully installed](./install.md) Kalabox you can start creating your own apps. Kalabox apps are completely isolated development environments. At a high level they contain the following things:
 
   1. Metadata about the containers and services your application needs to run.
   2. Metadata about the tooling your application needs for development.
   3. High level configuration such as name, service exposure, file sharing, etc.
-  4. Your applications codebase.
+  4. Your application’s codebase.
 
 !!! note "Apps are mutually exclusive"
     This architecture means that everything you need to run and develop your app is contained within the app itself. That means you can blow away `app1` without it having any impact on the containers and tools you are using on `app2`.
@@ -24,8 +24,8 @@ Kalabox apps can be quite simple or massively complex. For example, a Kalabox ap
 
 A Kalabox app at it's smallest requires only two files:
 
-  1. A `kalabox.yml` file which contains the high level configuration for your app.
-  2. A `kalabox-compose.yml` file which contains the services your app needs to run.
+  1. A `kalabox.yml` file that contains the high level configuration for your app.
+  2. A `kalabox-compose.yml` file that contains the services your app needs to run.
 
 !!! tip "Kalabox uses Docker Compose"
     The `kalabox-compose` file is simply a [Docker Compose](https://docs.docker.com/compose/compose-file/) file.
@@ -48,7 +48,7 @@ Now that you've started up the app you should have...
   2. A webroot with the default `nginx` index.html inside your app in the `code` directory.
 
 !!! tip "File sharing"
-    Everything in your apps `code` directory should be synced to the webserver. Try editing `index.html` and refreshing your site to see all the magix.
+    Everything in your apps `code` directory should be synced to the web server. Try editing `index.html` and refreshing your site to see all the magix.
 
 Now let examine your app's directory structure and files.
 
@@ -97,6 +97,6 @@ web:
 ```
 
 !!! tip "PRO TIP: Level up your `kalabox-compose.yml`"
-    You can use variables found in `kbox env` when constructing your `kalabox-compose.yml` such as `$KALABOX_APP_HOSTNAME`. This can give you a lot of power and flexibilty when crafting your app.
+    You can use variables found in `kbox env` when constructing your `kalabox-compose.yml` such as `$KALABOX_APP_HOSTNAME`. This can give you a lot of power and flexibility when crafting your app.
 
 

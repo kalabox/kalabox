@@ -4,9 +4,9 @@ Kalabox CLI
 The Kalabox CLI is accessible via your terminal by typing `kbox` at the prompt, which will display the list of commands you can run. Kalabox operates in one of two contexts:
 
   * **Global** - This is any directory that does not contain a Kalabox app.
-  * **App** - This is any directory which does contain an app.
+  * **App** - This is any directory that contains an app.
 
-The context will determine the list of commands you can run. If you have app context then the commands you run will apply to the app. In the example above Kalabox is running in an app context. You will see that Kalabox will group the commands into seperate contexts for you.
+The context will determine the list of commands you can run. If you have an app context then the commands you run will apply to the app. In the example above Kalabox is running in an app context. You will see that Kalabox will group the commands into separate contexts for you.
 
 If you are in a different app or global context you can easily run a command against another app using the `kbox <APPNAME> command` syntax.
 
@@ -48,7 +48,7 @@ Options:
   -h, --help     Display help message.                                 [boolean]
   -v, --verbose  Use verbose output.                                   [boolean]
   -d, --debug    Use debug output.                                     [boolean]
-  -y, --yes      Automatically answer affirmitive                      [boolean]
+  -y, --yes      Automatically answer affirmative                      [boolean]
 ```
 
 ```bash
@@ -66,7 +66,7 @@ kbox app2 destroy
 down
 ----
 
-Deactivates the Kalabox engine by shutting down the Kalabox daemon on Linux or the Kalabox2 VM on OSX/Windows. **This will stop all running apps.**
+Deactivates the Kalabox engine by shutting down the Kalabox daemon on Linux or the Kalabox2 VM on macOS/Windows. **This will stop all running apps.**
 
 `kbox down`
 
@@ -128,7 +128,7 @@ kbox rebuild -- -v
 !!! danger "Be careful using this command! It rebuilds EVERYTHING"
     If you have application data or code stored in a web or database container, this data will be lost as well unless you have properly volumed it or written a plugin to ensure the data sensitive container is not included in the rebuild.
 
-    For example, the [Pantheon](http://github.com/kalabox/kalabox-app-pantheon) and [PHP](http://github.com/kalabox/kalabox-app-php) plugins store all application data in a `data` container which is preserved through a rebuild.
+    For example, the [Pantheon](http://github.com/kalabox/kalabox-app-pantheon) and [PHP](http://github.com/kalabox/kalabox-app-php) plugins store all application data in a `data` container that is preserved through a rebuild.
 
 restart
 -------
@@ -221,7 +221,7 @@ Options:
 up
 --
 
-Activates the Kalabox engine by turning on the Kalabox daemon on Linux or the Kalabox2 VM on OSX/Windows. **This will get you in a state so you can create new or start existing apps.**
+Activates the Kalabox engine by turning on the Kalabox daemon on Linux or the Kalabox2 VM on macOS/Windows. **This will get you in a state so you can create new or start existing apps.**
 
 `kbox up`
 
@@ -249,7 +249,7 @@ Options:
 Additional Commands
 -------------------
 
-Please consult the [configuration](./config.md) page to learn more about adding your own custom commmands. Custom commands allow you to do some of the following things.
+Please consult the [configuration](./config.md) page to learn more about adding your own custom commands. Custom commands allow you to do some of the following things.
 
   1. Pull down sites from a hosting provider.
   2. Add additional tools to your app like `npm`, `grunt` or `gulp`.

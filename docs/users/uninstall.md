@@ -6,8 +6,8 @@ Preuninstall Checks
 
 1. Make sure you have closed the Kalabox GUI and terminated any running Kalabox process
 
-Mac OSX
--------
+macOS
+-----
 
 1. Mount the DMG you downloaded to install Kalabox. Visit [the Kalabox release page](https://github.com/kalabox/kalabox/releases) if you no longer have the DMG
 2. Double click on the `uninstall.command` script
@@ -49,7 +49,7 @@ Manually Uninstalling Kalabox
 
 There are still some bugs with our native uninstallers. If you feel like your Kalabox uninstallation has not completed successfully please review the following things have been removed and then try the uninstaller again.
 
-### Kalabox engine has been removed successfully on OSX/Windows
+### Kalabox engine has been removed successfully on macOS/Windows
 
 1. Open up VirtualBox and manually remove the Kalabox2 VM, including all its files if it shows up.
 2. Remove `~/.docker/machine/machines/Kalabox2/` if it exists
@@ -69,7 +69,7 @@ ps aux | grep 10.13.37.100
 sudo kill PID
 ```
 
-### Remove Kalabox directories on Linux/OSX
+### Remove Kalabox directories on Linux/macOS
 
 ```bash
 # Linux
@@ -77,7 +77,7 @@ sudo service kalabox stop
 sudo rm -rf /usr/share/kalabox
 sudo rm -f /etc/resolver/kbox
 
-# OSX
+# macOS
 sudo rm -rf /Applications/Kalabox.app
 sudo rm -f /etc/resolver/kbox
 ```

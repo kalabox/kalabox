@@ -8,7 +8,7 @@ Operating System
 
 Currently Kalabox is compatible with...
 
-  * Mac OS X 10.10+
+  * macOS 10.10+
   * Windows 7+
   * Debian 7/Ubuntu 14.04+
   * Fedora 23+
@@ -23,6 +23,6 @@ Hardware Requirements
   * 4GB RAM
   * Modern processor (~last 3 years)
 
-!!! note "Storage Requirements for OSX/Windows Virtual Disk"
+!!! note "Storage Requirements for macOS/Windows Virtual Disk"
     Note that Kalabox itself does not take up 20GB of hard drive space, but reserves that space for your sites in a virtual disk.
 
