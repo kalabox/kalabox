@@ -5,7 +5,7 @@ The Kalabox config system is highly flexible and allows you to configure a few t
 
   * The default domain suffix.
   * The plugins it should load.
-  * The plugin which contains the engine implementation.
+  * The plugin that contains the engine implementation.
 
 kalabox.yaml
 -------------
@@ -14,7 +14,7 @@ This file specifies the core configuration options for Kalabox. If you wanted to
 
   1. The default `kalabox.yml`. If you've installed Kalabox from source this will be in the source root.
   2. The `kalabox.yml` inside of the `sysConfRoot`. For example `/usr/share/kalabox` on Linux.
-  3. The `kalabox.yml` inside of the `userConfRoot`. For examples `~/.kalabox/` on OSX.
+  3. The `kalabox.yml` inside of the `userConfRoot`. For examples `~/.kalabox/` on macOS.
 
 !!! attention "Where are `sysConfRoot` and `userConfRoot`?"
     Run `kbox config` to find the location of these directories as they can be different.

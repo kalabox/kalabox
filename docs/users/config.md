@@ -1,14 +1,14 @@
 Configuration
 =============
 
-Kalabox has a sophisticated plugin system that allows users to extend core functionality and provide easy configuration options around many things. Here we will detail some of the configuration options provides by core Kalabox plugins.
+Kalabox has a sophisticated plugin system that allows users to extend core functionality and provide easy configuration options around many things. Here we will detail some of the configuration options provided by core Kalabox plugins.
 
 Sharing
 -------
 
 Kalabox seeks to mitigate the **HARDEST PROBLEM** in VM-based local development: quickly sharing files from your host machine into the VM while maintaining fast page loads. This is a longstanding issue and no project has a perfect solution; for a longer discussion on filesharing, see the [Advanced file sharing topics](#advanced-file-sharing-topics) section below.
 
-With Kalabox, you can easily enable file sharing by adding a `sharing` object to the `pluginconfig` of your app's `kalabox.yml` file. If you are on Mac OSX or Windows then sharing does have [some limitations](#advanced-file-sharing-topics) so we've also provided a few easy ways to both ignore specific kinds of files and share specific directories. If you have a particularly large codebase we **highly recommend** you take advantage of the `paths` and `ignore` options to speed up your sync.
+With Kalabox, you can easily enable file sharing by adding a `sharing` object to the `pluginconfig` of your app's `kalabox.yml` file. If you are on macOS or Windows then sharing does have [some limitations](#advanced-file-sharing-topics) so we've also provided a few easy ways to both ignore specific kinds of files and share specific directories. If you have a particularly large codebase we **highly recommend** you take advantage of the `paths` and `ignore` options to speed up your sync.
 
 We already try to do some basic optimization for you by ignoring the following:
 
@@ -103,11 +103,11 @@ When it comes to file sharing in Virtual Machine-based local development environ
 
 Solutions like `vbfs` or `nfs`, which mount files over the network, provide instantaneous changes. They also require the remote machine to "check in" to see if there are any changes to a file before it is read or written. For a site or app with a few files this is no big deal. However, when you have an app using a modern CMS like Drupal with thousands of files, this "checking in" can substantially slow a page load from less than a second to 5, 10, 40 or never seconds, depending on the load.
 
-If you are a sitebuilder who works through the UI instead of directly in code, these solutions can burn a lot of time.
+If you are a site builder who works through the UI instead of directly in code, these solutions can burn a lot of time.
 
 **Fast page loads**
 
-Solutions like `rsync` or `syncthing` will try to keep two directories synced. This lowers the speed that your code change propogates to seconds and can often burn a lot of resources on your machine but it will preserve "native" speed page loads.
+Solutions like `rsync` or `syncthing` will try to keep two directories synced. This reduces the speed that your code change propagates to just seconds and can often burn a lot of resources on your machine but it will preserve "native" speed page loads.
 
 If you are someone who is writing and changing code a lot these solutions can burn a lot of time.
 
@@ -119,17 +119,17 @@ The sharing process works like this
 
   1. Your code changes are instantaneously synced to the VM by VirtualBox's `vbfs`
   2. Your local `vbfs` shared local code root and container webroot are mounted into the same `unison` container
-  3. We run a `unison` container for each app that scans for and then propogates those changes every second.
+  3. We run a `unison` container for each app that scans for and then propagates those changes every second.
 
 !!! attention "We do we scan instead of watch?"
     We cannot use native filesystem events in this model due to [a won't fix bug](https://www.virtualbox.org/ticket/10660) in VirtualBox.
 
 #### The Downside
 
-While this produces `nfs` speed file change propogation along with "native" page loads, the speed of propagation does slow as you increase the amount of files you are scanning. Luckily, we've provided a few ways for you to optimize your sync.
+While this produces `nfs` speed file change propagation along with "native" page loads, the speed of propagation does slow as you increase the amount of files you are scanning. Luckily, we've provided a few ways for you to optimize your sync.
 #### The Roadmap Forward
 
-We **really, really hope** that the above is a stop-gap solution. Docker is currently working on "native" filesharing for both OSX and Windows. Once those are complete and perform better than what we have we will switch our sharing over to use them. You can track the progress of that issue over here:
+We **really, really hope** that the above is a stop-gap solution. Docker is currently working on "native" file sharing for both macOS and Windows. Once those are complete and perform better than what we have we will switch our sharing over to use them. You can track the progress of that issue over here:
 
  * [https://forums.docker.com/t/file-access-in-mounted-volumes-extremely-slow-cpu-bound/8076/108](https://forums.docker.com/t/file-access-in-mounted-volumes-extremely-slow-cpu-bound/8076/108)
 
@@ -238,7 +238,7 @@ You can easily add additional development tools to any Kalabox app using our bak
 Tooling works by installing and associating additional Docker containers to your app. These containers should contain the development commands you wish to run and should be set up to mount relevant local assets like `ssh keys`, config or code. While well constructed tooling containers should feel like "natively" running the same commands there are a few things that can be different. Here are some general guidelines to help you construct good tooling containers:
 
   1. Mount your webroot into the tooling container so you have access to your code.
-  2. Use a custom entrypoint script to correctly map local to container permissions.
+  2. Use a custom entry point script to correctly map local to container permissions.
   3. Mount your binaries as volumes so they can be shared with containers.
   4. Set the container's working directory so that it matches the users local location.
   5. Set any config in relevant environmental variables if possible
@@ -404,16 +404,16 @@ You should now be able to run `kbox` and see the following commands listed...
   * `kbox php`
   * `kbox composer`
 
-These commands should all work like they normally do with the exception of `mysql` which will drop you directly to the `mysql` prompt.
+These commands should all work like they normally do with the exception of `mysql`, which will drop you directly to the `mysql` prompt.
 
 ```bash
-# Drop into a myqsl shell connected to my app's database container
+# Drop into a mysql shell connected to my app's database container
 kbox mysql
 
 # Run an arbitrary piece of php
 kbox php -e "phpinfo();"
 
-# Flush my drupal caches
+# Flush my Drupal caches
 kbox drush cc all
 
 # Check the composer version

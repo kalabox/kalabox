@@ -9,8 +9,8 @@ Preinstall Checks
 3. Verify that you have administrative access to your machine.
 4. If you have previously installed Kalabox and are attempting to install a new  version check out our [update guide](./updating.md) before continuing.
 
-Mac OSX
--------
+macOS
+-----
 
 ### Installation Steps
 
@@ -79,7 +79,7 @@ sudo rpm -i kalabox.deb
 Common Installation Issues
 --------------------------
 
-### OSX
+### macOS
 
 1. [Duplicate host only adapter](./../troubleshooting/#resolving-duplicate-host-only-adapters)
 

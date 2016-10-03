@@ -16,7 +16,7 @@ Kalabox has an advanced plugin system that allows developers to add and extend K
 Installation
 ------------
 
-In order to get you plugin working with Kalabox you need to do two things:
+To get the plugin working with Kalabox do two things:
 
   1. [Override config](./config) to include your plugin's name.
   2. Place your plugin into the correct location. (see below)
@@ -25,7 +25,7 @@ Kalabox looks for plugins in either the `node_modules` or `plugins` folder in th
 
   1. The source directory.
   2. Inside of the `sysConfRoot`. For example `/usr/share/kalabox` on Linux.
-  3. Inside of the `userConfRoot`. For examples `~/.kalabox/` on OSX.
+  3. Inside of the `userConfRoot`. For example `~/.kalabox/` on macOS.
 
 !!! attention "Where are `sysConfRoot` and `userConfRoot`?"
     Run `kbox config` to find the location of these directories as they can be different.
@@ -35,7 +35,7 @@ Kalabox looks for plugins in either the `node_modules` or `plugins` folder in th
 Kalabox ships with two external plugins by default: ["Pantheon on Kalabox"](http://github.com/kalabox/kalabox-app-pantheon) and ["PHP on Kalabox"](http://github.com/kalabox/kalabox-app-php). These are installed into your `sysConfRoot` by the Kalabox installer along with a `kalabox.yml` override file. Let's say we want to do development on the "Pantheon on Kalabox" plugin.
 
 ```bash
-# Go into the `usrConfRoot`, Assuming OSX and `~/.kalabox` for this example
+# Go into the `usrConfRoot`; assuming macOS and `~/.kalabox` for this example
 cd ~/.kalabox
 
 # Create a plugins folder
