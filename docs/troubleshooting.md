@@ -1,10 +1,12 @@
-Logs
-====
+Troubleshooting
+===============
+
+Accessing Logs
+--------------
 
 Kalabox has a few different log layers to help you diagnose any issues you might be having.
 
-Install Logs
-------------
+### Install Logs
 
 If you have a failed installation, you should be able to find logs in the following locations...
 
@@ -12,8 +14,7 @@ If you have a failed installation, you should be able to find logs in the follow
 * **macOS** - `/var/log/install.log`
 * **Linux** - Differs per system but check common `apt` or `dnf/yum` logs
 
-Runtime Logs
-------------
+### Runtime Logs
 
 If you encounter an error during runtime, check out the runtime log at...
 
@@ -23,8 +24,7 @@ If you encounter an error during runtime, check out the runtime log at...
 !!! tip "Pro Tip: Use verbose or debug mode!""
     Run the failing command again with either the `-v` or `-d` option to get more useful debug output. But be careful because this output could contain sensitive information.
 
-Docker Logs
------------
+### Docker Logs
 
 One of the best ways to troubleshoot an issue is to get access to the Kalabox Engine and start hacking around.
 
@@ -53,8 +53,7 @@ Once you've completed the above you should be able to communicate with your cont
 **Attach to a container (this is like SSHing)**
 `docker exec -i -t service_appname_1 bash`
 
-Container Logs
---------------
+### Container Logs
 
 While you can get container logs by following some of the steps above you can also access specific container logs by mounting them back out onto your host machine. This is done by modifiying your `kalabox-compose.yml` file, which is a normal [Docker Compose](https://docs.docker.com/compose/compose-file/) with a bunch of extra [environmental variables](users/cli/#env) that Kalabox sets for you.
 
@@ -70,8 +69,10 @@ php:
     - $KALABOX_APP_ROOT_BIND/logs:/var/log
 ```
 
-Resolving Duplicate Host Only Adapters
-======================================
+Common Installation Issues
+--------------------------
+
+### Resolving Duplicate Host Only Adapters
 
 Any time you install a project that relies on VirtualBox (Docker Toolbox or a Vagrant-based project like Drupal VM are good examples), one of these host-only network adapters is created, and sometimes when you've frequently installed/uninstalled the same projects multiple times, these duplicates occur. Note that *ANY* duplicates (even if they aren't from Kalabox) can cause this issue.
 
@@ -88,3 +89,14 @@ Fortunately, removing these duplicates is fairly easy:
     ![List of host only adapter in VirtualBox](./images/hostonlyadapters.png)
 <br>
 4. Delete any of the adapters that aren't being used by one of your virtual machines.
+
+### Installation hangs in last minute
+
+Sometimes `docker` certs and config from an older version of docker can intefere with installation of Kalabox. To work around these issues you can try:
+
+1. Uninstalling Kalabox
+2. Removing `~/.docker` folders
+3. Reinstalling Kalabox
+
+!!! Note "Be careful removing `~/.docker`"
+    You might want to make sure that you do not have other docker based products that require some of the config in `~/.docker`.
