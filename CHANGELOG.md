@@ -2,6 +2,7 @@ v2.0.1
 ======
 
 * Fixed unassigned token `%KBOX_VERSION%` showing up in OSX installer customization. [#1614](https://github.com/kalabox/kalabox/issues/1614)
+* Updated documentation. #1641
 
 v2.0.0
 ======
