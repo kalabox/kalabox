@@ -19,6 +19,7 @@ Currently Kalabox is compatible with...
 Hardware Requirements
 -------------------
 
+  * x64 processor architecture
   * 20GB Available Space
   * 4GB RAM
   * Modern processor (~last 3 years)
