@@ -100,3 +100,58 @@ Sometimes `docker` certs and config from an older version of docker can intefere
 
 !!! Note "Be careful removing `~/.docker`"
     You might want to make sure that you do not have other docker based products that require some of the config in `~/.docker`.
+
+### Behind a network PROXY or FIREWALL
+
+If your service activation fail on Windows or you get an error like "Error while pulling image: Get https://index.docker.io/v1/repositories/kalabox/proxy/images: x509: certificate signed by unknown authority" in your macOS/Linux installer log then you might be behind a network proxy or firewall that is preventing you from pulling the needed Kalabox dependencies.
+
+Check out [https://github.com/kalabox/kalabox/issues/1635](https://github.com/kalabox/kalabox/issues/1635) for more details on that issue.
+
+### Windows is also running Hyper-V
+
+In some cases you cannot use VirtualBox (a critical Kalabox dependency) with Hyper-V however there is a documentated workaround you can check out over at [https://derekgusoff.wordpress.com/2012/09/05/run-hyper-v-and-virtualbox-on-the-same-machine/](https://derekgusoff.wordpress.com/2012/09/05/run-hyper-v-and-virtualbox-on-the-same-machine/)
+
+The author says, "VirtualBox and Hyper-V cannot co-exist on the same machine. Only one hypervisor can run at a time, and since Hyper-V runs all the time, while VirtualBox only runs when it is launched, VirtualBox is the loser in this scenario."
+
+Kalabox should install on your machine after using the above workaround.
+
+!!! Note "Eventually we will use Hyper-V"
+    As soon as `Docker for Windows` is mature and has performant file sharing we plan to switch our backend over to that, which uses Hyper-V instead of VirtualBox.
+
+### Windows install pops up with an error
+
+It's somewhat difficult to parse out useful installation errors on Windows. Here is a brief guide to help do that.
+
+
+  **1. Verify that you do not have another documentated install problem (see above)**
+
+  **2. Verify that you have [VT-x enabled](http://docs.kalabox.io/en/stable/general/sysreq/#system-requirements)**
+
+  **3. Run through the installer and continue installing after it fails**
+
+  Run the installer through to the end. Don't choose to rollback if given that option. You can uninstall the borked install later.
+
+  **4. Try to manually run the appropriate script**
+
+  You should now have a bunch of `*.bat` files somewhere in `"C:\Program Files\Kalabox\engine.bat"` Verify that is true and note that you may have a different sysDrive like D:\. It is also possible that the `*.bat` files are in a subdirectory.
+
+  Anyway, please copy the path location of the correct file according to the mapping below
+
+```bash
+Got "Engine activation failed" -> engine.bat
+Got "Service activation failed" -> services.bat
+Got "DNS activation failed" -> dns.bat
+```
+
+  Open cmd.exe and try to run the script.
+
+!!! Note "Be careful to use correct permissions"
+    For `engine.bat` and `services.bat` you need to make sure you **DO NOT RUN AS AN ADMINISTRATOR**. For `dns.bat` you need to make you **DO RUN AS AN ADMINSTRATOR**. By "run as administrator" we mean run with "elevated privileges".
+
+  *Example*
+
+```batch
+"C:\Program Files\Kalabox\engine.bat"
+```
+
+  At some point this should fail and give some better details about the underlying issue.
