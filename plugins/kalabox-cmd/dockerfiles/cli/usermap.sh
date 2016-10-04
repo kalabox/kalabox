@@ -25,24 +25,6 @@ if [ -f "/user/.ssh/$KALABOX_SSH_KEY" ]; then
   chown -Rf $KALABOX_UID:$KALABOX_UID $HOME/.ssh
 fi
 
-if [ -f "/${WEBROOT}/.stfolder" ]; then
-  mv /${WEBROOT}/.stfolder /tmp/.stfolder
-fi
-
-if [ -f "/${WEBROOT}/.stignore" ]; then
-  mv /${WEBROOT}/.stignore /tmp/.stignore
-fi
-
 # Run the command
 echo "$KALABOX_UID ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 su -m "$KALABOX_UID" -s "/bin/bash" -c "$(echo $@)"
-
-# Move this back
-if [ -f "/tmp/.stfolder" ]; then
-  mv /tmp/.stfolder /${WEBROOT}/.stfolder
-fi
-
-# Move this back
-if [ -f "/tmp/.stignore" ]; then
-  mv /tmp/.stignore /${WEBROOT}/.stignore
-fi

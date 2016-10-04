@@ -6,20 +6,21 @@ FROM mhart/alpine-node:4
 
 RUN \
   apk add --update \
-  git \
-  rsync \
-  openssh \
-  wget \
-  python \
-  make \
-  g++ \
-  curl \
-  bash && \
-  npm install --production -g grunt-cli gulp-cli bower && \
-  mkdir -p /config && \
-  rm -rf ~/.npm && \
-  npm cache clear && \
-  rm -rf /var/cache/apk/*
+    bash \
+    curl \
+    git \
+    g++ \
+    make \
+    openssh \
+    python \
+    rsync \
+    sudo \
+    wget \
+  && npm install --production -g grunt-cli gulp-cli bower \
+  && mkdir -p /config \
+  && rm -rf ~/.npm \
+  && npm cache clear \
+  && rm -rf /var/cache/apk/*
 
 COPY ./config/gitconfig /config/.gitconfig
 COPY ./usermap.sh /usr/bin/usermap
