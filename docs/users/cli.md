@@ -13,6 +13,41 @@ If you are in a different app or global context you can easily run a command aga
 !!! warning "Windows Users"
     We currently only support CLI usage via `cmd.exe`. That said, there is an issue to add support for alternate shells [over here](https://github.com/kalabox/kalabox/issues/1475).
 
+". <cmd\>"
+----------
+
+This is a special command that you can use to run most basic linux commands like `ls`, `sudo` and `rm`. The purpose of this commands is to provide a catch-all mechanism to run commands that are not explicitly defined eg `kbox grunt`.
+
+Furthermore this provides the user with a great way to interact with their files **AS THEY APPEAR INSIDE OF KALABOX'S CONTAINERS** without having to `ssh` or `docker exec` into the Kalabox 2 VM or specific Kalabox containers.
+
+Remember that these commands run inside of their own containers so the experience will be slightly different than running the same tools natively.
+
+Using this command the user should be able to
+
+  * Correct permission errors inside of their containers
+  * Remove vestigal files from bad syncOps
+  * Investigate the results of syncing
+
+`kbox . <cmd> <cmd options> -- <kalabox options>`
+
+```bash
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
+```
+
+```bash
+# Correct the permissions on a composer dependency
+kbox . sudo chown 1000:1000 -Rv vendor/solarium
+
+# List out all the files and perms in a directory
+kbox . ls -lsa
+
+# Sudo for force remove a directory
+kbox . sudo rm -rf node_modules
+```
+
 config
 ------
 

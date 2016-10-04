@@ -3,6 +3,7 @@ v2.0.1
 
 * Fixed unassigned token `%KBOX_VERSION%` showing up in OSX installer customization. [#1614](https://github.com/kalabox/kalabox/issues/1614)
 * Updated documentation. [#1641](https://github.com/kalabox/kalabox/issues/1641) [#1629](https://github.com/kalabox/kalabox/issues/1629) [#1635](https://github.com/kalabox/kalabox/issues/1635) [#1610](https://github.com/kalabox/kalabox/issues/1610)
+* Added a generic `kbox .` command so you can run things like `ls`, `rm`, `sudo` on containers. [#1615](https://github.com/kalabox/kalabox/issues/1615)
 
 v2.0.0
 ======
