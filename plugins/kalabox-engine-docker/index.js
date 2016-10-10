@@ -165,7 +165,7 @@ module.exports = function(kbox) {
 
     return Promise.try(function() {
       // Get the provider we need and then load its install routinezzz
-      var provider = (process.platform === 'linux') ? 'engine' : 'machine';
+      var provider = (process.platform !== 'win32') ? 'engine' : 'machine';
       var providerFile = path.join(PROVIDER_PATH, provider + '.js');
       return require(providerFile)(kbox);
     })

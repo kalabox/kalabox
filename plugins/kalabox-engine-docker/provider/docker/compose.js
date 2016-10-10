@@ -47,14 +47,18 @@ module.exports = function(kbox) {
     });
 
     // Set our docker host for compose
-    kbox.core.env.setEnv('DOCKER_HOST', dockerHost);
+    if (process.platform !== 'darwin') {
+      kbox.core.env.setEnv('DOCKER_HOST', dockerHost);
+    }
 
     // Additional configuration is needed for docker machinez
-    if (process.platform !== 'linux') {
+    if (process.platform === 'win32') {
       kbox.core.env.setEnv('DOCKER_TLS_VERIFY', 1);
       kbox.core.env.setEnv('DOCKER_MACHINE_NAME', engineConfig.machine);
       kbox.core.env.setEnv('DOCKER_CERT_PATH', engineConfig.certDir);
     }
+
+    // @todo: verify all DOCKER_ vars are stripped on darwin
 
     // Run a provider command in a shell.
     log.info(format('Running: %j', cmd));

@@ -219,27 +219,23 @@ module.exports = function(kbox) {
         .then(function(data) {
 
           // Get port information from container query.
-          var ports = _.get(data, 'NetworkSettings.Ports');
+          var ip = _.get(data, 'NetworkSettings.Networks.bridge.IPAddress');
 
           // Loop through each proxy.
           return Promise.map(service.routes, function(route) {
 
             // Get port for this proxy from port information.
-            var port = _.get(ports, '[' + route.port + '][0].HostPort', null);
+            var port = route.port.split('/')[0];
 
-            // If we have a port assigned then we are safe todo the mapping
-            if (port) {
+            // Loop through each url and add an entry to redis
+            return Promise.map(route.urls, function(url) {
+              return addRedisEntry(
+                ['frontend', url].join(':'),
+                u.parse(url).protocol + '//' + ip + ':' + port,
+                _.trimLeft(data.Name, '/')
+              );
+            });
 
-              // Loop through each url and add an entry to redis
-              return Promise.map(route.urls, function(url) {
-                return addRedisEntry(
-                  ['frontend', url].join(':'),
-                  u.parse(url).protocol + '//' + REDIS_IP + ':' + port,
-                  _.trimLeft(data.Name, '/')
-                );
-              });
-
-            }
           });
         });
       });

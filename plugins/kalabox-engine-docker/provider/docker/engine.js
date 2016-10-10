@@ -77,7 +77,7 @@ module.exports = function(kbox) {
   var up = function() {
 
     // Automatically return true if we are in the GUI
-    if (mode === 'gui') {
+    if (mode === 'gui' || process.platform === 'darwin') {
       return Promise.resolve(true);
     }
 
@@ -104,7 +104,7 @@ module.exports = function(kbox) {
   var down = function() {
 
     // Automatically return true if we are in the GUI
-    if (mode === 'gui') {
+    if (mode === 'gui' || process.platform === 'darwin') {
       return Promise.resolve(true);
     }
 
@@ -130,7 +130,11 @@ module.exports = function(kbox) {
    * Return engine's IP address.
    */
   var getIp = function() {
-    return Promise.resolve('10.13.37.100');
+    // Return exec based on path
+    switch (process.platform) {
+      case 'darwin': return Promise.resolve('127.0.0.1');
+      case 'linux': return Promise.resolve('10.13.37.100');
+    }
   };
 
   /*
@@ -139,7 +143,7 @@ module.exports = function(kbox) {
   var isUp = function() {
 
     // Automatically return true if we are in the GUI
-    if (mode === 'gui') {
+    if (mode === 'gui' || process.platform === 'darwin') {
       return Promise.resolve(true);
     }
 
@@ -190,10 +194,19 @@ module.exports = function(kbox) {
    */
   var getEngineConfig = function() {
 
-    return Promise.resolve({
+    var linuxConfig = {
       host: '10.13.37.100',
       port: '2375'
-    });
+    };
+    var darwinConfig = {
+      host: '127.0.0.1',
+      socketPath: '/var/run/docker.sock'
+    };
+
+    switch (process.platform) {
+      case 'darwin': return Promise.resolve(darwinConfig);
+      case 'linux': return Promise.resolve(linuxConfig);
+    }
 
   };
 

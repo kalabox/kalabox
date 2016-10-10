@@ -12,15 +12,6 @@ KALABOX_VERSION="$KBOX_VERSION"
 PLUGIN_PANTHEON_VERSION="2.0.1"
 PLUGIN_PHP_VERSION="2.0.1"
 
-# Docker things
-DOCKER_MACHINE_VERSION="0.8.1"
-DOCKER_COMPOSE_VERSION="1.8.0"
-BOOT2DOCKER_ISO_VERSION="1.12.1"
-
-# VirtualBox Things
-VBOX_VERSION="5.1.6"
-VBOX_REVISION="110634"
-
 # Move dependencies into the application bundle
 APP_CONTENTS="Kalabox.app/Contents/MacOS"
 APP_BIN="$APP_CONTENTS/bin"
@@ -43,24 +34,6 @@ mkdir -p $APP_PLUGINS/kalabox-app-pantheon $APP_PLUGINS/kalabox-app-php
 curl -fsSL "https://github.com/kalabox/kalabox-app-pantheon/releases/download/v$PLUGIN_PANTHEON_VERSION/kalabox-app-pantheon-v$PLUGIN_PANTHEON_VERSION.tar.gz" | tar -xf- -C $APP_PLUGINS/kalabox-app-pantheon
 curl -fsSL "https://github.com/kalabox/kalabox-app-php/releases/download/v$PLUGIN_PHP_VERSION/kalabox-app-php-v$PLUGIN_PHP_VERSION.tar.gz" | tar -xf- -C $APP_PLUGINS/kalabox-app-php
 cp -rf "../../installer/kalabox.yml" $APP_CONTENTS/kalabox.yml
-
-# Get our Docker dependencies
-curl -fsSL -o $APP_BIN/docker-compose "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Darwin-x86_64"
-curl -fsSL -o $APP_BIN/docker-machine "https://github.com/docker/machine/releases/download/v$DOCKER_MACHINE_VERSION/docker-machine-Darwin-x86_64"
-curl -fsSL -o $APP_CONTENTS/boot2docker.iso "https://github.com/boot2docker/boot2docker/releases/download/v$BOOT2DOCKER_ISO_VERSION/boot2docker.iso"
-chmod +x $APP_BIN/docker-compose
-chmod +x $APP_BIN/docker-machine
-
-# Get Virtualbox
-curl -fsSL -o vbox.dmg "http://download.virtualbox.org/virtualbox/$VBOX_VERSION/VirtualBox-$VBOX_VERSION-$VBOX_REVISION-OSX.dmg" && \
-  mkdir -p /tmp/kalabox/vb && \
-  hdiutil attach -mountpoint /tmp/kalabox/vb vbox.dmg && \
-  cp -rf /tmp/kalabox/vb/VirtualBox.pkg /tmp/VirtualBox.pkg && \
-  xar -xf /tmp/VirtualBox.pkg && \
-  hdiutil detach -force /tmp/kalabox/vb && \
-  rm -f vbox.dmg && \
-  rm -rf Resources && \
-  mv *.pkg mpkg/
 
 # kbox.pkg
 cd mpkg/kbox.pkg && \

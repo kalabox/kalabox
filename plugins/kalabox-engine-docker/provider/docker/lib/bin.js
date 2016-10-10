@@ -23,7 +23,13 @@ module.exports = function(kbox) {
 
     // Get sysconf
     var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;
-    return path.join(sysConfRoot, 'bin');
+
+    // Return exec based on path
+    switch (process.platform) {
+      case 'win32': return path.join(sysConfRoot, 'bin');
+      case 'darwin': return '/' + path.join('usr', 'local', 'bin');
+      case 'linux': return path.join(sysConfRoot, 'bin');
+    }
 
   };
 

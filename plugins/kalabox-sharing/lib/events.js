@@ -46,7 +46,8 @@ module.exports = function(kbox) {
     var getUnisonOptions = function() {
 
       // Start with our basic options
-      var opts = ['-repeat', '1', '-retry', '5'];
+      //var opts = ['-retry', '5'];
+      var opts = ['-watch'];
 
       // Add in platform specific (FUCKING WINDOWS) options
       if (process.platform === 'win32') {

@@ -5,85 +5,26 @@ APPLICATION="/Applications/Kalabox.app/Contents/MacOS"
 CONSOLE_USER=$(stat -f '%Su' /dev/console)
 CONSOLE_USER_HOME=$(su $CONSOLE_USER -c 'echo $HOME')
 
-DOCKER_MACHINE="$APPLICATION/bin/docker-machine"
-DOCKER_COMPOSE="$APPLICATION/bin/docker-compose"
-VBOXMANAGE=/Applications/VirtualBox.app/Contents/MacOS/VBoxManage
-VM=Kalabox2
+DOCKER_COMPOSE="/usr/local/bin/docker-compose"
+DOCKER_ENGINE_IP="127.0.0.1"
+
 PATH=$PATH:/usr/local/bin
 TERM=xterm
+
+KALABOX_DOMAIN="kbox"
 
 unset DYLD_LIBRARY_PATH
 unset LD_LIBRARY_PATH
 
-# Verify we have what we need
-if [ ! -f "${VBOXMANAGE}" ]; then
-  echo "VirtualBox is not installed. Please re-run the Kalabox Installer and try again."
-  exit 1
-fi
-if [ ! -f "${DOCKER_COMPOSE}" ]; then
-  echo "Docker Compose is not installed. Please re-run the Kalabox Installer and try again."
-  exit 1
-fi
-if [ ! -f "${DOCKER_MACHINE}" ]; then
-  echo "Docker Machine is not installed. Please re-run the Kalabox Installer and try again."
-  exit 1
-fi
-
-# Place boot2docker ISO in cache & upgrade the boot2docker VM
-mkdir -p $CONSOLE_USER_HOME/.docker/machine/cache
-cp $APPLICATION/boot2docker.iso $CONSOLE_USER_HOME/.docker/machine/cache/boot2docker.iso
-if [ -d "$CONSOLE_USER_HOME/.docker/machine/machines/$VM" ] && [ -f "$DOCKER_MACHINE" ]; then
-  sudo -i -u "$CONSOLE_USER" "$DOCKER_MACHINE" stop "$VM" || true
-  cp /usr/local/share/boot2docker/boot2docker.iso "$CONSOLE_USER_HOME/.docker/machine/machines/$VM/boot2docker.iso"
-fi
-
-# Make sure we set the correct permissions on our stuff
-chown -R $CONSOLE_USER:staff $CONSOLE_USER_HOME/.docker
 chmod -R 755 /Applications/Kalabox.app/
 
-# Set up the Kalabox engine if needed
-sudo -u "${CONSOLE_USER}" "${VBOXMANAGE}" list vms | grep \""${VM}"\" &> /dev/null
-VM_EXISTS_CODE=$?
-
-if [ $VM_EXISTS_CODE -eq 1 ]; then
-
-  # Do a basic check to make sure we clear out the filth
-  "${DOCKER_MACHINE}" rm -f "${VM}" &> /dev/null || :
-  rm -rf "${CONSOLE_USER_HOME}/.docker/machine/machines/${VM}"
-
-  # Get our free disk space, we will use MIN(freedisk, 150GB)
-  # @todo: add a KALABOX_DISK_SPACE env for customization?
-  FREE_DISK_SPACE=$(df -m / | awk '{if ($1 != "Filesystem") print $4}')
-
-  # @todo: this is probably not the best way to do this
-  sudo -u "${CONSOLE_USER}" "${DOCKER_MACHINE}" create -d virtualbox \
-    --virtualbox-memory 2048 \
-    --virtualbox-disk-size $(($FREE_DISK_SPACE<150000?$FREE_DISK_SPACE:150000)) \
-    --virtualbox-hostonly-cidr 10.13.37.1/24 \
-    "${VM}"
-fi
-
-# Start and refresh certs if needed
-VM_STATUS="$(sudo -u "${CONSOLE_USER}" ${DOCKER_MACHINE} status ${VM} 2>&1)"
-if [ "${VM_STATUS}" != "Running" ]; then
-  sudo -u "${CONSOLE_USER}" "${DOCKER_MACHINE}" start "${VM}"
-  sudo -u "${CONSOLE_USER}" yes | "${DOCKER_MACHINE}" regenerate-certs "${VM}"
-fi
-
-# Docker compose up all the services files
-KALABOX_IP=$(sudo -u "${CONSOLE_USER}" "${DOCKER_MACHINE}" ip "$VM")
-
-#todo: this is probably not the best way to do this
+# -f "$APPLICATION/services/services.yml" \
 sudo -u "${CONSOLE_USER}" \
-  DOCKER_TLS_VERIFY="1" \
-  DOCKER_HOST="tcp://${KALABOX_IP}:2376" \
-  DOCKER_CERT_PATH="${CONSOLE_USER_HOME}/.docker/machine/machines/${VM}" \
-  DOCKER_MACHINE_NAME="${VM}" \
-  KALABOX_DOMAIN=kbox \
-  KALABOX_ENGINE_IP="${KALABOX_IP}" \
+  KALABOX_DOMAIN="${KALABOX_DOMAIN}" \
+  KALABOX_ENGINE_IP="${DOCKER_ENGINE_IP}" \
   "${DOCKER_COMPOSE}" \
   -p kalabox \
-  -f "$APPLICATION/services/services.yml" \
+  -f "/Users/pirog/Desktop/work/kalabox/plugins/kalabox-services-kalabox/kalabox-compose.yml" \
   up \
   -d \
   --force-recreate
@@ -97,7 +38,7 @@ fi
 
 # Setup DNS
 mkdir -p /etc/resolver
-echo "nameserver ${KALABOX_IP}" > /etc/resolver/kbox
+echo "nameserver ${DOCKER_ENGINE_IP}" > "/etc/resolver/${KALABOX_DOMAIN}"
 
 # Symlink the KBOX binary
 mkdir -p /usr/local/bin
