@@ -1,3 +1,8 @@
+v2.0.2
+======
+
+* Added `confirmbigdel=false` to `unison` file sharing. This allows the user to remove their entire shared folder without issue.
+
 v2.0.1
 ======
 
