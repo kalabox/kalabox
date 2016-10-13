@@ -1,47 +1,17 @@
 #!/bin/bash
 
-APPLICATION="/Applications/Kalabox.app/Contents/MacOS"
+# Declare
+declare -r kalabox_bundle_dir=/Applications/Kalabox.app/Contents/MacOS
 
-CONSOLE_USER=$(stat -f '%Su' /dev/console)
-CONSOLE_USER_HOME=$(su $CONSOLE_USER -c 'echo $HOME')
-
-DOCKER_COMPOSE="/usr/local/bin/docker-compose"
-DOCKER_ENGINE_IP="127.0.0.1"
-
-PATH=$PATH:/usr/local/bin
-TERM=xterm
-
-KALABOX_DOMAIN="kbox"
-
+# Unset some possibly bad things
 unset DYLD_LIBRARY_PATH
 unset LD_LIBRARY_PATH
 
+# Ensure app perms
 chmod -R 755 /Applications/Kalabox.app/
-
-# -f "$APPLICATION/services/services.yml" \
-sudo -u "${CONSOLE_USER}" \
-  KALABOX_DOMAIN="${KALABOX_DOMAIN}" \
-  KALABOX_ENGINE_IP="${DOCKER_ENGINE_IP}" \
-  "${DOCKER_COMPOSE}" \
-  -p kalabox \
-  -f "/Users/pirog/Desktop/work/kalabox/plugins/kalabox-services-kalabox/kalabox-compose.yml" \
-  up \
-  -d \
-  --force-recreate
-
-# Throw error if above fails
-COMPOSE_FAIL_CODE=$?
-if [ ! $COMPOSE_FAIL_CODE -eq 0 ]; then
-  echo "Something went wrong installing core Docker images"
-  exit 666
-fi
-
-# Setup DNS
-mkdir -p /etc/resolver
-echo "nameserver ${DOCKER_ENGINE_IP}" > "/etc/resolver/${KALABOX_DOMAIN}"
 
 # Symlink the KBOX binary
 mkdir -p /usr/local/bin
-ln -sF "$APPLICATION/bin/kbox" /usr/local/bin/kbox
+ln -sF ${kalabox_bundle_dir}/bin/kbox /usr/local/bin/kbox
 
 # Fin

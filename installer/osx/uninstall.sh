@@ -11,18 +11,14 @@ while getopts 'f' flag; do
   esac
 done
 
-# Set some helpers
-APPLICATION="/Applications/Kalabox.app/Contents/MacOS"
-DOCKER_MACHINE="$APPLICATION/bin/docker-machine"
-
 #
 # Uninstall function
 #
 uninstall() {
 
-  echo "Removing Kalabox VM..."
-  "${DOCKER_MACHINE}" rm -f Kalabox2
-  rm -f "${HOME}/.docker/machine/machines/Kalabox2"
+  echo "Removing Docker..."
+  sudo /Applications/Docker.app/Contents/MacOS/Docker --uninstall
+  sudo rm -rf /Applications/Docker.app
 
   echo "Removing Application..."
   sudo rm -rf /Applications/Kalabox.app

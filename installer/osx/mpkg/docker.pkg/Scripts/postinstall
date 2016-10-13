@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Unset some things that could S the P
+unset DYLD_LIBRARY_PATH
+unset LD_LIBRARY_PATH
+unset ${!DOCKER_*}
+
+# Define some config
+PATH=$PATH:/usr/local/bin
+TERM=xterm
+
+# Get the originale user
+declare -r console_user=$(stat -f '%Su' /dev/console)
+
+# Set some docker things
+# @todo: get IP to be 10.13.37.100 at some point
+declare -r docker_engine_ip="127.0.0.1"
+declare -r docker_bundle_dir=/Applications/Docker.app/Contents
+declare -r docker_compose=${docker_bundle_dir}/Resources/bin/docker-compose
+declare -r docker=${docker_bundle_dir}/Resources/bin/docker
+
+# Set some kalabox things
+declare -r kalabox_bundle_dir=/Applications/Kalabox.app/Contents/MacOS
+declare -r kalabox_domain="kbox"
+
+# Make sure some core directories exist
+sudo mkdir -p /Library/PrivilegedHelperTools
+
+# Symlink all the docker tools
+for tool in com.docker.frontend docker docker-compose docker-diagnose docker-machine notary; do
+  sudo ln -sf ${docker_bundle_dir}/Resources/${tool} /usr/local/bin
+done
+
+# Set up our VMNET things
+sudo install -m 0544 -o root -g wheel ${docker_bundle_dir}/Library/LaunchServices/com.docker.vmnetd /Library/PrivilegedHelperTools
+sudo install -m 0644 -o root -g wheel ${docker_bundle_dir}/Resources/com.docker.vmnetd.plist /Library/LaunchDaemons
+sudo launchctl load /Library/LaunchDaemons/com.docker.vmnetd.plist
+
+# Launch docker
+sudo -u ${console_user} launchctl start com.docker.helper
+
+# Wait for docker to be ready
+NEXT_WAIT_TIME=0
+until ${docker} info >/dev/null || [ $NEXT_WAIT_TIME -eq 10 ]; do
+  sleep $(( NEXT_WAIT_TIME++ ))
+done
+
+# Launch core kalabox services
+sudo -u ${console_user} \
+  KALABOX_DOMAIN=${kalabox_domain} \
+  KALABOX_ENGINE_IP=${docker_engine_ip} \
+  ${docker_compose} \
+  -p kalabox \
+  -f ${kalabox_bundle_dir}/services/services.yml \
+  up \
+  -d \
+  --force-recreate
+
+# Throw error if above fails
+COMPOSE_FAIL_CODE=$?
+if [ ! $COMPOSE_FAIL_CODE -eq 0 ]; then
+  echo "Something went wrong installing core Docker images"
+  exit 666
+fi
+
+# Setup DNS
+mkdir -p /etc/resolver
+echo "nameserver ${docker_engine_ip}" > "/etc/resolver/${kalabox_domain}"
+
+# Fin

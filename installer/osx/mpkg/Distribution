@@ -3,14 +3,25 @@
     <title>kalabox_title</title>
     <options customize="allow" allow-external-scripts="yes" rootVolumeOnly="true" hostArchitectures="x86_64"/>
     <welcome file="welcome.rtfd" mime-type="text/rtfd"/>
+
     <choices-outline>
+        <line choice="choiceDocker"/>
         <line choice="choiceKalabox"/>
     </choices-outline>
+
     <choice id="choiceKalabox" title="choiceKalabox_title" description="choiceKalabox_msg" start_selected="true" start_enabled="true" start_visible="true">
         <pkg-ref id="io.kalabox.pkg.kalabox"/>
     </choice>
     <pkg-ref id="io.kalabox.pkg.kalabox" auth="Root" version="%KBOX_VERSION%" installKBytes="%KBOX_INSTALL_KBYTES%">#kbox.pkg</pkg-ref>
     <pkg-ref id="io.kalabox.pkg.kalabox">
+        <bundle-version/>
+    </pkg-ref>
+
+    <choice id="choiceDocker" title="choiceDocker_title" description="choiceDocker_msg" start_selected="true" start_enabled="true" start_visible="true">
+        <pkg-ref id="io.kalabox.pkg.docker"/>
+    </choice>
+    <pkg-ref id="io.kalabox.pkg.docker" auth="Root" version="%DOCKER_VERSION%" installKBytes="%DOCKER_INSTALL_KBYTES%">#docker.pkg</pkg-ref>
+    <pkg-ref id="io.kalabox.pkg.docker">
         <bundle-version/>
     </pkg-ref>
 
