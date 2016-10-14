@@ -58,7 +58,14 @@ module.exports = function(kbox) {
       kbox.core.env.setEnv('DOCKER_CERT_PATH', engineConfig.certDir);
     }
 
-    // @todo: verify all DOCKER_ vars are stripped on darwin
+    // Verify all DOCKER_* vars are stripped on darwin
+    if (process.platform === 'darwin') {
+      _.each(process.env, function(value, key) {
+        if (_.includes(key, 'DOCKER_')) {
+          delete process.env[key];
+        }
+      });
+    }
 
     // Run a provider command in a shell.
     log.info(format('Running: %j', cmd));

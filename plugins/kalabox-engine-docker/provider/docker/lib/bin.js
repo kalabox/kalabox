@@ -21,13 +21,14 @@ module.exports = function(kbox) {
    */
   var getBinPath = function() {
 
-    // Get sysconf
+    // Basepaths
     var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;
+    var dockerApp = '/Applications/Docker.app/Contents/Resources';
 
     // Return exec based on path
     switch (process.platform) {
       case 'win32': return path.join(sysConfRoot, 'bin');
-      case 'darwin': return '/' + path.join('usr', 'local', 'bin');
+      case 'darwin': return path.join(dockerApp, 'bin');
       case 'linux': return path.join(sysConfRoot, 'bin');
     }
 

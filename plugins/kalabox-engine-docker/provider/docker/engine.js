@@ -32,14 +32,22 @@ module.exports = function(kbox) {
    */
   var getEngineUpFiles = function() {
 
-    // Get sysconfroot
+    // Get relevant paths
     var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;
+    var dockerData = path.join(
+      kbox.core.deps.get('config').home,
+      'Library',
+      'Containers',
+      'com.docker.docker',
+      'Data',
+      'com.docker.driver.amd64-linux'
+    );
 
-    // Retrun files we need to check for
-    return [
-      path.join(sysConfRoot, 'docker.pid'),
-      path.join(sysConfRoot, 'docker.socket')
-    ];
+    // Retrun file(s) we need to check for
+    switch (process.platform) {
+      case 'darwin': return [path.join(dockerData, 'hypervisor.pid')];
+      case 'linux': return [path.join(sysConfRoot, 'docker.pid')];
+    }
 
   };
 
@@ -51,11 +59,15 @@ module.exports = function(kbox) {
     // Set the machine env
     env.setDockerEnv();
 
+    // Generate the command
+    var linuxRun = ['sudo', 'service', 'kalabox'].concat(cmd);
+    var darwinRun = ['launchctl', cmd, 'com.docker.helper'];
+    var run = (process.platform === 'linux' ? linuxRun : darwinRun);
+
     // Retry
     return Promise.retry(function() {
 
       // Build and log the command
-      var run = ['sudo', 'service', 'kalabox'].concat(cmd);
       log.info(format('Running %j', cmd));
 
       // Run the command
@@ -71,13 +83,13 @@ module.exports = function(kbox) {
   };
 
   /*
-   * Bring engine up. Only do this in the CLI we assume the engine is on
-   * on the GUI until we figure out how to deal with SUDO in GUI
+   * Bring engine up.
    */
   var up = function() {
 
-    // Automatically return true if we are in the GUI
-    if (mode === 'gui' || process.platform === 'darwin') {
+    // Automatically return true if we are in the GUI and on linux because
+    // this requires SUDO and because the daemon should always be running on nix
+    if (mode === 'gui' && process.platform === 'linux') {
       return Promise.resolve(true);
     }
 
@@ -89,6 +101,11 @@ module.exports = function(kbox) {
       if (isDown) {
         return serviceCmd(['start'], {mode: 'collect'});
       }
+    })
+
+    // Wait for the daemon to respond
+    .retry(function() {
+      return bin.sh([DOCKER_EXECUTABLE, 'info']);
     })
 
     // Wrap errors.
@@ -103,8 +120,9 @@ module.exports = function(kbox) {
    */
   var down = function() {
 
-    // Automatically return true if we are in the GUI
-    if (mode === 'gui' || process.platform === 'darwin') {
+    // Automatically return true if we are in the GUI and on linux because
+    // this requires SUDO and because the daemon should always be running on nix
+    if (mode === 'gui' && process.platform === 'linux') {
       return Promise.resolve(true);
     }
 
@@ -141,11 +159,6 @@ module.exports = function(kbox) {
    * Return true if engine is up.
    */
   var isUp = function() {
-
-    // Automatically return true if we are in the GUI
-    if (mode === 'gui' || process.platform === 'darwin') {
-      return Promise.resolve(true);
-    }
 
     // Reduce list of engine files to a boolean
     return Promise.reduce(getEngineUpFiles(), function(isUp, file) {
@@ -194,15 +207,19 @@ module.exports = function(kbox) {
    */
   var getEngineConfig = function() {
 
+    // Linux config
     var linuxConfig = {
       host: '10.13.37.100',
       port: '2375'
     };
+
+    // macOS config
     var darwinConfig = {
       host: '127.0.0.1',
       socketPath: '/var/run/docker.sock'
     };
 
+    // Return the correct config
     switch (process.platform) {
       case 'darwin': return Promise.resolve(darwinConfig);
       case 'linux': return Promise.resolve(linuxConfig);
@@ -211,7 +228,7 @@ module.exports = function(kbox) {
   };
 
   /*
-   * @todo: @pirog - I'm not touching this one! :)
+   * This should be the same on macOS and Linux
    */
   var path2Bind4U = function(path) {
     return path;
