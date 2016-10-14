@@ -3,14 +3,9 @@
 #define MyAppURL "https://kalabox.io"
 #define MyAppContact "https://kalabox.io"
 
-#define b2dIsoPath "boot2docker.iso"
 #define kalabox "bundle"
 #define kboxIco "kalabox.ico"
 #define git "Git.exe"
-#define virtualBoxCommon "common.cab"
-#define virtualBoxMsi "virtualbox.msi"
-#define engineSetup "engine.bat"
-#define servicesSetup "services.bat"
 #define dnsSetup "dns.bat"
 
 [Setup]
@@ -52,54 +47,25 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 [Tasks]
 Name: desktopicon; Description: "{cm:CreateDesktopIcon}"
 Name: modifypath; Description: "Add kbox binary to PATH"
-Name: upgradevm; Description: "Upgrade Boot2Docker VM"
 
 [Components]
-Name: "VirtualBox"; Description: "VirtualBox"; Types: full custom; Flags: disablenouninstallwarning fixed
 Name: "Git"; Description: "Git for Windows"; Types: full custom;
 Name: "Kalabox"; Description: "Kalabox" ; Types: full custom; Flags: disablenouninstallwarning fixed
 
 [Files]
-Source: "{#virtualBoxCommon}"; DestDir: "{app}\installers\virtualbox"; Components: "VirtualBox"
-Source: "{#virtualBoxMsi}"; DestDir: "{app}\installers\virtualbox"; DestName: "virtualbox.msi"; AfterInstall: RunInstallVirtualBox(); Components: "VirtualBox"
-Source: "{#b2dIsoPath}"; DestDir: "{app}"; Flags: ignoreversion; Components: "Kalabox"; AfterInstall: CopyBoot2DockerISO()
 Source: "{#kalabox}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: "Kalabox"
 Source: "{#kboxIco}"; DestDir: "{app}"; DestName: "kalabox.ico"; Components: "Kalabox"
-Source: "{#engineSetup}"; DestDir: "{app}"; Components: "Kalabox"; AfterInstall: RunEngineSetup();
-Source: "{#servicesSetup}"; DestDir: "{app}"; Components: "Kalabox"; AfterInstall: RunServicesSetup();
-Source: "{#dnsSetup}"; DestDir: "{app}"; Components: "Kalabox"; AfterInstall: RunServicesSetup();
+Source: "{#dnsSetup}"; DestDir: "{app}"; Components: "Kalabox"; AfterInstall: RunDNSSetup();
 Source: "{#git}"; DestDir: "{app}\installers\git"; DestName: "git.exe"; AfterInstall: RunInstallGit(); Components: "Git"
 
 [Icons]
 Name: "{userprograms}\Kalabox"; WorkingDir: "{app}\gui"; Filename: "{app}\gui\kalabox.exe"; Components: "Kalabox"; IconFilename: "{app}\kalabox.ico"
 Name: "{commondesktop}\Kalabox"; WorkingDir: "{app}\gui"; Filename: "{app}\gui\kalabox.exe"; Tasks: desktopicon; Components: "Kalabox"; IconFilename: "{app}\kalabox.ico"
 
-[UninstallRun]
-Filename: "{app}\bin\docker-machine.exe"; Parameters: "stop Kalabox2";
-Filename: "{app}\bin\docker-machine.exe"; Parameters: "rm -f Kalabox2";
-
 [Registry]
 Root: HKCU; Subkey: "Environment"; ValueType:string; ValueName:"KALABOX_INSTALL_PATH"; ValueData:"{app}" ; Flags: preservestringtype ;
 
 [Code]
-function NeedToInstallVirtualBox(): Boolean;
-begin
-  // TODO: Also compare versions
-  Result := (
-    (GetEnv('VBOX_INSTALL_PATH') = '')
-    and
-    (GetEnv('VBOX_MSI_INSTALL_PATH') = '')
-  );
-end;
-
-function VBoxPath(): String;
-begin
-  if GetEnv('VBOX_INSTALL_PATH') <> '' then
-    Result := GetEnv('VBOX_INSTALL_PATH')
-  else
-    Result := GetEnv('VBOX_MSI_INSTALL_PATH')
-end;
-
 function NeedToInstallGit(): Boolean;
 begin
   // TODO: Find a better way to see if Git is installed
@@ -115,20 +81,20 @@ begin
     MsgBox('VirtualBox install failure', mbInformation, MB_OK);
 end;
 
-procedure RunEngineSetup();
+procedure RunDNSSetup();
 var
   ResultCode: Integer;
 begin
-  WizardForm.FilenameLabel.Caption := 'Activating the engine...'
-  if ExecAsOriginalUser(ExpandConstant('{app}\engine.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  WizardForm.FilenameLabel.Caption := 'Activating the DNS...'
+  if ExecAsOriginalUser(ExpandConstant('{app}\dns.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
   begin
     if ( ResultCode = 0 ) then
     begin
-      Log('Engine activated with great success and result code ' + IntToStr(ResultCode));
+      Log('DNS activated with great success and result code ' + IntToStr(ResultCode));
     end
     else begin
-      Log('Engine activation failed with code ' + IntToStr(ResultCode));
-      MsgBox('Engine activation failed!', mbCriticalError, MB_OK);
+      Log('DNS activation failed with code ' + IntToStr(ResultCode));
+      MsgBox('DNS activation failed!', mbCriticalError, MB_OK);
       WizardForm.Close;
       exit;
     end;
@@ -137,35 +103,6 @@ begin
     Log('Something bad happened with code ' + IntToStr(ResultCode));
     MsgBox('Something bad happened. Install Fail.', mbCriticalError, MB_OK);
   end;
-end;
-
-procedure RunServicesSetup();
-var
-  ResultCode: Integer;
-begin
-  WizardForm.FilenameLabel.Caption := 'Starting the proxy and dns services...'
-  if ExecAsOriginalUser(ExpandConstant('{app}\services.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-  begin
-    if ( ResultCode = 0 ) then
-    begin
-      Log('Services activated with great success and result code ' + IntToStr(ResultCode));
-    end
-    else begin
-      Log('Service activation failed with code ' + IntToStr(ResultCode));
-      MsgBox('Service activation failed!', mbCriticalError, MB_OK);
-      WizardForm.Close;
-      exit;
-    end;
-  end
-  else begin
-    Log('Something bad happened with code ' + IntToStr(ResultCode));
-    MsgBox('Something bad happened. Install Fail.', mbCriticalError, MB_OK);
-  end;
-  WizardForm.FilenameLabel.Caption := 'Configuring DNS...'
-  if Exec(ExpandConstant('{app}\dns.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-  begin
-    Log('DNS script ran with result code ' + IntToStr(ResultCode));
-  end
 end;
 
 procedure RunInstallGit();
@@ -182,59 +119,6 @@ begin
     // handle failure if necessary; ResultCode contains the error code
     MsgBox('git install failure', mbCriticalError, MB_OK);
   end
-
-
-  end;
-
-procedure CopyBoot2DockerISO();
-begin
-  WizardForm.FilenameLabel.Caption := 'Copying boot2docker iso'
-  if not ForceDirectories(ExpandConstant('{localappdata}\..\..\.docker\machine\cache')) then
-      MsgBox('Failed to create docker machine cache dir', mbError, MB_OK);
-  if not FileCopy(ExpandConstant('{app}\boot2docker.iso'), ExpandConstant('{localappdata}\..\..\.docker\machine\cache\boot2docker.iso'), false) then
-      MsgBox('File moving failed!', mbError, MB_OK);
-end;
-
-function CanUpgradeVM(): Boolean;
-var
-  ResultCode: Integer;
-begin
-  if NeedToInstallVirtualBox() or not FileExists(ExpandConstant('{app}\docker-machine.exe')) then begin
-    Result := false
-    exit
-  end;
-
-  ExecAsOriginalUser(VBoxPath() + 'VBoxManage.exe', 'showvminfo Kalabox2', '', SW_HIDE, ewWaitUntilTerminated, ResultCode)
-  if ResultCode <> 0 then begin
-    Result := false
-    exit
-  end;
-
-  if not DirExists(ExpandConstant('{localappdata}\..\..\.docker\machine\machines\Kalabox2')) then begin
-    Result := false
-    exit
-  end;
-
-  Result := true
-end;
-
-function UpgradeVM() : Boolean;
-var
-  ResultCode: Integer;
-begin
-  WizardForm.StatusLabel.Caption := 'Upgrading Kalabox VM...'
-  ExecAsOriginalUser(ExpandConstant('{app}\docker-machine.exe'), 'stop Kalabox2', '', SW_HIDE, ewWaitUntilTerminated, ResultCode)
-  if (ResultCode = 0) or (ResultCode = 1) then
-  begin
-    FileCopy(ExpandConstant('{localappdata}\..\..\.docker\machine\cache\boot2docker.iso'), ExpandConstant('{localappdata}\..\..\.docker\machine\machines\Kalabox2\boot2docker.iso'), false)
-  end
-  else begin
-    MsgBox('VM Upgrade Failed because the VirtualBox VM could not be stopped.', mbCriticalError, MB_OK);
-    Result := false
-    WizardForm.Close;
-    exit;
-  end;
-  Result := true
 end;
 
 const
@@ -256,15 +140,8 @@ begin
   if CurStep = ssPostInstall then
   begin
     if IsTaskSelected(ModPathName) then
-      ModPath();
-    if not WizardSilent() then
     begin
-      if IsTaskSelected('upgradevm') then
-      begin
-        if CanUpgradeVM() then begin
-          Success := UpgradeVM();
-        end;
-      end;
+      ModPath();
     end;
   end;
 end;

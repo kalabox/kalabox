@@ -15,7 +15,6 @@ $bundle_dir = "$base_dir\bundle"
 $gui_dir = "$bundle_dir\gui"
 $docs_dir = "$bundle_dir\docs"
 $bin_dir = "$bundle_dir\bin"
-$services_dir = "$bundle_dir\services"
 $plugins_dir = "$bundle_dir\plugins"
 
 # Build dependencies
@@ -30,15 +29,6 @@ $kalabox_version = $kalabox_pkg.version
 # Kalabox plugins
 $plugin_pantheon_version = "2.0.1"
 $plugin_php_version = "2.0.1"
-
-# Docker version information
-$docker_machine_version = "0.8.1"
-$docker_compose_version = "1.8.0"
-$boot2docker_iso_version = "1.12.1"
-
-# Virtualbox version information
-$virtualbox_version = "5.1.6"
-$virtualbox_revision = "110634"
 
 # Git version information
 $git_version ="2.7.0"
@@ -84,35 +74,22 @@ If (!(Test-Path $inno_bin)) {
 }
 
 # Get the things we need
-New-Item -type directory -force -path $bundle_dir, $docs_dir, $bin_dir, $services_dir, $plugins_dir, $gui_dir
+New-Item -type directory -force -path $bundle_dir, $docs_dir, $bin_dir, $plugins_dir, $gui_dir
 Write-Output "Grabbing the files we need..."
 
 # Kalabox things
 Copy-Item "dist\gui\kalabox-ui\*" "$gui_dir" -force -recurse
 Copy-Item "dist\cli\kbox-win32-x64-v$kalabox_version.exe" "$bin_dir\kbox.exe" -force
-Copy-Item "plugins\kalabox-services-kalabox\kalabox-compose.yml" "$services_dir\services.yml" -force
 
 # App plugin things
 Download -Url "https://github.com/kalabox/kalabox-app-pantheon/releases/download/v$plugin_pantheon_version/kalabox-app-pantheon-v$plugin_pantheon_version.zip" -Destination "$temp_dir\kalabox-app-pantheon.zip"
 Download -Url "https://github.com/kalabox/kalabox-app-php/releases/download/v$plugin_php_version/kalabox-app-php-v$plugin_php_version.zip" -Destination "$temp_dir\kalabox-app-php.zip"
-
-# Docker things
-Download -Url "https://github.com/docker/machine/releases/download/v$docker_machine_version/docker-machine-Windows-x86_64.exe" -Destination "$bin_dir\docker-machine.exe"
-Download -Url "https://github.com/docker/compose/releases/download/$docker_compose_version/docker-compose-Windows-x86_64.exe" -Destination "$bin_dir\docker-compose.exe"
-Download -Url "https://github.com/boot2docker/boot2docker/releases/download/v$boot2docker_iso_version/boot2docker.iso" -Destination "$base_dir\boot2docker.iso"
-
-# Virtualbox
-Download -Url "http://download.virtualbox.org/virtualbox/$virtualbox_version/VirtualBox-$virtualbox_version-$virtualbox_revision-Win.exe" -Destination "$temp_dir\virtualbox.exe"
 
 # Git
 Download -Url "https://github.com/git-for-windows/git/releases/download/v$git_version.windows.1/Git-$git_version-64-bit.exe" -Destination "$base_dir\Git.exe"
 
 # Do some needed unpacking
 Write-Output "Unpacking..."
-Start-Process -Wait "$temp_dir\virtualbox.exe" -ArgumentList "-extract -silent -path $temp_dir"
-Copy-Item "$temp_dir\VirtualBox-$virtualbox_version-r$virtualbox_revision-MultiArch_amd64.msi" "$base_dir\virtualbox.msi" -force
-Copy-Item "$temp_dir\common.cab" "$base_dir\common.cab" -force
-
 New-Item -type directory -force -path $plugins_dir\kalabox-app-pantheon, $plugins_dir\kalabox-app-php
 Unzip -File "$temp_dir\kalabox-app-pantheon.zip" -Destination "$plugins_dir\kalabox-app-pantheon"
 Unzip -File "$temp_dir\kalabox-app-php.zip" -Destination "$plugins_dir\kalabox-app-php"
@@ -123,7 +100,6 @@ New-Item $docs_dir -type directory -force
 Copy-Item "$pwd\README.md" "$docs_dir\README.md" -force
 Copy-Item "$pwd\TERMS.md" "$docs_dir\TERMS.md" -force
 Copy-Item "$pwd\LICENSE.md" "$docs_dir\LICENSE.md" -force
-Copy-Item "$pwd\ORACLE_VIRTUALBOX_LICENSE" "$docs_dir\ORACLE_VIRTUALBOX_LICENSE" -force
 Copy-Item "$pwd\installer\kalabox.yml" "$bundle_dir\kalabox.yml" -force
 
 # Create our inno-installer

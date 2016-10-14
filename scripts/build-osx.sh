@@ -100,8 +100,7 @@ mkdir -p dmg && mkdir -p dist && cd mpkg && \
   mv -f kalabox.icns dmg/.VolumeIcon.icns && \
   cp -rf ../../README.md dmg/README.md && \
   cp -rf ../../TERMS.md dmg/TERMS.md && \
-  cp -rf ../../LICENSE.md dmg/LICENSE.md && \
-  cp -rf ../../ORACLE_VIRTUALBOX_LICENSE dmg/ORACLE_VIRTUALBOX_LICENSE
+  cp -rf ../../LICENSE.md dmg/LICENSE.md
 
 # This seems to fail on travis periodically so lets add a retry to it
 NEXT_WAIT_TIME=0
