@@ -16,7 +16,6 @@ PLUGIN_PHP_VERSION="2.0.1"
 # Define some app bundle locations
 APP_CONTENTS="Kalabox.app/Contents/MacOS"
 APP_BIN="$APP_CONTENTS/bin"
-APP_SERVICES="$APP_CONTENTS/services"
 APP_PLUGINS="$APP_CONTENTS/plugins"
 
 # Start up our build directory and go into it
@@ -25,9 +24,8 @@ cd build/installer
 
 # Get our Kalabox dependencies
 cp -rf "../../dist/gui/kalabox-ui/Kalabox.app" Kalabox.app
-mkdir -p $APP_BIN $APP_SERVICES
+mkdir -p $APP_BIN
 cp -rf "../../dist/cli/kbox-osx-x64-v${KALABOX_VERSION}" $APP_BIN/kbox
-cp -rf "../../plugins/kalabox-services-kalabox/kalabox-compose.yml" $APP_SERVICES/services.yml
 chmod +x $APP_BIN/kbox
 
 # Get our Apps

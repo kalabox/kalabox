@@ -27,14 +27,12 @@ DOCKER_COMPOSE_VERSION="1.6.2"
 mkdir -p build/installer
 mkdir -p build/installer/kalabox
 mkdir -p build/installer/kalabox/bin
-mkdir -p build/installer/kalabox/services
 mkdir -p build/installer/kalabox/docs
 cd build/installer/kalabox
 
 # Get our Kalabox dependencies
 cp -rf ../../../dist/gui/kalabox-ui/* ./
 cp -rf ../../../dist/cli/kbox-linux-x64-v${KALABOX_VERSION} bin/kbox
-cp -rf ../../../plugins/kalabox-services-kalabox/kalabox-compose.yml services/services.yml
 chmod +x bin/kbox
 
 # Get our app dependencies
