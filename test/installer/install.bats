@@ -114,8 +114,8 @@ setup() {
 }
 
 # Check that our unison image version is the stable tag
-@test "Check that our unison image version is the stable tag." {
-  cat ${TRAVIS_BUILD_DIR}/plugins/kalabox-sharing/lib/events.js | grep "image: 'kalabox/unison:stable'" | grep "stable"
+@test "Check that our unison image version is the 2.49 tag." {
+  cat ${TRAVIS_BUILD_DIR}/plugins/kalabox-sharing/lib/events.js | grep "image: 'kalabox/unison:2.49'" | grep "2.49"
 }
 
 # Check that we can compile native stuff with node-gyp.
