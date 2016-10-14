@@ -46,7 +46,7 @@ module.exports = function(kbox) {
     var getUnisonOptions = function() {
 
       // Start with our basic options
-      var opts = ['-repeat', '1', '-retry', '5', '-confirmbigdel=false'];
+      var opts = ['-repeat', 'watch', '-retry', '5'];
 
       // Add in platform specific (FUCKING WINDOWS) options
       if (process.platform === 'win32') {
@@ -71,7 +71,7 @@ module.exports = function(kbox) {
 
     // Build the unison part
     services.unison = {
-      image: 'kalabox/unison:stable',
+      image: 'kalabox/unison:2.49',
       restart: 'always',
       environment: {
         'UNISON_WEBROOT': webRoot,

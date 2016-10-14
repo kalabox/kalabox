@@ -33,7 +33,7 @@ batch=true
 #          preference is used, the same confirmation will be requested for
 #          top-level paths. (At the moment, this flag only affects the
 #          text user interface.) See also the mountpoint preference.
-confirmbigdel=true
+confirmbigdel=false
 
 #          When this preference is set to true, Unison will use the
 #          modification time and length of a file as a `pseudo inode
@@ -70,4 +70,4 @@ times=true
 
 #
 #
-watch=false
+watch=true
