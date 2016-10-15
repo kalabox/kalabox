@@ -14,9 +14,9 @@ module.exports = function(kbox) {
 
   /*
    * Helper function to generate the appropriate sharing compose file on
-   * WIN/OSX
+   * macOS
    */
-  var getSharingComposeNotLinux = function(app) {
+  var getSharingComposeDarwin = function(app) {
 
     /*
      * Transform an  array of values into a common deliminated
@@ -47,14 +47,6 @@ module.exports = function(kbox) {
 
       // Start with our basic options
       var opts = ['-repeat', 'watch', '-retry', '5'];
-
-      // Add in platform specific (FUCKING WINDOWS) options
-      if (process.platform === 'win32') {
-        opts.push('-fat');
-        opts.push('-owner');
-        opts.push('-group');
-        opts.push('-numericids');
-      }
 
       // Return our list
       return opts.join(' ');
@@ -98,9 +90,9 @@ module.exports = function(kbox) {
 
   /*
    * Helper function to generate the appropriate sharing compose file on
-   * Linux
+   * Linux/Windows
    */
-  var getSharingComposeLinux = function(app) {
+  var getSharingCompose = function(app) {
 
     // Start them up
     var currentCompose = {};
@@ -142,9 +134,9 @@ module.exports = function(kbox) {
    */
   var getSharingCompose = function(app) {
     switch (process.platform) {
-      case 'win32': return getSharingComposeNotLinux(app);
-      case 'darwin': return getSharingComposeNotLinux(app);
-      case 'linux': return getSharingComposeLinux(app);
+      case 'win32': return getSharingCompose(app);
+      case 'darwin': return getSharingComposeDarwin(app);
+      case 'linux': return getSharingCompose(app);
     }
   };
 
