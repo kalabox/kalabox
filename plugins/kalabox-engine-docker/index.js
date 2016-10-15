@@ -26,25 +26,7 @@ module.exports = function(kbox) {
   /*
    * Load our engine things
    */
-  var init = _.once(function() {
-
-    var VError = require('verror');
-
-    /*
-     * Helper function to load our engine things
-     */
-    var load = function(s) {
-      try {
-        return require(s)(kbox);
-      } catch (err) {
-        throw new VError(err, 'Error loading module "%s".', s);
-      }
-    };
-
-    // Load our tasks
-    load('./lib/tasks.js');
-
-  });
+  var init = _.once(function() {});
 
   /*
    * We might have datum but we need to wrap in array so Promise.each knows
