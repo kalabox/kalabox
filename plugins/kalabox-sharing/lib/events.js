@@ -92,7 +92,7 @@ module.exports = function(kbox) {
    * Helper function to generate the appropriate sharing compose file on
    * Linux/Windows
    */
-  var getSharingCompose = function(app) {
+  var getSharingComposeGeneric = function(app) {
 
     // Start them up
     var currentCompose = {};
@@ -134,9 +134,9 @@ module.exports = function(kbox) {
    */
   var getSharingCompose = function(app) {
     switch (process.platform) {
-      case 'win32': return getSharingCompose(app);
+      case 'win32': return getSharingComposeGeneric(app);
       case 'darwin': return getSharingComposeDarwin(app);
-      case 'linux': return getSharingCompose(app);
+      case 'linux': return getSharingComposeGeneric(app);
     }
   };
 

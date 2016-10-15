@@ -32,21 +32,37 @@ module.exports = function(kbox) {
    */
   var getEngineUpFiles = function() {
 
-    // Get relevant paths
-    var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;
-    var dockerData = path.join(
-      kbox.core.deps.get('config').home,
-      'Library',
-      'Containers',
-      'com.docker.docker',
-      'Data',
-      'com.docker.driver.amd64-linux'
-    );
-
-    // Retrun file(s) we need to check for
+    // Return file(s) we need to check for
     switch (process.platform) {
-      case 'darwin': return [path.join(dockerData, 'hypervisor.pid')];
-      case 'linux': return [path.join(sysConfRoot, 'docker.pid')];
+      case 'darwin':
+        var dockerData = path.join(
+          kbox.core.deps.get('config').home,
+          'Library',
+          'Containers',
+          'com.docker.docker',
+          'Data',
+          'com.docker.driver.amd64-linux'
+        );
+        return [path.join(dockerData, 'hypervisor.pid')];
+      case 'linux':
+        var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;
+        return [path.join(sysConfRoot, 'docker.pid')];
+      case 'win32':
+        return [];
+    }
+
+  };
+
+  /*
+   * Get services wrapper
+   */
+  var getServicesWrapper = function(cmd) {
+
+    // Return file(s) we need to check for
+    switch (process.platform) {
+      case 'darwin': return ['launchctl', cmd, 'com.docker.helper'];
+      case 'linux': return ['sudo', 'service', 'kalabox'].concat(cmd);
+      case 'win32': return [];
     }
 
   };
@@ -59,11 +75,6 @@ module.exports = function(kbox) {
     // Set the machine env
     env.setDockerEnv();
 
-    // Generate the command
-    var linuxRun = ['sudo', 'service', 'kalabox'].concat(cmd);
-    var darwinRun = ['launchctl', cmd, 'com.docker.helper'];
-    var run = (process.platform === 'linux' ? linuxRun : darwinRun);
-
     // Retry
     return Promise.retry(function() {
 
@@ -71,7 +82,7 @@ module.exports = function(kbox) {
       log.info(format('Running %j', cmd));
 
       // Run the command
-      return bin.sh(run, opts)
+      return bin.sh(getServicesWrapper(cmd), opts)
 
       // Throw an error
       .catch(function(err) {
@@ -106,7 +117,7 @@ module.exports = function(kbox) {
     // Wait for the daemon to respond
     .retry(function() {
       return bin.sh([DOCKER_EXECUTABLE, 'info']);
-    })
+    }, {max: 10, backoff: 1000})
 
     // Wrap errors.
     .catch(function(err) {
@@ -142,17 +153,6 @@ module.exports = function(kbox) {
       throw new VError(err, 'Error while shutting down.');
     });
 
-  };
-
-  /*
-   * Return engine's IP address.
-   */
-  var getIp = function() {
-    // Return exec based on path
-    switch (process.platform) {
-      case 'darwin': return Promise.resolve('127.0.0.1');
-      case 'linux': return Promise.resolve('10.13.37.100');
-    }
   };
 
   /*
@@ -217,42 +217,42 @@ module.exports = function(kbox) {
    */
   var getEngineConfig = function() {
 
-    // Linux config
-    var linuxConfig = {
-      host: '10.13.37.100',
-      port: '2375'
-    };
-
-    // macOS config
-    var darwinConfig = {
-      host: '127.0.0.1',
-      socketPath: '/var/run/docker.sock'
-    };
-
-    // Windows config
-    var winConfig = {
-      host: '127.0.0.1',
-      port: '2375'
-    };
-
     // Return the correct config
     switch (process.platform) {
-      case 'darwin': return Promise.resolve(darwinConfig);
-      case 'linux': return Promise.resolve(linuxConfig);
-      case 'win32': return Promise.resolve(winConfig);
+      case 'darwin':
+        return Promise.resolve({
+          host: '127.0.0.1',
+          socketPath: '/var/run/docker.sock'
+        });
+      case 'linux':
+        return Promise.resolve({
+          host: '10.13.37.100',
+          port: '2375'
+        });
+      case 'win32':
+        return Promise.resolve({
+          host: '127.0.0.1',
+          port: '2375'
+        });
     }
 
   };
 
   /*
-   * This should be the same on macOS and Linux
+   * Return engine's IP address.
+   */
+  var getIp = function() {
+    return getEngineConfig().host;
+  };
+
+  /*
+   * This should be the same on macOS and Linux, win needs a little extra
+   * magic
    */
   var path2Bind4U = function(path) {
     var bind = path;
     if (process.platform === 'win32') {
-      bind = path
-        .replace(/\\/g, '/')
-        .replace('C:/', 'c:/');
+      bind = path.replace(/\\/g, '/').replace('C:/', 'c:/');
     }
     return bind;
   };

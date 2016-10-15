@@ -17,23 +17,18 @@ module.exports = function(kbox) {
   var shell = kbox.util.shell;
 
   /*
-   * Get directory for docker executables.
+   * Get directory for docker bin base.
    */
   var getBinPath = function() {
-
-    // Basepaths
-    var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;
-    var dockerDarwin = '/Applications/Docker.app/Contents/Resources';
-    var programFiles = process.env.ProgramW6432;
-    var dockerWin = path.join(programFiles, 'Docker', 'Docker', 'resources');
-
-    // Return exec based on path
     switch (process.platform) {
-      case 'win32': return path.join(dockerWin, 'bin');
-      case 'darwin': return path.join(dockerDarwin, 'bin');
-      case 'linux': return path.join(sysConfRoot, 'bin');
+      case 'darwin':
+        return path.join('/Applications/Docker.app/Contents/Resources', 'bin');
+      case 'linux':
+        return path.join(kbox.core.deps.get('config').sysConfRoot, 'bin');
+      case 'win32':
+        var programFiles = process.env.ProgramW6432;
+        return path.join(programFiles + '\\Docker\\Docker\\resources\\bin');
     }
-
   };
 
   /*
@@ -47,9 +42,9 @@ module.exports = function(kbox) {
 
     // Return exec based on path
     switch (process.platform) {
-      case 'win32': return composeBin + '.exe';
       case 'darwin': return composeBin;
       case 'linux': return composeBin;
+      case 'win32': return composeBin + '.exe';
     }
 
   };
@@ -61,7 +56,14 @@ module.exports = function(kbox) {
 
     // Get docker bin path
     var dockerPath = getBinPath();
-    return path.join(dockerPath, 'docker');
+    var dockerBin = path.join(dockerPath, 'docker');
+
+    // Return exec based on path
+    switch (process.platform) {
+      case 'darwin': return dockerBin;
+      case 'linux': return dockerBin;
+      case 'win32': return dockerBin + '.exe';
+    }
 
   };
 
