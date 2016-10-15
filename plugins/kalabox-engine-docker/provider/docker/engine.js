@@ -160,6 +160,11 @@ module.exports = function(kbox) {
    */
   var isUp = function() {
 
+    // Whitelist this in windows for now
+    if (process.platform === 'win32') {
+      return Promise.resolve(true);
+    }
+
     // Reduce list of engine files to a boolean
     return Promise.reduce(getEngineUpFiles(), function(isUp, file) {
       var fileExists = fs.existsSync(file);
@@ -187,6 +192,11 @@ module.exports = function(kbox) {
    * Return true if engine is installed.
    */
   var isInstalled = function() {
+
+    // Whitelist this in windows for now
+    if (process.platform === 'win32') {
+      return Promise.resolve(true);
+    }
 
     // set the docker env
     env.setDockerEnv();
@@ -219,10 +229,17 @@ module.exports = function(kbox) {
       socketPath: '/var/run/docker.sock'
     };
 
+    // Windows config
+    var winConfig = {
+      host: '127.0.0.1',
+      port: '2375'
+    };
+
     // Return the correct config
     switch (process.platform) {
       case 'darwin': return Promise.resolve(darwinConfig);
       case 'linux': return Promise.resolve(linuxConfig);
+      case 'win32': return Promise.resolve(winConfig);
     }
 
   };
@@ -231,7 +248,13 @@ module.exports = function(kbox) {
    * This should be the same on macOS and Linux
    */
   var path2Bind4U = function(path) {
-    return path;
+    var bind = path;
+    if (process.platform === 'win32') {
+      bind = path
+        .replace(/\\/g, '/')
+        .replace('C:/', 'c:/');
+    }
+    return bind;
   };
 
   // Build module function.

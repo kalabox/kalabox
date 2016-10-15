@@ -163,11 +163,9 @@ module.exports = function(kbox) {
    */
   var getProvider = _.once(function() {
 
+    // Get the provider we need and then load its install routinezzz
     return Promise.try(function() {
-      // Get the provider we need and then load its install routinezzz
-      var provider = (process.platform !== 'win32') ? 'engine' : 'machine';
-      var providerFile = path.join(PROVIDER_PATH, provider + '.js');
-      return require(providerFile)(kbox);
+      return require(path.join(PROVIDER_PATH, 'engine.js'))(kbox);
     })
 
     // Wrap errors.

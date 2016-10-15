@@ -23,31 +23,15 @@ module.exports = function(kbox) {
 
     // Basepaths
     var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;
-    var dockerApp = '/Applications/Docker.app/Contents/Resources';
+    var dockerDarwin = '/Applications/Docker.app/Contents/Resources';
+    var programFiles = process.env.ProgramW6432;
+    var dockerWin = path.join(programFiles, 'Docker', 'Docker', 'resources');
 
     // Return exec based on path
     switch (process.platform) {
-      case 'win32': return path.join(sysConfRoot, 'bin');
-      case 'darwin': return path.join(dockerApp, 'bin');
+      case 'win32': return path.join(dockerWin, 'bin');
+      case 'darwin': return path.join(dockerDarwin, 'bin');
       case 'linux': return path.join(sysConfRoot, 'bin');
-    }
-
-  };
-
-  /*
-   * Return the machine executable location
-   */
-  var getMachineExecutable = function() {
-
-    // Get machine bin path
-    var machinePath = getBinPath();
-    var machineBin = path.join(machinePath, 'docker-machine');
-
-    // Return exec based on path
-    switch (process.platform) {
-      case 'win32': return machineBin + '.exe';
-      case 'darwin': return machineBin;
-      case 'linux': return machineBin;
     }
 
   };
@@ -122,7 +106,6 @@ module.exports = function(kbox) {
     sh: sh,
     getBinPath: getBinPath,
     getDockerExecutable: getDockerExecutable,
-    getMachineExecutable: getMachineExecutable,
     getComposeExecutable: getComposeExecutable
   };
 
