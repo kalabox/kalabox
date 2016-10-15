@@ -72,8 +72,8 @@ module.exports = function(kbox) {
    */
   var sh = function(cmd, opts) {
 
-    // If we have a mode then we need to spawn
-    if (opts && opts.mode) {
+    // If we have a mode or are detached then we need to spawn
+    if (opts && (opts.mode || opts.detached === true)) {
 
       /*
        * Compose run's require stdin to be a tty to get the correct output back

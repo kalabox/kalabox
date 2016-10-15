@@ -39,7 +39,7 @@ module.exports = function(kbox) {
       case 'win32':
         var base = process.env.ProgramW6432;
         var dockerBin = base + '\\Docker\\Docker\\Docker for Windows.exe';
-        return [cmd, '/B', '""', dockerBin];
+        return ['cmd', '/C', dockerBin];
     }
 
   };
@@ -87,7 +87,8 @@ module.exports = function(kbox) {
     // Only start if we aren't already
     .then(function(isDown) {
       if (isDown) {
-        return serviceCmd(['start']);
+        var opts = (process.platform === 'win32') ? {detached: true} : {};
+        return serviceCmd(['start'], opts);
       }
     })
 
