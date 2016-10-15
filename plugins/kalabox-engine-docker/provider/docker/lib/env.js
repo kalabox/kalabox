@@ -9,6 +9,7 @@ module.exports = function(kbox) {
 
   // Native
   var path = require('path');
+  var url = require('url');
 
   // NPM modules
   var _ = require('lodash');
@@ -54,15 +55,29 @@ module.exports = function(kbox) {
       kbox.core.env.setEnv(pathString, newPath);
     }
 
-    // NW does not inherit the users environment on POSIX (possibly on windows also)
-    // This means /usr/local/bin is not in the path by default. Docker-machine needs this
-    // because VBoxManage should be there. Let's add this in if its not there.
-    if (kbox.core.deps.get('mode') === 'gui' && process.platform !== 'win32') {
-      var ulb = '/usr/local/bin';
-      if (!_.includes(process.env.PATH, ulb)) {
-        var ulbPath = [process.env.PATH, ulb].join(':');
-        kbox.core.env.setEnv('PATH', ulbPath);
-      }
+    // Get our config so we can set our env correctly
+    var engineConfig = kbox.core.deps.get('engineConfig');
+
+    // Parse the docker host url
+    var dockerHost = url.format({
+      protocol: 'tcp',
+      slashes: true,
+      hostname: engineConfig.host,
+      port: engineConfig.port
+    });
+
+    // Set our docker host for compose
+    if (process.platform === 'linux') {
+      kbox.core.env.setEnv('DOCKER_HOST', dockerHost);
+    }
+
+    // Verify all DOCKER_* vars are stripped on darwin and windows
+    if (process.platform === 'darwin' || process.platform === 'win32') {
+      _.each(process.env, function(value, key) {
+        if (_.includes(key, 'DOCKER_')) {
+          delete process.env[key];
+        }
+      });
     }
 
   };

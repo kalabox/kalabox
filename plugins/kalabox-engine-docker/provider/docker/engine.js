@@ -9,10 +9,8 @@ module.exports = function(kbox) {
 
   // NODE modules
   var format = require('util').format;
-  var path = require('path');
 
   // NPM modules
-  var fs = require('fs-extra');
   var VError = require('verror');
 
   // Kalabox modules
@@ -28,41 +26,20 @@ module.exports = function(kbox) {
   var mode = kbox.core.deps.get('mode');
 
   /*
-   * Get directory for docker engine.
-   */
-  var getEngineUpFiles = function() {
-
-    // Return file(s) we need to check for
-    switch (process.platform) {
-      case 'darwin':
-        var dockerData = path.join(
-          kbox.core.deps.get('config').home,
-          'Library',
-          'Containers',
-          'com.docker.docker',
-          'Data',
-          'com.docker.driver.amd64-linux'
-        );
-        return [path.join(dockerData, 'hypervisor.pid')];
-      case 'linux':
-        var sysConfRoot = kbox.core.deps.get('config').sysConfRoot;
-        return [path.join(sysConfRoot, 'docker.pid')];
-      case 'win32':
-        return [];
-    }
-
-  };
-
-  /*
    * Get services wrapper
    */
   var getServicesWrapper = function(cmd) {
 
     // Return file(s) we need to check for
     switch (process.platform) {
-      case 'darwin': return ['launchctl', cmd, 'com.docker.helper'];
-      case 'linux': return ['sudo', 'service', 'kalabox'].concat(cmd);
-      case 'win32': return [];
+      case 'darwin':
+        return ['launchctl', cmd, 'com.docker.helper'];
+      case 'linux':
+        return ['sudo', 'service', 'kalabox'].concat(cmd);
+      case 'win32':
+        var base = process.env.ProgramW6432;
+        var dockerBin = base + '\\Docker\\Docker\\Docker for Windows.exe';
+        return [cmd, '/B', '""', dockerBin];
     }
 
   };
@@ -110,14 +87,15 @@ module.exports = function(kbox) {
     // Only start if we aren't already
     .then(function(isDown) {
       if (isDown) {
-        return serviceCmd(['start'], {mode: 'collect'});
+        return serviceCmd(['start']);
       }
     })
 
     // Wait for the daemon to respond
     .retry(function() {
-      return bin.sh([DOCKER_EXECUTABLE, 'info']);
-    }, {max: 10, backoff: 1000})
+      log.debug('Trying to connect to daemon.');
+      return bin.sh([DOCKER_EXECUTABLE, 'info'], {mode: 'collect'});
+    }, {max: 25, backoff: 1000})
 
     // Wrap errors.
     .catch(function(err) {
@@ -161,17 +139,19 @@ module.exports = function(kbox) {
   var isUp = function() {
 
     // Whitelist this in windows for now
-    if (process.platform === 'win32') {
-      return Promise.resolve(true);
-    }
+    return bin.sh([DOCKER_EXECUTABLE, 'info'], {mode: 'collect'})
 
-    // Reduce list of engine files to a boolean
-    return Promise.reduce(getEngineUpFiles(), function(isUp, file) {
-      var fileExists = fs.existsSync(file);
-      log.debug(format('File %s exists: %s', file, fileExists));
-      log.debug(format('Engine status: %s', isUp && fileExists));
-      return isUp && fileExists;
-    }, true);
+    // Return true if we get a zero response
+    .then(function() {
+      log.debug('Engine is up.');
+      return Promise.resolve(true);
+    })
+
+    // Return false if we get a non-zero response
+    .catch(function() {
+      log.debug('Engine is down.');
+      return Promise.resolve(false);
+    });
 
   };
 
@@ -193,17 +173,12 @@ module.exports = function(kbox) {
    */
   var isInstalled = function() {
 
-    // Whitelist this in windows for now
-    if (process.platform === 'win32') {
-      return Promise.resolve(true);
-    }
-
     // set the docker env
     env.setDockerEnv();
 
-    // We have the engine executable now return whether we have the
-    // vm or not
-    if (kbox.util.shell.which(DOCKER_EXECUTABLE) === DOCKER_EXECUTABLE) {
+    // Return whether we have the engine executable in the expected location
+    var which = kbox.util.shell.which(DOCKER_EXECUTABLE);
+    if (which.toUpperCase() === DOCKER_EXECUTABLE.toUpperCase()) {
       return Promise.resolve(true);
     }
 

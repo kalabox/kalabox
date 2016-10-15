@@ -9,7 +9,6 @@ module.exports = function(kbox) {
 
   // Native modules
   var path = require('path');
-  var url = require('url');
   var format = require('util').format;
 
   // NPM modules
@@ -34,31 +33,6 @@ module.exports = function(kbox) {
 
     // Set the machine env
     env.setDockerEnv();
-
-    // Get our config so we can set our env correctly
-    var engineConfig = kbox.core.deps.get('engineConfig');
-
-    // Parse the docker host url
-    var dockerHost = url.format({
-      protocol: 'tcp',
-      slashes: true,
-      hostname: engineConfig.host,
-      port: engineConfig.port
-    });
-
-    // Set our docker host for compose
-    if (process.platform === 'linux') {
-      kbox.core.env.setEnv('DOCKER_HOST', dockerHost);
-    }
-
-    // Verify all DOCKER_* vars are stripped on darwin and windows
-    if (process.platform === 'darwin' || process.platform === 'win32') {
-      _.each(process.env, function(value, key) {
-        if (_.includes(key, 'DOCKER_')) {
-          delete process.env[key];
-        }
-      });
-    }
 
     // Run a provider command in a shell.
     log.info(format('Running: %j', cmd));

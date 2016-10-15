@@ -75,17 +75,6 @@ setup() {
   [ "$status" -eq 0 ]
 }
 
-# Check that core dns container exists
-@test "Check that core dns container exists and is running." {
-  echo $DOCKER
-  $DOCKER inspect kalabox_dns_1 | grep "\"Running\": true"
-}
-
-# Check that core proxy container exists
-@test "Check that core proxy container exists and is running." {
-  $DOCKER inspect kalabox_proxy_1 | grep "\"Running\": true"
-}
-
 # Check that DNS has been set
 @test "Check that '10.13.37.100' exists in '/etc/resolver/kbox'" {
   cat /etc/resolver/kbox | grep 10.13.37.100
@@ -113,7 +102,7 @@ setup() {
   cat ${TRAVIS_BUILD_DIR}/plugins/kalabox-cmd/kalabox-compose.yml | grep "image: kalabox/cli:" | grep "stable"
 }
 
-# Check that our unison image version is the stable tag
+# Check that our unison image version is the 2.49 tag
 @test "Check that our unison image version is the 2.49 tag." {
   cat ${TRAVIS_BUILD_DIR}/plugins/kalabox-sharing/lib/events.js | grep "image: 'kalabox/unison:2.49'" | grep "2.49"
 }
