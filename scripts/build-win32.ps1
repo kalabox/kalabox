@@ -88,6 +88,9 @@ Download -Url "https://github.com/kalabox/kalabox-app-php/releases/download/v$pl
 # Git
 Download -Url "https://github.com/git-for-windows/git/releases/download/v$git_version.windows.1/Git-$git_version-64-bit.exe" -Destination "$base_dir\Git.exe"
 
+# Docker for Windows
+Download -Url "https://download.docker.com/win/stable/InstallDocker.msi" -Destination "$base_dir\Docker.msi"
+
 # Do some needed unpacking
 Write-Output "Unpacking..."
 New-Item -type directory -force -path $plugins_dir\kalabox-app-pantheon, $plugins_dir\kalabox-app-php

@@ -3,10 +3,12 @@
 #define MyAppURL "https://kalabox.io"
 #define MyAppContact "https://kalabox.io"
 
+#define docker "Docker.msi"
+#define engineSetup "engine.bat"
 #define kalabox "bundle"
 #define kboxIco "kalabox.ico"
-#define git "Git.exe"
 #define dnsSetup "dns.bat"
+#define git "Git.exe"
 
 [Setup]
 AppCopyright={#MyAppPublisher}
@@ -51,8 +53,11 @@ Name: modifypath; Description: "Add kbox binary to PATH"
 [Components]
 Name: "Git"; Description: "Git for Windows"; Types: full custom;
 Name: "Kalabox"; Description: "Kalabox" ; Types: full custom; Flags: disablenouninstallwarning fixed
+Name: "Docker"; Description: "Docker for Windows" ; Types: full custom; Flags: disablenouninstallwarning fixed
 
 [Files]
+Source: "{#docker}"; DestDir: "{app}\installers\docker"; DestName: "docker.msi"; BeforeInstall: CheckHyperV(); AfterInstall: RunInstallDocker(); Components: "Docker"
+Source: "{#engineSetup}"; DestDir: "{app}"; Components: "Docker"; AfterInstall: RunEngineSetup();
 Source: "{#kalabox}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: "Kalabox"
 Source: "{#kboxIco}"; DestDir: "{app}"; DestName: "kalabox.ico"; Components: "Kalabox"
 Source: "{#dnsSetup}"; DestDir: "{app}"; Components: "Kalabox"; AfterInstall: RunDNSSetup();
@@ -66,19 +71,61 @@ Name: "{commondesktop}\Kalabox"; WorkingDir: "{app}\gui"; Filename: "{app}\gui\k
 Root: HKCU; Subkey: "Environment"; ValueType:string; ValueName:"KALABOX_INSTALL_PATH"; ValueData:"{app}" ; Flags: preservestringtype ;
 
 [Code]
-function NeedToInstallGit(): Boolean;
-begin
-  // TODO: Find a better way to see if Git is installed
-  Result := not DirExists('C:\Program Files\Git') or not FileExists('C:\Program Files\Git\git-bash.exe')
-end;
-
-procedure RunInstallVirtualBox();
+procedure CheckHyperV();
 var
   ResultCode: Integer;
 begin
-  WizardForm.FilenameLabel.Caption := 'Installing VirtualBox'
-  if not Exec(ExpandConstant('msiexec'), ExpandConstant('/qn /i "{app}\installers\virtualbox\virtualbox.msi" /norestart'), '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-    MsgBox('VirtualBox install failure', mbInformation, MB_OK);
+  WizardForm.FilenameLabel.Caption := 'Checking that HyperV is enabled and running...'
+  if ExecAsOriginalUser(ExpandConstant('sc'), ExpandConstant('query vmms'), '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  begin
+    if ( ResultCode = 0 ) then
+    begin
+      Log('HyperV is running with code ' + IntToStr(ResultCode));
+    end
+    else begin
+      Log('HyperV is not running with code ' + IntToStr(ResultCode));
+      MsgBox('HyperV is not running! Please install first and then run this installer.', mbCriticalError, MB_OK);
+      WizardForm.Close;
+      exit;
+    end;
+  end
+  else begin
+    Log('Something bad happened with code ' + IntToStr(ResultCode));
+    MsgBox('Something bad happened. Install Fail.', mbCriticalError, MB_OK);
+  end;
+end;
+
+procedure RunInstallDocker();
+var
+  ResultCode: Integer;
+begin
+  WizardForm.FilenameLabel.Caption := 'Installing Docker for Windows'
+  if not Exec(ExpandConstant('msiexec'), ExpandConstant('/qn /i "{app}\installers\docker\docker.msi" /norestart'), '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    MsgBox('Docker for Windows install failure', mbInformation, MB_OK);
+end;
+
+procedure RunEngineSetup();
+var
+  ResultCode: Integer;
+begin
+  WizardForm.FilenameLabel.Caption := 'Activating the HyperV Docker Engine...'
+  if ExecAsOriginalUser(ExpandConstant('{app}\engine.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  begin
+    if ( ResultCode = 0 ) then
+    begin
+      Log('Engine activated with great success and result code ' + IntToStr(ResultCode));
+    end
+    else begin
+      Log('Engine activation failed with code ' + IntToStr(ResultCode));
+      MsgBox('Engine activation failed!', mbCriticalError, MB_OK);
+      WizardForm.Close;
+      exit;
+    end;
+  end
+  else begin
+    Log('Something bad happened with code ' + IntToStr(ResultCode));
+    MsgBox('Something bad happened. Install Fail.', mbCriticalError, MB_OK);
+  end;
 end;
 
 procedure RunDNSSetup();
@@ -86,7 +133,7 @@ var
   ResultCode: Integer;
 begin
   WizardForm.FilenameLabel.Caption := 'Activating the DNS...'
-  if ExecAsOriginalUser(ExpandConstant('{app}\dns.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  if Exec(ExpandConstant('{app}\dns.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
   begin
     if ( ResultCode = 0 ) then
     begin
