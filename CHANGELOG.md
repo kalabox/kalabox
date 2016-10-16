@@ -1,7 +1,5 @@
-v2.1.0-alpha.1
+v2.1.0-rc.1
 ==============
-
-### Experimental Features
 
 * Removed `docker-machine` and `VirtualBox` in favor of `Docker for Mac/Windows` and `xhyve/Hyper-V`.
 * Vastly improved file sharing and resource usage.
