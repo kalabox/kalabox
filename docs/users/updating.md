@@ -24,6 +24,8 @@ Here is a list of recent versions of Kalabox that introduce breaking changes. Th
 * `v0.13.0-alpha.1`
 * `v0.13.0-beta.2`
 * `v0.13.0-rc.2`
+* `v2.0.0`
+* `v2.1.0`
 
 Normal Updating
 ---------------
@@ -34,7 +36,7 @@ Normal updating if fairly simple.
 2. Follow the [normal installation steps](./install.md) with the new version.
 
 !!! note "Older apps will not be updated!!!"
-    If you created apps with a previous version of Kalabox these apps will not be updated. Also, to update your apps we recommend you destroy and recreate those apps.
+    If you created apps with a previous version of Kalabox these apps will not be updated. To update your apps we recommend you destroy and recreate those apps.
 
 Purge Updating
 --------------

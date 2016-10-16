@@ -71,7 +71,7 @@ Kalabox is an open-source project. As such, support is a community-lead effort. 
 Development Releases
 --------------------
 
-We produce development releases for every commit merged into our `v0.13` branch. **These releases are not officially supported** but we have made them available to intrepid users who want to try the bleeding edge or are interested in trying out a recent bug fix before
+We produce development releases for every commit merged into our `v2.1` branch. **These releases are not officially supported** but we have made them available to intrepid users who want to try the bleeding edge or are interested in trying out a recent bug fix before
 an official release is rolled.
 
   * **Windows** - [http://installer.kalabox.io/kalabox-latest-dev.exe](http://installer.kalabox.io/kalabox-latest-dev.exe)
@@ -81,7 +81,7 @@ an official release is rolled.
 
 **NOTE:** Releases can take some time to build after we merge in commits. For that reason you might want to check the time of the last commit and if it is within a few hours you might want to hold off a bit before trying the new latest release.
 
-You can also easily verify that the release you downloaded matches the latest commit. All development releases look something like `0.13.0-alpha.1-4-g63b0db0`. This means 4 commits after the `0.13.0-alpha.1` tag and with commit hash `g63b0db0`. You should make sure this commit hash matches or comes before the latest commit.
+You can also easily verify that the release you downloaded matches the latest commit. All development releases look something like `v2.1.0-alpha.1-4-g63b0db0`. This means 4 commits after the `2.1.0-alpha.1` tag and with commit hash `g63b0db0`. You should make sure this commit hash matches or comes before the latest commit.
 
 Other Resources
 ---------------

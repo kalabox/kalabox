@@ -7,7 +7,7 @@ With Kalabox you can...
 
   * Easily mimic your production environment on local.
   * Setup, develop, pull and deploy your sites super fast.
-  * Standardize your team's dev environments and tools on macOS, Windows and Linux.
+  * Standardize your teams dev environments and tools on OSX, Windows and Linux.
   * Easily customize or extend tooling, deployment options and basically any other functionality.
   * Free yourself from the tyranny of inferior local development products.
 
@@ -16,7 +16,7 @@ Learn more and get general Kalabox information by visting [our docs](http://docs
 Getting Started
 ---------------
 
-Kalabox ships as native installer packages for Windows, macOS, Debian and Fedora. Officially supported versions are available on our [releases page](https://github.com/kalabox/kalabox/releases). To get informed of new Kalabox releases and project updates we encourage you to [sign up for our newsletter](http://www.kalabox.io/).
+Kalabox ships as native installer packages for Windows, OSX, Debian and Fedora. Officially supported versions are available on our [releases page](https://github.com/kalabox/kalabox/releases). To get informed of new Kalabox releases and project updates we encourage you to [sign up for our newsletter](http://www.kalabox.io/).
 
 Once you've [installed Kalabox](http://docs.kalabox.io/en/stable/users/install/#installation) you should have...
 
@@ -55,7 +55,7 @@ Support
 
 To get help...
 
-  1. Make sure your question isn't answered in either the [core docs](http://support.kalabox.io/solution/categories), the [Pantheon app docs](http://pantheon.kalabox.io/), or the [PHP docs](http://php.kalabox.io/).
+  1. Make sure your question isn't answered in either the [core docs](http://support.kalabox.io/en/stable/), the [Pantheon app docs](http://pantheon.kalabox.io/), or the [PHP docs](http://php.kalabox.io/).
   2. Thoroughly search the [Github issue queue](https://github.com/kalabox/kalabox/issues) for any existing issues similar to yours.
   3. If all else fails, create an issue and follow the pre-populated guidelines and the [CONTRIB.MD](https://raw.githubusercontent.com/kalabox/kalabox/v0.13/CONTRIBUTING.md) as best as possible.
 
@@ -71,17 +71,17 @@ Kalabox is an open-source project. As such, support is a community-lead effort. 
 Development Releases
 --------------------
 
-We produce development releases for every commit merged into our `v0.13` branch. **These releases are not officially supported** but we have made them available to intrepid users who want to try the bleeding edge or are interested in trying out a recent bug fix before
+We produce development releases for every commit merged into our `v2.1` branch. **These releases are not officially supported** but we have made them available to intrepid users who want to try the bleeding edge or are interested in trying out a recent bug fix before
 an official release is rolled.
 
   * **Windows** - [http://installer.kalabox.io/kalabox-latest-dev.exe](http://installer.kalabox.io/kalabox-latest-dev.exe)
   * **Debian** - [http://installer.kalabox.io/kalabox-latest-dev.deb](http://installer.kalabox.io/kalabox-latest-dev.deb)
   * **Fedora** - [http://installer.kalabox.io/kalabox-latest-dev.rpm](http://installer.kalabox.io/kalabox-latest-dev.rpm)
-  * **macOS** - [http://installer.kalabox.io/kalabox-latest-dev.dmg](http://installer.kalabox.io/kalabox-latest-dev.dmg)
+  * **MacOSX** - [http://installer.kalabox.io/kalabox-latest-dev.dmg](http://installer.kalabox.io/kalabox-latest-dev.dmg)
 
 **NOTE:** Releases can take some time to build after we merge in commits. For that reason you might want to check the time of the last commit and if it is within a few hours you might want to hold off a bit before trying the new latest release.
 
-You can also easily verify that the release you downloaded matches the latest commit. All development releases look something like `0.13.0-alpha.1-4-g63b0db0`. This means 4 commits after the `0.13.0-alpha.1` tag and with commit hash `g63b0db0`. You should make sure this commit hash matches or comes before the latest commit.
+You can also easily verify that the release you downloaded matches the latest commit. All development releases look something like `v2.1.0-alpha.1-4-g63b0db0`. This means 4 commits after the `2.1.0-alpha.1` tag and with commit hash `g63b0db0`. You should make sure this commit hash matches or comes before the latest commit.
 
 Other Resources
 ---------------

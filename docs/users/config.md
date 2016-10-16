@@ -6,34 +6,9 @@ Kalabox has a sophisticated plugin system that allows users to extend core funct
 Sharing
 -------
 
-Kalabox seeks to mitigate the **HARDEST PROBLEM** in VM-based local development: quickly sharing files from your host machine into the VM while maintaining fast page loads. This is a longstanding issue and no project has a perfect solution; for a longer discussion on filesharing, see the [Advanced file sharing topics](#advanced-file-sharing-topics) section below.
+Kalabox seeks to mitigate the **HARDEST PROBLEM** in VM-based local development: quickly sharing files from your host machine into the VM while maintaining fast page loads.
 
-With Kalabox, you can easily enable file sharing by adding a `sharing` object to the `pluginconfig` of your app's `kalabox.yml` file. If you are on macOS or Windows then sharing does have [some limitations](#advanced-file-sharing-topics) so we've also provided a few easy ways to both ignore specific kinds of files and share specific directories. If you have a particularly large codebase we **highly recommend** you take advantage of the `paths` and `ignore` options to speed up your sync.
-
-We already try to do some basic optimization for you by ignoring the following:
-
-```
-Name *.7z
-Name *.bz2
-Name *.dmg'
-Name *.gz'
-Name *.iso'
-Name *.jar'
-Name *.rar'
-Name *.tar'
-Name *.tgz'
-Name *.un~'
-Name *.zip'
-Name .*.swp'
-Name .DS_Store'
-Name ._*'
-Name .sass-cache'
-Name Thumbs.db'
-Name ehthumbs.db
-```
-
-!!! tip "How does the ignore syntax work?"
-    We use `unison` [path specification](http://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html#pathspec) for our ignore syntax.
+You can easily enable file sharing by adding a `sharing` object to the `pluginconfig` of your app's `kalabox.yml` file.
 
 ### Example 1: Directly share your webroot.
 
@@ -46,92 +21,16 @@ pluginconfig:
     share: 'web:/usr/share/nginx/html'
 ```
 
-### Example 2: Optimize sharing for a large Drupal project.
+### Example 2: Sharing to a custom code directory
 
-This example will create a directory called `wwwdocs` inside your local app root and it will sync that directory with what is inside your `data` container at `/code`. It will only sync `index.php` and everything in you custom modules folder while also ignoring your Drupal files directory.
-
+This example will create a directory called `wwwdocs` inside your local app root and it will sync that directory with what is inside your `data` container at `/code`.
 ```yaml
 name: example2
 pluginconfig:
   sharing:
     codeDir: 'wwwdocs'
     share: 'data:/code'
-    ignore:
-      - Path sites/default/files
-    paths:
-      - index.php
-      - sites/all/modules/custom
 ```
-
-!!! tip "Protect upstream from being hacked"
-    The `paths` and `ignore` options are also useful for restricting the code a user can alter. For example the above config (with the exception of index.php) would prevent changes being made to Drupal core and contrib modules.
-
-### Example 3: Optimize sharing for node-based frontend tooling.
-
-Node-based frontend tooling is very popular these days, and with good reason. Unfortunately these workflows often comes with a large file footprints. You can optimize Kalabox's sharing in these situations by ignoring dependency directories such as `node_modules` or `vendor`.
-
-This example will create a directory called `code` inside your local app root and it will sync that directory with what is inside your `data` container at `/code`. It will also ignore all files and directories below any occurences of `node_modules`, `bower_components`, `vendor` and `build`.
-
-```yaml
-name: example3
-pluginconfig:
-  sharing:
-    share: 'data:/code'
-    ignore:
-      - Name *node_modules*
-      - Name *bower_components*
-      - Name *vendor*
-      - Name *build*
-```
-
-!!! tip "Use `kbox` variants of `npm` and `grunt`"
-    Try using `kbox npm` or `kbox grunt` in your app where available. This will allow you to install needed dependencies directly inside your container so you don't have to rely on installing locally and waiting for files to sync over.
-
-### Advanced file sharing topics
-
-!!! note "No worries on Linux"
-    Everything below does not apply if you are using the Linux version of Kalabox because it does not use a VM.
-
-#### Tradeoffs
-
-When it comes to file sharing in Virtual Machine-based local development environments there are essentially two major things to consider:
-
-  1. How fast can my code change get from my host to my VM?
-  2. How fast will my app/site load?
-
-**Fast code changes**
-
-Solutions like `vbfs` or `nfs`, which mount files over the network, provide instantaneous changes. They also require the remote machine to "check in" to see if there are any changes to a file before it is read or written. For a site or app with a few files this is no big deal. However, when you have an app using a modern CMS like Drupal with thousands of files, this "checking in" can substantially slow a page load from less than a second to 5, 10, 40 or never seconds, depending on the load.
-
-If you are a site builder who works through the UI instead of directly in code, these solutions can burn a lot of time.
-
-**Fast page loads**
-
-Solutions like `rsync` or `syncthing` will try to keep two directories synced. This reduces the speed that your code change propagates to just seconds and can often burn a lot of resources on your machine but it will preserve "native" speed page loads.
-
-If you are someone who is writing and changing code a lot these solutions can burn a lot of time.
-
-#### Enter unison
-
-We've tried to provide the best of both worlds by using native VirtualBox file sharing combined with a [unison](https://www.cis.upenn.edu/~bcpierce/unison/) (yes that is really their website) container.
-
-The sharing process works like this
-
-  1. Your code changes are instantaneously synced to the VM by VirtualBox's `vbfs`
-  2. Your local `vbfs` shared local code root and container webroot are mounted into the same `unison` container
-  3. We run a `unison` container for each app that scans for and then propagates those changes every second.
-
-!!! attention "We do we scan instead of watch?"
-    We cannot use native filesystem events in this model due to [a won't fix bug](https://www.virtualbox.org/ticket/10660) in VirtualBox.
-
-#### The Downside
-
-While this produces `nfs` speed file change propagation along with "native" page loads, the speed of propagation does slow as you increase the amount of files you are scanning. Luckily, we've provided a few ways for you to optimize your sync.
-#### The Roadmap Forward
-
-We **really, really hope** that the above is a stop-gap solution. Docker is currently working on "native" file sharing for both macOS and Windows. Once those are complete and perform better than what we have we will switch our sharing over to use them. You can track the progress of that issue over here:
-
- * [https://forums.docker.com/t/file-access-in-mounted-volumes-extremely-slow-cpu-bound/8076/108](https://forums.docker.com/t/file-access-in-mounted-volumes-extremely-slow-cpu-bound/8076/108)
 
 Services
 --------

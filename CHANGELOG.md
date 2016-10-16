@@ -1,6 +1,10 @@
-v2.0.2
-======
+v2.1.0-alpha.1
+==============
 
+### Experimental Features
+
+* Removed `docker-machine` and `VirtualBox` in favor of `Docker for Mac/Windows` and `xhyve/Hyper-V`.
+* Vastly improved file sharing and resource usage.
 * Added `confirmbigdel=false` to `unison` file sharing. This allows the user to remove their entire shared folder without issue.
 
 v2.0.1

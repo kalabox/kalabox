@@ -9,21 +9,25 @@ Operating System
 Currently Kalabox is compatible with...
 
   * macOS 10.10+
-  * Windows 7+
+  * Windows 10 Pro+ (or equivalent) with Hyper-V running
   * Debian 7/Ubuntu 14.04+
   * Fedora 23+
 
-!!! note "VT-x must be enabled on Windows"
-    To learn how to enable VT-x check out this [article](http://www.howtogeek.com/213795/how-to-enable-intel-vt-x-in-your-computers-bios-or-uefi-firmware). To read about some common problems with VT-x and Hyper-V on Kalabox check out this [issue](https://github.com/kalabox/kalabox/issues/1141).
+!!! warning "Hyper-V be enabled on Windows"
+    To learn how to enable Hyper-V check out this [article](https://msdn.microsoft.com/en-us/virtualization/hyperv_on_windows/quick_start/walkthrough_install).
 
 Hardware Requirements
--------------------
+---------------------
 
   * x64 processor architecture
-  * 20GB Available Space
   * 4GB RAM
-  * Modern processor (~last 3 years)
+  * Modern processor (~last 2 years)
 
-!!! note "Storage Requirements for macOS/Windows Virtual Disk"
-    Note that Kalabox itself does not take up 20GB of hard drive space, but reserves that space for your sites in a virtual disk.
+Docker Engine Requirements
+--------------------------
 
+Please also verify you meet the requirements of our Docker-based backend.
+
+  * Linux Docker engine [requirements](https://docs.docker.com/engine/installation/linux/debian/#/prerequisites)
+  * Docker for Mac [requirements](https://docs.docker.com/docker-for-mac/#/what-to-know-before-you-install)
+  * Docker for Windows [requirements](https://docs.docker.com/docker-for-windows/#/what-to-know-before-you-install)

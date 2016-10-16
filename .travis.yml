@@ -94,4 +94,4 @@ deploy:
     skip_cleanup: true
     on:
       repo: kalabox/kalabox
-      branch: v2.0
+      branch: v2.1
