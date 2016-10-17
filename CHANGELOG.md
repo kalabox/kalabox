@@ -1,5 +1,10 @@
+v2.1.0
+======
+
+* Fixed `KALABOX_ENGINE_REMOTE_IP` value on macOS. Resolves issues with xdebug.
+
 v2.1.0-rc.1
-==============
+===========
 
 * Removed `docker-machine` and `VirtualBox` in favor of `Docker for Mac/Windows` and `xhyve/Hyper-V`.
 * Vastly improved file sharing and resource usage.
