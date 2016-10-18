@@ -5,13 +5,13 @@ ENV UNISON_CODEROOT=/code
 ENV UNISON_WEBROOT=/var/www
 ENV UNISON_OPTIONS=
 
-RUN apt-get update  && apt-get install -y \
+RUN apt-get update && apt-get install -y \
     curl \
   && curl -fsSL -o /tmp/Release.key "http://download.opensuse.org/repositories/home:ocaml/xUbuntu_14.04/Release.key" \
   && apt-key add - < /tmp/Release.key \
   && sh -c "echo 'deb http://download.opensuse.org/repositories/home:/ocaml/xUbuntu_14.04/ /' >> /etc/apt/sources.list.d/ocaml.list" \
   && apt-get update -y \
-  && apt-get install -y \
+  && apt-get install -y --force-yes \
     ocaml \
     build-essential \
     exuberant-ctags \
