@@ -1,7 +1,8 @@
-v2.1.0
-======
+v2.1.0-rc.2
+===========
 
 * Fixed `KALABOX_ENGINE_REMOTE_IP` value on macOS. Resolves issues with xdebug.
+* Updated `kalabox-cmd` plugin to take arrays for `{pre|post}cmdopts}`.
 
 v2.1.0-rc.1
 ===========

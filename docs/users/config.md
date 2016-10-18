@@ -272,6 +272,17 @@ mysql:
   entrypoint: mysql
   description: Drop into a mysql shell
   mapping: <config.sharing.codeDir>:/var/www/html
+redis:
+  service: redis-cli
+  stripfirst: true
+  precmdopts:
+    - -h
+    - redis
+    - -p
+    - '8161'
+  entrypoint: redis-cli
+  description: Drop into a redis-cli shell
+  mapping: <config.sharing.codeDir>:/code
 drush:
   service: drush
   entrypoint: usermap
@@ -290,7 +301,7 @@ composer:
 ```
 
 !!! tip "Notice the `precmdopts` used in `kbox mysql`"
-    This will automatically prepend options before the user entered part of the command, in this case connecting you to mysql before anything else happens.
+    This will automatically prepend options before the user entered part of the command, in this case connecting you to mysql before anything else happens. Make sure if you are passing in many options to use an array as in the `redis` example above.
 
     `postcmdopts` can also be used in the same way, for example to always run a command in verbose mode using `-v`.
 

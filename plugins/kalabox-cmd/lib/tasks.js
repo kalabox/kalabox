@@ -131,13 +131,27 @@ module.exports = function(kbox) {
                 // If we have pre cmd opts then unshift them
                 // @todo: handle pre cmd opt array?
                 if (options.precmdopts) {
-                  options.cmd.unshift(options.precmdopts);
+                  if (typeof options.precmdopts === 'object') {
+                    _.each(options.precmdopts.reverse(), function(opt) {
+                      options.cmd.unshift(opt);
+                    });
+                  }
+                  else {
+                    options.cmd.unshift(options.precmdopts);
+                  }
                 }
 
                 // If we have posrt cmd opts then unshift them
                 // @todo: handle post cmd opt array?
                 if (options.postcmdopts) {
-                  options.cmd.push(options.postcmdopts);
+                  if (typeof options.postcmdopts === 'object') {
+                    _.each(options.postcmdopts.reverse(), function(opt) {
+                      options.cmd.unshift(opt);
+                    });
+                  }
+                  else {
+                    options.cmd.unshift(options.precmdopts);
+                  }
                 }
 
                 // if an arg has spaces lets assume we need to wrap it in
