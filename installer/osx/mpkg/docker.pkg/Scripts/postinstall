@@ -36,7 +36,8 @@ sudo install -m 0644 -o root -g wheel ${docker_bundle_dir}/Resources/com.docker.
 sudo launchctl load /Library/LaunchDaemons/com.docker.vmnetd.plist
 
 # Launch docker
-sudo -u ${console_user} launchctl start com.docker.helper
+#sudo -u ${console_user} launchctl start com.docker.helper
+open -j -g /Applications/Docker.app
 
 # Wait for docker to be ready
 NEXT_WAIT_TIME=0
