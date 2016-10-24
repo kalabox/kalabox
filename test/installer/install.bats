@@ -76,13 +76,13 @@ setup() {
 }
 
 # Check that DNS has been set
-@test "Check that '10.13.37.100' exists in '/etc/resolver/kbox'" {
-  cat /etc/resolver/kbox | grep 10.13.37.100
+@test "Check that correct IP exists in '/etc/resolver/kbox'" {
+  cat /etc/resolver/kbox | grep "${KALABOX_IP}"
 }
 
-# Check that '10.13.37.100' can be pinged
-@test "Check that '10.13.37.100' can be pinged" {
-  ping -c 1 10.13.37.100
+# Check that correct IP can be pinged
+@test "Check that that correct IP can be pinged" {
+  ping -c 1 "${KALABOX_IP}"
 }
 
 # Check that we can build the cli image without an error.

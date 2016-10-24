@@ -9,9 +9,6 @@
 #
 : ${KBOX_SUDO_PASSWORD=kalabox}
 
-# The kalabox IP address
-: ${KALABOX_IP:=10.13.37.100}
-
 # Local stuff
 if [ ! $TRAVIS ]; then
   : ${TRAVIS_BUILD_DIR:=$(pwd)}
@@ -57,6 +54,7 @@ case $FLAVOR in
 
     # Unix type
     : ${UNIX_TYPE:=linux}
+    : ${KALABOX_IP:=10.13.37.100}
 
     # Dep handling
     : ${LINUX_DEP_INSTALL:=apt-get -y --force-yes install}
@@ -81,6 +79,7 @@ case $FLAVOR in
 
     # Unix type
     : ${UNIX_TYPE:=linux}
+    : ${KALABOX_IP:=10.13.37.100}
 
     # Dep handling
     : ${LINUX_DEP_INSTALL:=dnf -y install}
@@ -102,6 +101,8 @@ case $FLAVOR in
 
     # Unix type
     : ${UNIX_TYPE:=darwin}
+    : ${KALABOX_IP:=127.0.0.1}
+
 
     # Path to the uninstall script
     : ${KBOX_UNINSTALL:=$(pwd)/installer/osx/uninstall.sh}
@@ -110,7 +111,7 @@ case $FLAVOR in
     : ${KALABOX_PKG:=kalabox.dmg}
 
     # Docker bin
-    : ${DOCKER:="/Applications/Kalabox.app/Contents/MacOS/bin/docker-machine ssh Kalabox2 docker"}
+    : ${DOCKER:="/usr/local/bin/docker"}
 
     ;;
   *)

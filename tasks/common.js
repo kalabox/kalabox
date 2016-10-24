@@ -96,8 +96,7 @@ var installerLinuxBatsFiles = [
 
 // Osx installer BATS tests
 var installerOsxBatsFiles = [
-  './test/installer/install.bats',
-  './test/installer/osx/*.bats'
+  './test/installer/install.bats'
 ];
 
 // Our vendor JS files

@@ -38,7 +38,9 @@ kbox-install() {
 # Run the Kalabox uninstall
 #
 kbox-uninstall() {
+
   echo "${KBOX_SUDO_PASSWORD}" | sudo -S "$KBOX_UNINSTALL" -f
+
 }
 
 #
