@@ -173,7 +173,7 @@ services
 
 Displays relevant connection information for your apps services. Like `kbox create` this command also must be implemented by the app itself.
 
-`kbox create`
+`kbox services`
 
 See the plugin-specific documentation for how the [Pantheon plugin](http://pantheon.kalabox.io) and the [PHP plugin](http://php.kalabox.io) implement this command.
 
