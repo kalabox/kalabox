@@ -55,6 +55,13 @@ script:
   # Run a few tests on the installer
   - if [ $KBOX_PKG_TYPE == "deb" ]; then grunt func; fi
   - if [ $KBOX_PKG_TYPE == "dmg" ]; then grunt func; fi
+  - which docker
+  - docker
+  - ls -lsa /usr/local/bin
+  - ls -lsa /Applications/Docker.app/Contents/Resources/bin
+  - ls -lsa /Applications
+  - kbox version
+  - cat /var/log/install.log
 
   # Name the release depending on whether it is an official release or not
   - if [ -z "$TRAVIS_TAG" ]; then cp -rf dist/kalabox.$KBOX_PKG_TYPE release/kalabox-latest-dev.$KBOX_PKG_TYPE; fi
