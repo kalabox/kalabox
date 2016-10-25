@@ -18,8 +18,8 @@ DOCKER_COMPOSE_VERSION="1.8.0"
 BOOT2DOCKER_ISO_VERSION="1.12.1"
 
 # VirtualBox Things
-VBOX_VERSION="5.1.6"
-VBOX_REVISION="110634"
+VBOX_VERSION="5.1.8"
+VBOX_REVISION="111374"
 
 # Move dependencies into the application bundle
 APP_CONTENTS="Kalabox.app/Contents/MacOS"
