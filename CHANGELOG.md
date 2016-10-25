@@ -2,6 +2,7 @@ v2.0.2
 ======
 
 * Added `confirmbigdel=false` to `unison` file sharing. This allows the user to remove their entire shared folder without issue.
+* Updated to VirtualBox 5.1.8 which resolves problems with OSX update 10.12.1.
 
 v2.0.1
 ======
