@@ -1,3 +1,9 @@
+Kalabox Unison
+==============
+
+Image for basic unison syncops.
+
+```
 FROM debian:jessie
 
 ENV UNISON_VERSION=2.49.543
@@ -31,3 +37,4 @@ COPY sync.profile /root/.unison/default.prf
 COPY run.sh /run.sh
 
 CMD ["/run.sh"]
+```
