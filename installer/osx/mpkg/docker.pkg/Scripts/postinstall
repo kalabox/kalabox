@@ -38,12 +38,10 @@ tell application "Docker"
   activate
 end tell
 tell application "System Events"
-  keystroke return
-  keystroke return
-  keystroke return
-  keystroke return
-  keystroke return
-  keystroke return
+  repeat 10 times
+    keystroke return
+    delay (random number from 0.1 to 0.3)
+  end repeat
 end tell
 EOD
 
