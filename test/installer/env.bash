@@ -111,7 +111,7 @@ case $FLAVOR in
     : ${KALABOX_PKG:=kalabox.dmg}
 
     # Docker bin
-    : ${DOCKER:="/usr/local/bin/docker"}
+    : ${DOCKER:="/Applications/Docker.app/Contents/Resources/bin/docker"}
 
     ;;
   *)
