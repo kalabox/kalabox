@@ -9,12 +9,12 @@ unset ${!DOCKER_*}
 PATH=$PATH:/usr/local/bin
 TERM=xterm
 
-# Get the originale user
+# Get the user originale
 declare -r console_user=$(stat -f '%Su' /dev/console)
 
 # Set some docker things
 # @todo: get IP to be 10.13.37.100 at some point
-declare -r docker_engine_ip="127.0.0.1"
+declare -r docker_engine_ip=127.0.0.1
 declare -r docker_bundle_dir=/Applications/Docker.app/Contents
 declare -r docker=${docker_bundle_dir}/Resources/bin/docker
 
@@ -24,11 +24,7 @@ declare -r kalabox_domain="kbox"
 
 # Make sure some core directories exist
 sudo mkdir -p /Library/PrivilegedHelperTools
-
-# Symlink all the docker tools
-for tool in com.docker.frontend docker docker-compose docker-diagnose docker-machine notary; do
-  sudo ln -sf ${docker_bundle_dir}/Resources/${tool} /usr/local/bin
-done
+sudo mkdir -p /usr/local/bin
 
 # Set up our VMNET things
 sudo install -m 0544 -o root -g wheel ${docker_bundle_dir}/Library/LaunchServices/com.docker.vmnetd /Library/PrivilegedHelperTools
@@ -36,7 +32,18 @@ sudo install -m 0644 -o root -g wheel ${docker_bundle_dir}/Resources/com.docker.
 sudo launchctl load /Library/LaunchDaemons/com.docker.vmnetd.plist
 
 # Launch docker
-sudo -u ${console_user} launchctl start com.docker.helper
+sudo -u ${console_user} open -a /Applications/Docker.app
+osascript <<EOD
+tell application "Docker"
+  activate
+end tell
+tell application "System Events"
+  repeat 10 times
+    keystroke return
+    delay (random number from 0.1 to 0.3)
+  end repeat
+end tell
+EOD
 
 # Wait for docker to be ready
 NEXT_WAIT_TIME=0
