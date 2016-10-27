@@ -1,3 +1,18 @@
+v2.1.1
+======
+
+* Added some additional upstreams to our DNS service. Should help resolve some DNS concerns on Windows. [#1676](https://github.com/kalabox/kalabox/issues/1676)
+
+v2.1.0
+======
+
+* Removed `docker-machine` and `VirtualBox` in favor of `Docker for Mac/Windows` and `xhyve/Hyper-V`.
+* Vastly improved file sharing and resource usage.
+* Added `confirmbigdel=false` to `unison` file sharing. This allows the user to remove their entire shared folder without issue.
+* Fixed `KALABOX_ENGINE_REMOTE_IP` value on macOS. Resolves issues with xdebug.
+* Updated `kalabox-cmd` plugin to take arrays for `{pre|post}cmdopts}`.
+* Improved auto install of Docker for Mac
+
 v2.1.0-rc.2
 ===========
 

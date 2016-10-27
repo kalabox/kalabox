@@ -6,11 +6,10 @@ FROM alpine:3.2
 
 RUN \
   apk add --update dnsmasq && \
-  echo 'user=root' >> /etc/dnsmasq.conf && \
-  echo 'address=/DOMAIN/IP' >> /etc/dnsmasq.conf && \
   rm -rf /var/cache/apk/*
 
 ADD start.sh /start.sh
+ADD dnsmasq.conf /etc/dnsmasq.conf
 
 EXPOSE 53
 CMD ["/start.sh"]
