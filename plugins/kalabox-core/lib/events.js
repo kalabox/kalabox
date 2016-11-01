@@ -35,8 +35,8 @@ module.exports = function(kbox) {
       // Send REST request.
       return new Promise(function(fulfill, reject) {
 
-        // Make the actual request
-        rest.get(site)
+        // Make the actual request, lets make sure self-signed certs are OK
+        rest.get(site, {rejectUnauthorized: false})
 
         // Log result and fulfil promise
         .on('success', function(data) {
