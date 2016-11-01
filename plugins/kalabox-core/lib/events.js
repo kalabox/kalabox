@@ -23,11 +23,11 @@ module.exports = function(kbox) {
     // Communication is the key to every succesful relationship
     app.status('Waiting for site to be ready.');
 
+    // Grab the URL we want to check
+    var site = app.url;
+
     // Ping the site until its ready to go
     return Promise.retry(function() {
-
-      // Grab the URL we want to check
-      var site = app.url;
 
       // Log the attempt
       log.debug(format('Checking to see if %s is ready.', site));
@@ -65,7 +65,16 @@ module.exports = function(kbox) {
 
       });
 
-    }, {max: 40});
+    }, {max: 15})
+
+    // We've been unable to get the correct status code so lets shoot out a
+    // non-fatal warning to the user
+    .catch(function() {
+      log.warn(
+        format('Unexpected status code returned. This MAY be a problem. ' +
+        'Check your site at %s to verify. Restarting your app may help.', site)
+      );
+    });
   };
 
   /*
