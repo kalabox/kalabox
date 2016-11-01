@@ -127,6 +127,20 @@ Options:
   -n, --names    Only display app names.                               [boolean]
 ```
 
+poweroff
+--------
+
+This is a nice utility command that you can run to shutdown all running Kalabox containers. This mimics the behavior of shutting down the Kalabox GUI. It is helpful if you are primarily a CLI user and want to free up any resources or ports Kalabox might be using.
+
+`kbox poweroff`
+
+```bash
+Options:
+  -h, --help     Display help message.                                 [boolean]
+  -v, --verbose  Use verbose output.                                   [boolean]
+  -d, --debug    Use debug output.                                     [boolean]
+```
+
 rebuild
 -------
 
