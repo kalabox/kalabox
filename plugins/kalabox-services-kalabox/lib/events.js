@@ -18,6 +18,20 @@ module.exports = function(kbox) {
   var log = kbox.core.log.make('SERVICES PLUGIN');
 
   /*
+   * Return the proxy and dns services
+   */
+  var getCoreServices = function() {
+    return {
+      compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
+      project: 'kalabox',
+      opts: {
+        services: ['dns', 'proxy'],
+        internal: true
+      }
+    };
+  };
+
+  /*
    * App events
    */
   kbox.core.events.on('post-app-load', function(app) {
@@ -39,20 +53,6 @@ module.exports = function(kbox) {
         opts: {
           app: app,
           services: [service]
-        }
-      };
-    };
-
-    /*
-     * Return the proxy and dns services
-     */
-    var getCoreServices = function() {
-      return {
-        compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
-        project: 'kalabox',
-        opts: {
-          services: ['dns', 'proxy'],
-          internal: true
         }
       };
     };
@@ -241,4 +241,12 @@ module.exports = function(kbox) {
       });
     });
   });
+
+  /*
+   * App events
+   */
+  kbox.core.events.on('pre-engine-down', 8, function() {
+    return kbox.engine.stop(getCoreServices());
+  });
+
 };

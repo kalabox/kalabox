@@ -10,6 +10,7 @@ module.exports = function(kbox) {
   require('./tasks/destroy.js')(kbox);
   require('./tasks/env.js')(kbox);
   require('./tasks/list.js')(kbox);
+  require('./tasks/poweroff.js')(kbox);
   require('./tasks/rebuild.js')(kbox);
   require('./tasks/restart.js')(kbox);
   require('./tasks/services.js')(kbox);

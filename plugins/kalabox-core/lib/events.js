@@ -104,4 +104,20 @@ module.exports = function(kbox) {
 
   });
 
+  /*
+   * Core events
+   * Shut down all app containers
+   */
+  kbox.core.events.on('pre-engine-down', 2, function() {
+
+    // Get all our apps
+    return kbox.app.list()
+
+    // SHUT IT ALL DOWN
+    .each(function(app) {
+      return kbox.app.stop(app);
+    });
+
+  });
+
 };

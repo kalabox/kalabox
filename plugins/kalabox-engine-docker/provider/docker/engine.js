@@ -33,7 +33,7 @@ module.exports = function(kbox) {
     // Return file(s) we need to check for
     switch (process.platform) {
       case 'darwin':
-        return ['launchctl', cmd, 'com.docker.helper'];
+        return ['open', '--hide', '--background', '-a', 'Docker'];
       case 'linux':
         return ['sudo', 'service', 'kalabox'].concat(cmd);
       case 'win32':
@@ -113,6 +113,19 @@ module.exports = function(kbox) {
     // Automatically return true if we are in the GUI and on linux because
     // this requires SUDO and because the daemon should always be running on nix
     if (mode === 'gui' && process.platform === 'linux') {
+      return Promise.resolve(true);
+    }
+
+    // Automatically return if we are on Windows or Darwin because we don't
+    // ever want to automatically turn the VM off since users might be using
+    // D4M/W for other things.
+    //
+    // For now we will be shutting down any services via relevant event hooks
+    // that bind to critical/common ports on 127.0.0.1/localhost e.g. 80/443/53
+    //
+    // @todo: When/if we can run our own isolated docker daemon we can change
+    // this back.
+    if (process.platform === 'win32' || process.platform === 'darwin') {
       return Promise.resolve(true);
     }
 
