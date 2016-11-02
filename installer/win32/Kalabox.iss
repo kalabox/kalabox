@@ -7,7 +7,6 @@
 #define engineSetup "engine.bat"
 #define kalabox "bundle"
 #define kboxIco "kalabox.ico"
-#define dnsSetup "dns.bat"
 #define git "Git.exe"
 
 [Setup]
@@ -60,7 +59,6 @@ Source: "{#docker}"; DestDir: "{app}\installers\docker"; DestName: "docker.msi";
 Source: "{#engineSetup}"; DestDir: "{app}"; Components: "Docker"; AfterInstall: RunEngineSetup();
 Source: "{#kalabox}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: "Kalabox"
 Source: "{#kboxIco}"; DestDir: "{app}"; DestName: "kalabox.ico"; Components: "Kalabox"
-Source: "{#dnsSetup}"; DestDir: "{app}"; Components: "Kalabox"; AfterInstall: RunDNSSetup();
 Source: "{#git}"; DestDir: "{app}\installers\git"; DestName: "git.exe"; AfterInstall: RunInstallGit(); Components: "Git"
 
 [Icons]
@@ -69,6 +67,9 @@ Name: "{commondesktop}\Kalabox"; WorkingDir: "{app}\gui"; Filename: "{app}\gui\k
 
 [Registry]
 Root: HKCU; Subkey: "Environment"; ValueType:string; ValueName:"KALABOX_INSTALL_PATH"; ValueData:"{app}" ; Flags: preservestringtype ;
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{userappdata}\..\.kalabox"
 
 [Code]
 procedure CheckHyperV();
@@ -118,30 +119,6 @@ begin
     else begin
       Log('Engine activation failed with code ' + IntToStr(ResultCode));
       MsgBox('Engine activation failed!', mbCriticalError, MB_OK);
-      WizardForm.Close;
-      exit;
-    end;
-  end
-  else begin
-    Log('Something bad happened with code ' + IntToStr(ResultCode));
-    MsgBox('Something bad happened. Install Fail.', mbCriticalError, MB_OK);
-  end;
-end;
-
-procedure RunDNSSetup();
-var
-  ResultCode: Integer;
-begin
-  WizardForm.FilenameLabel.Caption := 'Activating the DNS...'
-  if Exec(ExpandConstant('{app}\dns.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-  begin
-    if ( ResultCode = 0 ) then
-    begin
-      Log('DNS activated with great success and result code ' + IntToStr(ResultCode));
-    end
-    else begin
-      Log('DNS activation failed with code ' + IntToStr(ResultCode));
-      MsgBox('DNS activation failed!', mbCriticalError, MB_OK);
       WizardForm.Close;
       exit;
     end;

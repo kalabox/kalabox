@@ -4,7 +4,6 @@ set -e -x
 KALABOX_ROOT=/usr/share/kalabox
 PATH=$PATH:/usr/local/bin
 TERM=xterm
-KALABOX_IP=10.13.37.100
 
 # Set some permissions
 chmod 755 -R "$KALABOX_ROOT"
@@ -29,10 +28,6 @@ else
   fi
   service kalabox $_dh_action 2>/dev/null || true
 fi
-
-# Setup DNS
-mkdir -p /etc/resolver
-echo "nameserver ${KALABOX_IP}:53" > /etc/resolver/kbox
 
 # Symlink the KBOX binary
 mkdir -p /usr/local/bin

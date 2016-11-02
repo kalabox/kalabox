@@ -19,8 +19,13 @@ uninstall-kalabox() {
   echo "Removing Application..."
   sudo rm -rf /Applications/Kalabox.app
 
-  echo "Removing DNS"
+  echo "Removing legacy DNS resolver"
   sudo rm -f /etc/resolver/kbox
+
+  echo "Removing config directory"
+  rm -rf "$HOME/.kalabox"
+
+  echo "Kalabox Removed!"
 
 }
 
@@ -33,7 +38,7 @@ uninstall-docker() {
   sudo /Applications/Docker.app/Contents/MacOS/Docker --uninstall
   sudo rm -rf /Applications/Docker.app
 
-  echo "Kalabox Removed!"
+  echo "Docker Removed!"
 
 }
 

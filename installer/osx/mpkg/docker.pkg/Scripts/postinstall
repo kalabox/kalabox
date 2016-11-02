@@ -51,8 +51,4 @@ until ${docker} info >/dev/null || [ $NEXT_WAIT_TIME -eq 10 ]; do
   sleep $(( NEXT_WAIT_TIME++ ))
 done
 
-# Setup DNS
-mkdir -p /etc/resolver
-echo "nameserver ${docker_engine_ip}" > "/etc/resolver/${kalabox_domain}"
-
 # Fin

@@ -47,25 +47,6 @@ curl -fsSL -o bin/docker-compose "https://github.com/docker/compose/releases/dow
 chmod +x bin/docker
 chmod +x bin/docker-compose
 
-# Extract DNS
-cd ..
-curl -fsSL -o dns.rpm "https://github.com/azukiapp/libnss-resolver/releases/download/v0.3.0/fedora20-libnss-resolver-0.3.0-1.x86_64.rpm" && \
-  fakeroot -- alien -d dns.rpm --scripts && \
-  mkdir -p dns/rpm/data && mkdir -p dns/rpm/control && cd dns/rpm && \
-  ar x ./../../libnss-resolver_0.3.0-2_amd64.deb && \
-  tar -xzvf control.tar.gz -C control && \
-  tar -xvf data.tar.gz -C data || tar -xvf data.tar.xz -C data && \
-  cd ../.. && \
-  rm -f libnss-resolver_0.3.0-2_amd64.deb && \
-  rm -f dns.rpm
-curl -fsSL -o dns.deb "https://github.com/azukiapp/libnss-resolver/releases/download/v0.3.0/debian8-0-libnss-resolver_0.3.0_amd64.deb" && \
-  mkdir -p dns/deb/data && mkdir -p dns/deb/control && cd dns/deb && \
-  ar x ./../../dns.deb && \
-  tar -xzvf control.tar.gz -C control && \
-  tar -xzvf data.tar.gz -C data
-  cd ../.. && \
-  rm -f dns.deb
-
 # Back out to install root
 mkdir -p dist && \
   cp -rf ../../README.md kalabox/docs/README.md && \

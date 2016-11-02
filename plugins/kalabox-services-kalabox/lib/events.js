@@ -18,14 +18,14 @@ module.exports = function(kbox) {
   var log = kbox.core.log.make('SERVICES PLUGIN');
 
   /*
-   * Return the proxy and dns services
+   * Return the proxy service
    */
   var getCoreServices = function() {
     return {
       compose: [path.resolve(__dirname, '..', 'kalabox-compose.yml')],
       project: 'kalabox',
       opts: {
-        services: ['dns', 'proxy'],
+        services: ['proxy'],
         internal: true
       }
     };
@@ -198,7 +198,7 @@ module.exports = function(kbox) {
      */
     app.events.on('post-start', 1, function() {
 
-      // Make sure the core dns and proxy services are started up
+      // Make sure the core proxy service is started up
       return kbox.engine.start(getCoreServices())
 
       // Parse the config into an array of services objects
