@@ -33,6 +33,4 @@ fpm -s dir -t $PKG_TYPE \
   daemon/daemonup=/usr/share/kalabox/scripts/daemonup \
   init/upstart/kalabox.conf=/etc/init/kalabox.conf \
   init/sysv/kalabox=/etc/init.d/kalabox \
-  init/systemd/kalabox.service=/lib/systemd/system/kalabox.service \
-  dns/$PKG_TYPE/data/etc=/ \
-  dns/$PKG_TYPE/data/usr=/
+  init/systemd/kalabox.service=/lib/systemd/system/kalabox.service

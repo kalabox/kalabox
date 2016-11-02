@@ -12,10 +12,13 @@ if [ -d /run/systemd/system ] ; then
   systemctl --system daemon-reload > /dev/null || true
 fi
 
-# Remove DNS
-rm -f /etc/resolver/kbox
-
 # Totally wipe out /usr/share/kalabox on a purge
 if [ "$1" = "purge" ] ; then
   rm -rf /usr/share/kalabox
 fi
+
+# Remove config directory
+rm -rf "$HOME/.kalabox"
+
+# Removing legacy DNS resolver
+rm -f /etc/resolver/kbox
