@@ -36,9 +36,6 @@ Windows
 !!! warning "IF YOU DO NOT DO STEP 5 YOU ARE GOING TO BE S.O.L."
     After installation is finished make sure you [set up Shared Drives](https://docs.docker.com/docker-for-windows/#/shared-drives)
 
-!!! tip "White list *.kbox domains"
-    White list *.kbox domains in relevant security software that may be interfering with our custom DNS. See this [Github issue](https://github.com/kalabox/kalabox/issues/891) for more information on the topic.
-
 Debian/Ubuntu
 -------------
 
