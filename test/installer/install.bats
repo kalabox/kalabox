@@ -75,11 +75,6 @@ setup() {
   [ "$status" -eq 0 ]
 }
 
-# Check that DNS has been set
-@test "Check that correct IP exists in '/etc/resolver/kbox'" {
-  cat /etc/resolver/kbox | grep "${KALABOX_IP}"
-}
-
 # Check that correct IP can be pinged
 @test "Check that that correct IP can be pinged" {
   ping -c 1 "${KALABOX_IP}"
