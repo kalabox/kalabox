@@ -8,6 +8,7 @@ v2.1.1
 * Removed local `dns` server in favor of remote option. Should improve resolution on Windows. [#1676](https://github.com/kalabox/kalabox/issues/1676)
 * Changed default GUI app location from `~/.kalabox/apps` to `~/Kalabox`.
 * Added removal of `~/.kalabox` on uninstall.
+* Provided some retry wrappers to key `docker` engine operations.
 
 v2.1.0
 ======
