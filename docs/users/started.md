@@ -44,7 +44,7 @@ kbox start
 
 Now that you've started up the app you should have...
 
-  1. A static HTML site running the latest `nginx` and accessible at `http://html1.example.kbox/`
+  1. A static HTML site running the latest `nginx` and accessible at `http://html1.example.kbox.site/`
   2. A webroot with the default `nginx` index.html inside your app in the `code` directory.
 
 !!! tip "File sharing"

@@ -46,7 +46,7 @@ You can easily turn on proxying by adding an array of `services` objects to the 
 
 This config will start the following maps:
 
-  * `http://example1.kbox` => port `80` on your `web` container.
+  * `http://example1.kbox.site` => port `80` on your `web` container.
 
 ```yaml
 name: example1
@@ -61,10 +61,10 @@ pluginconfig:
 
 This config will start the following maps:
 
-  * `http://example2.kbox`        => port `8888` on your `web` container.
-  * `https://example2.kbox`       => port `444` on your `web` container.
-  * `http://edge.example2.kbox`   => port `80` on your `edge` container.
-  * `https://edge.example2.kbox`  => port `443` on your `edge` container.
+  * `http://example2.kbox.site`        => port `8888` on your `web` container.
+  * `https://example2.kbox.site`       => port `444` on your `web` container.
+  * `http://edge.example2.kbox.site`   => port `80` on your `edge` container.
+  * `https://edge.example2.kbox.site`  => port `443` on your `edge` container.
 
 ```yaml
 name: example2
@@ -88,11 +88,11 @@ pluginconfig:
 
 This config will start the following maps:
 
-  * `http://example3.kbox`              => port `80` on your `web` container.
-  * `http://site1.example3.kbox`        => port `80` on your `web` container.
-  * `http://site2.example3.kbox`        => port `80` on your `web` container.
-  * `http://site3.example3.kbox`        => port `80` on your `web` container.
-  * `http://site4.example3.kbox`        => port `80` on your `web` container.
+  * `http://example3.kbox.site`              => port `80` on your `web` container.
+  * `http://site1.example3.kbox.site`        => port `80` on your `web` container.
+  * `http://site2.example3.kbox.site`        => port `80` on your `web` container.
+  * `http://site3.example3.kbox.site`        => port `80` on your `web` container.
+  * `http://site4.example3.kbox.site`        => port `80` on your `web` container.
 
 
 ```yaml
@@ -113,9 +113,9 @@ pluginconfig:
 
 This config will start the following maps:
 
-  * `http://bob.frank.kbox`             => port `80` on your `web` container.
-  * `http://frank.bob.kbox`             => port `80` on your `web` container.
-  * `http://tippecanoe.tyler.too.kbox`  => port `80` on your `web` container.
+  * `http://bob.frank.kbox.site`             => port `80` on your `web` container.
+  * `http://frank.bob.kbox.site`             => port `80` on your `web` container.
+  * `http://tippecanoe.tyler.too.kbox.site`  => port `80` on your `web` container.
 
 ```yaml
 name: example4

@@ -28,7 +28,7 @@ Here is the default `kalabox.yml` file as of `v0.13.x`.
 # You can change the domain suffix used by default. The support level of
 # this setting is currently unknown.
 #
-domain: kbox
+domain: kbox.site
 
 #
 # Global plugins
