@@ -48,7 +48,7 @@ chmod +x bin/docker
 chmod +x bin/docker-compose
 
 # Back out to install root
-mkdir -p dist && \
+cd .. && mkdir -p dist && \
   cp -rf ../../README.md kalabox/docs/README.md && \
   cp -rf ../../TERMS.md kalabox/docs/TERMS.md && \
   cp -rf ../../LICENSE.md kalabox/docs/LICENSE.md
