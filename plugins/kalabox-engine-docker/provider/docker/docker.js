@@ -91,11 +91,9 @@ module.exports = function(kbox) {
     return dockerInstance()
     .then(function(dockerInstance) {
       // Make sure to retry call to list containers.
-      return Promise.retry(function() {
-        return Promise.fromNode(function(cb) {
-          dockerInstance.listContainers({all: 1}, cb);
-        });
-      }, {max: 50});
+      return Promise.fromNode(function(cb) {
+        dockerInstance.listContainers({all: 1}, cb);
+      });
     })
     // Make sure we have a timeout.
     .timeout(30 * 1000)
@@ -191,11 +189,9 @@ module.exports = function(kbox) {
     // Inspect container.
     .then(function(container) {
       // Make sure to retry call to inspect.
-      return Promise.retry(function() {
-        return Promise.fromNode(function(cb) {
-          container.inspect(cb);
-        });
-      }, {max: 50});
+      return Promise.fromNode(function(cb) {
+        container.inspect(cb);
+      });
     })
     // Wrap errors.
     .catch(function(err) {
