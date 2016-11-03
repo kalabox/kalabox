@@ -72,11 +72,11 @@ php:
 Common Issues
 -------------
 
-### Kalabox is failing to bind to port 80 or 53
+### Shoddy DNS issues on Windows or slow pull of Docker images
 
-In order for Kalabox to work it needs to bind its reverse proxy to port 80 and its dns service to port 53 on your computer. Sadly, these are fairly common ports that are used by a potential myriad of other software such as `apache`, `MAMP`, `Vagrant` etc. Please make sure you've deactivated these services before trying to run Kalabox.
+Some users have reported slowness (eg hours) to pull some of the Docker images we need to spin up your sites. It looks like this is a known issue for Docker for Windows. It looks like there is a good workaround here:
 
-See: [https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=find%20out%20what%20is%20running%20on%20port%2080](https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=find%20out%20what%20is%20running%20on%20port%2080)
+[https://docs.docker.com/docker-for-windows/#network](https://docs.docker.com/docker-for-windows/#network)
 
 ### Behind a network PROXY or FIREWALL
 
@@ -89,3 +89,25 @@ Check out [https://github.com/kalabox/kalabox/issues/1635](https://github.com/ka
 In some cases you cannot use VirtualBox (a common development tool) with Hyper-V however there is a documentated workaround you can check out over at [https://derekgusoff.wordpress.com/2012/09/05/run-hyper-v-and-virtualbox-on-the-same-machine/](https://derekgusoff.wordpress.com/2012/09/05/run-hyper-v-and-virtualbox-on-the-same-machine/)
 
 The author says, "VirtualBox and Hyper-V cannot co-exist on the same machine. Only one hypervisor can run at a time, and since Hyper-V runs all the time, while VirtualBox only runs when it is launched, VirtualBox is the loser in this scenario."
+
+### Working Offline
+
+Kalabox uses a remote DNS server to resolve your `*.kbox.site` addresses which means if you don't have an internet connection you are not going to be able to get to your site. However, you can use your `hosts` file in this scenario. Generally this file is located at `/etc/hosts` on Linux and macOS and `C:\Windows\System32\Drivers\etc\host` on Windows. Generally you will need administrative privileges to edit this file.
+
+Here is a [good read](http://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/) if you are not very familiar with the `hosts` file, how to edit it and how it works.
+
+On Linux you are going to want to point your site to `10.13.37.100` while on macOS and Windows you will want to use `127.0.0.1`. Here are some examples:
+
+#### Adding some domains to Windows/macOS
+
+```bash
+127.0.0.1 project-awesome.kbox.site varnish.project-awesome.kbox.site
+127.0.0.1 weezer.kbox.site
+```
+
+#### Adding some domains to Linux
+
+```bash
+10.13.37.100 mysite.kbox.host edge.mysite.kbox.host
+10.13.37.100 thing.kbox.host
+```

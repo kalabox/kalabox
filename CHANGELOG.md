@@ -1,10 +1,10 @@
 v2.1.1
 ======
 
-* Added some additional upstreams to our DNS service. Should help resolve some DNS concerns on Windows. [#1676](https://github.com/kalabox/kalabox/issues/1676)
 * Switched site is up logic to not reject self-signed certs if site it forcing `HTTPS`. [#1657](https://github.com/kalabox/kalabox/issues/1657)
 * Switched site is up logic to always end up with site being ready. [#1688](https://github.com/kalabox/kalabox/issues/1688)
 * Improved Kalabox start and shutdown logic. [#1669](https://github.com/kalabox/kalabox/issues/1669)
+* Added `kbox poweroff` command. [#1669](https://github.com/kalabox/kalabox/issues/1669)
 * Removed local `dns` server in favor of remote option. Should improve resolution on Windows. [#1676](https://github.com/kalabox/kalabox/issues/1676)
 * Changed default GUI app location from `~/.kalabox/apps` to `~/Kalabox`.
 * Added removal of `~/.kalabox` on uninstall.

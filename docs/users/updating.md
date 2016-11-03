@@ -9,7 +9,7 @@ This means that *generally* you should be able to [update normally](#normal-upda
 
 **Updating between minor versions is likely dark and full of peril**
 
-Right now minor version bumps ie from `v0.12.1` to `v0.13.2` should be considered breaking. Once we release a stable `v1.0.0` minor version bumps will likely not be breaking.
+Minor version bumps eg from `v0.12.1` to `v0.13.2` should be considered breaking.
 
 **Updating from a pre-release version is often frought with terror**
 
@@ -44,7 +44,7 @@ Purge Updating
 To update to a Kalabox that has breaking changes purge the old installation and install the new one. The easiest way to do this is:
 
 1. Destroy all the apps you have (see [backing up older apps](#backing-up-older-appps))
-2. Shutdown the Kalabox GUI and/or kill any running Kalabox CLI process.
+2. Shutdown the Kalabox GUI and/or kill any running Kalabox CLI processes.
 3. Follow the normal [uninstall procedure](./uninstall.md).
 4. Follow the [normal installation steps](./install.md) with the new version.
 

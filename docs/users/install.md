@@ -7,7 +7,10 @@ Preinstall Checks
 1. Verify that your system meets the [minimum system and hardware requirements](../general/sysreq.md) to run Kalabox.
 2. Verify that you are connected to the internet.
 3. Verify that you have administrative access to your machine.
-4. If you have previously installed Kalabox and are attempting to install a new  version check out our [update guide](./updating.md) before continuing.
+4. Verify that your machine is not currently using ports `80`, `443` and `8160`.
+
+!!! warning "Previously installed Kalabox?."
+    If you have previously installed Kalabox and are attempting to install a new version check out our [update guide](./updating.md) before continuing.
 
 macOS
 -----
