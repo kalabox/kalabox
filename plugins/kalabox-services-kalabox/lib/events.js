@@ -67,18 +67,18 @@ module.exports = function(kbox) {
 
       // Handle 'default' key
       if (route.default) {
-        hostnames.push(app.name);
+        hostnames.push([app.name, app.domain].join('.'));
       }
 
       // Handle legacy 'hostname' key
       if (route.hostname) {
-        hostnames.push([route.hostname, app.name].join('.'));
+        hostnames.push([route.hostname, app.name, app.domain].join('.'));
       }
 
       // Handle 'subdomains'
       if (route.subdomains) {
         _.forEach(route.subdomains, function(subdomain) {
-          hostnames.push([subdomain, app.name].join('.'));
+          hostnames.push([subdomain, app.name, app.domain].join('.'));
         });
       }
 
@@ -94,7 +94,7 @@ module.exports = function(kbox) {
 
       // Return an array of parsed hostnames
       return _.map(hostnames, function(hostname) {
-        return protocol + [hostname, app.domain].join('.');
+        return protocol + hostname;
       });
 
     };

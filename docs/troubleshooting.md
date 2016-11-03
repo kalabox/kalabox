@@ -92,7 +92,7 @@ The author says, "VirtualBox and Hyper-V cannot co-exist on the same machine. On
 
 ### Working Offline
 
-Kalabox uses a remote DNS server to resolve your `*.kbox.site` addresses which means if you don't have an internet connection you are not going to be able to get to your site. However, you can use your `hosts` file in this scenario. Generally this file is located at `/etc/hosts` on Linux and macOS and `C:\Windows\System32\Drivers\etc\host` on Windows. Generally you will need administrative privileges to edit this file.
+Kalabox uses a remote DNS server to resolve your `*.kbox.site` addresses which means if you don't have an internet connection you are not going to be able to get to your site. However, you can use your `hosts` file in this scenario. Generally this file is located at `/etc/hosts` on Linux and macOS and `C:\Windows\System32\Drivers\etc\host` on Windows. You will need administrative privileges to edit this file.
 
 Here is a [good read](http://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/) if you are not very familiar with the `hosts` file, how to edit it and how it works.
 
@@ -102,12 +102,12 @@ On Linux you are going to want to point your site to `10.13.37.100` while on mac
 
 ```bash
 127.0.0.1 project-awesome.kbox.site varnish.project-awesome.kbox.site
-127.0.0.1 weezer.kbox.site
+127.0.0.1 weezer.kbox.rocks
 ```
 
 #### Adding some domains to Linux
 
 ```bash
 10.13.37.100 mysite.kbox.host edge.mysite.kbox.host
-10.13.37.100 thing.kbox.host
+10.13.37.100 thing.kbox.com
 ```

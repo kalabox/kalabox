@@ -9,6 +9,7 @@ v2.1.1
 * Changed default GUI app location from `~/.kalabox/apps` to `~/Kalabox`.
 * Added removal of `~/.kalabox` on uninstall.
 * Provided some retry wrappers to key `docker` engine operations.
+* Widened `services` plugin to allow non `*.kbox.site` domains. [#1611](https://github.com/kalabox/kalabox/issues/1611)
 
 v2.1.0
 ======
