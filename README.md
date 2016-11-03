@@ -77,7 +77,7 @@ an official release is rolled.
   * **Windows** - [http://installer.kalabox.io/kalabox-latest-dev.exe](http://installer.kalabox.io/kalabox-latest-dev.exe)
   * **Debian** - [http://installer.kalabox.io/kalabox-latest-dev.deb](http://installer.kalabox.io/kalabox-latest-dev.deb)
   * **Fedora** - [http://installer.kalabox.io/kalabox-latest-dev.rpm](http://installer.kalabox.io/kalabox-latest-dev.rpm)
-  * **MacOSX** - [http://installer.kalabox.io/kalabox-latest-dev.dmg](http://installer.kalabox.io/kalabox-latest-dev.dmg)
+  * **macOS** - [http://installer.kalabox.io/kalabox-latest-dev.dmg](http://installer.kalabox.io/kalabox-latest-dev.dmg)
 
 **NOTE:** Releases can take some time to build after we merge in commits. For that reason you might want to check the time of the last commit and if it is within a few hours you might want to hold off a bit before trying the new latest release.
 

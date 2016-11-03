@@ -54,7 +54,7 @@
     "bluebird": "^3.4.1",
     "chalk": "~0.5.1",
     "decompress": "^3.0.0",
-    "dockerode": "^2.2.7",
+    "dockerode": "^2.3.1",
     "download": "^4.4.3",
     "fs-extra": "^0.18.2",
     "inquirer": "^0.8.3",
