@@ -11,17 +11,15 @@ function fixSearch() {
     observer.disconnect();
     var form = $('#rtd-search-form');
     form.empty();
-    form.attr('action', 'https://' + window.location.hostname + '/en/' + determineSelectedBranch() + '/search.html');
+    form.attr('action', 'http://' + window.location.hostname + '/en/' + determineSelectedBranch() + '/search.html');
     $('<input>').attr({
       type: "text",
       name: "q",
       placeholder: "Search docs"
     }).appendTo(form);
   });
-  // don't run this outside RTD hosting
-  if (window.location.origin.indexOf('readthedocs') > -1) {
-    observer.observe(target, config);
-  }
+  
+  observer.observe(target, config);
 }
 
 /**
@@ -32,11 +30,9 @@ function fixSearch() {
  * @returns GitHub branch name
  */
 function determineSelectedBranch() {
-  var branch = 'dev', path = window.location.pathname;
-  if (window.location.origin.indexOf('readthedocs') > -1) {
-    // path is like /en/<branch>/<lang>/build/ -> extract 'lang'
-    // split[0] is an '' because the path starts with the separator
-    branch = path.split('/')[2];
-  }
+  var branch = 'stable', path = window.location.pathname;
+  // path is like /en/<branch>/<lang>/build/ -> extract 'lang'
+  // split[0] is an '' because the path starts with the separator
+  branch = path.split('/')[2];
   return branch;
 }
