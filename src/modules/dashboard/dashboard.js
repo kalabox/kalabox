@@ -92,6 +92,7 @@ angular.module('kalabox.dashboard', [
       var index = findSite(app, $scope.ui.sites);
       $scope.$applyAsync(function() {
         $scope.ui.sites[index] = Site.fromApp(app);
+        $scope.ui.sites[index].status = 'Creating...';
         $scope.ui.sites[index].busy = true;
       });
     });
