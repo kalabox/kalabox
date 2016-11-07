@@ -72,6 +72,15 @@ php:
 Common Issues
 -------------
 
+### Docker daemon is throwing an error
+
+On occasion, and especially while Docker for Mac and Docker for Windows are in beta, the docker daemon will throw an unexpected error. The best thing to do in these circumstances is to restart the docker daemon which you can read more about in our [engine section](./general/engine.md).
+
+If you are having recurring issues that you suspect are primarily docker related then you can try upgrading to the latest Docker for Mac/Windows beta to see if that resolves your issue.
+
+[Docker for Mac BETA](https://download.docker.com/mac/beta/Docker.dmg)
+[Docker for Windows BETA](https://download.docker.com/win/beta/InstallDocker.msi)
+
 ### Shoddy DNS issues on Windows or slow pull of Docker images
 
 Some users have reported slowness (eg hours) to pull some of the Docker images we need to spin up your sites. It looks like this is a known issue for Docker for Windows. It looks like there is a good workaround here:
