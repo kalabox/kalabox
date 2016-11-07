@@ -112,6 +112,25 @@ module.exports = function(kbox) {
     };
 
     /*
+     * Verify that we have the ports that we need
+     */
+    var verifyPorts = function() {
+
+      // Check to see if our proxy is already up and running
+      return kbox.engine.inspect(getCoreServices())
+
+      // Return the running state
+      .then(function(data) {
+        return _.get(data, 'State.Running', false);
+      })
+
+      .then(function(isRunning) {
+        console.log(isRunning);
+      });
+
+    };
+
+    /*
      * Parse our config into an array of service objects and do
      * some basic validation
      */
@@ -198,8 +217,13 @@ module.exports = function(kbox) {
      */
     app.events.on('post-start', 1, function() {
 
+      // Verify ports we need are availabke
+      return verifyPorts()
+
       // Make sure the core proxy service is started up
-      return kbox.engine.start(getCoreServices())
+      .then(function() {
+        return kbox.engine.start(getCoreServices());
+      })
 
       // Parse the config into an array of services objects
       .then(function() {

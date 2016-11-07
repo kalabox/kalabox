@@ -69,6 +69,7 @@
     "mkdirp": "^0.5.1",
     "moment": "^2.10.6",
     "multipipe": "^0.1.2",
+    "portastic": "^1.0.1",
     "redis": "https://github.com/thinktandem/node_redis/tarball/master",
     "restler": "^3.4.0",
     "sha1": "^1.1.0",
