@@ -1,3 +1,8 @@
+v2.1.2
+======
+
+* Fixed regression where `cli` was not accepting hyphens for site names. [#1711](https://github.com/kalabox/kalabox/issues/1711)
+
 v2.1.1
 ======
 
