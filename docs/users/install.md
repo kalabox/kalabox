@@ -36,8 +36,8 @@ Windows
 5. After installation is finished make sure you [set up Shared Drives](https://docs.docker.com/docker-for-windows/#/shared-drives)
 6. Launch the Kalabox CLI or GUI and start deving all the devs
 
-!!! warning "IF YOU DO NOT DO STEP 5 YOU ARE GOING TO BE S.O.L."
-    After installation is finished make sure you [set up Shared Drives](https://docs.docker.com/docker-for-windows/#/shared-drives)
+!!! warning "YOU MUST SET UP SHARED DRIVES AND HAVE HYPER-V ENABLED"
+    After installation is finished make sure you [set up Shared Drives](https://docs.docker.com/docker-for-windows/#/shared-drives) and if you have further problems, check to see if [Hyper-V is enabled](https://msdn.microsoft.com/en-us/virtualization/hyperv_on_windows/quick_start/walkthrough_install).
 
 Debian/Ubuntu
 -------------
