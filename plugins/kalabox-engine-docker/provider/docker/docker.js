@@ -66,6 +66,7 @@ module.exports = function(kbox) {
     var service = dockerContainer.Labels['com.docker.compose.service'];
     var num = dockerContainer.Labels['com.docker.compose.container-number'];
     var run = dockerContainer.Labels['com.docker.compose.oneoff'];
+    var kalabox = dockerContainer.Labels['io.kalabox.container'] || false;
 
     // Add 'run' the service if this is a oneoff container
     if (run === 'True') {
@@ -77,7 +78,8 @@ module.exports = function(kbox) {
       id: dockerContainer.Id,
       name: [app, service, num].join('_'),
       app: (app !== 'kalabox') ? app : undefined,
-      kind: (app !== 'kalabox') ? 'app' : 'service'
+      kind: (app !== 'kalabox') ? 'app' : 'service',
+      kalabox: (kalabox === 'TRUE') ? true : false
     };
 
   };
@@ -101,7 +103,7 @@ module.exports = function(kbox) {
     .catch(function(err) {
       throw new VError(err, 'Error querying docker for list of containers.');
     })
-    // Filter out containers with invalid status.
+    // Filter out containers with invalid status
     .filter(function(data) {
       return data.Status !== 'Removal In Progress';
     })
@@ -109,6 +111,10 @@ module.exports = function(kbox) {
     .map(toGenericContainer)
     // Filter out nulls and undefineds.
     .filter(_.identity)
+    // Filter out all non-kalabox containers
+    .filter(function(data) {
+      return data.kalabox === true;
+    })
     // Filter by app name if an app name was given.
     .then(function(containers) {
       if (appName) {

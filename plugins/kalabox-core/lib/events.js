@@ -4,16 +4,51 @@ module.exports = function(kbox) {
 
   // Node modules
   var format = require('util').format;
+  var path = require('path');
 
   // Npm modules
   var rest = require('restler');
   var _ = require('lodash');
+  var fs = require('fs-extra');
 
   // Kalabox modules
   var Promise = kbox.Promise;
 
   // Logging
   var log = kbox.core.log.make('CORE PLUGIN');
+
+  /*
+   * Return an object of default envs and labels
+   */
+  var getComposeDefaults = function(composeFiles) {
+
+    // Colllect our compose files
+    var currentCompose = {};
+
+    // Get our composed things
+    _.forEach(composeFiles, function(file)  {
+      _.extend(currentCompose, kbox.util.yaml.toJson(file));
+    });
+
+    // Build our default object
+    var defaults = {};
+
+    // Iterate through keys and add defaults
+    _.forEach(_.keys(currentCompose), function(key) {
+      defaults[key] = {
+        environment: {
+          'KALABOX': 'ON'
+        },
+        labels: {
+          'io.kalabox.container': 'TRUE'
+        }
+      };
+    });
+
+    // Return our defaults
+    return defaults;
+
+  };
 
   /*
    * Helper function to check to see if a site is ready or not
@@ -101,6 +136,35 @@ module.exports = function(kbox) {
     app.events.on('post-create', 9, function() {
       return verifyIsUp(app);
     });
+
+  });
+
+  /*
+   * Engine events
+   */
+  kbox.core.events.on('pre-engine-start', function(data) {
+
+    // Get options
+    var composeFiles = data.compose || {};
+    var project = data.project || 'kalabox';
+
+    // Create dir to store this stuff
+    var tmpDir = path.join(kbox.util.disk.getTempDir(), project);
+    fs.mkdirpSync(tmpDir);
+
+    // Get our sharing compose file
+    var composeDefaults = getComposeDefaults(composeFiles);
+
+    // Add in our compose file with the defaults
+    if (!_.isEmpty(composeDefaults)) {
+      var fileName = [project, _.uniqueId()].join('-');
+      var defaultComposeFile = path.join(tmpDir, fileName + '.yml');
+      kbox.util.yaml.toYamlFile(composeDefaults, defaultComposeFile);
+      composeFiles.push(defaultComposeFile);
+    }
+
+    // Reset our composeData
+    data.compose = composeFiles;
 
   });
 
