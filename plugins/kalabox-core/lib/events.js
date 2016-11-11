@@ -20,7 +20,15 @@ module.exports = function(kbox) {
   /*
    * Return an object of default envs and labels
    */
-  var getComposeDefaults = function(composeFiles) {
+  var getComposeDefaults = function(data) {
+
+    // Get options
+    var composeFiles = data.compose || {};
+    var project = data.project || 'kalabox';
+
+    // Create dir to store this stuff
+    var tmpDir = path.join(kbox.util.disk.getTempDir(), project);
+    fs.mkdirpSync(tmpDir);
 
     // Colllect our compose files
     var currentCompose = {};
@@ -45,8 +53,16 @@ module.exports = function(kbox) {
       };
     });
 
+    // Add in our compose file with the defaults
+    if (!_.isEmpty(defaults)) {
+      var fileName = [project, _.uniqueId()].join('-');
+      var defaultComposeFile = path.join(tmpDir, fileName + '.yml');
+      kbox.util.yaml.toYamlFile(defaults, defaultComposeFile);
+      composeFiles.push(defaultComposeFile);
+    }
+
     // Return our defaults
-    return defaults;
+    return composeFiles;
 
   };
 
@@ -142,30 +158,15 @@ module.exports = function(kbox) {
   /*
    * Engine events
    */
+
+  // Add defaults to start events
   kbox.core.events.on('pre-engine-start', function(data) {
+    data.compose = getComposeDefaults(data);
+  });
 
-    // Get options
-    var composeFiles = data.compose || {};
-    var project = data.project || 'kalabox';
-
-    // Create dir to store this stuff
-    var tmpDir = path.join(kbox.util.disk.getTempDir(), project);
-    fs.mkdirpSync(tmpDir);
-
-    // Get our sharing compose file
-    var composeDefaults = getComposeDefaults(composeFiles);
-
-    // Add in our compose file with the defaults
-    if (!_.isEmpty(composeDefaults)) {
-      var fileName = [project, _.uniqueId()].join('-');
-      var defaultComposeFile = path.join(tmpDir, fileName + '.yml');
-      kbox.util.yaml.toYamlFile(composeDefaults, defaultComposeFile);
-      composeFiles.push(defaultComposeFile);
-    }
-
-    // Reset our composeData
-    data.compose = composeFiles;
-
+  // Add defaults to run events
+  kbox.core.events.on('pre-engine-run', function(data) {
+    data.compose = getComposeDefaults(data);
   });
 
   /*
