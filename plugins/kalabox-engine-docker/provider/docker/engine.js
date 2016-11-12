@@ -33,7 +33,7 @@ module.exports = function(kbox) {
     // Return file(s) we need to check for
     switch (process.platform) {
       case 'darwin':
-        return ['open', '--hide', '--background', '-a', 'Docker'];
+        return ['open', '/Applications/Docker.app'];
       case 'linux':
         return ['sudo', 'service', 'kalabox'].concat(cmd);
       case 'win32':
