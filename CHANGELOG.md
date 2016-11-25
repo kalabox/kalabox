@@ -1,3 +1,8 @@
+v2.1.3
+======
+
+* Added `lodash` to `kbox._` for use in easy plugin craftworks.
+
 v2.1.2
 ======
 
