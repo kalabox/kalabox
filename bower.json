@@ -1,6 +1,6 @@
 {
   "name": "Kalabox",
-  "version": "2.1.3",
+  "version": "2.1.2",
   "license": "N/A",
   "dependencies": {
     "angular": "~1.4.0",

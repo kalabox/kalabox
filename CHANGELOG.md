@@ -6,6 +6,7 @@ v2.1.3
 * Added `fs-extra` to `kbox.node.fs` for use in easy plugin craftworks.
 * Added `inquirer` to `kbox.node.inquirer` for use in easy plugin craftworks.
 * Added `restler` to `kbox.node.restler` for use in easy plugin craftworks.
+* Fixed `postoptcmd` to put options in the right place when used via `cli.yml`
 
 v2.1.2
 ======

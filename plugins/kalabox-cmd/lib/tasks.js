@@ -146,11 +146,11 @@ module.exports = function(kbox) {
                 if (options.postcmdopts) {
                   if (typeof options.postcmdopts === 'object') {
                     _.each(options.postcmdopts.reverse(), function(opt) {
-                      options.cmd.unshift(opt);
+                      options.cmd.push(opt);
                     });
                   }
                   else {
-                    options.cmd.unshift(options.precmdopts);
+                    options.cmd.push(options.postcmdopts);
                   }
                 }
 
