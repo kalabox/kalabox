@@ -1,7 +1,11 @@
 v2.1.3
 ======
 
-* Added `lodash` to `kbox._` for use in easy plugin craftworks.
+* Added `lodash` to `kbox.node._` for use in easy plugin craftworks.
+* Added `chalk` to `kbox.node.chalk` for use in easy plugin craftworks.
+* Added `fs-extra` to `kbox.node.fs` for use in easy plugin craftworks.
+* Added `inquirer` to `kbox.node.inquirer` for use in easy plugin craftworks.
+* Added `restler` to `kbox.node.restler` for use in easy plugin craftworks.
 
 v2.1.2
 ======
