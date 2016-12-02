@@ -2,7 +2,7 @@
 Name=Kalabox
 Comment=Fast local dev
 Keywords=development;
-OnlyShowIn=GNOME;KDE;LXDE;MATE;Razor;ROX;TDE;Unity;XFCE;EDE;Cinnamon;Old;
+OnlyShowIn=GNOME;KDE;LXDE;MATE;Razor;ROX;TDE;Unity;XFCE;EDE;Cinnamon;Old;Pantheon;
 Path=/usr/share/kalabox/
 Exec=/usr/share/kalabox/Kalabox
 Icon=/usr/share/kalabox/kalabox.png
