@@ -1,3 +1,8 @@
+v2.1.4
+======
+
+* Added `KALABOX_HOSTOS` environmental variable to every container.
+
 v2.1.3
 ======
 
