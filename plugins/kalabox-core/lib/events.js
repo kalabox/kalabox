@@ -45,7 +45,8 @@ module.exports = function(kbox) {
     _.forEach(_.keys(currentCompose), function(key) {
       defaults[key] = {
         environment: {
-          'KALABOX': 'ON'
+          'KALABOX': 'ON',
+          'KALABOX_HOSTOS': process.platform
         },
         labels: {
           'io.kalabox.container': 'TRUE'
