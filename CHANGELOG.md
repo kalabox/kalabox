@@ -4,6 +4,7 @@ v2.1.4
 * Added `KALABOX_HOSTOS` environmental variable to every container.
 * Fixed bug where deleting an app whilst creating another would result in `ENOENT` on the deleted app. [#1742](https://github.com/kalabox/kalabox/issues/1742)
 * Added GUI to `Pantheon` based Linux Desktops. [#1737](https://github.com/kalabox/kalabox/issues/1737)
+* Fixed bug where plugins with `undefined` config sections were stalling the GUI loading screen.
 
 v2.1.3
 ======

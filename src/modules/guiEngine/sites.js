@@ -320,7 +320,7 @@ angular.module('kalabox.sites', [])
       url: app.url,
       folder: app.root,
       codeFolder: app.config.sharing.codeRoot,
-      providerInfo: app.config.pluginconfig[app.config.type]
+      providerInfo: app.config.pluginconfig[app.config.type] || {}
     });
   };
 
