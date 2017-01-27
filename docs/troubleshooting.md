@@ -93,6 +93,12 @@ If you are pulling container images and seeing errors like "Error while pulling 
 
 Check out [https://github.com/kalabox/kalabox/issues/1635](https://github.com/kalabox/kalabox/issues/1635) for more details on that issue.
 
+#### DNS Rebinding Protection
+
+Some Routers and Firewalls may prevent Kalabox from properly routing `yoursite.kbox.site` to your local environment through [DNS Rebinding](https://en.wikipedia.org/wiki/DNS_rebinding) protection. DD-WRT router firmware enables this protection by default.
+
+If your site preview fails automatically, and you are unable to look up the url (`nslookup <sitename>.kbox.site)`), DNS rebinding protection may be the cause. If you can't or don't want to remove this protection, you can use the steps in [Working Offline](#working-offline) to bypass.
+
 ### Windows is also running VirtualBox
 
 In some cases you cannot use VirtualBox (a common development tool) with Hyper-V however there is a documentated workaround you can check out over at [https://derekgusoff.wordpress.com/2012/09/05/run-hyper-v-and-virtualbox-on-the-same-machine/](https://derekgusoff.wordpress.com/2012/09/05/run-hyper-v-and-virtualbox-on-the-same-machine/)
