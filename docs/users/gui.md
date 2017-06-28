@@ -2,11 +2,11 @@ Using the Kalabox GUI
 =====================
 
 The Kalabox GUI gives you the ability to easily interact with your sites on Pantheon
-and to spin-up stock Drupal, Wordpress, and Backdrop apps. If you're interested
+and to spin-up stock Drupal, WordPress, and Backdrop apps. If you're interested
 in in-depth information on how the GUI functions, see...
 
 - [Pantheon app docs](http://pantheon.kalabox.io) for how to pull down and work on Pantheon sites.
-- [PHP app docs](http://php.kalabox.io) for how to create new Drupal, Wordpress, and Backdrop apps.
+- [PHP app docs](http://php.kalabox.io) for how to create new Drupal, WordPress, and Backdrop apps.
 
 !!! note "Note for Kalabox Developers"
     Right now there is no distinction between core GUI features, features dedicated

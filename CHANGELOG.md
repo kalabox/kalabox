@@ -5,6 +5,7 @@ v2.1.4
 * Fixed bug where deleting an app whilst creating another would result in `ENOENT` on the deleted app. [#1742](https://github.com/kalabox/kalabox/issues/1742)
 * Added GUI to `Pantheon` based Linux Desktops. [#1737](https://github.com/kalabox/kalabox/issues/1737)
 * Fixed bug where plugins with `undefined` config sections were stalling the GUI loading screen.
+* Fixed mis-capitlization of "WordPress". [#1814](https://github.com/kalabox/kalabox/issues/1814)
 
 v2.1.3
 ======

@@ -135,7 +135,7 @@ angular.module('kalabox.sidebar', [
         case 'drupal8':
           return 'Drupal 8';
         case 'wordpress':
-          return 'Wordpress';
+          return 'WordPress';
       }
     };
   }
