@@ -7,8 +7,7 @@ Creating Issues
 **ALL ISSUES** for the Kalabox should be created on the main Kalabox
 project page: https://github.com/kalabox/kalabox/issues
 
-Once you create an issue please follow the guidelines that are posted as the
-first comment on your.
+Once you create an issue please follow the guidelines that are pre-populated in the first comment of the issue.
 
 Issue tags
 ----------
