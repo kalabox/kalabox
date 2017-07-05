@@ -24,7 +24,7 @@ Once you've [installed Kalabox](http://docs.kalabox.io/en/stable/users/install/#
   * The Kalabox CLI available in your terminal. Type `kbox` on a terminal to see.
   * The Kalabox engine running a docker daemon.
 
-Kalabox also packages two kinds of special external plugins that generate Drupal, Wordpress, Backdrop or Pantheon based projects. Read about them below.
+Kalabox also packages two kinds of special external plugins that generate Drupal, WordPress, Backdrop or Pantheon based projects. Read about them below.
 
 ### Creating Pantheon Apps
 
@@ -41,7 +41,7 @@ To read more about the Pantheon plugin check out both the [docs](http://pantheon
 
 The Kalabox PHP app allows users to...
 
-  1. Create basic Drupal, Wordpress and Backdrop sites.
+  1. Create basic Drupal, WordPress and Backdrop sites.
   2. Get some nice power tools to go with their apps like Drush.
 
 To read more about the PHP app check out both the [docs](http://php.kalabox.io/) and its [code](https://github.com/kalabox/kalabox-app-php).

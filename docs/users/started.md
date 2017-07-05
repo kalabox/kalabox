@@ -1,8 +1,8 @@
-!!! warning "Looking for pre-made Drupal, Wordpress and Backdrop apps?"
+!!! warning "Looking for pre-made Drupal, WordPress and Backdrop apps?"
     If you aren't interested in making your own apps, check out the documentation on...
 
-    * [Our Pantheon plugin](http://pantheon.kalabox.io) - Allows you to pull Drupal, Wordpress and Backdrop sites from Pantheon
-    * [Our PHP plugin](http://php.kalabox.io) - Allows you to spin up brand-new Drupal, Wordpress, and Backdrop sites.
+    * [Our Pantheon plugin](http://pantheon.kalabox.io) - Allows you to pull Drupal, WordPress and Backdrop sites from Pantheon
+    * [Our PHP plugin](http://php.kalabox.io) - Allows you to spin up brand-new Drupal, WordPress, and Backdrop sites.
 
 Getting Started
 ===============
