@@ -70,5 +70,5 @@ If you do not have the GUI-based Software Center you can install the `.rpm` pkg 
 ```bash
 sudo dnf update -y
 sudo dnf install bridge-utils iptables cgroup-bin
-sudo rpm -i kalabox.deb
+sudo rpm -i kalabox.rpm
 ```
