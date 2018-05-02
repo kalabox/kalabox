@@ -18,8 +18,6 @@ install:
 
   # install relevant things
   - npm install -g grunt-cli bower
-  - ruby --version
-  - gem --version
   - gem install sass
 
   # Build the things
@@ -73,7 +71,7 @@ deploy:
     artifact: weezer
     draft: false
     auth_token:
-      secure: h95XRXK3tAJOZphssQ9dB3rpdK0y2I8VpakCR79+YwjZQOCW4YukAdCcwtBFdEoD
+      secure: o0IVlx+/pe1B6oybNp8JHk3NIn0O4Ki+6v3nHF6Hu8ULnIePBY3//o/YCav/Paa8
     prerelease: false
     on:
       appveyor_repo_tag: true
