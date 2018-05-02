@@ -204,9 +204,9 @@ module.exports = function(grunt) {
   // Check Linting, standards and styles
   grunt.registerTask('test:code', [
     'jshint',
-    'jscs',
-    'htmlangular',
-    'mdlint'
+    'jscs'
+    // 'htmlangular'
+    // 'mdlint'
   ]);
 
   // Run unit tests

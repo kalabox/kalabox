@@ -71,6 +71,41 @@ module.exports = function(kbox) {
   };
 
   /*
+   * Return true if engine is up.
+   */
+  var isUp = function() {
+
+    // Whitelist this in windows for now
+    return bin.sh([DOCKER_EXECUTABLE, 'info'], {mode: 'collect'})
+
+    // Return true if we get a zero response
+    .then(function() {
+      log.debug('Engine is up.');
+      return Promise.resolve(true);
+    })
+
+    // Return false if we get a non-zero response
+    .catch(function() {
+      log.debug('Engine is down.');
+      return Promise.resolve(false);
+    });
+
+  };
+
+  /*
+   * Return true if engine is down.
+   */
+  var isDown = function() {
+
+    // Return the opposite of isUp.
+    return isUp()
+    .then(function(isUp) {
+      return !isUp;
+    });
+
+  };
+
+  /*
    * Bring engine up.
    */
   var up = function() {
@@ -143,41 +178,6 @@ module.exports = function(kbox) {
     // Wrap errors.
     .catch(function(err) {
       throw new VError(err, 'Error while shutting down.');
-    });
-
-  };
-
-  /*
-   * Return true if engine is up.
-   */
-  var isUp = function() {
-
-    // Whitelist this in windows for now
-    return bin.sh([DOCKER_EXECUTABLE, 'info'], {mode: 'collect'})
-
-    // Return true if we get a zero response
-    .then(function() {
-      log.debug('Engine is up.');
-      return Promise.resolve(true);
-    })
-
-    // Return false if we get a non-zero response
-    .catch(function() {
-      log.debug('Engine is down.');
-      return Promise.resolve(false);
-    });
-
-  };
-
-  /*
-   * Return true if engine is down.
-   */
-  var isDown = function() {
-
-    // Return the opposite of isUp.
-    return isUp()
-    .then(function(isUp) {
-      return !isUp;
     });
 
   };

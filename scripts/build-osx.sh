@@ -10,7 +10,7 @@ KALABOX_VERSION="$KBOX_VERSION"
 DOCKER_VERSION="0.12.1"
 
 # Apps
-PLUGIN_PANTHEON_VERSION="2.1.3"
+PLUGIN_PANTHEON_VERSION="2.1.5"
 PLUGIN_PHP_VERSION="2.1.3"
 
 # Define some app bundle locations
@@ -36,7 +36,7 @@ cp -rf "../../installer/kalabox.yml" $APP_CONTENTS/kalabox.yml
 
 # Get Docker for mac
 # @todo: Would be great to pin this version
-curl -fsSL -o docker.dmg "https://download.docker.com/mac/stable/Docker.dmg" && \
+curl -fsSL -o docker.dmg "https://download.docker.com/mac/stable/15583/Docker.dmg" && \
   mkdir -p /tmp/kalabox/docker && \
   hdiutil attach -mountpoint /tmp/kalabox/docker Docker.dmg && \
   cp -rf /tmp/kalabox/docker/Docker.app ./Docker.app && \

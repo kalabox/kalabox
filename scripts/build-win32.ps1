@@ -27,7 +27,7 @@ $kalabox_pkg = Get-Content "package.json" | Out-String | ConvertFrom-Json
 $kalabox_version = $kalabox_pkg.version
 
 # Kalabox plugins
-$plugin_pantheon_version = "2.1.3"
+$plugin_pantheon_version = "2.1.5"
 $plugin_php_version = "2.1.3"
 
 # Git version information
@@ -89,7 +89,7 @@ Download -Url "https://github.com/kalabox/kalabox-app-php/releases/download/v$pl
 Download -Url "https://github.com/git-for-windows/git/releases/download/v$git_version.windows.1/Git-$git_version-64-bit.exe" -Destination "$base_dir\Git.exe"
 
 # Docker for Windows
-Download -Url "https://download.docker.com/win/stable/InstallDocker.msi" -Destination "$base_dir\Docker.msi"
+Download -Url "https://download.docker.com/win/stable/1.12.3.8488/InstallDocker.msi" -Destination "$base_dir\Docker.msi"
 
 # Do some needed unpacking
 Write-Output "Unpacking..."

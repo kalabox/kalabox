@@ -19,6 +19,7 @@
 # NPM files
 npm-debug.log
 node_modules
+modules/jxcore/bin
 .sass-cache
 style.css
 html-angular*

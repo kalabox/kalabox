@@ -1,13 +1,7 @@
-TRY OUT LANDO CLI BETA (AKA KALABOX 3.0)!
------------------------------------------
+THIS PROJECT WILL SOON BE DEPRECATED!!!
+---------------------------------------
 
-IF YOU:
-
-* ARE A KALABOX CLI USER 
-* ARE HAVING ISSUES WITH KALABOX 
-* WANT THE BEST LOCAL DEV IN THE GALAXY
-
-THEN WE **HIGHLY HIGHLY RECOMMEND** YOU CHECK OUT [LANDO](https://github.com/kalabox/lando)
+WE RECOMMEND YOU TRANSITION TO [LANDO](https://github.com/lando/lando) IMMEDIATELY.
 
 Kalabox
 =======
