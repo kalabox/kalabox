@@ -16,6 +16,8 @@ install:
 
   # install relevant things
   - npm install -g grunt-cli bower
+  - ruby --version
+  - gem --version
   - gem install sass
 
   # Build the things
