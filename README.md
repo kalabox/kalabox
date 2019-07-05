@@ -1,7 +1,9 @@
-THIS PROJECT WILL SOON BE DEPRECATED!!!
----------------------------------------
+THIS PROJECT IS NOW OFFICIALLY DEPRECATED
+-----------------------------------------
 
-WE RECOMMEND YOU TRANSITION TO [LANDO](https://github.com/lando/lando) IMMEDIATELY.
+Kalabox is now deprecated and will EOL sometime later in 2019. 
+
+Check out https://www.kalabox.io for information on how to migrate to either Lando or Pantheon Localdev
 
 Kalabox
 =======
