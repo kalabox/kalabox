@@ -34,7 +34,7 @@ module.exports = function(common) {
           ' * kalabox.io\n' +
           ' *\n' +
           ' * Copyright (c) <%= grunt.template.today("yyyy") %> ' +
-          'Kalabox Inc.\n' +
+          'Lando Alliance\n' +
           ' */\n'
         },
         src: [
