@@ -42,9 +42,9 @@
   },
   "nwjsBuilder": {
     "productName": "Kalabox",
-    "copyright": "2016",
+    "copyright": "2025",
     "comments": "Make local dev great again!",
-    "companyName": "Kalabox Inc."
+    "companyName": "Lando Alliance"
   },
   "chromium-args": "--enable-threaded-compositing",
   "web_accessible_resources": [
