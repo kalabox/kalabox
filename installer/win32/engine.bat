@@ -6,7 +6,7 @@ CLS
 ::
 :: Kalabox Services Script.
 ::
-:: Copyright (C) 2016 Kalabox Inc
+:: Copyright (c) 2025 Lando Alliance
 ::
 
 :: Make sure we unset any docker vars
