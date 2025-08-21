@@ -53,7 +53,7 @@
   "dependencies": {
     "bluebird": "^3.4.1",
     "chalk": "~0.5.1",
-    "decompress": "^3.0.0",
+    "decompress": "^4.2.1",
     "dockerode": "^2.3.1",
     "download": "^4.4.3",
     "fs-extra": "^0.18.2",
