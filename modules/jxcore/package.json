@@ -8,7 +8,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "decompress": "^2.2.1",
+    "decompress": "^4.2.1",
     "download": "^3.3.0",
     "file-exists": "^0.1.1",
     "merge": "^1.2.0",
